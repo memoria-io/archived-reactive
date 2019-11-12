@@ -10,13 +10,13 @@
 
     <groupId>com.marmoush</groupId>
     <artifactId>jutils</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.3</version>
 
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
     <description>Java utilities</description>
-    <url>https://memoria.io</url>
+    <url>https://marmoush.com</url>
     <organization>
         <name>marmoush.com</name>
         <url>https://marmoush.com</url>
@@ -295,7 +295,7 @@
     </dependencyManagement>
 
     <dependencies>
-        <!--########################################## Reactive Programming ######################################## -->
+        <!--########################################## Core ######################################## -->
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
@@ -317,8 +317,15 @@
             <version>${vavr.version}</version>
         </dependency>
 
-        <!--########################################## Business Logic  ############################################# -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
 
+        <dependency>
+            <groupId>com.esotericsoftware.yamlbeans</groupId>
+            <artifactId>yamlbeans</artifactId>
+        </dependency>
         <!--########################################## Logging  #################################################### -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

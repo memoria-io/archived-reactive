@@ -1,0 +1,6 @@
+sub.config.name: "hello world"
+sub.other.value: byebye
+sub.list:
+  - hi
+  - hello
+  - bye
