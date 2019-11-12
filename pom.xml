@@ -35,7 +35,6 @@
         <maven-site-plugin.version>3.8.2</maven-site-plugin.version>
         <maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
         <jacoco-plugin.version>0.8.4</jacoco-plugin.version>
-        <pit-plugin.version>1.4.10</pit-plugin.version>
         <maven-sonar-plugin.version>3.6.0.1398</maven-sonar-plugin.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -55,7 +54,7 @@
     <distributionManagement>
         <site>
             <id>${project.artifactId}-site</id>
-            <url>ftp://memoria.io/</url>
+            <url>ftp://marmoush.com/</url>
         </site>
         <snapshotRepository>
             <id>ossrh</id>
