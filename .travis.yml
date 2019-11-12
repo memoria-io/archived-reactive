@@ -12,8 +12,8 @@ before_install:
   - gpg --import deploy/marmoush.com.gpg
 
 after_success:
-  - mvn test jacoco:report coveralls:report
-
+  - bash <(curl -s https://codecov.io/bash)
+install: mvn install
 deploy:
   provider: script
   script: mvn deploy --settings deploy/maven-settings.xml
