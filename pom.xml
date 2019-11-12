@@ -8,7 +8,7 @@
         <version>9</version>
     </parent>
 
-    <groupId>io.memoria</groupId>
+    <groupId>com.marmoush</groupId>
     <artifactId>jutils</artifactId>
     <version>0.0.1</version>
 
@@ -18,8 +18,8 @@
     <description>Java utilities</description>
     <url>https://memoria.io</url>
     <organization>
-        <name>memoria.io</name>
-        <url>http://memoria.io</url>
+        <name>marmoush.com</name>
+        <url>https://marmoush.com</url>
     </organization>
 
     <properties>
@@ -190,7 +190,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
+                <version>3.1.1</version>
+
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
