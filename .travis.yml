@@ -1,0 +1,19 @@
+language: java
+###########
+### JDK ###
+###########
+jdk:
+  - openjdk12
+
+#####################
+### Notifications ###
+#####################
+notifications:
+  email: false
+
+####################
+### Build script ###
+####################
+script:
+  - export GPG_TTY=$(tty)
+  - mvn clean compile package install
