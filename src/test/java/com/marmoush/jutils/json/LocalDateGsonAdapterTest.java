@@ -20,7 +20,7 @@ public class LocalDateGsonAdapterTest {
 
   @Test
   public void dateSerializer() {
-    String result = j.toJson(dateObj);
+    String result = j.toJsonString(dateObj);
     assertEquals(dateString, result);
   }
 

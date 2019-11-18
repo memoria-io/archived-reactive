@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class FileAdapterTest {
+public class YamlUtilsTest {
   @Test
   public void parseYamlShouldReturnList() throws IOException {
     Map<String, Object> map = YamlUtils.parseYaml("test.yaml").get();

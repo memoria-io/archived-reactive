@@ -3,8 +3,10 @@ package com.marmoush.jutils.functional;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static io.vavr.API.*;
 import static io.vavr.Patterns.$Failure;
@@ -31,5 +33,9 @@ public class Functional {
   public static <A> Function<Try<A>, Mono<Void>> tryToMonoVoid(Function<A, Mono<Void>> f,
                                                                Function<Throwable, Mono<Void>> f2) {
     return a -> Match(a).of(Case($Success($()), f), Case($Failure($()), f2));
+  }
+
+  public static <A> Mono<A> blockingToMono(Supplier<A> f, Scheduler scheduler) {
+    return Mono.defer(() -> Mono.just(f.get()).subscribeOn(scheduler));
   }
 }

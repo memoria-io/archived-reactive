@@ -24,7 +24,7 @@ public class JsonGson implements Json {
   }
 
   @Override
-  public <T> String toJson(T t) {
+  public <T> String toJsonString(T t) {
     return gson.toJson(t);
   }
 }

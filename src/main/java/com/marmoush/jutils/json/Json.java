@@ -9,5 +9,5 @@ public interface Json {
 
   Try<Map<String, Object>> toMap(String str);
 
-  <T> String toJson(T tclass);
+  <T> String toJsonString(T tclass);
 }

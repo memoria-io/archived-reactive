@@ -10,8 +10,8 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-import static com.marmoush.jutils.file.FileUtils.asInputStream;
-import static com.marmoush.jutils.file.FileUtils.asString;
+import static com.marmoush.jutils.file.FileUtils.asStringBlocking;
+import static com.marmoush.jutils.file.FileUtils.resource;
 
 public class YamlUtils {
   private YamlUtils() {}
@@ -29,14 +29,14 @@ public class YamlUtils {
   public static <T> Try<T> parseYaml(Class<T> t, String fileName, boolean ignoreUnknown) {
     YamlConfig yc = new YamlConfig();
     yc.readConfig.setIgnoreUnknownProperties(ignoreUnknown);
-    YamlReader yr = new YamlReader(asString(fileName, YamlUtils::yamlInclude), yc);
+    YamlReader yr = new YamlReader(asStringBlocking(resource(fileName), YamlUtils::yamlInclude), yc);
     return Try.of(() -> yr.read(t));
   }
 
   private static String yamlInclude(String l) {
     if (l.startsWith("include:")) {
       String file = l.split(":")[1].trim();
-      InputStream is = asInputStream(file);
+      InputStream is = resource(file);
       BufferedReader reader = new BufferedReader(new InputStreamReader(is));
       return reader.lines().collect(Collectors.joining(System.lineSeparator()));
     } else {
