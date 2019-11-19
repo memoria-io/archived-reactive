@@ -9,5 +9,5 @@ This repository contains reused utility code across multiple projects.
 ```
 <groupId>com.marmoush</groupId>
 <artifactId>jutils</artifactId>
-<version>0.0.3</version>
+<version>0.1.3</version>
 ``` 
