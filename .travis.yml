@@ -18,7 +18,6 @@ deploy:
   provider: script
   script: mvn deploy --settings deploy/maven-settings.xml -P travis_deployment
   on:
-    repo: ismailmarmoush/jutils
     branch: master
     tags: true
 branches:
