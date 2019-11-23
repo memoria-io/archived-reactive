@@ -1,6 +1,5 @@
 package com.marmoush.jutils.functional;
 
-import io.vavr.API;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
@@ -40,10 +39,6 @@ public class Functional {
   public static <A> Mono<A> blockingToMono(Supplier<A> f, Scheduler scheduler) {
     return Mono.defer(() -> Mono.just(f.get()).subscribeOn(scheduler));
   }
-
-//  public static <T, R> Match.Case<T, R> instanceOfCase(Class<T> c, R r) {
-//    return Case($(instanceOf(c)), () -> r);
-//  }
 
   public static <T, R> Match.Case<T, R> instanceOfCase(Class<?> c, R r) {
     return Case($(instanceOf(c)), () -> r);
