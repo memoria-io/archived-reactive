@@ -22,7 +22,7 @@ public class NettyHttpError {
   }
 
   public NettyHttpError(Throwable t, int statusCode, Option<HttpHeaders> httpHeaders) {
-    log.error("An error occured w" + statusCode, t);
+    log.error("An error occured with status code: " + statusCode, t);
     this.statusCode = statusCode;
     this.message = Option.of(t.getMessage());
     this.httpHeaders = httpHeaders;

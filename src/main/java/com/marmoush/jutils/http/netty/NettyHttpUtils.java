@@ -10,17 +10,13 @@ public class NettyHttpUtils {
   private NettyHttpUtils() {}
 
   public static NettyOutbound send(HttpServerResponse resp, int status, String s) {
-    return send(resp, status, s, EmptyHttpHeaders.INSTANCE);
-  }
-
-  public static NettyOutbound send(HttpServerResponse resp, int status, String s, HttpHeaders headers) {
-    return resp.status(status).headers(headers).sendString(Mono.just(s));
+    return resp.status(status).sendString(Mono.just(s));
   }
 
   public static NettyOutbound sendError(HttpServerResponse resp, NettyHttpError nhe) {
     HttpHeaders header = nhe.httpHeaders.isDefined() ? nhe.httpHeaders.get() : EmptyHttpHeaders.INSTANCE;
     return resp.status(nhe.statusCode)
                .headers(resp.responseHeaders().add(header))
-               .sendString(Mono.just(nhe.message.getOrElse("Error")));
+               .sendString(Mono.just(nhe.message.getOrElse("Error message unavailable.")));
   }
 }
