@@ -40,12 +40,12 @@
         </sonar.coverage.jacoco.xmlReportPaths>
         <!--Compile Deps-->
         <reactor.version>Dysprosium-RELEASE</reactor.version>
-
-        <vavr.version>1.0.0-alpha-3</vavr.version>
+        <vavr.version>0.10.2</vavr.version>
         <gson.version>2.8.5</gson.version>
         <yamlbeans.version>1.13</yamlbeans.version>
         <logging.version>2.12.0</logging.version>
-
+        <argon2.version>2.5</argon2.version>
+        <jsonwebtoken.version>0.10.7</jsonwebtoken.version>
         <!--Test Deps-->
         <junit.jupiter.version>5.5.2</junit.jupiter.version>
         <junit.assertj.version>3.11.1</junit.assertj.version>
@@ -303,6 +303,30 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>${logging.version}</version>
+        </dependency>
+
+        <!-- ############################################### Security ###############################################-->
+        <dependency>
+            <groupId>de.mkammerer</groupId>
+            <artifactId>argon2-jvm</artifactId>
+            <version>${argon2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jsonwebtoken.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jsonwebtoken.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jsonwebtoken.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!--########################################### Testing  ################################################### -->
