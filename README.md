@@ -17,3 +17,9 @@ for example having more modular parts, dependencies, name changes etc.
 
 ## Contribution
 You can just do pull requests and I will check them asap.
+
+## Todos
+
+
+## Release notes
+
