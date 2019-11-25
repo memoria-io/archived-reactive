@@ -10,7 +10,7 @@
 
     <groupId>com.marmoush</groupId>
     <artifactId>jutils</artifactId>
-    <version>0.1.5</version>
+    <version>0.1.8</version>
 
     <packaging>jar</packaging>
 
