@@ -12,7 +12,7 @@ for example having more modular parts, dependencies, name changes etc.
 ```
 <groupId>com.marmoush</groupId>
 <artifactId>jutils</artifactId>
-<version>0.1.4</version>
+<version>0.1.9</version>
 ``` 
 
 ## Contribution
