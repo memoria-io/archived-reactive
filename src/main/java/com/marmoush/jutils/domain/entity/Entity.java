@@ -12,17 +12,17 @@ public class Entity<T> {
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(id, value);
-  }
-
-  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    Entity<T> entity = (Entity<T>) o;
-    return Objects.equals(id, entity.id) && Objects.equals(value, entity.value);
+    Entity<?> entity = (Entity<?>) o;
+    return id.equals(entity.id) && value.equals(entity.value);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, value);
   }
 }

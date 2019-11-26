@@ -13,5 +13,7 @@ public class EntityTest {
     Assertions.assertNotEquals(new Entity<>("hello", 1), new Entity<>("hello", 2));
     Assertions.assertNotEquals(new Entity<>("hello", 1), new Entity<>("hi", 1));
     Assertions.assertNotEquals(new Entity<>("hello", 1), new Entity<>("hi", 2));
+    Assertions.assertThrows(NullPointerException.class,
+                            () -> new Entity<>("hello", null).equals(new Entity<>("hello", 1)));
   }
 }

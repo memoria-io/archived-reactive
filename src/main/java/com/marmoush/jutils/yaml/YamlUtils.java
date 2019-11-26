@@ -14,10 +14,24 @@ public class YamlUtils {
 
   public static class ConfigMap extends HashMap<String, Object> {}
 
+  /**
+   * Supports one level expansion of another file through "include: file.txt"
+   *
+   * @param fileName resource filename
+   * @return object instance of class ConfigMap
+   */
   public static Try<ConfigMap> parseYamlResource(String fileName) {
     return parseYamlResource(ConfigMap.class, fileName);
   }
 
+  /**
+   * Supports one level expansion of another file through "include: file.txt"
+   *
+   * @param t        Class type T
+   * @param fileName resource filename
+   * @param <T>      Parse file to class T
+   * @return object instance of class T
+   */
   public static <T> Try<T> parseYamlResource(Class<T> t, String fileName) {
     return parseYamlResource(t, fileName, true);
   }
@@ -25,11 +39,11 @@ public class YamlUtils {
   /**
    * Supports one level expansion of another file through "include: file.txt"
    *
-   * @param t
-   * @param fileName
-   * @param ignoreUnknown
-   * @param <T>
-   * @return
+   * @param t             Class type T
+   * @param fileName      resource filename
+   * @param <T>           Parse file to class T
+   * @param ignoreUnknown ignore unknown extra values
+   * @return object instance of class T
    */
   public static <T> Try<T> parseYamlResource(Class<T> t, String fileName, boolean ignoreUnknown) {
     YamlConfig yc = new YamlConfig();
