@@ -1,0 +1,7 @@
+package com.marmoush.jutils.domain.port;
+
+public interface Hasher {
+  String hash(String password, String salt);
+
+  boolean verify(String password, String hash, String salt);
+}
