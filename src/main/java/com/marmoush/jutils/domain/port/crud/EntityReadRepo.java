@@ -1,4 +1,4 @@
-package com.marmoush.jutils.domain.port;
+package com.marmoush.jutils.domain.port.crud;
 
 import com.marmoush.jutils.domain.entity.Entity;
 import io.vavr.control.Option;
