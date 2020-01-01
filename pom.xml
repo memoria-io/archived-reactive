@@ -21,6 +21,9 @@
         <name>marmoush.com</name>
         <url>https://marmoush.com</url>
     </organization>
+    <properties>
+        <jsonwebtoken.version>0.10.7</jsonwebtoken.version>
+    </properties>
     <distributionManagement>
         <site>
             <id>${project.artifactId}-site</id>
@@ -35,7 +38,28 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-
+    <dependencies>
+        <!--======================================================================================== -->
+        <!-- Security Dependencies -->
+        <!--======================================================================================== -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jsonwebtoken.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jsonwebtoken.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jsonwebtoken.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
 </project>
 
 
