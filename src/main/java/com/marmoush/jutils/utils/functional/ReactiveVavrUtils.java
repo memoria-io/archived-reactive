@@ -12,17 +12,9 @@ import java.util.function.Supplier;
 import static io.vavr.API.*;
 import static io.vavr.Patterns.$Failure;
 import static io.vavr.Patterns.$Success;
-import static io.vavr.Predicates.instanceOf;
 
-public class Functional {
-  private Functional() {}
-
-  public static <L extends Throwable, R> Mono<R> eitherToMono(Either<L, R> either) {
-    if (either.isRight())
-      return Mono.just(either.get());
-    else
-      return Mono.error(either.getLeft());
-  }
+public class ReactiveVavrUtils {
+  private ReactiveVavrUtils() {}
 
   public static <A, B> Mono<Try<B>> tryToMonoTry(Try<A> a, Function<A, Mono<Try<B>>> f) {
     return Match(a).of(Case($Success($()), f), Case($Failure($()), t -> Mono.just(Try.<B>failure(t))));
@@ -49,8 +41,24 @@ public class Functional {
     return Mono.defer(() -> Mono.just(f.get()).subscribeOn(scheduler));
   }
 
-  public static <T, R> Match.Case<T, R> instanceOfCase(Class<?> c, R r) {
-    return Case($(instanceOf(c)), () -> r);
+  public static <T> Flux<Try<T>> fluxT(Try<Flux<T>> tt) {
+    if (tt.isSuccess())
+      return tt.get().map(Try::success);
+    else
+      return Flux.just(Try.failure(tt.getCause()));
   }
 
+  public static <T> Mono<Try<T>> monoT(Try<Mono<T>> tt) {
+    if (tt.isSuccess())
+      return tt.get().map(Try::success);
+    else
+      return Mono.just(Try.failure(tt.getCause()));
+  }
+
+  public static <L extends Throwable, R> Mono<R> eitherToMono(Either<L, R> either) {
+    if (either.isRight())
+      return Mono.just(either.get());
+    else
+      return Mono.error(either.getLeft());
+  }
 }

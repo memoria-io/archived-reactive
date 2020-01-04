@@ -8,27 +8,14 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
-import java.time.Duration;
 import java.util.function.Function;
 
 import static com.marmoush.jutils.utils.file.FileUtils.writeFile;
-import static com.marmoush.jutils.utils.functional.Functional.*;
+import static com.marmoush.jutils.utils.functional.ReactiveVavrUtils.*;
 import static io.vavr.control.Either.left;
 import static io.vavr.control.Either.right;
 
-public class FunctionalTest {
-
-  @Test
-  public void eitherToMonoTest() {
-    Either<Exception, Integer> k = right(23);
-    Mono<Integer> integerMono = eitherToMono(k);
-    StepVerifier.create(integerMono).expectNext(23).expectComplete().verify();
-
-    k = left(new Exception("exception example"));
-    integerMono = eitherToMono(k);
-    StepVerifier.create(integerMono).expectError().verify();
-  }
-
+public class ReactiveVavrUtilsTest {
   @Test
   public void tryToMonoTryTest() {
     Try<String> h = Try.success("hello");
@@ -93,11 +80,13 @@ public class FunctionalTest {
   }
 
   @Test
-  public void flux() {
-    Flux<Long> longFlux = Flux.interval(Duration.ofSeconds(1))
-                              .take(10)
-                              .concatWith(Flux.just(4l, 5l, 6l))
-                              .doOnNext(System.out::println);
-    StepVerifier.create(longFlux).expectNextCount(13).expectComplete().verify();
+  public void eitherToMonoTest() {
+    Either<Exception, Integer> k = right(23);
+    Mono<Integer> integerMono = eitherToMono(k);
+    StepVerifier.create(integerMono).expectNext(23).expectComplete().verify();
+
+    k = left(new Exception("exception example"));
+    integerMono = eitherToMono(k);
+    StepVerifier.create(integerMono).expectError().verify();
   }
 }
