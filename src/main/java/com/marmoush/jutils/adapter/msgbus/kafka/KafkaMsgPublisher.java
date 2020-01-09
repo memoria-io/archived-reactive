@@ -9,14 +9,15 @@ import io.vavr.control.Try;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-
-import static com.marmoush.jutils.utils.functional.Functional.blockingToMono;
 
 public class KafkaMsgPublisher implements MsgPublisher {
   private final KafkaProducer<String, String> producer;
@@ -32,11 +33,13 @@ public class KafkaMsgPublisher implements MsgPublisher {
   }
 
   @Override
-  public Mono<Try<PublishResponse>> publish(String topic, int partition, Msg msg) {
-    var record = new ProducerRecord<>(topic, partition, msg.key, msg.value);
-    var recordTry = Try.of(() -> producer.send(record).get(timeout.toMillis(), TimeUnit.MILLISECONDS))
-                       .map(KafkaMsgPublisher::toPublishResponse);
-    return blockingToMono(() -> recordTry, scheduler);
+  public Flux<Try<PublishResponse>> publish(String topic, int partition, Flux<Msg> msgFlux) {
+    return Flux.defer(() -> msgFlux.map(msg -> {
+      var record = new ProducerRecord<>(topic, partition, msg.key, msg.value);
+      //noinspection RedundantTypeArguments
+      return Try.<RecordMetadata>of(() -> producer.send(record).get(timeout.toMillis(), TimeUnit.MILLISECONDS)).map(
+              KafkaMsgPublisher::toPublishResponse);
+    }).publishOn(scheduler));
   }
 
   private static PublishResponse toPublishResponse(RecordMetadata meta) {

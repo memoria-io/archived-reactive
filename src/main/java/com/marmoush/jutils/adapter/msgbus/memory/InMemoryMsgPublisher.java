@@ -5,7 +5,7 @@ import com.marmoush.jutils.domain.value.msg.Msg;
 import com.marmoush.jutils.domain.value.msg.PublishResponse;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -20,12 +20,11 @@ public class InMemoryMsgPublisher implements MsgPublisher {
   }
 
   @Override
-  public Mono<Try<PublishResponse>> publish(String topic, int partition, Msg msg) {
-    db.putIfAbsent(topic, new HashMap<>()).putIfAbsent(partition, new LinkedList<>()).addLast(msg);
-    long offset = db.get(topic).get(partition).size() - 1;
-    return Mono.just(Try.success(new PublishResponse(topic,
-                                                     partition,
-                                                     Option.of(offset),
-                                                     Option.of(LocalDateTime.now()))));
+  public Flux<Try<PublishResponse>> publish(String topic, int partition, Flux<Msg> msgFlux) {
+    return msgFlux.map(msg -> {
+      db.putIfAbsent(topic, new HashMap<>()).putIfAbsent(partition, new LinkedList<>()).addLast(msg);
+      long offset = db.get(topic).get(partition).size() - 1;
+      return Try.success(new PublishResponse(topic, partition, Option.of(offset), Option.of(LocalDateTime.now())));
+    });
   }
 }
