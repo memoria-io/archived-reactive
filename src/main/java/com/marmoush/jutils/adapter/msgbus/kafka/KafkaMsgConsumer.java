@@ -12,6 +12,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.publisher.SynchronousSink;
 import reactor.core.scheduler.Scheduler;
 
@@ -37,11 +38,16 @@ public class KafkaMsgConsumer implements MsgConsumer {
 
   @Override
   public Flux<Try<ConsumeResponse>> consume(String topic, int partition, long offset) {
-    consumer.subscribe(List.of(topic).toJavaList());
-    // TODO check auto offset
-    consumer.seek(new TopicPartition(topic, partition), offset);
-    Consumer<SynchronousSink<List<Try<ConsumeResponse>>>> consumer = s -> s.next(pollOnce(topic, partition));
-    return Flux.defer(() -> Flux.generate(consumer).flatMap(Flux::fromIterable).subscribeOn(scheduler));
+    Consumer<SynchronousSink<List<Try<ConsumeResponse>>>> poll = s -> s.next(pollOnce(topic, partition));
+    Mono<Object> subscribeMono = Mono.create(s -> {
+      consumer.subscribe(List.of(topic).toJavaList());
+      // must call poll before seek
+      consumer.poll(timeout);
+      consumer.seek(new TopicPartition(topic, partition), offset);
+      s.success();
+    });
+    var flux = Flux.generate(poll).flatMap(Flux::fromIterable);
+    return Flux.defer(() -> subscribeMono.thenMany(flux).subscribeOn(scheduler));
   }
 
   private List<Try<ConsumeResponse>> pollOnce(String topic, int partition) {
