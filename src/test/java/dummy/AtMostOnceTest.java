@@ -7,19 +7,21 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import java.util.Arrays;
 import java.util.Properties;
 
+import static dummy.Constants.*;
+
 public class AtMostOnceTest {
 
   public static void main(String[] args) throws InterruptedException {
     KafkaConsumer<String, String> consumer = createConsumer();
     // Subscribe to all partition in that topic. 'assign' could be used here
     // instead of 'subscribe' to subscribe to specific partition.
-    consumer.subscribe(Arrays.asList("normal-topic"));
+    consumer.subscribe(Arrays.asList(KAFKA_TOPIC));
     processRecords(consumer);
   }
 
   private static KafkaConsumer<String, String> createConsumer() {
     Properties props = new Properties();
-    props.put("bootstrap.servers", "172.17.0.1:9092");
+    props.put("bootstrap.servers", IP + ":" + KAFKA_PORT);
     String consumeGroup = "cg1";
     props.put("group.id", consumeGroup);
     // Set this property, if auto commit should happen.
