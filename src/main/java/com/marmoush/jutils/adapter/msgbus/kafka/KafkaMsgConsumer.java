@@ -12,14 +12,15 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.SynchronousSink;
 import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Properties;
+import java.util.function.Consumer;
 
-import static com.marmoush.jutils.utils.functional.Functional.*;
+import static com.marmoush.jutils.utils.functional.VavrUtils.traversableT;
 
 public class KafkaMsgConsumer implements MsgConsumer {
   private final KafkaConsumer<String, String> consumer;
@@ -37,32 +38,22 @@ public class KafkaMsgConsumer implements MsgConsumer {
   @Override
   public Flux<Try<ConsumeResponse>> consume(String topic, int partition, long offset) {
     consumer.subscribe(List.of(topic).toJavaList());
-    // TODO see auto offset
+    // TODO check auto offset
     consumer.seek(new TopicPartition(topic, partition), offset);
-    var pollTry = Try.of(() -> consumer.poll(timeout));
-    Flux.from(blockingToMono(() -> pollTry, scheduler))
-        .flatMap(tryToFluxTry(crs -> toConsumeResponses(crs, topic, partition)));
-    return null;
+    Consumer<SynchronousSink<List<Try<ConsumeResponse>>>> consumer = s -> s.next(pollOnce(topic, partition));
+    return Flux.defer(() -> Flux.generate(consumer).flatMap(Flux::fromIterable).subscribeOn(scheduler));
   }
 
-  public Flux<Try<ConsumeResponse>> consumeEach(String topic, int partition) {
-    var safePoll = blockingToMono(() -> Try.of(() -> consumer.poll(timeout)), scheduler);
-    return Flux.from(safePoll).flatMap(tryToFluxTry(crs -> toConsumeResponses(crs, topic, partition)));
+  private List<Try<ConsumeResponse>> pollOnce(String topic, int partition) {
+    var t = Try.of(() -> consumer.poll(timeout)).map(crs -> toConsumeResponses(crs, topic, partition));
+    return List.ofAll(traversableT(t));
   }
 
-  private static Flux<Try<ConsumeResponse>> toConsumeResponses(ConsumerRecords<String, String> crs,
-                                                               String topic,
-                                                               int partition) {
-    return Flux.fromIterable(crs.records(new TopicPartition(topic, partition)))
-               .map(KafkaMsgConsumer::toConsumeResponse)
-               .map(Try::success);
-  }
-
-  private static Mono<Try<List<ConsumeResponse>>> toConsumeResponseList(ConsumerRecords<String, String> crs,
-                                                                        String topic,
-                                                                        int partition) {
-    return Mono.just(Try.success(List.ofAll(crs.records(new TopicPartition(topic, partition)))
-                                     .map(KafkaMsgConsumer::toConsumeResponse)));
+  private static List<ConsumeResponse> toConsumeResponses(ConsumerRecords<String, String> crs,
+                                                          String topic,
+                                                          int partition) {
+    var prt = new TopicPartition(topic, partition);
+    return List.ofAll(crs.records(prt)).map(KafkaMsgConsumer::toConsumeResponse);
   }
 
   private static ConsumeResponse toConsumeResponse(ConsumerRecord<String, String> cr) {

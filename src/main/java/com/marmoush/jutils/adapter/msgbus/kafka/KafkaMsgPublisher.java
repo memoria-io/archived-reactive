@@ -34,12 +34,10 @@ public class KafkaMsgPublisher implements MsgPublisher {
 
   @Override
   public Flux<Try<PublishResponse>> publish(String topic, int partition, Flux<Msg> msgFlux) {
-    return Flux.defer(() -> msgFlux.map(msg -> {
-      var record = new ProducerRecord<>(topic, partition, msg.key, msg.value);
-      //noinspection RedundantTypeArguments
-      return Try.<RecordMetadata>of(() -> producer.send(record).get(timeout.toMillis(), TimeUnit.MILLISECONDS)).map(
-              KafkaMsgPublisher::toPublishResponse);
-    }).publishOn(scheduler));
+    return msgFlux.publishOn(scheduler)
+                  .map(msg -> new ProducerRecord<>(topic, partition, msg.key, msg.value))
+                  .map(prodRec -> Try.of(() -> producer.send(prodRec).get(timeout.toMillis(), TimeUnit.MILLISECONDS)))
+                  .map(t -> t.map(KafkaMsgPublisher::toPublishResponse));
   }
 
   private static PublishResponse toPublishResponse(RecordMetadata meta) {
