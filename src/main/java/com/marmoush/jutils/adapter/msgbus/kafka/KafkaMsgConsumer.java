@@ -39,7 +39,7 @@ public class KafkaMsgConsumer implements MsgConsumer {
   @Override
   public Flux<Try<ConsumeResponse>> consume(String topic, int partition, long offset) {
     Consumer<SynchronousSink<List<Try<ConsumeResponse>>>> poll = s -> s.next(pollOnce(topic, partition));
-    Mono<Object> subscribeMono = Mono.create(s -> {
+    var subscribeMono = Mono.create(s -> {
       consumer.subscribe(List.of(topic).toJavaList());
       // must call poll before seek
       consumer.poll(timeout);
