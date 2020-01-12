@@ -20,7 +20,7 @@ public class InMemoryMsgPublisher implements MsgPublisher {
   }
 
   @Override
-  public Flux<Try<PublishResponse>> publish(String topic, int partition, Flux<Msg> msgFlux) {
+  public Flux<Try<PublishResponse>> publish(Flux<Msg> msgFlux, String topic, int partition) {
     return msgFlux.map(msg -> {
       db.putIfAbsent(topic, new HashMap<>()).putIfAbsent(partition, new LinkedList<>()).addLast(msg);
       long offset = db.get(topic).get(partition).size() - 1;

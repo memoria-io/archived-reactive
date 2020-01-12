@@ -24,7 +24,7 @@ public class KafkaMsgPublisher implements MsgPublisher {
   private final Scheduler scheduler;
   private final Duration timeout;
 
-  public KafkaMsgPublisher(Map<String, String> configs, Scheduler scheduler, Duration timeout) {
+  public KafkaMsgPublisher(Map<String, Object> configs, Scheduler scheduler, Duration timeout) {
     this.scheduler = scheduler;
     this.timeout = timeout;
     Properties properties = new Properties();
@@ -33,7 +33,7 @@ public class KafkaMsgPublisher implements MsgPublisher {
   }
 
   @Override
-  public Flux<Try<PublishResponse>> publish(String topic, int partition, Flux<Msg> msgFlux) {
+  public Flux<Try<PublishResponse>> publish(Flux<Msg> msgFlux, String topic, int partition) {
     return msgFlux.publishOn(scheduler)
                   .map(msg -> new ProducerRecord<>(topic, partition, msg.key, msg.value))
                   .map(prodRec -> Try.of(() -> producer.send(prodRec).get(timeout.toMillis(), TimeUnit.MILLISECONDS)))

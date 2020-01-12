@@ -27,7 +27,7 @@ public class KafkaMsgConsumer implements MsgConsumer {
   private final Scheduler scheduler;
   private final Duration timeout;
 
-  public KafkaMsgConsumer(Map<String, String> configs, Scheduler scheduler, Duration timeout) {
+  public KafkaMsgConsumer(Map<String, Object> configs, Scheduler scheduler, Duration timeout) {
     this.scheduler = scheduler;
     this.timeout = timeout;
     Properties properties = new Properties();
