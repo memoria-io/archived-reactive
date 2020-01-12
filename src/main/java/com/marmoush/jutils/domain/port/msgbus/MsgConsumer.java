@@ -5,5 +5,5 @@ import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 
 public interface MsgConsumer {
-  Flux<Try<ConsumeResponse>> consume(String topicId, int partition, long offset);
+  Flux<Try<ConsumeResponse>> consume(String topicId, String partition, long offset);
 }

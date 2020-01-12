@@ -10,16 +10,16 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class InMemoryMsgConsumer implements MsgConsumer {
-  private final Map<String, HashMap<Integer, LinkedList<ConsumeResponse>>> db;
+  private final Map<String, HashMap<String, LinkedList<ConsumeResponse>>> db;
   private final int partitions;
 
-  public InMemoryMsgConsumer(Map<String, HashMap<Integer, LinkedList<ConsumeResponse>>> db, int partitions) {
+  public InMemoryMsgConsumer(Map<String, HashMap<String, LinkedList<ConsumeResponse>>> db, int partitions) {
     this.db = db;
     this.partitions = partitions;
   }
 
   @Override
-  public Flux<Try<ConsumeResponse>> consume(String topicId, int partition, long offset) {
+  public Flux<Try<ConsumeResponse>> consume(String topicId, String partition, long offset) {
     return Flux.fromIterable(db.get(topicId).get(partition)).map(Try::success);
   }
 }

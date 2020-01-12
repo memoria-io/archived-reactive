@@ -1,0 +1,5 @@
+server: "nats://localhost:4222"
+connectionTimeout: 1000
+reconnectionTimeout: 1000
+bufferSize: 1000
+pingInterval: 1000

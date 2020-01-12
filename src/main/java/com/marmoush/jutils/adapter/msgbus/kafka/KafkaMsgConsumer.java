@@ -36,7 +36,8 @@ public class KafkaMsgConsumer implements MsgConsumer {
   }
 
   @Override
-  public Flux<Try<ConsumeResponse>> consume(String topic, int partition, long offset) {
+  public Flux<Try<ConsumeResponse>> consume(String topic, String partitionStr, long offset) {
+    var partition = Integer.parseInt(partitionStr);
     Consumer<SynchronousSink<List<Try<ConsumeResponse>>>> poll = s -> s.next(pollOnce(topic, partition));
 
     var subscribeMono = Mono.create(s -> {
@@ -46,8 +47,8 @@ public class KafkaMsgConsumer implements MsgConsumer {
       consumer.seek(new TopicPartition(topic, partition), offset);
       s.success();
     });
-    var flux = Flux.generate(poll).flatMap(Flux::fromIterable);
-    return Flux.defer(() -> subscribeMono.thenMany(flux).subscribeOn(scheduler));
+    var consumerFlux = Flux.generate(poll).flatMap(Flux::fromIterable);
+    return Flux.defer(() -> subscribeMono.thenMany(consumerFlux).subscribeOn(scheduler));
   }
 
   private List<Try<ConsumeResponse>> pollOnce(String topic, int partition) {
@@ -64,6 +65,10 @@ public class KafkaMsgConsumer implements MsgConsumer {
 
   private static ConsumeResponse toConsumeResponse(ConsumerRecord<String, String> cr) {
     Msg msg = new Msg(cr.key(), cr.value());
-    return new ConsumeResponse(msg, cr.topic(), cr.partition(), Option.of(cr.offset()), Option.of(LocalDateTime.now()));
+    return new ConsumeResponse(msg,
+                               cr.topic(),
+                               cr.partition() + "",
+                               Option.of(cr.offset()),
+                               Option.of(LocalDateTime.now()));
   }
 }

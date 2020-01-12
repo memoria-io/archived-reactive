@@ -13,14 +13,14 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class InMemoryMsgPublisher implements MsgPublisher {
-  private final Map<String, HashMap<Integer, LinkedList<Msg>>> db;
+  private final Map<String, HashMap<String, LinkedList<Msg>>> db;
 
-  public InMemoryMsgPublisher(Map<String, HashMap<Integer, LinkedList<Msg>>> db) {
+  public InMemoryMsgPublisher(Map<String, HashMap<String, LinkedList<Msg>>> db) {
     this.db = db;
   }
 
   @Override
-  public Flux<Try<PublishResponse>> publish(Flux<Msg> msgFlux, String topic, int partition) {
+  public Flux<Try<PublishResponse>> publish(Flux<Msg> msgFlux, String topic, String partition) {
     return msgFlux.map(msg -> {
       db.putIfAbsent(topic, new HashMap<>()).putIfAbsent(partition, new LinkedList<>()).addLast(msg);
       long offset = db.get(topic).get(partition).size() - 1;

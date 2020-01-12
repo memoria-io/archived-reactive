@@ -33,16 +33,22 @@ public class KafkaMsgPublisher implements MsgPublisher {
   }
 
   @Override
-  public Flux<Try<PublishResponse>> publish(Flux<Msg> msgFlux, String topic, int partition) {
-    return msgFlux.publishOn(scheduler)
-                  .map(msg -> new ProducerRecord<>(topic, partition, msg.key, msg.value))
-                  .map(prodRec -> Try.of(() -> producer.send(prodRec).get(timeout.toMillis(), TimeUnit.MILLISECONDS)))
-                  .map(t -> t.map(KafkaMsgPublisher::toPublishResponse));
+  public Flux<Try<PublishResponse>> publish(Flux<Msg> msgFlux, String topic, String partitionStr) {
+    Try<Integer> partitionTry = Try.of(() -> Integer.parseInt(partitionStr));
+    if (partitionTry.isSuccess()) {
+      return msgFlux.publishOn(scheduler)
+                    .map(msg -> new ProducerRecord<>(topic, partitionTry.get(), msg.key, msg.value))
+                    .map(prodRec -> Try.of(() -> producer.send(prodRec).get(timeout.toMillis(), TimeUnit.MILLISECONDS)))
+                    .map(t -> t.map(KafkaMsgPublisher::toPublishResponse));
+
+    } else {
+      return Flux.just(Try.failure(partitionTry.getCause()));
+    }
   }
 
   private static PublishResponse toPublishResponse(RecordMetadata meta) {
     return new PublishResponse(meta.topic(),
-                               meta.partition(),
+                               meta.partition() + "",
                                Option.of(meta.offset()),
                                Option.of(meta.timestamp())
                                      .map(Instant::ofEpochMilli)

@@ -9,7 +9,7 @@ public class ConsumeResponse extends PublishResponse {
 
   public ConsumeResponse(Msg msg,
                          String topic,
-                         int partition,
+                         String partition,
                          Option<Long> offset,
                          Option<LocalDateTime> deliveryTime) {
     super(topic, partition, offset, deliveryTime);

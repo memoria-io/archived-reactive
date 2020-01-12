@@ -6,5 +6,5 @@ import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 
 public interface MsgPublisher {
-  Flux<Try<PublishResponse>> publish(Flux<Msg> msg, String topic, int partition);
+  Flux<Try<PublishResponse>> publish(Flux<Msg> msgFlux, String topic, String partitionStr);
 }

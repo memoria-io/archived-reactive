@@ -22,7 +22,7 @@ import java.util.Random;
 public class ReactiveKafkaAPIIT {
   private final Map<String, Object> config = YamlUtils.parseYamlResource("kafka.yaml").get();
   private final int MSG_COUNT = 3;
-  private final int PARTITION = 0;
+  private final String PARTITION = "0";
 
   @Test
   @DisplayName("Consumed messages should be same as published ones.")

@@ -1,8 +1,0 @@
-package dummy;
-
-public class Constants {
-//  public static final String IP = "172.17.0.1";
-  public static final String IP = "localhost";
-  public static final String KAFKA_PORT = "9092";
-  public static final String KAFKA_TOPIC = "test4";
-}
