@@ -16,7 +16,9 @@ before_install:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-script: mvn install
+# Install is for installing dependencies, but it stops on failure while script continues
+install: mvn install
+script: skip
 deploy:
   provider: script
   script: mvn deploy --settings deploy/maven-settings.xml -P travis_deployment
