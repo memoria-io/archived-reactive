@@ -9,6 +9,7 @@ import com.marmoush.jutils.utils.yaml.YamlUtils;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.Map;
 import io.vavr.control.Try;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
@@ -20,12 +21,13 @@ import java.util.Random;
 
 public class ReactiveKafkaAPIIT {
   private final Map<String, Object> config = YamlUtils.parseYamlResource("kafka.yaml").get();
-  public final String KAFKA_TOPIC = "topic-" + new Random().nextInt(100);
+  public final String KAFKA_TOPIC = "topic-" + new Random().nextInt(1000);
   private final int MSG_COUNT = 3;
   private final int PARTITION = 0;
 
   @Test
-  public void kafkaApiTest() {
+  @DisplayName("Consumed messages should be same as published ones.")
+  public void kafkaPubSub() {
     @SuppressWarnings("unchecked")
     var publisherConf = (LinkedHashMap<String, Object>) config.get("publisher").get();
     MsgPublisher msgPublisher = new KafkaMsgPublisher(HashMap.ofAll(publisherConf),
@@ -42,7 +44,17 @@ public class ReactiveKafkaAPIIT {
     Flux<Try<PublishResponse>> kafkaPublisher = msgPublisher.publish(msgs, KAFKA_TOPIC, PARTITION);
     Flux<Try<ConsumeResponse>> kafkaConsumer = msgConsumer.consume(KAFKA_TOPIC, PARTITION, 0).take(MSG_COUNT);
 
-    StepVerifier.create(kafkaPublisher).expectNextCount(MSG_COUNT).expectComplete().verify();
-    StepVerifier.create(kafkaConsumer).expectNextCount(MSG_COUNT).expectComplete().verify();
+    StepVerifier.create(kafkaPublisher)
+                .expectNextMatches(pr -> pr.isSuccess())
+                .expectNextMatches(pr -> pr.isSuccess())
+                .expectNextMatches(pr -> pr.get().offset.get() == 2)
+                .expectComplete()
+                .verify();
+    StepVerifier.create(kafkaConsumer)
+                .expectNextMatches(pr -> pr.isSuccess())
+                .expectNextMatches(pr -> pr.isSuccess())
+                .expectNextMatches(pr -> pr.get().msg.key.equals("2"))
+                .expectComplete()
+                .verify();
   }
 }
