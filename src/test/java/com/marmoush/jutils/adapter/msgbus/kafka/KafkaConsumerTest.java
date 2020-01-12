@@ -1,5 +1,6 @@
 package com.marmoush.jutils.adapter.msgbus.kafka;
 
+import com.marmoush.jutils.adapter.msgbus.kafka.KafkaMsgConsumer;
 import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
 import com.marmoush.jutils.domain.value.msg.ConsumeResponse;
 import dummy.Constants;
@@ -36,7 +37,7 @@ public class KafkaConsumerTest {
 
   public static void main(String[] args) throws InterruptedException {
     MsgConsumer msgConsumer = new KafkaMsgConsumer(config, Schedulers.elastic(), Duration.ofSeconds(1));
-    Flux<Try<ConsumeResponse>> topic = msgConsumer.consume("test", 0, 5).doOnNext(i -> {
+    Flux<Try<ConsumeResponse>> topic = msgConsumer.consume(Constants.KAFKA_TOPIC, 0, 3000).doOnNext(i -> {
       if (i.isSuccess()) {
         var msg = i.get().msg;
         System.out.println(msg.key + ":" + msg.value);
