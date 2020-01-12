@@ -21,13 +21,13 @@ import java.util.Random;
 
 public class ReactiveKafkaAPIIT {
   private final Map<String, Object> config = YamlUtils.parseYamlResource("kafka.yaml").get();
-  public final String KAFKA_TOPIC = "topic-" + new Random().nextInt(1000);
   private final int MSG_COUNT = 3;
   private final int PARTITION = 0;
 
   @Test
   @DisplayName("Consumed messages should be same as published ones.")
   public void kafkaPubSub() {
+    final String KAFKA_TOPIC = "topic-" + new Random().nextInt(1000);
     @SuppressWarnings("unchecked")
     var publisherConf = (LinkedHashMap<String, Object>) config.get("publisher").get();
     MsgPublisher msgPublisher = new KafkaMsgPublisher(HashMap.ofAll(publisherConf),
@@ -45,14 +45,14 @@ public class ReactiveKafkaAPIIT {
     Flux<Try<ConsumeResponse>> kafkaConsumer = msgConsumer.consume(KAFKA_TOPIC, PARTITION, 0).take(MSG_COUNT);
 
     StepVerifier.create(kafkaPublisher)
-                .expectNextMatches(pr -> pr.isSuccess())
-                .expectNextMatches(pr -> pr.isSuccess())
+                .expectNextMatches(Try::isSuccess)
+                .expectNextMatches(Try::isSuccess)
                 .expectNextMatches(pr -> pr.get().offset.get() == 2)
                 .expectComplete()
                 .verify();
     StepVerifier.create(kafkaConsumer)
-                .expectNextMatches(pr -> pr.isSuccess())
-                .expectNextMatches(pr -> pr.isSuccess())
+                .expectNextMatches(Try::isSuccess)
+                .expectNextMatches(Try::isSuccess)
                 .expectNextMatches(pr -> pr.get().msg.key.equals("2"))
                 .expectComplete()
                 .verify();
