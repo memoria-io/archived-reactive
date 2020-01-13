@@ -28,7 +28,7 @@ public class NatsMsgConsumer implements MsgConsumer {
 
   @Override
   public Flux<Try<ConsumeResponse>> consume(String topic, String partition, long offset) {
-    Subscription subscription = nc.subscribe(topic);
+    Subscription subscription = nc.subscribe(subject(topic, partition));
     var flux = Flux.<Try<ConsumeResponse>>generate(s -> s.next(pollOnce(subscription)));
     return Flux.defer(() -> flux.subscribeOn(scheduler));
   }
@@ -41,5 +41,9 @@ public class NatsMsgConsumer implements MsgConsumer {
     var msg = new Msg("", new String(m.getData()));
     var title = m.getSubject().split("\\" + CHANNEL_SEPARATOR);
     return new ConsumeResponse(msg, title[0], title[1], none(), none());
+  }
+
+  private static String subject(String topic, String partition) {
+    return topic + CHANNEL_SEPARATOR + partition;
   }
 }

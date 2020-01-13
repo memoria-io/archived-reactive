@@ -30,7 +30,7 @@ public class ReactiveNatsIT {
 
   @Test
   @DisplayName("Consumed messages should be same as published ones.")
-  public void kafkaPubSub() throws IOException, InterruptedException, TimeoutException {
+  public void NatsPubSub() throws IOException, InterruptedException, TimeoutException {
     final String TOPIC = "topic-" + new Random().nextInt(1000);
     Connection nc = NatsConnection.create(config);
     MsgPublisher msgPublisher = new NatsMsgPublisher(nc, Schedulers.elastic(), Duration.ofMillis(500));
