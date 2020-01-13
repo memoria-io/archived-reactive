@@ -4,7 +4,6 @@ import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
 import com.marmoush.jutils.domain.value.msg.ConsumeResponse;
 import com.marmoush.jutils.domain.value.msg.Msg;
 import io.vavr.collection.List;
-import io.vavr.collection.Map;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -18,7 +17,6 @@ import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Properties;
 import java.util.function.Consumer;
 
 import static com.marmoush.jutils.utils.functional.VavrUtils.traversableT;
@@ -28,12 +26,10 @@ public class KafkaMsgConsumer implements MsgConsumer {
   private final Scheduler scheduler;
   private final Duration timeout;
 
-  public KafkaMsgConsumer(Map<String, Object> configs, Scheduler scheduler, Duration timeout) {
+  public KafkaMsgConsumer(KafkaConsumer<String, String> consumer, Scheduler scheduler, Duration timeout) {
     this.scheduler = scheduler;
     this.timeout = timeout;
-    Properties properties = new Properties();
-    properties.putAll(configs.toJavaMap());
-    this.consumer = new KafkaConsumer<>(properties);
+    this.consumer = consumer;
   }
 
   @Override

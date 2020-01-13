@@ -9,6 +9,8 @@ import com.marmoush.jutils.utils.yaml.YamlUtils;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.Map;
 import io.vavr.control.Try;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -30,15 +32,14 @@ public class ReactiveKafkaIT {
     final String TOPIC = "topic-" + new Random().nextInt(1000);
     @SuppressWarnings("unchecked")
     var publisherConf = (LinkedHashMap<String, Object>) config.get("publisher").get();
-    MsgPublisher msgPublisher = new KafkaMsgPublisher(HashMap.ofAll(publisherConf),
-                                                      Schedulers.elastic(),
-                                                      Duration.ofSeconds(1));
+
+    var kafkaProducer = new KafkaProducer<String, String>(publisherConf);
+    MsgPublisher msgPublisher = new KafkaMsgPublisher(kafkaProducer, Schedulers.elastic(), Duration.ofSeconds(1));
 
     @SuppressWarnings("unchecked")
     var consumerConf = (LinkedHashMap<String, Object>) config.get("consumer").get();
-    MsgConsumer msgConsumer = new KafkaMsgConsumer(HashMap.ofAll(consumerConf),
-                                                   Schedulers.elastic(),
-                                                   Duration.ofSeconds(1));
+    var kafkaConsumer = new KafkaConsumer<String, String>(consumerConf);
+    MsgConsumer msgConsumer = new KafkaMsgConsumer(kafkaConsumer, Schedulers.elastic(), Duration.ofSeconds(1));
 
     var msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg(i + "", "Msg number" + i)).take(MSG_COUNT);
     Flux<Try<PublishResponse>> publisher = msgPublisher.publish(msgs, TOPIC, PARTITION);

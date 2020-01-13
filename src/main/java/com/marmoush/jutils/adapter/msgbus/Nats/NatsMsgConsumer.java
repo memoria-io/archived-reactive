@@ -7,13 +7,9 @@ import io.nats.client.Connection;
 import io.nats.client.Subscription;
 import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.SynchronousSink;
 import reactor.core.scheduler.Scheduler;
 
-import java.io.IOException;
 import java.time.Duration;
-import java.util.function.Consumer;
 
 import static io.vavr.control.Option.none;
 

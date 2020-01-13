@@ -3,7 +3,6 @@ package com.marmoush.jutils.adapter.msgbus.kafka;
 import com.marmoush.jutils.domain.port.msgbus.MsgPublisher;
 import com.marmoush.jutils.domain.value.msg.Msg;
 import com.marmoush.jutils.domain.value.msg.PublishResponse;
-import io.vavr.collection.Map;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -16,7 +15,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public class KafkaMsgPublisher implements MsgPublisher {
@@ -24,12 +22,10 @@ public class KafkaMsgPublisher implements MsgPublisher {
   private final Scheduler scheduler;
   private final Duration timeout;
 
-  public KafkaMsgPublisher(Map<String, Object> configs, Scheduler scheduler, Duration timeout) {
+  public KafkaMsgPublisher(KafkaProducer<String, String> producer, Scheduler scheduler, Duration timeout) {
     this.scheduler = scheduler;
     this.timeout = timeout;
-    Properties properties = new Properties();
-    properties.putAll(configs.toJavaMap());
-    this.producer = new KafkaProducer<>(properties);
+    this.producer = producer;
   }
 
   @Override
