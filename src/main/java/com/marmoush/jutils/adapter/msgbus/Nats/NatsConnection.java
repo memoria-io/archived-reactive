@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.time.Duration;
 
 public class NatsConnection {
+  public static final String CHANNEL_SEPARATOR = ".";
   private static final Logger log = LoggerFactory.getLogger(NatsConnection.class.getName());
 
   private NatsConnection() {}

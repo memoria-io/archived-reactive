@@ -11,6 +11,8 @@ import reactor.core.scheduler.Scheduler;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
+import static com.marmoush.jutils.adapter.msgbus.Nats.NatsConnection.CHANNEL_SEPARATOR;
+
 public class NatsMsgPublisher implements MsgPublisher {
   private final Connection nc;
   private final Scheduler scheduler;
@@ -25,7 +27,7 @@ public class NatsMsgPublisher implements MsgPublisher {
   @Override
   public Flux<Try<PublishResponse>> publish(Flux<Msg> msgFlux, String topic, String partition) {
     return msgFlux.publishOn(scheduler).map(msg -> Try.of(() -> {
-      nc.publish(topic, msg.value.getBytes(StandardCharsets.UTF_8));
+      nc.publish(topic + CHANNEL_SEPARATOR + partition, msg.value.getBytes(StandardCharsets.UTF_8));
       return new PublishResponse(topic, partition);
     })).timeout(timeout);
   }
