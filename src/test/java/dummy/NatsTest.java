@@ -22,17 +22,17 @@ public class NatsTest {
     int elements = 3;
     Connection nc = Nats.connect(createExampleOptions(server));
     Flux<Integer> pub = Flux.range(0, elements)
-                            .log()
                             .doOnNext(i -> nc.publish(subject, message.getBytes(StandardCharsets.UTF_8)));
+
     Subscription sub = nc.subscribe(subject);
     Flux<Try<String>> consumer = Flux.interval(Duration.ofSeconds(1))
                                      .take(elements)
-                                     .log()
                                      .map(i -> Try.of(() -> sub.nextMessage(Duration.ofMillis(500))))
                                      .map(t -> t.map(msg -> new String(msg.getData())))
-                                     .doOnNext(t -> out.println(t.getOrElse("")));
+                                     .doOnNext(t -> out.println(t.get()));
 
-    StepVerifier.create(pub.thenMany(consumer)).expectNextCount(elements).expectComplete().verify();
+    StepVerifier.create(pub).expectNextCount(elements).expectComplete().verify();
+    StepVerifier.create(consumer).expectNextCount(elements).expectComplete().verify();
     nc.flush(Duration.ofSeconds(1));
     nc.close();
   }

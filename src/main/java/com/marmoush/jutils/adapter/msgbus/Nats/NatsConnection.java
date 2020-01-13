@@ -13,13 +13,18 @@ public class NatsConnection {
 
   private NatsConnection() {}
 
-  public static Connection create(Map<String, Object> configs) throws IOException, InterruptedException {
-    var config = new Options.Builder().server((String) configs.get("server").get())
-                                      .connectionTimeout(Duration.ofMillis((Long) configs.get("connectionTimeout")
-                                                                                         .get()))
-                                      .reconnectWait(Duration.ofMillis((Long) configs.get("reconnectionTimeout").get()))
-                                      .bufferSize((Integer) configs.get("bufferSize").get())
-                                      .pingInterval(Duration.ofMillis((Long) configs.get("pingInterval").get()))
+  public static Connection create(Map<String, Object> configMap) throws IOException, InterruptedException {
+    var configs = configMap.mapValues(v -> (String) v);
+    var conTimeout = Duration.ofMillis(Long.parseLong(configs.get("connectionTimeout").get()));
+    var reconTimeout = Duration.ofMillis(Long.parseLong(configs.get("reconnectionTimeout").get()));
+    var pingInterval = Duration.ofMillis(Long.parseLong(configs.get("pingInterval").get()));
+    var bufferSize = Integer.parseInt(configs.get("bufferSize").get());
+
+    var config = new Options.Builder().server(configs.get("server").get())
+                                      .connectionTimeout(conTimeout)
+                                      .reconnectWait(reconTimeout)
+                                      .bufferSize(bufferSize)
+                                      .pingInterval(pingInterval)
                                       .connectionListener((conn, type) -> log.info("Status change " + type))
                                       .errorListener(err)
                                       .build();

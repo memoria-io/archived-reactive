@@ -3,15 +3,11 @@ package com.marmoush.jutils.adapter.msgbus.Nats;
 import com.marmoush.jutils.domain.port.msgbus.MsgPublisher;
 import com.marmoush.jutils.domain.value.msg.Msg;
 import com.marmoush.jutils.domain.value.msg.PublishResponse;
-import io.nats.client.*;
-import io.vavr.collection.Map;
+import io.nats.client.Connection;
 import io.vavr.control.Try;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
@@ -20,9 +16,8 @@ public class NatsMsgPublisher implements MsgPublisher {
   private final Scheduler scheduler;
   private final Duration timeout;
 
-  public NatsMsgPublisher(Map<String, Object> configs, Scheduler scheduler, Duration timeout)
-          throws IOException, InterruptedException {
-    this.nc = NatsConnection.create(configs);
+  public NatsMsgPublisher(Connection nc, Scheduler scheduler, Duration timeout) {
+    this.nc = nc;
     this.scheduler = scheduler;
     this.timeout = timeout;
   }
@@ -34,5 +29,4 @@ public class NatsMsgPublisher implements MsgPublisher {
       return new PublishResponse(topic, partition);
     })).timeout(timeout);
   }
-
 }
