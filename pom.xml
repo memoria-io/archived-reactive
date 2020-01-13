@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.marmoush</groupId>
         <artifactId>jbom</artifactId>
-        <version>0.2.0</version>
+        <version>0.2.2</version>
     </parent>
 
     <artifactId>jutils</artifactId>
@@ -21,6 +21,13 @@
         <name>marmoush.com</name>
         <url>https://marmoush.com</url>
     </organization>
+
+    <properties>
+        <jsonwebtoken.version>0.10.7</jsonwebtoken.version>
+        <kafka.version>2.4.0</kafka.version>
+        <nats.version>2.6.6</nats.version>
+    </properties>
+
     <distributionManagement>
         <site>
             <id>${project.artifactId}-site</id>
@@ -35,7 +42,41 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-
+    <dependencies>
+        <!--======================================================================================== -->
+        <!-- Messaging Dependencies -->
+        <!--======================================================================================== -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>${kafka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.nats</groupId>
+            <artifactId>jnats</artifactId>
+            <version>${nats.version}</version>
+        </dependency>
+        <!--======================================================================================== -->
+        <!-- Security Dependencies -->
+        <!--======================================================================================== -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jsonwebtoken.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jsonwebtoken.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jsonwebtoken.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
 </project>
 
 

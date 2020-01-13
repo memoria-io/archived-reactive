@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-import static com.marmoush.jutils.utils.functional.Functional.blockingToMono;
+import static com.marmoush.jutils.utils.functional.ReactiveVavrUtils.blockingToMono;
 import static java.nio.file.StandardOpenOption.CREATE;
 
 public class FileUtils {

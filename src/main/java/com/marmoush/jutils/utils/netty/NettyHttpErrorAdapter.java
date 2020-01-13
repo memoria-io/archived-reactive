@@ -2,7 +2,7 @@ package com.marmoush.jutils.utils.netty;
 
 import java.util.function.Function;
 
-import static com.marmoush.jutils.utils.functional.Functional.instanceOfCase;
+import static com.marmoush.jutils.utils.functional.VavrUtils.instanceOfCase;
 import static io.vavr.API.Match;
 
 public class NettyHttpErrorAdapter implements Function<Throwable, NettyHttpError> {

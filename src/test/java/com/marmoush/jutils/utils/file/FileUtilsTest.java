@@ -1,6 +1,6 @@
 package com.marmoush.jutils.utils.file;
 
-import com.marmoush.jutils.utils.functional.Functional;
+import com.marmoush.jutils.utils.functional.ReactiveVavrUtils;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,8 +23,8 @@ public class FileUtilsTest {
   public void appendOrCreateTest() {
     Mono<Try<Path>> helloWorld = writeFile("target/temp.txt", "hello world", Schedulers.elastic());
     StepVerifier.create(helloWorld).expectNextMatches(t -> t.isSuccess()).expectComplete().verify();
-    Mono<Try<Boolean>> fileExists = helloWorld.flatMap(Functional.tryToMonoTry(h -> Mono.just(Try.of(() -> h.toFile()
-                                                                                                            .exists()))));
+    Mono<Try<Boolean>> fileExists = helloWorld.flatMap(ReactiveVavrUtils.tryToMonoTry(h -> Mono.just(Try.of(() -> h.toFile()
+                                                                                                                   .exists()))));
     StepVerifier.create(fileExists).expectNext(Try.success(true)).expectComplete().verify();
 
     String tempFile = file("target/temp.txt").get();

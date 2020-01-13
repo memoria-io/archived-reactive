@@ -4,6 +4,7 @@ import com.esotericsoftware.yamlbeans.YamlConfig;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.marmoush.jutils.utils.file.FileUtils;
 import io.vavr.collection.List;
+import io.vavr.collection.Map;
 import io.vavr.control.Try;
 
 import java.util.HashMap;
@@ -12,15 +13,15 @@ import java.util.function.Function;
 public class YamlUtils {
   private YamlUtils() {}
 
-  public static class ConfigMap extends HashMap<String, Object> {}
+  private static class ConfigMap extends HashMap<String, Object> {}
 
   /**
    * @param filename      path of the file under e.g resources/filename
    * @param ignoreUnknown ignore extra values in when parsing
    * @return Try of class type T
    */
-  public static Try<ConfigMap> parseYamlFile(String filename, boolean ignoreUnknown) {
-    return parseYamlFile(ConfigMap.class, filename, ignoreUnknown);
+  public static Try<Map<String, Object>> parseYamlFile(String filename, boolean ignoreUnknown) {
+    return parseYamlFile(ConfigMap.class, filename, ignoreUnknown).map(io.vavr.collection.HashMap::ofAll);
   }
 
   /**
@@ -35,12 +36,11 @@ public class YamlUtils {
   }
 
   /**
-   * @param filename      path of the file under e.g resources/filename
-   * @param ignoreUnknown ignore extra values in when parsing
+   * @param filename path of the file under e.g resources/filename
    * @return Try of class type T
    */
-  public static Try<ConfigMap> parseYamlResource(String filename, boolean ignoreUnknown) {
-    return parseYamlResource(ConfigMap.class, filename, ignoreUnknown);
+  public static Try<Map<String, Object>> parseYamlResource(String filename) {
+    return parseYamlResource(ConfigMap.class, filename, false).map(io.vavr.collection.HashMap::ofAll);
   }
 
   /**

@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class YamlUtilsTest {
   @Test
-  public void parseYamlShouldReturnList() throws IOException {
-    Map<String, Object> map = YamlUtils.parseYamlResource("test.yaml", true).get();
+  public void parseYamlShouldReturnList() {
+    Map<String, Object> map = YamlUtils.parseYamlResource("test.yaml").get().toJavaMap();
     @SuppressWarnings("unchecked")
     List<String> list = (ArrayList<String>) map.get("list");
 
