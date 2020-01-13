@@ -13,6 +13,7 @@ before_install:
     -in deploy/marmoush.com.gpg.enc -out deploy/marmoush.com.gpg -d
   - gpg --import deploy/marmoush.com.gpg
   - docker-compose -f deploy/kafka-docker-compose.yml up -d
+  - docker run -d --name nats-main -p 4222:4222 -p 6222:6222 -p 8222:8222 nats
 install: mvn install
 script: skip
 after_success:
