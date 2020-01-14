@@ -3,6 +3,7 @@ package com.marmoush.jutils.adapter.msgbus.kafka;
 import com.marmoush.jutils.domain.port.msgbus.MsgSub;
 import com.marmoush.jutils.domain.value.msg.SubResp;
 import com.marmoush.jutils.domain.value.msg.Msg;
+import io.vavr.Function1;
 import io.vavr.collection.List;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -49,23 +50,17 @@ public class KafkaMsgSub implements MsgSub {
   }
 
   private List<Try<SubResp>> pollOnce(String topic, int partition) {
-    var t = Try.of(() -> consumer.poll(timeout)).map(crs -> toConsumeResponses(crs, topic, partition));
+    var t = Try.of(() -> consumer.poll(timeout)).map(toConsumeResponses(topic, partition));
     return List.ofAll(traversableT(t));
   }
 
-  private static List<SubResp> toConsumeResponses(ConsumerRecords<String, String> crs,
-                                                  String topic,
-                                                  int partition) {
-    var prt = new TopicPartition(topic, partition);
-    return List.ofAll(crs.records(prt)).map(KafkaMsgSub::toConsumeResponse);
+  private static Function1<ConsumerRecords<String, String>, List<SubResp>> toConsumeResponses(String topic,
+                                                                                              int partition) {
+    return crs -> List.ofAll(crs.records(new TopicPartition(topic, partition))).map(KafkaMsgSub::toConsumeResponse);
   }
 
   private static SubResp toConsumeResponse(ConsumerRecord<String, String> cr) {
     Msg msg = new Msg(cr.key(), cr.value());
-    return new SubResp(msg,
-                       cr.topic(),
-                               cr.partition() + "",
-                       Option.of(cr.offset()),
-                       Option.of(LocalDateTime.now()));
+    return new SubResp(msg, cr.topic(), cr.partition() + "", Option.of(cr.offset()), Option.of(LocalDateTime.now()));
   }
 }
