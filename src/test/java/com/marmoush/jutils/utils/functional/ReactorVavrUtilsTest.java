@@ -11,11 +11,11 @@ import reactor.test.StepVerifier;
 import java.util.function.Function;
 
 import static com.marmoush.jutils.utils.file.FileUtils.writeFile;
-import static com.marmoush.jutils.utils.functional.ReactiveVavrUtils.*;
+import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.*;
 import static io.vavr.control.Either.left;
 import static io.vavr.control.Either.right;
 
-public class ReactiveVavrUtilsTest {
+public class ReactorVavrUtilsTest {
   @Test
   public void tryToMonoTryTest() {
     Try<String> h = Try.success("hello");

@@ -5,6 +5,8 @@ import io.vavr.collection.List;
 import io.vavr.collection.Traversable;
 import io.vavr.control.Try;
 
+import java.util.function.BiFunction;
+
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.Predicates.instanceOf;
@@ -21,5 +23,12 @@ public final class VavrUtils {
       return tt.get().map(Try::success);
     else
       return List.of(Try.failure(tt.getCause()));
+  }
+
+  /**
+   * CompletableFuture.handle bi function
+   */
+  public static <T> Try<T> cfHandle(T value, Throwable t) {
+    return null;
   }
 }
