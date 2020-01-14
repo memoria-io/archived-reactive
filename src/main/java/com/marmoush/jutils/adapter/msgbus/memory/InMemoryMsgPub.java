@@ -20,7 +20,7 @@ public class InMemoryMsgPub implements MsgPub {
   }
 
   @Override
-  public Flux<Try<PubResp>> publish(Flux<Msg> msgFlux, String topic, String partition) {
+  public Flux<Try<PubResp>> pub(Flux<Msg> msgFlux, String topic, String partition) {
     return msgFlux.map(msg -> {
       db.putIfAbsent(topic, new HashMap<>()).putIfAbsent(partition, new LinkedList<>()).addLast(msg);
       long offset = db.get(topic).get(partition).size() - 1;

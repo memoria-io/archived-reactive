@@ -29,7 +29,7 @@ public class KafkaMsgPub implements MsgPub {
   }
 
   @Override
-  public Flux<Try<PubResp>> publish(Flux<Msg> msgFlux, String topic, String partitionStr) {
+  public Flux<Try<PubResp>> pub(Flux<Msg> msgFlux, String topic, String partitionStr) {
     Try<Integer> partitionTry = Try.of(() -> Integer.parseInt(partitionStr));
     if (partitionTry.isSuccess()) {
       return msgFlux.publishOn(scheduler)

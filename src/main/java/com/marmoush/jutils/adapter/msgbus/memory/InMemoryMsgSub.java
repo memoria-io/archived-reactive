@@ -19,7 +19,7 @@ public class InMemoryMsgSub implements MsgSub {
   }
 
   @Override
-  public Flux<Try<SubResp>> consume(String topicId, String partition, long offset) {
+  public Flux<Try<SubResp>> sub(String topicId, String partition, long offset) {
     return Flux.fromIterable(db.get(topicId).get(partition)).map(Try::success);
   }
 }

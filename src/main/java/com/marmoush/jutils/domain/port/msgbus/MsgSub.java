@@ -5,5 +5,5 @@ import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 
 public interface MsgSub {
-  Flux<Try<SubResp>> consume(String topicId, String partition, long offset);
+  Flux<Try<SubResp>> sub(String topicId, String partition, long offset);
 }

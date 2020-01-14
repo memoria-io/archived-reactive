@@ -37,8 +37,8 @@ public class ReactiveNatsIT {
     MsgSub msgSub = new NatsMsgSub(nc, Schedulers.elastic(), Duration.ofMillis(500));
 
     var msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg(i + "", "Msg number" + i)).take(MSG_COUNT);
-    Flux<Try<PubResp>> publisher = msgPub.publish(msgs, TOPIC, PARTITION);
-    Flux<Try<SubResp>> consumer = msgSub.consume(TOPIC, PARTITION, 0).take(MSG_COUNT);
+    Flux<Try<PubResp>> publisher = msgPub.pub(msgs, TOPIC, PARTITION);
+    Flux<Try<SubResp>> consumer = msgSub.sub(TOPIC, PARTITION, 0).take(MSG_COUNT);
 
     StepVerifier.create(publisher)
                 .expectNextMatches(Try::isSuccess)

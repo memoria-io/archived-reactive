@@ -33,7 +33,7 @@ public class KafkaMsgSub implements MsgSub {
   }
 
   @Override
-  public Flux<Try<SubResp>> consume(String topic, String partitionStr, long offset) {
+  public Flux<Try<SubResp>> sub(String topic, String partitionStr, long offset) {
     var partition = Integer.parseInt(partitionStr);
     Consumer<SynchronousSink<List<Try<SubResp>>>> poll = s -> s.next(pollOnce(topic, partition));
 

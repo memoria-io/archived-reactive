@@ -25,7 +25,7 @@ public class NatsMsgPub implements MsgPub {
   }
 
   @Override
-  public Flux<Try<PubResp>> publish(Flux<Msg> msgFlux, String topic, String partition) {
+  public Flux<Try<PubResp>> pub(Flux<Msg> msgFlux, String topic, String partition) {
     return msgFlux.publishOn(scheduler).map(msg -> Try.of(() -> {
       nc.publish(topic + CHANNEL_SEPARATOR + partition, msg.value.getBytes(StandardCharsets.UTF_8));
       return new PubResp(topic, partition);
