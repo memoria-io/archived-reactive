@@ -1,5 +1,6 @@
 package com.marmoush.jutils.domain.value.msg;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Msg {
@@ -7,6 +8,10 @@ public class Msg {
   public final String value;
 
   public Msg(String key, String value) {
+    this(key, value, LocalDateTime.now());
+  }
+
+  public Msg(String key, String value, LocalDateTime creationTime) {
     this.key = key;
     this.value = value;
   }
@@ -18,7 +23,7 @@ public class Msg {
     if (o == null || getClass() != o.getClass())
       return false;
     Msg msg = (Msg) o;
-    return key.equals(msg.key) && value.equals(msg.value);
+    return Objects.equals(key, msg.key) && Objects.equals(value, msg.value);
   }
 
   @Override
