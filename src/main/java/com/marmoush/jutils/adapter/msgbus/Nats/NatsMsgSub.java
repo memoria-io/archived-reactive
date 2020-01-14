@@ -29,8 +29,7 @@ public class NatsMsgSub implements MsgSub {
   @Override
   public Flux<Try<SubResp>> sub(String topic, String partition, long offset) {
     Subscription subscription = nc.subscribe(subject(topic, partition));
-    var flux = Flux.<Try<SubResp>>generate(s -> s.next(pollOnce(subscription)));
-    return Flux.defer(() -> flux.subscribeOn(scheduler));
+    return Flux.defer(() -> Flux.<Try<SubResp>>generate(s -> s.next(pollOnce(subscription))).subscribeOn(scheduler));
   }
 
   private Try<SubResp> pollOnce(Subscription sub) {
