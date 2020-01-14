@@ -1,7 +1,7 @@
 package com.marmoush.jutils.adapter.msgbus.kafka;
 
-import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
-import com.marmoush.jutils.domain.value.msg.ConsumeResponse;
+import com.marmoush.jutils.domain.port.msgbus.MsgSub;
+import com.marmoush.jutils.domain.value.msg.SubResp;
 import com.marmoush.jutils.domain.value.msg.Msg;
 import io.vavr.collection.List;
 import io.vavr.control.Option;
@@ -21,21 +21,21 @@ import java.util.function.Consumer;
 
 import static com.marmoush.jutils.utils.functional.VavrUtils.traversableT;
 
-public class KafkaMsgConsumer implements MsgConsumer {
+public class KafkaMsgSub implements MsgSub {
   private final KafkaConsumer<String, String> consumer;
   private final Scheduler scheduler;
   private final Duration timeout;
 
-  public KafkaMsgConsumer(KafkaConsumer<String, String> consumer, Scheduler scheduler, Duration timeout) {
+  public KafkaMsgSub(KafkaConsumer<String, String> consumer, Scheduler scheduler, Duration timeout) {
     this.scheduler = scheduler;
     this.timeout = timeout;
     this.consumer = consumer;
   }
 
   @Override
-  public Flux<Try<ConsumeResponse>> consume(String topic, String partitionStr, long offset) {
+  public Flux<Try<SubResp>> consume(String topic, String partitionStr, long offset) {
     var partition = Integer.parseInt(partitionStr);
-    Consumer<SynchronousSink<List<Try<ConsumeResponse>>>> poll = s -> s.next(pollOnce(topic, partition));
+    Consumer<SynchronousSink<List<Try<SubResp>>>> poll = s -> s.next(pollOnce(topic, partition));
 
     var subscribeMono = Mono.create(s -> {
       consumer.assign(List.of(new TopicPartition(topic, partition)).toJavaList());
@@ -48,24 +48,24 @@ public class KafkaMsgConsumer implements MsgConsumer {
     return Flux.defer(() -> subscribeMono.thenMany(consumerFlux).subscribeOn(scheduler));
   }
 
-  private List<Try<ConsumeResponse>> pollOnce(String topic, int partition) {
+  private List<Try<SubResp>> pollOnce(String topic, int partition) {
     var t = Try.of(() -> consumer.poll(timeout)).map(crs -> toConsumeResponses(crs, topic, partition));
     return List.ofAll(traversableT(t));
   }
 
-  private static List<ConsumeResponse> toConsumeResponses(ConsumerRecords<String, String> crs,
-                                                          String topic,
-                                                          int partition) {
+  private static List<SubResp> toConsumeResponses(ConsumerRecords<String, String> crs,
+                                                  String topic,
+                                                  int partition) {
     var prt = new TopicPartition(topic, partition);
-    return List.ofAll(crs.records(prt)).map(KafkaMsgConsumer::toConsumeResponse);
+    return List.ofAll(crs.records(prt)).map(KafkaMsgSub::toConsumeResponse);
   }
 
-  private static ConsumeResponse toConsumeResponse(ConsumerRecord<String, String> cr) {
+  private static SubResp toConsumeResponse(ConsumerRecord<String, String> cr) {
     Msg msg = new Msg(cr.key(), cr.value());
-    return new ConsumeResponse(msg,
-                               cr.topic(),
+    return new SubResp(msg,
+                       cr.topic(),
                                cr.partition() + "",
-                               Option.of(cr.offset()),
-                               Option.of(LocalDateTime.now()));
+                       Option.of(cr.offset()),
+                       Option.of(LocalDateTime.now()));
   }
 }

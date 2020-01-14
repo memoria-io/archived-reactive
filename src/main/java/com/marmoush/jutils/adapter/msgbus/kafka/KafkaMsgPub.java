@@ -1,8 +1,8 @@
 package com.marmoush.jutils.adapter.msgbus.kafka;
 
-import com.marmoush.jutils.domain.port.msgbus.MsgPublisher;
+import com.marmoush.jutils.domain.port.msgbus.MsgPub;
 import com.marmoush.jutils.domain.value.msg.Msg;
-import com.marmoush.jutils.domain.value.msg.PublishResponse;
+import com.marmoush.jutils.domain.value.msg.PubResp;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -17,36 +17,36 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.concurrent.TimeUnit;
 
-public class KafkaMsgPublisher implements MsgPublisher {
+public class KafkaMsgPub implements MsgPub {
   private final KafkaProducer<String, String> producer;
   private final Scheduler scheduler;
   private final Duration timeout;
 
-  public KafkaMsgPublisher(KafkaProducer<String, String> producer, Scheduler scheduler, Duration timeout) {
+  public KafkaMsgPub(KafkaProducer<String, String> producer, Scheduler scheduler, Duration timeout) {
     this.scheduler = scheduler;
     this.timeout = timeout;
     this.producer = producer;
   }
 
   @Override
-  public Flux<Try<PublishResponse>> publish(Flux<Msg> msgFlux, String topic, String partitionStr) {
+  public Flux<Try<PubResp>> publish(Flux<Msg> msgFlux, String topic, String partitionStr) {
     Try<Integer> partitionTry = Try.of(() -> Integer.parseInt(partitionStr));
     if (partitionTry.isSuccess()) {
       return msgFlux.publishOn(scheduler)
                     .map(msg -> new ProducerRecord<>(topic, partitionTry.get(), msg.key, msg.value))
                     .map(prodRec -> Try.of(() -> producer.send(prodRec).get(timeout.toMillis(), TimeUnit.MILLISECONDS)))
-                    .map(t -> t.map(KafkaMsgPublisher::toPublishResponse));
+                    .map(t -> t.map(KafkaMsgPub::toPublishResponse));
 
     } else {
       return Flux.just(Try.failure(partitionTry.getCause()));
     }
   }
 
-  private static PublishResponse toPublishResponse(RecordMetadata meta) {
-    return new PublishResponse(meta.topic(),
+  private static PubResp toPublishResponse(RecordMetadata meta) {
+    return new PubResp(meta.topic(),
                                meta.partition() + "",
-                               Option.of(meta.offset()),
-                               Option.of(meta.timestamp())
+                       Option.of(meta.offset()),
+                       Option.of(meta.timestamp())
                                      .map(Instant::ofEpochMilli)
                                      .map(t -> LocalDateTime.ofInstant(t, ZoneOffset.UTC)));
   }

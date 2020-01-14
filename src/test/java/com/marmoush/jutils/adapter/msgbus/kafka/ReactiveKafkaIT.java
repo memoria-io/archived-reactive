@@ -1,12 +1,11 @@
 package com.marmoush.jutils.adapter.msgbus.kafka;
 
-import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
-import com.marmoush.jutils.domain.port.msgbus.MsgPublisher;
-import com.marmoush.jutils.domain.value.msg.ConsumeResponse;
+import com.marmoush.jutils.domain.port.msgbus.MsgSub;
+import com.marmoush.jutils.domain.port.msgbus.MsgPub;
+import com.marmoush.jutils.domain.value.msg.SubResp;
 import com.marmoush.jutils.domain.value.msg.Msg;
-import com.marmoush.jutils.domain.value.msg.PublishResponse;
+import com.marmoush.jutils.domain.value.msg.PubResp;
 import com.marmoush.jutils.utils.yaml.YamlUtils;
-import io.vavr.collection.HashMap;
 import io.vavr.collection.Map;
 import io.vavr.control.Try;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -34,16 +33,16 @@ public class ReactiveKafkaIT {
     var publisherConf = (LinkedHashMap<String, Object>) config.get("publisher").get();
 
     var kafkaProducer = new KafkaProducer<String, String>(publisherConf);
-    MsgPublisher msgPublisher = new KafkaMsgPublisher(kafkaProducer, Schedulers.elastic(), Duration.ofSeconds(1));
+    MsgPub msgPub = new KafkaMsgPub(kafkaProducer, Schedulers.elastic(), Duration.ofSeconds(1));
 
     @SuppressWarnings("unchecked")
     var consumerConf = (LinkedHashMap<String, Object>) config.get("consumer").get();
     var kafkaConsumer = new KafkaConsumer<String, String>(consumerConf);
-    MsgConsumer msgConsumer = new KafkaMsgConsumer(kafkaConsumer, Schedulers.elastic(), Duration.ofSeconds(1));
+    MsgSub msgSub = new KafkaMsgSub(kafkaConsumer, Schedulers.elastic(), Duration.ofSeconds(1));
 
     var msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg(i + "", "Msg number" + i)).take(MSG_COUNT);
-    Flux<Try<PublishResponse>> publisher = msgPublisher.publish(msgs, TOPIC, PARTITION);
-    Flux<Try<ConsumeResponse>> consumer = msgConsumer.consume(TOPIC, PARTITION, 0).take(MSG_COUNT);
+    Flux<Try<PubResp>> publisher = msgPub.publish(msgs, TOPIC, PARTITION);
+    Flux<Try<SubResp>> consumer = msgSub.consume(TOPIC, PARTITION, 0).take(MSG_COUNT);
 
     StepVerifier.create(publisher)
                 .expectNextMatches(Try::isSuccess)

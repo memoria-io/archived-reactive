@@ -1,13 +1,13 @@
 package com.marmoush.jutils.adapter.msgbus.nats;
 
 import com.marmoush.jutils.adapter.msgbus.Nats.NatsConnection;
-import com.marmoush.jutils.adapter.msgbus.Nats.NatsMsgConsumer;
-import com.marmoush.jutils.adapter.msgbus.Nats.NatsMsgPublisher;
-import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
-import com.marmoush.jutils.domain.port.msgbus.MsgPublisher;
-import com.marmoush.jutils.domain.value.msg.ConsumeResponse;
+import com.marmoush.jutils.adapter.msgbus.Nats.NatsMsgSub;
+import com.marmoush.jutils.adapter.msgbus.Nats.NatsMsgPub;
+import com.marmoush.jutils.domain.port.msgbus.MsgSub;
+import com.marmoush.jutils.domain.port.msgbus.MsgPub;
+import com.marmoush.jutils.domain.value.msg.SubResp;
 import com.marmoush.jutils.domain.value.msg.Msg;
-import com.marmoush.jutils.domain.value.msg.PublishResponse;
+import com.marmoush.jutils.domain.value.msg.PubResp;
 import com.marmoush.jutils.utils.yaml.YamlUtils;
 import io.nats.client.Connection;
 import io.vavr.collection.Map;
@@ -33,12 +33,12 @@ public class ReactiveNatsIT {
   public void NatsPubSub() throws IOException, InterruptedException, TimeoutException {
     final String TOPIC = "topic-" + new Random().nextInt(1000);
     Connection nc = NatsConnection.create(config);
-    MsgPublisher msgPublisher = new NatsMsgPublisher(nc, Schedulers.elastic(), Duration.ofMillis(500));
-    MsgConsumer msgConsumer = new NatsMsgConsumer(nc, Schedulers.elastic(), Duration.ofMillis(500));
+    MsgPub msgPub = new NatsMsgPub(nc, Schedulers.elastic(), Duration.ofMillis(500));
+    MsgSub msgSub = new NatsMsgSub(nc, Schedulers.elastic(), Duration.ofMillis(500));
 
     var msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg(i + "", "Msg number" + i)).take(MSG_COUNT);
-    Flux<Try<PublishResponse>> publisher = msgPublisher.publish(msgs, TOPIC, PARTITION);
-    Flux<Try<ConsumeResponse>> consumer = msgConsumer.consume(TOPIC, PARTITION, 0).take(MSG_COUNT);
+    Flux<Try<PubResp>> publisher = msgPub.publish(msgs, TOPIC, PARTITION);
+    Flux<Try<SubResp>> consumer = msgSub.consume(TOPIC, PARTITION, 0).take(MSG_COUNT);
 
     StepVerifier.create(publisher)
                 .expectNextMatches(Try::isSuccess)

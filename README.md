@@ -21,7 +21,7 @@ As soon as it gets more stability and users (if you're using it, please star it)
 ```
 <groupId>com.marmoush</groupId>
 <artifactId>jutils</artifactId>
-<version>0.2.2</version>
+<version>0.2.6</version>
 ``` 
 
 ## Contribution

@@ -26,6 +26,7 @@
         <jsonwebtoken.version>0.10.7</jsonwebtoken.version>
         <kafka.version>2.4.0</kafka.version>
         <nats.version>2.6.6</nats.version>
+        <pulsar.version>2.4.2</pulsar.version>
     </properties>
 
     <distributionManagement>
@@ -55,6 +56,11 @@
             <groupId>io.nats</groupId>
             <artifactId>jnats</artifactId>
             <version>${nats.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pulsar</groupId>
+            <artifactId>pulsar-client</artifactId>
+            <version>${pulsar.version}</version>
         </dependency>
         <!--======================================================================================== -->
         <!-- Security Dependencies -->

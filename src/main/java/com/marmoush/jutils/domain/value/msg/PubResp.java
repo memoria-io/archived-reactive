@@ -5,17 +5,17 @@ import io.vavr.control.Option;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class PublishResponse {
+public class PubResp {
   public final String topic;
   public final String partition;
   public final Option<Long> offset;
   public final Option<LocalDateTime> deliveryTime;
 
-  public PublishResponse(String topic, String partition) {
+  public PubResp(String topic, String partition) {
     this(topic, partition, Option.none(), Option.none());
   }
 
-  public PublishResponse(String topic, String partition, Option<Long> offset, Option<LocalDateTime> deliveryTime) {
+  public PubResp(String topic, String partition, Option<Long> offset, Option<LocalDateTime> deliveryTime) {
     this.topic = topic;
     this.partition = partition;
     this.offset = offset;
@@ -28,7 +28,7 @@ public class PublishResponse {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    PublishResponse that = (PublishResponse) o;
+    PubResp that = (PubResp) o;
     return partition.equals(that.partition) && topic.equals(that.topic) && offset.equals(that.offset) &&
            deliveryTime.equals(that.deliveryTime);
   }
