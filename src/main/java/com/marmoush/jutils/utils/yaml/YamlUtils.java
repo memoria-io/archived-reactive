@@ -4,7 +4,6 @@ import com.esotericsoftware.yamlbeans.YamlConfig;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.marmoush.jutils.utils.file.FileUtils;
 import io.vavr.collection.List;
-import io.vavr.collection.Map;
 import io.vavr.control.Try;
 
 import java.util.HashMap;
@@ -13,15 +12,15 @@ import java.util.function.Function;
 public class YamlUtils {
   private YamlUtils() {}
 
-  private static class ConfigMap extends HashMap<String, Object> {}
+  private final class MapInstance extends HashMap<String, Object> {}
 
   /**
    * @param filename      path of the file under e.g resources/filename
    * @param ignoreUnknown ignore extra values in when parsing
    * @return Try of class type T
    */
-  public static Try<Map<String, Object>> parseYamlFile(String filename, boolean ignoreUnknown) {
-    return parseYamlFile(ConfigMap.class, filename, ignoreUnknown).map(io.vavr.collection.HashMap::ofAll);
+  public static Try<YamlConfigMap> parseYamlFile(String filename, boolean ignoreUnknown) {
+    return parseYamlFile(MapInstance.class, filename, ignoreUnknown).map(YamlConfigMap::new);
   }
 
   /**
@@ -39,8 +38,8 @@ public class YamlUtils {
    * @param filename path of the file under e.g resources/filename
    * @return Try of class type T
    */
-  public static Try<Map<String, Object>> parseYamlResource(String filename) {
-    return parseYamlResource(ConfigMap.class, filename, false).map(io.vavr.collection.HashMap::ofAll);
+  public static Try<YamlConfigMap> parseYamlResource(String filename) {
+    return parseYamlResource(MapInstance.class, filename, false).map(YamlConfigMap::new);
   }
 
   /**
@@ -61,8 +60,7 @@ public class YamlUtils {
     YamlConfig yc = new YamlConfig();
     yc.readConfig.setIgnoreUnknownProperties(ignoreUnknown);
     return fileReader.apply(fileName)
-                     .map(list -> list.flatMap(line -> yamlInclude(line, fileReader))
-                                      .reduceLeft((l1, l2) -> l1.appendAll(l2)))
+                     .map(list -> list.flatMap(line -> yamlInclude(line, fileReader)).reduceLeft(List::appendAll))
                      .map(l -> String.join("\n", l))
                      .flatMap(s -> Try.of(() -> new YamlReader(s, yc).read(t)));
   }
