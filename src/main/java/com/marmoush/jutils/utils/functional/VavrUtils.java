@@ -5,13 +5,11 @@ import io.vavr.collection.List;
 import io.vavr.collection.Traversable;
 import io.vavr.control.Try;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.Predicates.instanceOf;
-import static java.util.Objects.requireNonNullElseGet;
 
 public final class VavrUtils {
   private VavrUtils() {}
