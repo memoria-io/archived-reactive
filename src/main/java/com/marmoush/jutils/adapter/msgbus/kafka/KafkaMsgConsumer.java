@@ -5,7 +5,6 @@ import com.marmoush.jutils.domain.value.msg.ConsumerResp;
 import com.marmoush.jutils.domain.value.msg.Msg;
 import io.vavr.Function1;
 import io.vavr.collection.List;
-import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;

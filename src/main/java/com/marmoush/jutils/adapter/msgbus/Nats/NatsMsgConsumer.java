@@ -6,7 +6,6 @@ import com.marmoush.jutils.domain.value.msg.Msg;
 import io.nats.client.Connection;
 import io.nats.client.Message;
 import io.nats.client.Subscription;
-import io.vavr.control.Option;
 import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;

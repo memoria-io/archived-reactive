@@ -5,11 +5,13 @@ import io.vavr.collection.List;
 import io.vavr.collection.Traversable;
 import io.vavr.control.Try;
 
-import java.util.function.BiFunction;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.Predicates.instanceOf;
+import static java.util.Objects.requireNonNullElseGet;
 
 public final class VavrUtils {
   private VavrUtils() {}
@@ -26,9 +28,14 @@ public final class VavrUtils {
   }
 
   /**
-   * CompletableFuture.handle bi function
+   * This can handle CompletableFuture.handle bi function
    */
-  public static <T> Try<T> cfHandle(T value, Throwable t) {
-    return null;
+  public static <T> CompletableFuture<Try<T>> toTry(CompletableFuture<T> c) {
+    return c.handle((v, t) -> {
+      if (v != null) {
+        return Try.success(v);
+      } else
+        return Try.failure(requireNonNullElseGet(t, () -> new NullPointerException("Both values are null")));
+    });
   }
 }

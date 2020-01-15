@@ -1,7 +1,5 @@
 package com.marmoush.jutils.adapter.generator.id;
 
-import com.marmoush.jutils.adapter.generator.id.SerialIdGenerator;
-import com.marmoush.jutils.adapter.generator.id.UUIDGenerator;
 import com.marmoush.jutils.domain.port.IdGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
