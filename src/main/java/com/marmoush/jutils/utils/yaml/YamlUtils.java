@@ -12,7 +12,7 @@ import java.util.function.Function;
 public class YamlUtils {
   private YamlUtils() {}
 
-  private final class MapInstance extends HashMap<String, Object> {}
+  private static final class MapInstance extends HashMap<String, Object> {}
 
   /**
    * @param filename      path of the file under e.g resources/filename

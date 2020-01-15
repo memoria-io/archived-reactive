@@ -9,6 +9,7 @@ docker run -it \
 ```
 Then you can go to [http://localhost:8080/admin/v2/persistent/public/default/](http://localhost:8080/admin/v2/persistent/public/default/)
 
+For Java client Service URL is `pulsar.serviceUrl: pulsar://localhost:6650`
 ## Dashboard with Standalone
 ```
 docker run -it -p 8090:80 \
