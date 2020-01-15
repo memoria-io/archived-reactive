@@ -18,8 +18,12 @@ public class YamlConfigMap {
     return (String) map.get(key).get();
   }
 
-  public Integer asInt(String key) {
+  public Integer asInteger(String key) {
     return (Integer) map.get(key).get();
+  }
+
+  public Long asLong(String key) {
+    return (Long) map.get(key).get();
   }
 
   public Double asDouble(String key) {
@@ -42,6 +46,12 @@ public class YamlConfigMap {
     return List.ofAll(list);
   }
 
+  public List<Long> asLongList(String key) {
+    @SuppressWarnings("unchecked")
+    var list = (ArrayList<Long>) map.get(key).get();
+    return List.ofAll(list);
+  }
+
   public List<Double> asDoubleList(String key) {
     @SuppressWarnings("unchecked")
     var list = (ArrayList<Double>) map.get(key).get();
@@ -54,9 +64,15 @@ public class YamlConfigMap {
     return List.ofAll(list);
   }
 
-  public Map<String, String> asMap(String key) {
+  public YamlConfigMap asMap(String key) {
     @SuppressWarnings("unchecked")
-    var m = (java.util.Map<String, String>) map.get(key);
-    return HashMap.ofAll(m);
+    var m = (java.util.Map<String, Object>) map.get(key);
+    return new YamlConfigMap(m);
+  }
+
+  public java.util.Map<String, Object> asJavaMap(String key) {
+    @SuppressWarnings("unchecked")
+    var m = (java.util.Map<String, Object>) map.get(key);
+    return HashMap.ofAll(m).toJavaMap();
   }
 }

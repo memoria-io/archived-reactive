@@ -1,7 +1,7 @@
 package com.marmoush.jutils.adapter.msgbus.Nats;
 
+import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.nats.client.*;
-import io.vavr.collection.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,14 +14,14 @@ public class NatsConnection {
 
   private NatsConnection() {}
 
-  public static Connection create(Map<String, Object> configMap) throws IOException, InterruptedException {
-    var configs = configMap.mapValues(v -> (String) v);
-    var conTimeout = Duration.ofMillis(Long.parseLong(configs.get("connectionTimeout").get()));
-    var reconTimeout = Duration.ofMillis(Long.parseLong(configs.get("reconnectionTimeout").get()));
-    var pingInterval = Duration.ofMillis(Long.parseLong(configs.get("pingInterval").get()));
-    var bufferSize = Integer.parseInt(configs.get("bufferSize").get());
+  public static Connection create(YamlConfigMap c) throws IOException, InterruptedException {
+    var server = c.asString("server");
+    var conTimeout = Duration.ofMillis(c.asLong("connectionTimeout"));
+    var reconTimeout = Duration.ofMillis(c.asLong("reconnectionTimeout"));
+    var pingInterval = Duration.ofMillis(c.asLong("pingInterval"));
+    var bufferSize = c.asInteger("bufferSize");
 
-    var config = new Options.Builder().server(configs.get("server").get())
+    var config = new Options.Builder().server(server)
                                       .connectionTimeout(conTimeout)
                                       .reconnectWait(reconTimeout)
                                       .bufferSize(bufferSize)

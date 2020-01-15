@@ -3,14 +3,10 @@ package com.marmoush.jutils.adapter.msgbus.nats;
 import com.marmoush.jutils.adapter.msgbus.Nats.NatsConnection;
 import com.marmoush.jutils.adapter.msgbus.Nats.NatsMsgConsumer;
 import com.marmoush.jutils.adapter.msgbus.Nats.NatsMsgProducer;
-import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
-import com.marmoush.jutils.domain.port.msgbus.MsgProducer;
-import com.marmoush.jutils.domain.value.msg.ConsumerResp;
 import com.marmoush.jutils.domain.value.msg.Msg;
-import com.marmoush.jutils.domain.value.msg.ProducerResp;
+import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import com.marmoush.jutils.utils.yaml.YamlUtils;
 import io.nats.client.Connection;
-import io.vavr.collection.Map;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,20 +22,29 @@ import java.util.concurrent.TimeoutException;
 import static io.vavr.control.Option.some;
 
 public class ReactiveNatsIT {
-  private final Map<String, Object> config = YamlUtils.parseYamlResource("nats.yaml").get();
-  private final String PARTITION = "0";
-  private final int MSG_COUNT = 3;
+  private final YamlConfigMap config;
+  private Connection nc;
+  private final NatsMsgProducer msgProducer;
+  private final NatsMsgConsumer msgConsumer;
+  private final Flux<Msg> msgs;
+
+  public ReactiveNatsIT() throws IOException, InterruptedException {
+    config = YamlUtils.parseYamlResource("nats.yaml").get();
+    nc = NatsConnection.create(config);
+    msgProducer = new NatsMsgProducer(nc, Schedulers.elastic(), Duration.ofMillis(500));
+    msgConsumer = new NatsMsgConsumer(nc, Schedulers.elastic(), Duration.ofMillis(500));
+
+    msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg("Msg number" + i, some(i + "")));
+  }
 
   @Test
   @DisplayName("Consumed messages should be same as published ones.")
-  public void NatsPubSub() throws IOException, InterruptedException, TimeoutException {
+  public void NatsPubSub() throws TimeoutException, InterruptedException {
     final var TOPIC = "topic-" + new Random().nextInt(1000);
-    var nc = NatsConnection.create(config);
-    var msgProducer = new NatsMsgProducer(nc, Schedulers.elastic(), Duration.ofMillis(500));
-    var msgConsumer = new NatsMsgConsumer(nc, Schedulers.elastic(), Duration.ofMillis(500));
+    final String PARTITION = "0";
+    final int MSG_COUNT = 3;
 
-    var msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg("Msg number" + i, some(i + ""))).take(MSG_COUNT);
-    var publisher = msgProducer.produce(TOPIC, PARTITION, msgs);
+    var publisher = msgProducer.produce(TOPIC, PARTITION, msgs.take(MSG_COUNT));
     var consumer = msgConsumer.consume(TOPIC, PARTITION, 0).take(MSG_COUNT);
 
     StepVerifier.create(publisher)
