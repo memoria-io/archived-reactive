@@ -34,5 +34,4 @@ public class PulsarMsgProducer implements MsgProducer<MessageId> {
     var m = producer.newMessage().value(msg.value);
     return (msg.pkey.isDefined()) ? m.key(msg.pkey.get()) : m;
   }
-
 }

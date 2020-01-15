@@ -1,18 +1,18 @@
 package com.marmoush.jutils.adapter.msgbus.pulsar;
 
 import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
-import com.marmoush.jutils.domain.value.msg.Msg;
 import com.marmoush.jutils.domain.value.msg.ConsumerResp;
-import com.marmoush.jutils.utils.functional.ReactorVavrUtils;
+import com.marmoush.jutils.domain.value.msg.Msg;
 import com.marmoush.jutils.utils.functional.VavrUtils;
-import io.vavr.Function1;
 import io.vavr.control.Try;
 import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.Message;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public class PulsarMsgConsumer implements MsgConsumer {
+import static io.vavr.control.Option.some;
+
+public class PulsarMsgConsumer implements MsgConsumer<Message<String>> {
   private final Consumer<String> consumer;
 
   public PulsarMsgConsumer(Consumer<String> consumer) {
@@ -20,17 +20,13 @@ public class PulsarMsgConsumer implements MsgConsumer {
   }
 
   @Override
-  public Flux<Try<ConsumerResp>> consume(String topicId, String partition, long offset) {
-    var m = Mono.fromFuture(consumer.receiveAsync().handle(VavrUtils::cfHandle));
-    //    m.flatMap(ReactorVavrUtils.tryToMonoTry())
-    return null;
+  public Flux<Try<ConsumerResp<Message<String>>>> consume(String topicId, String partition, long offset) {
+    var consume = Mono.fromFuture(consumer.receiveAsync().handle(VavrUtils::cfHandle))
+                      .map(t -> t.map(PulsarMsgConsumer::toSubResp));
+    return Flux.<Mono<Try<ConsumerResp<Message<String>>>>>generate(s -> s.next(consume)).flatMap(Flux::from);
   }
 
-  private static Function1<Message<String>, ConsumerResp> toSubResp(String topic, String partition) {
-    //    return msg -> new ConsumerResp(new Msg(msg.getKey(), msg.getValue(), creationTime),
-    //                                   msg.getTopicName(),
-    //                                   partition,
-    //                                   t)
-    return null;
+  private static ConsumerResp<Message<String>> toSubResp(Message<String> msg) {
+    return new ConsumerResp<>(new Msg(msg.getValue(), some(msg.getKey())));
   }
 }
