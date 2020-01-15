@@ -36,18 +36,16 @@ public class ReactiveKafkaIT {
     var publisherConf = (LinkedHashMap<String, Object>) config.get("publisher").get();
 
     var kafkaProducer = new KafkaProducer<String, String>(publisherConf);
-    MsgProducer<RecordMetadata> msgProducer = new KafkaMsgProducer(kafkaProducer,
-                                                                   Schedulers.elastic(),
-                                                                   Duration.ofSeconds(1));
+    var msgProducer = new KafkaMsgProducer(kafkaProducer, Schedulers.elastic(), Duration.ofSeconds(1));
 
     @SuppressWarnings("unchecked")
     var consumerConf = (LinkedHashMap<String, Object>) config.get("consumer").get();
     var kafkaConsumer = new KafkaConsumer<String, String>(consumerConf);
-    MsgConsumer<Void> msgConsumer = new KafkaMsgConsumer(kafkaConsumer, Schedulers.elastic(), Duration.ofSeconds(1));
+    var msgConsumer = new KafkaMsgConsumer(kafkaConsumer, Schedulers.elastic(), Duration.ofSeconds(1));
 
     var msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg("Msg number" + i, some(i + ""))).take(MSG_COUNT);
-    Flux<Try<ProducerResp<RecordMetadata>>> publisher = msgProducer.produce(TOPIC, PARTITION, msgs);
-    Flux<Try<ConsumerResp<Void>>> consumer = msgConsumer.consume(TOPIC, PARTITION, 0).take(MSG_COUNT);
+    var publisher = msgProducer.produce(TOPIC, PARTITION, msgs);
+    var consumer = msgConsumer.consume(TOPIC, PARTITION, 0).take(MSG_COUNT);
 
     StepVerifier.create(publisher)
                 .expectNextMatches(Try::isSuccess)

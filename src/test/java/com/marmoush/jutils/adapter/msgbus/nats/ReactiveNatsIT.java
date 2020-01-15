@@ -33,14 +33,14 @@ public class ReactiveNatsIT {
   @Test
   @DisplayName("Consumed messages should be same as published ones.")
   public void NatsPubSub() throws IOException, InterruptedException, TimeoutException {
-    final String TOPIC = "topic-" + new Random().nextInt(1000);
-    Connection nc = NatsConnection.create(config);
-    MsgProducer<Void> msgProducer = new NatsMsgProducer(nc, Schedulers.elastic(), Duration.ofMillis(500));
-    MsgConsumer<Void> msgConsumer = new NatsMsgConsumer(nc, Schedulers.elastic(), Duration.ofMillis(500));
+    final var TOPIC = "topic-" + new Random().nextInt(1000);
+    var nc = NatsConnection.create(config);
+    var msgProducer = new NatsMsgProducer(nc, Schedulers.elastic(), Duration.ofMillis(500));
+    var msgConsumer = new NatsMsgConsumer(nc, Schedulers.elastic(), Duration.ofMillis(500));
 
     var msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg("Msg number" + i, some(i + ""))).take(MSG_COUNT);
-    Flux<Try<ProducerResp<Void>>> publisher = msgProducer.produce(TOPIC, PARTITION, msgs);
-    Flux<Try<ConsumerResp<Void>>> consumer = msgConsumer.consume(TOPIC, PARTITION, 0).take(MSG_COUNT);
+    var publisher = msgProducer.produce(TOPIC, PARTITION, msgs);
+    var consumer = msgConsumer.consume(TOPIC, PARTITION, 0).take(MSG_COUNT);
 
     StepVerifier.create(publisher)
                 .expectNextMatches(Try::isSuccess)
