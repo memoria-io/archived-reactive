@@ -6,6 +6,7 @@ import com.marmoush.jutils.domain.value.msg.Msg;
 import io.nats.client.Connection;
 import io.nats.client.Message;
 import io.nats.client.Subscription;
+import io.vavr.control.Option;
 import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;
@@ -13,6 +14,7 @@ import reactor.core.scheduler.Scheduler;
 import java.time.Duration;
 
 import static com.marmoush.jutils.adapter.msgbus.Nats.NatsConnection.CHANNEL_SEPARATOR;
+import static io.vavr.control.Option.none;
 
 public class NatsMsgConsumer implements MsgConsumer<Void> {
   private final Scheduler scheduler;
@@ -37,7 +39,7 @@ public class NatsMsgConsumer implements MsgConsumer<Void> {
   }
 
   private static ConsumerResp<Void> toConsumeResponse(Message m) {
-    return new ConsumerResp<>(new Msg("", new String(m.getData())));
+    return new ConsumerResp<>(new Msg(new String(m.getData()), none()));
   }
 
   private static String subject(String topic, String partition) {

@@ -5,6 +5,7 @@ import com.marmoush.jutils.domain.value.msg.ConsumerResp;
 import com.marmoush.jutils.domain.value.msg.Msg;
 import io.vavr.Function1;
 import io.vavr.collection.List;
+import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -18,6 +19,7 @@ import java.time.Duration;
 import java.util.function.Consumer;
 
 import static com.marmoush.jutils.utils.functional.VavrUtils.traversableT;
+import static io.vavr.control.Option.some;
 
 public class KafkaMsgConsumer implements MsgConsumer<Void> {
   private final KafkaConsumer<String, String> consumer;
@@ -54,6 +56,6 @@ public class KafkaMsgConsumer implements MsgConsumer<Void> {
   private static Function1<ConsumerRecords<String, String>, List<ConsumerResp<Void>>> toConsumeResponses(String topic,
                                                                                                          int partition) {
     return crs -> List.ofAll(crs.records(new TopicPartition(topic, partition)))
-                      .map(cr -> new ConsumerResp<Void>(new Msg(cr.key(), cr.value())));
+                      .map(cr -> new ConsumerResp<Void>(new Msg(cr.value(),some(cr.key()))));
   }
 }

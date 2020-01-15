@@ -27,19 +27,22 @@ public class KafkaMsgProducer implements MsgProducer<RecordMetadata> {
 
   @Override
   public Flux<Try<ProducerResp<RecordMetadata>>> produce(String topic, String partitionStr, Flux<Msg> msgFlux) {
-    Try<Integer> partitionTry = Try.of(() -> Integer.parseInt(partitionStr));
-    if (partitionTry.isSuccess()) {
-      return msgFlux.publishOn(scheduler)
-                    .map(msg -> new ProducerRecord<>(topic, partitionTry.get(), msg.key, msg.value))
-                    .map(prodRec -> Try.of(() -> producer.send(prodRec).get(timeout.toMillis(), TimeUnit.MILLISECONDS)))
-                    .map(t -> t.map(KafkaMsgProducer::toPublishResponse));
+    return Try.of(() -> Integer.parseInt(partitionStr))
+              .map(partition -> msgFlux.publishOn(scheduler)
+                                       .map(msg -> toProducerRecord(msg, topic, partition))
+                                       .map(prodRec -> Try.of(() -> producer.send(prodRec)
+                                                                            .get(timeout.toMillis(),
+                                                                                 TimeUnit.MILLISECONDS)))
+                                       .map(t -> t.map(KafkaMsgProducer::toPublishResponse)))
+              .getOrElseGet(t -> Flux.just(Try.failure(t)));
+  }
 
-    } else {
-      return Flux.just(Try.failure(partitionTry.getCause()));
-    }
+  private static ProducerRecord<String, String> toProducerRecord(Msg msg, String topic, int partition) {
+    return (msg.pkey.isDefined()) ? new ProducerRecord<>(topic, partition, msg.pkey.get(), msg.value)
+                                  : new ProducerRecord<>(topic, msg.value);
   }
 
   private static ProducerResp<RecordMetadata> toPublishResponse(RecordMetadata meta) {
-    return new ProducerResp<>(Option.of(meta.offset()), Option.of(meta));
+    return new ProducerResp<>(Option.of(meta));
   }
 }

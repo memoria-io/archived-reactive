@@ -21,6 +21,8 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Random;
 
+import static io.vavr.control.Option.some;
+
 public class ReactiveKafkaIT {
   private final Map<String, Object> config = YamlUtils.parseYamlResource("kafka.yaml").get();
   private final String PARTITION = "0";
@@ -43,7 +45,7 @@ public class ReactiveKafkaIT {
     var kafkaConsumer = new KafkaConsumer<String, String>(consumerConf);
     MsgConsumer<Void> msgConsumer = new KafkaMsgConsumer(kafkaConsumer, Schedulers.elastic(), Duration.ofSeconds(1));
 
-    var msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg(i + "", "Msg number" + i)).take(MSG_COUNT);
+    var msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg("Msg number" + i, some(i + ""))).take(MSG_COUNT);
     Flux<Try<ProducerResp<RecordMetadata>>> publisher = msgProducer.produce(TOPIC, PARTITION, msgs);
     Flux<Try<ConsumerResp<Void>>> consumer = msgConsumer.consume(TOPIC, PARTITION, 0).take(MSG_COUNT);
 
@@ -56,7 +58,7 @@ public class ReactiveKafkaIT {
     StepVerifier.create(consumer)
                 .expectNextMatches(Try::isSuccess)
                 .expectNextMatches(Try::isSuccess)
-                .expectNextMatches(pr -> pr.get().msg.key.equals("2"))
+                .expectNextMatches(pr -> pr.get().msg.pkey.equals(some("2")))
                 .expectComplete()
                 .verify();
   }

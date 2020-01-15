@@ -23,6 +23,8 @@ import java.time.Duration;
 import java.util.Random;
 import java.util.concurrent.TimeoutException;
 
+import static io.vavr.control.Option.some;
+
 public class ReactiveNatsIT {
   private final Map<String, Object> config = YamlUtils.parseYamlResource("nats.yaml").get();
   private final String PARTITION = "0";
@@ -36,7 +38,7 @@ public class ReactiveNatsIT {
     MsgProducer<Void> msgProducer = new NatsMsgProducer(nc, Schedulers.elastic(), Duration.ofMillis(500));
     MsgConsumer<Void> msgConsumer = new NatsMsgConsumer(nc, Schedulers.elastic(), Duration.ofMillis(500));
 
-    var msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg(i + "", "Msg number" + i)).take(MSG_COUNT);
+    var msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg("Msg number" + i, some(i + ""))).take(MSG_COUNT);
     Flux<Try<ProducerResp<Void>>> publisher = msgProducer.produce(TOPIC, PARTITION, msgs);
     Flux<Try<ConsumerResp<Void>>> consumer = msgConsumer.consume(TOPIC, PARTITION, 0).take(MSG_COUNT);
 

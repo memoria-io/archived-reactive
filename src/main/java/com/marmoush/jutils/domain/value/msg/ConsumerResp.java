@@ -11,7 +11,6 @@ public class ConsumerResp<T> {
 
   public final Msg msg;
   public final LocalDateTime consumingTime;
-  public final Option<Long> offset;
   public final Option<T> t;
 
   public ConsumerResp(Msg msg) {
@@ -19,13 +18,12 @@ public class ConsumerResp<T> {
   }
 
   public ConsumerResp(Msg msg, LocalDateTime consumingTime) {
-    this(msg, consumingTime, none(), none());
+    this(msg, consumingTime, none());
   }
 
-  public ConsumerResp(Msg msg, LocalDateTime consumingTime, Option<Long> offset, Option<T> t) {
+  public ConsumerResp(Msg msg, LocalDateTime consumingTime, Option<T> t) {
     this.msg = msg;
     this.consumingTime = consumingTime;
-    this.offset = offset;
     this.t = t;
   }
 
@@ -37,11 +35,11 @@ public class ConsumerResp<T> {
       return false;
     ConsumerResp<?> consumerResp = (ConsumerResp<?>) o;
     return Objects.equals(msg, consumerResp.msg) && Objects.equals(consumingTime, consumerResp.consumingTime) &&
-           Objects.equals(offset, consumerResp.offset) && Objects.equals(t, consumerResp.t);
+           Objects.equals(t, consumerResp.t);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(msg, consumingTime, offset, t);
+    return Objects.hash(msg, consumingTime, t);
   }
 }

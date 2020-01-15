@@ -7,15 +7,13 @@ import java.util.Objects;
 import static io.vavr.control.Option.none;
 
 public class ProducerResp<T> {
-  public final Option<Long> offset;
   public final Option<T> t;
 
   public ProducerResp() {
-    this(none(), none());
+    this(none());
   }
 
-  public ProducerResp(Option<Long> offset, Option<T> t) {
-    this.offset = offset;
+  public ProducerResp(Option<T> t) {
     this.t = t;
   }
 
@@ -26,11 +24,11 @@ public class ProducerResp<T> {
     if (o == null || getClass() != o.getClass())
       return false;
     ProducerResp<?> producerResp = (ProducerResp<?>) o;
-    return Objects.equals(offset, producerResp.offset) && Objects.equals(t, producerResp.t);
+    return Objects.equals(t, producerResp.t);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(offset, t);
+    return Objects.hash(t);
   }
 }
