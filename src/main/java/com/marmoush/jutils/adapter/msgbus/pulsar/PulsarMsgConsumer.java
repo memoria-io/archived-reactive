@@ -10,7 +10,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static com.marmoush.jutils.utils.functional.VavrUtils.handle;
-import static com.marmoush.jutils.utils.functional.VavrUtils.handleWithTry;
 import static io.vavr.control.Option.some;
 
 public class PulsarMsgConsumer implements MsgConsumer<Message<String>> {

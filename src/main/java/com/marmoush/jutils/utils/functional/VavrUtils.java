@@ -30,16 +30,4 @@ public final class VavrUtils {
   public static <V> BiFunction<V, Throwable, Try<V>> handle() {
     return (v, t) -> (v != null) ? Try.success(v) : Try.failure(t);
   }
-
-  /**
-   * This can handle CompletableFuture.handle bi function
-   */
-  public static <T> CompletableFuture<Try<T>> handleWithTry(CompletableFuture<T> c) {
-    return c.handle((v, t) -> {
-      if (v != null) {
-        return Try.success(v);
-      } else
-        return Try.failure(requireNonNullElseGet(t, () -> new NullPointerException("Both values are null")));
-    });
-  }
 }
