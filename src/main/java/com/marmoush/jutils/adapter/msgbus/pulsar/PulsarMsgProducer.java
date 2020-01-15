@@ -11,6 +11,7 @@ import org.apache.pulsar.client.api.TypedMessageBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import static com.marmoush.jutils.utils.functional.VavrUtils.handle;
 import static com.marmoush.jutils.utils.functional.VavrUtils.handleWithTry;
 import static io.vavr.control.Option.some;
 
@@ -27,7 +28,7 @@ public class PulsarMsgProducer implements MsgProducer<MessageId> {
   }
 
   private static Function1<Msg, Mono<Try<MessageId>>> toPulsarMessage(Producer<String> producer) {
-    return msg -> Mono.fromFuture(handleWithTry(toPulsarMessage(producer, msg).sendAsync()));
+    return msg -> Mono.fromFuture(toPulsarMessage(producer, msg).sendAsync().handle(handle()));
   }
 
   private static TypedMessageBuilder<String> toPulsarMessage(Producer<String> producer, Msg msg) {
