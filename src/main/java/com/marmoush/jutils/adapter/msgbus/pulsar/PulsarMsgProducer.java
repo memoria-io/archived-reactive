@@ -3,7 +3,6 @@ package com.marmoush.jutils.adapter.msgbus.pulsar;
 import com.marmoush.jutils.domain.port.msgbus.MsgProducer;
 import com.marmoush.jutils.domain.value.msg.Msg;
 import com.marmoush.jutils.domain.value.msg.ProducerResp;
-import com.marmoush.jutils.utils.functional.VavrUtils;
 import io.vavr.Function1;
 import io.vavr.control.Try;
 import org.apache.pulsar.client.api.MessageId;
@@ -12,7 +11,7 @@ import org.apache.pulsar.client.api.TypedMessageBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static com.marmoush.jutils.utils.functional.VavrUtils.toTry;
+import static com.marmoush.jutils.utils.functional.VavrUtils.handleWithTry;
 import static io.vavr.control.Option.some;
 
 public class PulsarMsgProducer implements MsgProducer<MessageId> {
@@ -28,7 +27,7 @@ public class PulsarMsgProducer implements MsgProducer<MessageId> {
   }
 
   private static Function1<Msg, Mono<Try<MessageId>>> toPulsarMessage(Producer<String> producer) {
-    return msg -> Mono.fromFuture(toTry(toPulsarMessage(producer, msg).sendAsync()));
+    return msg -> Mono.fromFuture(handleWithTry(toPulsarMessage(producer, msg).sendAsync()));
   }
 
   private static TypedMessageBuilder<String> toPulsarMessage(Producer<String> producer, Msg msg) {

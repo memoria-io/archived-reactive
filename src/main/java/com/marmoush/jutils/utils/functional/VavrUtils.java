@@ -5,8 +5,8 @@ import io.vavr.collection.List;
 import io.vavr.collection.Traversable;
 import io.vavr.control.Try;
 
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
@@ -27,10 +27,14 @@ public final class VavrUtils {
       return List.of(Try.failure(tt.getCause()));
   }
 
+  public static <V> BiFunction<V, Throwable, Try<V>> handle() {
+    return (v, t) -> (v != null) ? Try.success(v) : Try.failure(t);
+  }
+
   /**
    * This can handle CompletableFuture.handle bi function
    */
-  public static <T> CompletableFuture<Try<T>> toTry(CompletableFuture<T> c) {
+  public static <T> CompletableFuture<Try<T>> handleWithTry(CompletableFuture<T> c) {
     return c.handle((v, t) -> {
       if (v != null) {
         return Try.success(v);
