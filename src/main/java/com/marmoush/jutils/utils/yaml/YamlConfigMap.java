@@ -75,4 +75,8 @@ public class YamlConfigMap {
     var m = (java.util.Map<String, Object>) map.get(key);
     return HashMap.ofAll(m).toJavaMap();
   }
+
+  public java.util.Map<String, Object> toJavaMap() {
+    return this.map.toJavaMap();
+  }
 }
