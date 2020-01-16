@@ -3,6 +3,7 @@ package com.marmoush.jutils.adapter.msgbus.kafka;
 import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
 import com.marmoush.jutils.domain.value.msg.ConsumerResp;
 import com.marmoush.jutils.domain.value.msg.Msg;
+import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.vavr.Function1;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.SynchronousSink;
 import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
 import java.util.function.Consumer;
@@ -25,10 +27,10 @@ public class KafkaMsgConsumer implements MsgConsumer<Void> {
   private final Scheduler scheduler;
   private final Duration timeout;
 
-  public KafkaMsgConsumer(KafkaConsumer<String, String> consumer, Scheduler scheduler, Duration timeout) {
+  public KafkaMsgConsumer(YamlConfigMap map, Scheduler scheduler, Duration timeout) {
     this.scheduler = scheduler;
     this.timeout = timeout;
-    this.consumer = consumer;
+    this.consumer = new KafkaConsumer<>(map.toJavaMap());
   }
 
   @Override
@@ -47,6 +49,13 @@ public class KafkaMsgConsumer implements MsgConsumer<Void> {
     return Flux.defer(() -> subscribeMono.thenMany(consumerFlux).subscribeOn(scheduler));
   }
 
+  public Mono<Void> close(Duration timeout) {
+    return Mono.defer(() -> Mono.create(s -> {
+      consumer.close(timeout);
+      s.success();
+    }).subscribeOn(scheduler)).then();
+  }
+
   private List<Try<ConsumerResp<Void>>> pollOnce(String topic, int partition) {
     var t = Try.of(() -> consumer.poll(timeout)).map(toConsumeResponses(topic, partition));
     return List.ofAll(traversableT(t));
@@ -55,6 +64,6 @@ public class KafkaMsgConsumer implements MsgConsumer<Void> {
   private static Function1<ConsumerRecords<String, String>, List<ConsumerResp<Void>>> toConsumeResponses(String topic,
                                                                                                          int partition) {
     return crs -> List.ofAll(crs.records(new TopicPartition(topic, partition)))
-                      .map(cr -> new ConsumerResp<Void>(new Msg(cr.value(),some(cr.key()))));
+                      .map(cr -> new ConsumerResp<Void>(new Msg(cr.value(), some(cr.key()))));
   }
 }
