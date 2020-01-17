@@ -6,18 +6,15 @@ import com.marmoush.jutils.domain.value.msg.Msg;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.vavr.control.Try;
 import org.apache.pulsar.client.api.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
 
-import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.blockingToMono;
 import static com.marmoush.jutils.utils.functional.VavrUtils.handle;
 import static io.vavr.control.Option.some;
+import static java.util.function.Function.identity;
 
 public class PulsarMsgConsumer implements MsgConsumer<Message<String>> {
 
@@ -33,10 +30,9 @@ public class PulsarMsgConsumer implements MsgConsumer<Message<String>> {
   // TODO Receive async
   @Override
   public Flux<Try<ConsumerResp<Message<String>>>> consume(String topicId, String partition, long offset) {
-    return createConsumer(client, topicId, offset).map(c -> {
-      var f = Flux.<Try<Message<String>>>generate(s -> s.next(Try.of(() -> c.receive())));
-      return f.map(t -> t.map(PulsarMsgConsumer::toConsumerResp)).doFinally(s -> close(c).subscribe());
-    }).getOrElseGet(t -> Flux.just(Try.failure(t)));
+    return createConsumer(client, topicId, offset).map(PulsarMsgConsumer::consumeFrom)
+                                                  .getOrElseGet(t -> Flux.just(Try.failure(t)))
+                                                  .timeout(timeout);
   }
 
   @Override
@@ -55,6 +51,15 @@ public class PulsarMsgConsumer implements MsgConsumer<Message<String>> {
     });
   }
 
+  private static Flux<Try<ConsumerResp<Message<String>>>> consumeFrom(Consumer<String> c) {
+    var f = Flux.<Flux<Try<Message<String>>>>generate(s -> s.next(receive(c).flux())).flatMap(identity());
+    return f.map(t -> t.map(PulsarMsgConsumer::toConsumerResp)).doFinally(s -> close(c));
+  }
+
+  private static Mono<Try<Message<String>>> receive(Consumer<String> c) {
+    return Mono.fromFuture(c.receiveAsync().handle(handle()));
+  }
+
   private static ConsumerResp<Message<String>> toConsumerResp(Message<String> msg) {
     return new ConsumerResp<>(new Msg(msg.getValue(), some(msg.getKey())), LocalDateTime.now(), some(msg));
   }
@@ -62,5 +67,4 @@ public class PulsarMsgConsumer implements MsgConsumer<Message<String>> {
   private static Mono<Void> close(Consumer<String> con) {
     return Mono.fromFuture(con.closeAsync());
   }
-
 }

@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.function.Function;
 
 import static com.marmoush.jutils.utils.functional.VavrUtils.handle;
 import static io.vavr.control.Option.some;
@@ -28,10 +29,15 @@ public class PulsarMsgProducer implements MsgProducer<MessageId> {
 
   @Override
   public Flux<Try<ProducerResp<MessageId>>> produce(String topic, String partitionStr, Flux<Msg> msgFlux) {
-    return createProducer(client, topic).map(prod -> msgFlux.flatMap(toPulsarMessage(prod))
-                                                            .map(k -> k.map(id -> new ProducerResp<>(some(id))))
-                                                            .doFinally(s -> closeProducer(prod).subscribe()))
-                                        .getOrElseGet(f -> Flux.just(Try.failure(f)));
+    return createProducer(client, topic).map(produceFrom(msgFlux))
+                                        .getOrElseGet(f -> Flux.just(Try.failure(f)))
+                                        .timeout(timeout);
+  }
+
+  private Function<Producer<String>, Flux<Try<ProducerResp<MessageId>>>> produceFrom(Flux<Msg> msgFlux) {
+    return prod -> msgFlux.flatMap(send(prod))
+                          .map(PulsarMsgProducer::toProducerResp)
+                          .doFinally(s -> close(prod).subscribe());
   }
 
   @Override
@@ -39,20 +45,24 @@ public class PulsarMsgProducer implements MsgProducer<MessageId> {
     return Mono.fromFuture(client.closeAsync().handle(handle()));
   }
 
-  private static Function1<Msg, Mono<Try<MessageId>>> toPulsarMessage(Producer<String> producer) {
-    return msg -> Mono.fromFuture(toPulsarMessage(producer, msg).sendAsync().handle(handle()));
-  }
-
-  private static TypedMessageBuilder<String> toPulsarMessage(Producer<String> producer, Msg msg) {
-    return msg.pkey.map(key -> producer.newMessage().key(key).value(msg.value))
-                   .getOrElse(producer.newMessage().value(msg.value));
-  }
-
   private static Try<Producer<String>> createProducer(PulsarClient client, String topic) {
     return Try.of(() -> client.newProducer(Schema.STRING).topic(topic).create());
   }
 
-  private static Mono<Void> closeProducer(Producer<String> prod) {
+  private static Function1<Msg, Mono<Try<MessageId>>> send(Producer<String> producer) {
+    return msg -> Mono.fromFuture(msgAdapter(producer, msg).sendAsync().handle(handle()));
+  }
+
+  private static TypedMessageBuilder<String> msgAdapter(Producer<String> producer, Msg msg) {
+    return msg.pkey.map(key -> producer.newMessage().key(key).value(msg.value))
+                   .getOrElse(producer.newMessage().value(msg.value));
+  }
+
+  private static Try<ProducerResp<MessageId>> toProducerResp(Try<MessageId> k) {
+    return k.map(id -> new ProducerResp<>(some(id)));
+  }
+
+  private static Mono<Void> close(Producer<String> prod) {
     return Mono.fromFuture(prod.flushAsync()).then(Mono.fromFuture(prod.closeAsync()));
   }
 }
