@@ -10,16 +10,20 @@ import org.apache.pulsar.client.api.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
+
 import static com.marmoush.jutils.utils.functional.VavrUtils.handle;
 import static io.vavr.control.Option.some;
 
 public class PulsarMsgProducer implements MsgProducer<MessageId> {
 
   private final PulsarClient client;
+  private final Duration timeout;
 
   public PulsarMsgProducer(YamlConfigMap map) throws PulsarClientException {
-    String url = map.asString("pulsar.serviceUrl");
+    String url = map.asMap("pulsar").asString("serviceUrl");
     this.client = PulsarClient.builder().serviceUrl(url).build();
+    this.timeout = Duration.ofMillis(map.asMap("reactorPulsar").asLong("request.timeout"));
   }
 
   @Override
@@ -30,8 +34,9 @@ public class PulsarMsgProducer implements MsgProducer<MessageId> {
                                         .getOrElseGet(f -> Flux.just(Try.failure(f)));
   }
 
-  public Mono<Void> close() {
-    return Mono.fromFuture(client.closeAsync());
+  @Override
+  public Mono<Try<Void>> close() {
+    return Mono.fromFuture(client.closeAsync().handle(handle()));
   }
 
   private static Function1<Msg, Mono<Try<MessageId>>> toPulsarMessage(Producer<String> producer) {

@@ -11,35 +11,37 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
+import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.blockingToMono;
 import static com.marmoush.jutils.utils.functional.VavrUtils.handle;
 import static io.vavr.control.Option.some;
 
 public class PulsarMsgConsumer implements MsgConsumer<Message<String>> {
-  private static final Logger log = LoggerFactory.getLogger(PulsarMsgConsumer.class.getName());
 
   private final PulsarClient client;
+  private final Duration timeout;
 
   public PulsarMsgConsumer(YamlConfigMap map) throws PulsarClientException {
-    String url = map.asString("pulsar.serviceUrl");
+    String url = map.asMap("pulsar").asString("serviceUrl");
     this.client = PulsarClient.builder().serviceUrl(url).build();
+    this.timeout = Duration.ofMillis(map.asMap("reactorPulsar").asLong("request.timeout"));
   }
 
-  //TODO fix error
+  // TODO Receive async
   @Override
   public Flux<Try<ConsumerResp<Message<String>>>> consume(String topicId, String partition, long offset) {
-    return createConsumer(client, topicId, offset).map(consumer -> {
-      var consume = Mono.fromFuture(consumer.receiveAsync().handle(handle()))
-                        .map(t -> t.map(PulsarMsgConsumer::toSubResp));
-      return Flux.<Mono<Try<ConsumerResp<Message<String>>>>>generate(s -> s.next(consume)).flatMap(Flux::from)
-                                                                                          .doFinally(s -> close(consumer)
-                                                                                                  .subscribe());
+    return createConsumer(client, topicId, offset).map(c -> {
+      var f = Flux.<Try<Message<String>>>generate(s -> s.next(Try.of(() -> c.receive())));
+      return f.map(t -> t.map(PulsarMsgConsumer::toConsumerResp)).doFinally(s -> close(c).subscribe());
     }).getOrElseGet(t -> Flux.just(Try.failure(t)));
   }
 
-  public Mono<Void> close() {
-    return Mono.fromFuture(client.closeAsync());
+  @Override
+  public Mono<Try<Void>> close() {
+    return Mono.fromFuture(client.closeAsync().handle(handle()));
   }
 
   private static Try<Consumer<String>> createConsumer(PulsarClient client, String topic, long offset) {
@@ -48,16 +50,17 @@ public class PulsarMsgConsumer implements MsgConsumer<Message<String>> {
                            .topic(topic)
                            .subscriptionName(topic + "subscription")
                            .subscribe();
-      consumer.seek(MessageId.earliest);
+      consumer.seek(offset);
       return consumer;
     });
   }
 
-  private static ConsumerResp<Message<String>> toSubResp(Message<String> msg) {
+  private static ConsumerResp<Message<String>> toConsumerResp(Message<String> msg) {
     return new ConsumerResp<>(new Msg(msg.getValue(), some(msg.getKey())), LocalDateTime.now(), some(msg));
   }
 
   private static Mono<Void> close(Consumer<String> con) {
     return Mono.fromFuture(con.closeAsync());
   }
+
 }

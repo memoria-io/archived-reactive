@@ -14,11 +14,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.SynchronousSink;
 import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
 import java.util.function.Consumer;
 
+import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.blockingToMono;
 import static com.marmoush.jutils.utils.functional.VavrUtils.traversableT;
 import static io.vavr.control.Option.some;
 
@@ -27,9 +27,9 @@ public class KafkaMsgConsumer implements MsgConsumer<Void> {
   private final Scheduler scheduler;
   private final Duration timeout;
 
-  public KafkaMsgConsumer(YamlConfigMap map, Scheduler scheduler, Duration timeout) {
+  public KafkaMsgConsumer(YamlConfigMap map, Scheduler scheduler) {
     this.scheduler = scheduler;
-    this.timeout = timeout;
+    this.timeout = Duration.ofMillis(map.asMap("reactorKafka").asLong("consumer.request.timeout"));
     this.consumer = new KafkaConsumer<>(map.toJavaMap());
   }
 
@@ -49,11 +49,9 @@ public class KafkaMsgConsumer implements MsgConsumer<Void> {
     return Flux.defer(() -> subscribeMono.thenMany(consumerFlux).subscribeOn(scheduler));
   }
 
-  public Mono<Void> close(Duration timeout) {
-    return Mono.defer(() -> Mono.create(s -> {
-      consumer.close(timeout);
-      s.success();
-    }).subscribeOn(scheduler)).then();
+  @Override
+  public Mono<Try<Void>> close() {
+    return blockingToMono(() -> Try.run(() -> consumer.close(timeout)), scheduler);
   }
 
   private List<Try<ConsumerResp<Void>>> pollOnce(String topic, int partition) {

@@ -19,19 +19,15 @@ public class YamlConfigMap {
   }
 
   public Integer asInteger(String key) {
-    return (Integer) map.get(key).get();
+    return Integer.parseInt(asString(key));
   }
 
   public Long asLong(String key) {
-    return (Long) map.get(key).get();
+    return Long.parseLong(asString(key));
   }
 
   public Double asDouble(String key) {
-    return (Double) map.get(key).get();
-  }
-
-  public URI asURI(String key) {
-    return URI.create(asString(key));
+    return Double.parseDouble(asString(key));
   }
 
   public List<String> asStringList(String key) {
@@ -41,32 +37,20 @@ public class YamlConfigMap {
   }
 
   public List<Integer> asIntegerList(String key) {
-    @SuppressWarnings("unchecked")
-    var list = (ArrayList<Integer>) map.get(key).get();
-    return List.ofAll(list);
+    return List.ofAll(asStringList(key)).map(Integer::parseInt);
   }
 
   public List<Long> asLongList(String key) {
-    @SuppressWarnings("unchecked")
-    var list = (ArrayList<Long>) map.get(key).get();
-    return List.ofAll(list);
+    return List.ofAll(asStringList(key)).map(Long::parseLong);
   }
 
   public List<Double> asDoubleList(String key) {
-    @SuppressWarnings("unchecked")
-    var list = (ArrayList<Double>) map.get(key).get();
-    return List.ofAll(list);
-  }
-
-  public List<URI> asURIList(String key) {
-    @SuppressWarnings("unchecked")
-    var list = (ArrayList<URI>) map.get(key).get();
-    return List.ofAll(list);
+    return List.ofAll(asStringList(key)).map(Double::parseDouble);
   }
 
   public YamlConfigMap asMap(String key) {
     @SuppressWarnings("unchecked")
-    var m = (java.util.Map<String, Object>) map.get(key);
+    var m = (java.util.Map<String, Object>) map.get(key).get();
     return new YamlConfigMap(m);
   }
 

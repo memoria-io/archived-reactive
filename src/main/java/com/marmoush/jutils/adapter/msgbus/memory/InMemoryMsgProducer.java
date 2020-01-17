@@ -5,6 +5,7 @@ import com.marmoush.jutils.domain.value.msg.Msg;
 import com.marmoush.jutils.domain.value.msg.ProducerResp;
 import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -28,5 +29,10 @@ public class InMemoryMsgProducer implements MsgProducer<Integer> {
       int offset = db.get(topic).get(partition).size() - 1;
       return Try.success(new ProducerResp<>(some(offset)));
     });
+  }
+
+  @Override
+  public Mono<Try<Void>> close() {
+    return Mono.just(Try.run(() -> db.clear()));
   }
 }

@@ -23,17 +23,14 @@ import static io.vavr.control.Option.some;
 
 public class ReactiveNatsIT {
   private final YamlConfigMap config;
-  private Connection nc;
   private final NatsMsgProducer msgProducer;
   private final NatsMsgConsumer msgConsumer;
   private final Flux<Msg> msgs;
 
   public ReactiveNatsIT() throws IOException, InterruptedException {
     config = YamlUtils.parseYamlResource("nats.yaml").get();
-    nc = NatsConnection.create(config);
-    msgProducer = new NatsMsgProducer(nc, Schedulers.elastic(), Duration.ofMillis(500));
-    msgConsumer = new NatsMsgConsumer(nc, Schedulers.elastic(), Duration.ofMillis(500));
-
+    msgProducer = new NatsMsgProducer(config, Schedulers.elastic());
+    msgConsumer = new NatsMsgConsumer(config, Schedulers.elastic());
     msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg("Msg number" + i, some(i + "")));
   }
 
@@ -53,13 +50,13 @@ public class ReactiveNatsIT {
                 .expectNextMatches(Try::isSuccess)
                 .expectComplete()
                 .verify();
-    nc.flush(Duration.ofMillis(100));
+    msgProducer.close().subscribe();
     StepVerifier.create(consumer)
                 .expectNextMatches(s -> s.get().msg.value.equals("Msg number" + 0))
                 .expectNextMatches(s -> s.get().msg.value.equals("Msg number" + 1))
                 .expectNextMatches(s -> s.get().msg.value.equals("Msg number" + 2))
                 .expectComplete()
                 .verify();
-    nc.close();
+    msgConsumer.close().subscribe();
   }
 }

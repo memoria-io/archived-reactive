@@ -16,14 +16,16 @@ import reactor.core.scheduler.Scheduler;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.blockingToMono;
+
 public class KafkaMsgProducer implements MsgProducer<RecordMetadata> {
   private final KafkaProducer<String, String> kafkaProducer;
   private final Scheduler scheduler;
   private final Duration timeout;
 
-  public KafkaMsgProducer(YamlConfigMap map, Scheduler scheduler, Duration timeout) {
+  public KafkaMsgProducer(YamlConfigMap map, Scheduler scheduler) {
     this.scheduler = scheduler;
-    this.timeout = timeout;
+    this.timeout = Duration.ofMillis(map.asMap("reactorKafka").asLong("producer.request.timeout"));
     this.kafkaProducer = new KafkaProducer<>(map.toJavaMap());
   }
 
@@ -39,11 +41,9 @@ public class KafkaMsgProducer implements MsgProducer<RecordMetadata> {
               .getOrElseGet(t -> Flux.just(Try.failure(t)));
   }
 
-  public Mono<Void> close(Duration d) {
-    return Mono.defer(() -> Mono.create(s -> {
-      kafkaProducer.close(d);
-      s.success();
-    }).subscribeOn(scheduler)).then();
+  @Override
+  public Mono<Try<Void>> close() {
+    return blockingToMono(() -> Try.run(() -> kafkaProducer.close(timeout)), scheduler);
   }
 
   private static ProducerRecord<String, String> toProducerRecord(Msg msg, String topic, int partition) {

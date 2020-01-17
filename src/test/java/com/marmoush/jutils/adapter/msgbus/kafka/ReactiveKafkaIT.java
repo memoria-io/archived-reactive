@@ -27,8 +27,8 @@ public class ReactiveKafkaIT {
 
   public ReactiveKafkaIT() {
     config = YamlUtils.parseYamlResource("kafka.yaml").get();
-    msgProducer = new KafkaMsgProducer(config, Schedulers.elastic(), Duration.ofSeconds(1));
-    msgConsumer = new KafkaMsgConsumer(config, Schedulers.elastic(), Duration.ofSeconds(1));
+    msgProducer = new KafkaMsgProducer(config, Schedulers.elastic());
+    msgConsumer = new KafkaMsgConsumer(config, Schedulers.elastic());
     msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg("Msg number" + i, some(i + "")));
   }
 
@@ -48,17 +48,14 @@ public class ReactiveKafkaIT {
                 .expectNextMatches(Try::isSuccess)
                 .expectComplete()
                 .verify();
+    msgProducer.close().subscribe();
+
     StepVerifier.create(consumer)
                 .expectNextMatches(Try::isSuccess)
                 .expectNextMatches(Try::isSuccess)
                 .expectNextMatches(pr -> pr.get().msg.pkey.equals(some("2")))
                 .expectComplete()
                 .verify();
-  }
-
-  @AfterAll
-  public void afterAll() {
-    msgProducer.close(Duration.ofMillis(1000));
-    msgConsumer.close(Duration.ofSeconds(1000));
+    msgConsumer.close().subscribe();
   }
 }
