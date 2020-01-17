@@ -44,22 +44,8 @@ public class ReactivePulsarIT {
     producer.close().subscribe();
     var consumer = new PulsarMsgConsumer(config);
     var c = consumer.consume(TOPIC, PARTITION, 0);
-    StepVerifier.create(c).expectNextCount(2).expectNextMatches(s -> {
-      print(s.get().t.get());
-      return true;
-    }).thenCancel().verify();
+    StepVerifier.create(c.take(3)).expectNextCount(2).expectNextMatches(Try::isSuccess).expectComplete().verify();
     consumer.close().subscribe();
-  }
-
-  public static void print(Message<String> s) {
-    System.out.println("topicname:" + s.getTopicName());
-    System.out.println("orderingKey:" + s.hasOrderingKey());
-    System.out.println("key:" + s.getKey());
-    System.out.println("data:" + s.getData());
-    System.out.println("sequenceId:" + s.getSequenceId());
-    System.out.println("messageID:" + s.getMessageId());
-    System.out.println("isReplicated:" + s.isReplicated());
-    System.out.println("--------------------");
   }
 }
 

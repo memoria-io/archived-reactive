@@ -15,11 +15,12 @@ public class NatsConnection {
   private NatsConnection() {}
 
   public static Connection create(YamlConfigMap c) throws IOException, InterruptedException {
-    var server = c.asString("server");
-    var conTimeout = Duration.ofMillis(c.asLong("connectionTimeout"));
-    var reconTimeout = Duration.ofMillis(c.asLong("reconnectionTimeout"));
-    var pingInterval = Duration.ofMillis(c.asLong("pingInterval"));
-    var bufferSize = c.asInteger("bufferSize");
+    var nats = c.asMap("nats");
+    var server = nats.asString("server");
+    var conTimeout = Duration.ofMillis(nats.asLong("connectionTimeout"));
+    var reconTimeout = Duration.ofMillis(nats.asLong("reconnectionTimeout"));
+    var pingInterval = Duration.ofMillis(nats.asLong("pingInterval"));
+    var bufferSize = nats.asInteger("bufferSize");
 
     var config = new Options.Builder().server(server)
                                       .connectionTimeout(conTimeout)
