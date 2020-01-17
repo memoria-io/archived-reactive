@@ -7,8 +7,6 @@ import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.vavr.Function1;
 import io.vavr.control.Try;
 import org.apache.pulsar.client.api.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -41,9 +39,6 @@ public class PulsarMsgProducer implements MsgProducer<MessageId> {
   }
 
   private static TypedMessageBuilder<String> toPulsarMessage(Producer<String> producer, Msg msg) {
-    if(msg.pkey.isDefined()){
-      return producer.newMessage().key(msg.pkey.get()).value(msg.value);
-    }
     return msg.pkey.map(key -> producer.newMessage().key(key).value(msg.value))
                    .getOrElse(producer.newMessage().value(msg.value));
   }
