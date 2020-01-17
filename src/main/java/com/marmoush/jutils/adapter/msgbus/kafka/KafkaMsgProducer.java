@@ -34,7 +34,7 @@ public class KafkaMsgProducer implements MsgProducer<RecordMetadata> {
                                        .map(msg -> toProducerRecord(msg, topic, partition))
                                        .map(prodRec -> Try.of(() -> kafkaProducer.send(prodRec)
                                                                                  .get(timeout.toMillis(),
-                                                                                 TimeUnit.MILLISECONDS)))
+                                                                                      TimeUnit.MILLISECONDS)))
                                        .map(t -> t.map(KafkaMsgProducer::toPublishResponse)))
               .getOrElseGet(t -> Flux.just(Try.failure(t)));
   }
@@ -47,8 +47,8 @@ public class KafkaMsgProducer implements MsgProducer<RecordMetadata> {
   }
 
   private static ProducerRecord<String, String> toProducerRecord(Msg msg, String topic, int partition) {
-    return (msg.pkey.isDefined()) ? new ProducerRecord<>(topic, partition, msg.pkey.get(), msg.value)
-                                  : new ProducerRecord<>(topic, msg.value);
+    return msg.pkey.map(key -> new ProducerRecord<>(topic, partition, key, msg.value))
+                   .getOrElse(new ProducerRecord<>(topic, msg.value));
   }
 
   private static ProducerResp<RecordMetadata> toPublishResponse(RecordMetadata meta) {

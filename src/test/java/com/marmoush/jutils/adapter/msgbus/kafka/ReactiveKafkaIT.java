@@ -4,8 +4,10 @@ import com.marmoush.jutils.domain.value.msg.Msg;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import com.marmoush.jutils.utils.yaml.YamlUtils;
 import io.vavr.control.Try;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
@@ -15,6 +17,7 @@ import java.util.Random;
 
 import static io.vavr.control.Option.some;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ReactiveKafkaIT {
   private final YamlConfigMap config;
 
@@ -51,5 +54,11 @@ public class ReactiveKafkaIT {
                 .expectNextMatches(pr -> pr.get().msg.pkey.equals(some("2")))
                 .expectComplete()
                 .verify();
+  }
+
+  @AfterAll
+  public void afterAll() {
+    msgProducer.close(Duration.ofMillis(1000));
+    msgConsumer.close(Duration.ofSeconds(1000));
   }
 }
