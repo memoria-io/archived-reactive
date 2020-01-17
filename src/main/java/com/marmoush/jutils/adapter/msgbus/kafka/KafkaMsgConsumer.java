@@ -36,8 +36,6 @@ public class KafkaMsgConsumer implements MsgConsumer<Void> {
   @Override
   public Flux<Try<ConsumerResp<Void>>> consume(String topic, String partitionStr, long offset) {
     var partition = Integer.parseInt(partitionStr);
-    Consumer<SynchronousSink<List<Try<ConsumerResp<Void>>>>> poll = s -> s.next(pollOnce(topic, partition));
-
     var subscribeMono = Mono.create(s -> {
       consumer.assign(List.of(new TopicPartition(topic, partition)).toJavaList());
       // must call poll before seek
@@ -45,6 +43,8 @@ public class KafkaMsgConsumer implements MsgConsumer<Void> {
       consumer.seek(new TopicPartition(topic, partition), offset);
       s.success();
     });
+
+    Consumer<SynchronousSink<List<Try<ConsumerResp<Void>>>>> poll = s -> s.next(pollOnce(topic, partition));
     var consumerFlux = Flux.generate(poll).flatMap(Flux::fromIterable);
     return Flux.defer(() -> subscribeMono.thenMany(consumerFlux).subscribeOn(scheduler));
   }
