@@ -33,6 +33,7 @@ public class InMemoryMsgTest {
                 .expectNextMatches(pr -> pr.get().t.get().equals(2))
                 .expectComplete()
                 .verify();
+    StepVerifier.create(producer.close()).expectComplete().verify();
   }
 
   @Test
@@ -50,5 +51,6 @@ public class InMemoryMsgTest {
                 .expectNextMatches(pr -> pr.get().msg.pkey.equals(some("2")))
                 .expectComplete()
                 .verify();
+    StepVerifier.create(consumer.close()).expectComplete().verify();
   }
 }
