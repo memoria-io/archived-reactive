@@ -1,8 +1,6 @@
 package com.marmoush.jutils.adapter.crud;
 
 import com.marmoush.jutils.domain.entity.Entity;
-import com.marmoush.jutils.domain.error.AlreadyExists;
-import com.marmoush.jutils.domain.error.NotFound;
 import com.marmoush.jutils.domain.port.crud.EntityRepo;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.AfterEach;
@@ -21,7 +19,7 @@ public class InMemoryRepoTests {
   private final Map<String, Entity<String>> db = new HashMap<>();
   private final EntityRepo<Entity<String>> repo = new InMemoryRepo<>(db);
   private final Entity<String> entity = new Entity<>("id", "value");
-  private final Entity<String> otherEntity = new Entity<>("id", "other_value");
+  private final Entity<String> updateEntity = new Entity<>("id", "other_value");
 
   @AfterEach
   public void afterEach() {
@@ -33,13 +31,13 @@ public class InMemoryRepoTests {
   public void crudTest() {
     StepVerifier.create(repo.create(entity)).expectNextMatches(Try::isSuccess).expectComplete().verify();
     Assertions.assertEquals("value", db.get("id").value);
-    StepVerifier.create(repo.update(otherEntity)).expectNextMatches(Try::isSuccess).expectComplete().verify();
+    StepVerifier.create(repo.update(updateEntity)).expectNextMatches(Try::isSuccess).expectComplete().verify();
     StepVerifier.create(repo.delete(entity.id)).expectComplete().verify();
   }
 
   @Test
   @DisplayName("Should be not found")
-  public void notTest() {
+  public void notFoundTest() {
     StepVerifier.create(repo.update(entity))
                 .expectNextMatches(s -> s.getCause().equals(NOT_FOUND))
                 .expectComplete()
@@ -50,7 +48,8 @@ public class InMemoryRepoTests {
   @Test
   @DisplayName("Already exists")
   public void alreadyExists() {
-    StepVerifier.create(repo.update(entity))
+    db.put(this.entity.id,this.entity);
+    StepVerifier.create(repo.create(entity))
                 .expectNextMatches(s -> s.getCause().equals(ALREADY_EXISTS))
                 .expectComplete()
                 .verify();
