@@ -1,7 +1,5 @@
 package com.marmoush.jutils.adapter.msgbus.memory;
 
-import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
-import com.marmoush.jutils.domain.value.msg.ConsumerResp;
 import com.marmoush.jutils.domain.value.msg.Msg;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.DisplayName;
