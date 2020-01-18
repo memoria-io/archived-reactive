@@ -40,7 +40,7 @@ public class NatsMsgConsumer implements MsgConsumer<Void> {
 
   @Override
   public Mono<Try<Void>> close() {
-    return blockingToMono(() -> Try.run(() -> nc.close()), scheduler);
+    return blockingToMono(() -> Try.run(nc::close), scheduler);
   }
 
   private Try<ConsumerResp<Void>> pollOnce(Subscription sub) {

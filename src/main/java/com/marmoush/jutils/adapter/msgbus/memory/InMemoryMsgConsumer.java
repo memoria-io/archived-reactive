@@ -29,6 +29,6 @@ public class InMemoryMsgConsumer implements MsgConsumer<Integer> {
 
   @Override
   public Mono<Try<Void>> close() {
-    return Mono.just(Try.run(() -> db.clear()));
+    return Mono.just(Try.run(db::clear));
   }
 }

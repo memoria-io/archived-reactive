@@ -15,5 +15,9 @@ public class LogLevelsTest {
     log.info("Info message !");
     log.warn("Warn message !");
     log.error("Error message !");
+    assert !log.isTraceEnabled();
+    assert log.isInfoEnabled();
+    assert log.isWarnEnabled();
+    assert log.isErrorEnabled();
   }
 }

@@ -39,6 +39,6 @@ public class NatsMsgProducer implements MsgProducer<Void> {
 
   @Override
   public Mono<Try<Void>> close() {
-    return blockingToMono(() -> Try.run(() -> nc.close()), scheduler);
+    return blockingToMono(() -> Try.run(nc::close), scheduler);
   }
 }

@@ -33,6 +33,6 @@ public class InMemoryMsgProducer implements MsgProducer<Integer> {
 
   @Override
   public Mono<Try<Void>> close() {
-    return Mono.just(Try.run(() -> db.clear()));
+    return Mono.just(Try.run(db::clear));
   }
 }

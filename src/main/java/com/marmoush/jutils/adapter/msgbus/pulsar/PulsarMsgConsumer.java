@@ -27,7 +27,6 @@ public class PulsarMsgConsumer implements MsgConsumer<Message<String>> {
     this.timeout = Duration.ofMillis(map.asMap("reactorPulsar").asLong("request.timeout"));
   }
 
-  // TODO Receive async
   @Override
   public Flux<Try<ConsumerResp<Message<String>>>> consume(String topicId, String partition, long offset) {
     return createConsumer(client, topicId, offset).map(PulsarMsgConsumer::consumeFrom)
