@@ -26,7 +26,7 @@ public class KafkaMsgProducer implements MsgProducer<RecordMetadata> {
   public KafkaMsgProducer(YamlConfigMap map, Scheduler scheduler) {
     this.scheduler = scheduler;
     this.timeout = Duration.ofMillis(map.asMap("reactorKafka").asLong("producer.request.timeout"));
-    this.kafkaProducer = new KafkaProducer<>(map.toJavaMap());
+    this.kafkaProducer = new KafkaProducer<>(map.asMap("kafka").asMap("producer").toJavaMap());
   }
 
   @Override

@@ -30,7 +30,7 @@ public class KafkaMsgConsumer implements MsgConsumer<Void> {
   public KafkaMsgConsumer(YamlConfigMap map, Scheduler scheduler) {
     this.scheduler = scheduler;
     this.timeout = Duration.ofMillis(map.asMap("reactorKafka").asLong("consumer.request.timeout"));
-    this.consumer = new KafkaConsumer<>(map.toJavaMap());
+    this.consumer = new KafkaConsumer<>(map.asMap("kafka").asMap("consumer").toJavaMap());
   }
 
   @Override

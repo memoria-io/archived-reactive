@@ -19,11 +19,11 @@ public class NettyHttpUtilsTest {
   public static void beforeAll() {
     server = HttpServer.create()
                        .host("127.0.0.1")
-                       .port(8080)
+                       .port(8081)
                        .route(r -> r.get("/happy", (req, resp) -> NettyHttpUtils.send(resp, 200, "hello"))
                                     .get("/sad", (req, resp) -> NettyHttpUtils.sendError(resp, error)))
                        .bindNow();
-    client = HttpClient.create().baseUrl("127.0.0.1:8080");
+    client = HttpClient.create().baseUrl("127.0.0.1:8081");
   }
 
   @Test

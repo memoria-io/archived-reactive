@@ -17,7 +17,6 @@ import java.util.Random;
 
 import static io.vavr.control.Option.some;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ReactiveKafkaIT {
   private final YamlConfigMap config;
 
