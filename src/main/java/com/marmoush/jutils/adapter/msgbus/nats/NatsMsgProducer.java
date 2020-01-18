@@ -31,10 +31,10 @@ public class NatsMsgProducer implements MsgProducer<Void> {
 
   @Override
   public Flux<Try<ProducerResp<Void>>> produce(String topic, String partition, Flux<Msg> msgFlux) {
-    return msgFlux.publishOn(scheduler).map(msg -> Try.of(() -> {
+    return msgFlux.publishOn(scheduler).timeout(timeout).map(msg -> Try.of(() -> {
       nc.publish(topic + CHANNEL_SEPARATOR + partition, msg.value.getBytes(StandardCharsets.UTF_8));
-      return new ProducerResp<Void>();
-    })).timeout(timeout);
+      return new ProducerResp<>();
+    }));
   }
 
   @Override
