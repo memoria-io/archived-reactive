@@ -2,6 +2,7 @@ package com.marmoush.jutils.adapter.crud;
 
 import com.marmoush.jutils.domain.entity.Entity;
 import com.marmoush.jutils.domain.port.crud.EntityReadRepo;
+import com.marmoush.jutils.domain.port.crud.EntityRepo;
 import com.marmoush.jutils.domain.port.crud.EntityWriteRepo;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -9,7 +10,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
-public class InMemoryRepo<T extends Entity<?>> implements EntityWriteRepo<T>, EntityReadRepo<T> {
+public class InMemoryRepo<T extends Entity<?>> implements EntityRepo<T> {
   protected final Map<String, T> db;
   private EntityReadRepo<T> entityReadRepo;
   private EntityWriteRepo<T> entityWriteRepo;
