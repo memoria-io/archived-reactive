@@ -25,15 +25,15 @@ public class InMemoryMsgTest {
   @DisplayName("Should publish messages correctly")
   public void publish() {
     var db = new HashMap<String, HashMap<String, LinkedList<Msg>>>();
-    var producer = new InMemoryMsgProducer(db);
-    var published = producer.produce(TOPIC, PARTITION, msgs).take(MSG_COUNT);
+    var msgProducer = new InMemoryMsgProducer(db);
+    var published = msgProducer.produce(TOPIC, PARTITION, msgs).take(MSG_COUNT);
     StepVerifier.create(published)
                 .expectNextMatches(Try::isSuccess)
                 .expectNextMatches(Try::isSuccess)
                 .expectNextMatches(pr -> pr.get().t.get().equals(2))
                 .expectComplete()
                 .verify();
-    StepVerifier.create(producer.close()).expectComplete().verify();
+    StepVerifier.create(msgProducer.close()).expectComplete().verify();
   }
 
   @Test
@@ -44,13 +44,13 @@ public class InMemoryMsgTest {
     db.get(TOPIC).put(PARTITION, new LinkedList<>());
     db.get(TOPIC).get(PARTITION).addAll(msgs.collectList().block());
     var msgConsumer = new InMemoryMsgConsumer(db);
-    var consumer = msgConsumer.consume(TOPIC, PARTITION, 0).take(MSG_COUNT);
-    StepVerifier.create(consumer)
+    var consumed = msgConsumer.consume(TOPIC, PARTITION, 0).take(MSG_COUNT);
+    StepVerifier.create(consumed)
                 .expectNextMatches(Try::isSuccess)
                 .expectNextMatches(Try::isSuccess)
                 .expectNextMatches(pr -> pr.get().msg.pkey.equals(some("2")))
                 .expectComplete()
                 .verify();
-    StepVerifier.create(consumer.close()).expectComplete().verify();
+    StepVerifier.create(msgConsumer.close()).expectComplete().verify();
   }
 }
