@@ -17,8 +17,8 @@ public class JsonGsonTest {
   public void toMap() {
     String s = resource("json/gson-test.json").get();
     Map<String, Object> map = json.toMap(s).get();
-    Assertions.assertEquals(map.get("name"), "Bob");
-    Assertions.assertEquals(map.get("age"), 23.0);
-    Assertions.assertEquals(map.get("cars"), List.of("mercedes", "chevy", "porsche"));
+    Assertions.assertEquals("Bob", map.get("name"));
+    Assertions.assertEquals(23.0, map.get("age"));
+    Assertions.assertEquals(List.of("mercedes", "chevy", "porsche"), map.get("cars"));
   }
 }

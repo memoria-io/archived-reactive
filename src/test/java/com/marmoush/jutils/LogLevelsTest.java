@@ -1,5 +1,6 @@
 package com.marmoush.jutils;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +16,9 @@ public class LogLevelsTest {
     log.info("Info message !");
     log.warn("Warn message !");
     log.error("Error message !");
-    assert !log.isTraceEnabled();
-    assert log.isInfoEnabled();
-    assert log.isWarnEnabled();
-    assert log.isErrorEnabled();
+    Assertions.assertFalse(log.isTraceEnabled());
+    Assertions.assertTrue(log.isInfoEnabled());
+    Assertions.assertTrue(log.isWarnEnabled());
+    Assertions.assertTrue(log.isErrorEnabled());
   }
 }

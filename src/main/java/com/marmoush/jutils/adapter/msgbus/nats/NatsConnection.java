@@ -41,12 +41,12 @@ public class NatsConnection {
     }
 
     public void errorOccurred(Connection conn, String type) {
-      log.error(String.format("Error %s ", type));
+      log.error("Error {}", type);
     }
 
     public void slowConsumerDetected(Connection conn, Consumer consumer) {
       var url = Option.of(conn.getConnectedUrl()).getOrElse("");
-      log.error(String.format("Slow consumer on connection %s", url));
+      log.error("Slow consumer on connection {}", url);
     }
   };
 }

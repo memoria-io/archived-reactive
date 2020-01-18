@@ -10,11 +10,11 @@ public class IdGeneratorsTest {
   @Test
   public void SerialIdTest() {
     IdGenerator idGen = new SerialIdGenerator(new AtomicInteger());
-    Assertions.assertEquals(idGen.generate(), "0");
-    Assertions.assertEquals(idGen.generate(), "1");
-    Assertions.assertEquals(idGen.generate(), "2");
+    Assertions.assertEquals("0", idGen.generate());
+    Assertions.assertEquals("1", idGen.generate());
+    Assertions.assertEquals("2", idGen.generate());
     idGen = new SerialIdGenerator(new AtomicInteger());
-    Assertions.assertEquals(idGen.generate(), "0");
+    Assertions.assertEquals("0", idGen.generate());
   }
 
   @Test
