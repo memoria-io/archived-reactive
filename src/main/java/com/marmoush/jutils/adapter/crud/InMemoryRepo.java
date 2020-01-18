@@ -9,42 +9,34 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
-import static com.marmoush.jutils.domain.error.AlreadyExists.ALREADY_EXISTS;
-import static com.marmoush.jutils.domain.error.NotFound.NOT_FOUND;
-
 public class InMemoryRepo<T extends Entity<?>> implements EntityWriteRepo<T>, EntityReadRepo<T> {
   protected final Map<String, T> db;
+  private EntityReadRepo<T> entityReadRepo;
+  private EntityWriteRepo<T> entityWriteRepo;
 
   public InMemoryRepo(Map<String, T> db) {
     this.db = db;
+    this.entityReadRepo = new InMemoryReadRepo<>(db);
+    this.entityWriteRepo = new InMemoryWriteRepo<>(db);
   }
 
   @Override
   public Mono<Try<T>> create(T t) {
-    if (db.containsKey(t.id)) {
-      return Mono.just(Try.failure(ALREADY_EXISTS));
-    }
-    db.put(t.id, t);
-    return Mono.just(Try.success(t));
+    return this.entityWriteRepo.create(t);
   }
 
   @Override
   public Mono<Try<T>> update(T t) {
-    if (db.containsKey(t.id)) {
-      return Mono.just(Try.success(db.put(t.id, t)));
-    } else {
-      return Mono.just(Try.failure(NOT_FOUND));
-    }
+    return this.entityWriteRepo.update(t);
   }
 
   @Override
   public Mono<Option<T>> get(String id) {
-    return Mono.just(Option.of(db.get(id)));
+    return this.entityReadRepo.get(id);
   }
 
   @Override
   public Mono<Void> delete(String id) {
-    db.remove(id);
-    return Mono.empty();
+    return this.entityWriteRepo.delete(id);
   }
 }

@@ -4,7 +4,6 @@ import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
 
-import java.net.URI;
 import java.util.ArrayList;
 
 public class YamlConfigMap {

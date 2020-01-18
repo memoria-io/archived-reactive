@@ -1,12 +1,8 @@
 package com.marmoush.jutils.adapter.msgbus.nats;
 
-import com.marmoush.jutils.adapter.msgbus.Nats.NatsConnection;
-import com.marmoush.jutils.adapter.msgbus.Nats.NatsMsgConsumer;
-import com.marmoush.jutils.adapter.msgbus.Nats.NatsMsgProducer;
 import com.marmoush.jutils.domain.value.msg.Msg;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import com.marmoush.jutils.utils.yaml.YamlUtils;
-import io.nats.client.Connection;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

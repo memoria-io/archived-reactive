@@ -4,7 +4,6 @@ import com.marmoush.jutils.domain.value.msg.Msg;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import com.marmoush.jutils.utils.yaml.YamlUtils;
 import io.vavr.control.Try;
-import org.apache.pulsar.client.api.Message;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

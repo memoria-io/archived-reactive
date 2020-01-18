@@ -1,4 +1,4 @@
-package com.marmoush.jutils.adapter.msgbus.Nats;
+package com.marmoush.jutils.adapter.msgbus.nats;
 
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.nats.client.*;
@@ -27,7 +27,7 @@ public class NatsConnection {
                                       .reconnectWait(reconTimeout)
                                       .bufferSize(bufferSize)
                                       .pingInterval(pingInterval)
-                                      .connectionListener((conn, type) -> log.info("Status change " + type))
+                                      .connectionListener((conn, type) -> log.info("Status change {0} ", type))
                                       .errorListener(err)
                                       .build();
     return Nats.connect(config);
@@ -35,15 +35,15 @@ public class NatsConnection {
 
   private static ErrorListener err = new ErrorListener() {
     public void exceptionOccurred(Connection conn, Exception exp) {
-      log.error("Exception " + exp.getMessage());
+      log.error("Exception {0}", exp.getMessage());
     }
 
     public void errorOccurred(Connection conn, String type) {
-      log.error("Error " + type);
+      log.error("Error {0} ", type);
     }
 
     public void slowConsumerDetected(Connection conn, Consumer consumer) {
-      log.error("Slow consumer on connection:" + conn.getConnectedUrl());
+      log.error("Slow consumer on connection: {0}", conn.getConnectedUrl());
     }
   };
 }

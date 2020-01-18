@@ -1,4 +1,4 @@
-package com.marmoush.jutils.adapter.msgbus.Nats;
+package com.marmoush.jutils.adapter.msgbus.nats;
 
 import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
 import com.marmoush.jutils.domain.value.msg.ConsumerResp;
@@ -15,8 +15,8 @@ import reactor.core.scheduler.Scheduler;
 import java.io.IOException;
 import java.time.Duration;
 
-import static com.marmoush.jutils.adapter.msgbus.Nats.NatsConnection.CHANNEL_SEPARATOR;
-import static com.marmoush.jutils.adapter.msgbus.Nats.NatsConnection.create;
+import static com.marmoush.jutils.adapter.msgbus.nats.NatsConnection.CHANNEL_SEPARATOR;
+import static com.marmoush.jutils.adapter.msgbus.nats.NatsConnection.create;
 import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.blockingToMono;
 import static io.vavr.control.Option.none;
 
