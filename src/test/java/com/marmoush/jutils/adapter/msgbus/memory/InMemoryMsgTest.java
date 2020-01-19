@@ -1,6 +1,6 @@
 package com.marmoush.jutils.adapter.msgbus.memory;
 
-import com.marmoush.jutils.domain.value.msg.Msg;
+import com.marmoush.jutils.domain.entity.Msg;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,14 +11,12 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import static io.vavr.control.Option.some;
-
 public class InMemoryMsgTest {
   private final String TOPIC = "test_topic";
   private final String PARTITION = "0";
   private final int MSG_COUNT = 3;
   private final Flux<Msg> msgs = Flux.interval(Duration.ofMillis(10))
-                                     .map(i -> new Msg("Msg number" + i))
+                                     .map(i -> new Msg(i + "", "Msg number" + i))
                                      .take(MSG_COUNT);
 
   @Test
@@ -30,7 +28,7 @@ public class InMemoryMsgTest {
     StepVerifier.create(published)
                 .expectNextMatches(Try::isSuccess)
                 .expectNextMatches(Try::isSuccess)
-                .expectNextMatches(pr -> pr.get().t.get().equals(2))
+                .expectNextMatches(Try::isSuccess)
                 .expectComplete()
                 .verify();
     StepVerifier.create(msgProducer.close()).expectNextMatches(Try::isSuccess).expectComplete().verify();

@@ -1,6 +1,6 @@
 package com.marmoush.jutils.adapter.msgbus.nats;
 
-import com.marmoush.jutils.domain.value.msg.Msg;
+import com.marmoush.jutils.domain.entity.Msg;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import com.marmoush.jutils.utils.yaml.YamlUtils;
 import io.vavr.control.Try;
@@ -13,9 +13,6 @@ import reactor.test.StepVerifier;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Random;
-import java.util.concurrent.TimeoutException;
-
-import static io.vavr.control.Option.some;
 
 public class ReactiveNatsIT {
   private final YamlConfigMap config;
@@ -27,7 +24,7 @@ public class ReactiveNatsIT {
     config = YamlUtils.parseYamlResource("nats.yaml").get();
     msgProducer = new NatsMsgProducer(config, Schedulers.elastic());
     msgConsumer = new NatsMsgConsumer(config, Schedulers.elastic());
-    msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg("Msg number" + i));
+    msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg(i + "", "Msg number" + i));
   }
 
   @Test
@@ -48,9 +45,9 @@ public class ReactiveNatsIT {
                 .verify();
     msgProducer.close().subscribe();
     StepVerifier.create(consumer)
-                .expectNextMatches(s -> s.get().msg.value.equals("Msg number" + 0))
-                .expectNextMatches(s -> s.get().msg.value.equals("Msg number" + 1))
-                .expectNextMatches(s -> s.get().msg.value.equals("Msg number" + 2))
+                .expectNextMatches(s -> s.get().value.equals("Msg number" + 0))
+                .expectNextMatches(s -> s.get().value.equals("Msg number" + 1))
+                .expectNextMatches(s -> s.get().value.equals("Msg number" + 2))
                 .expectComplete()
                 .verify();
     msgConsumer.close().subscribe();

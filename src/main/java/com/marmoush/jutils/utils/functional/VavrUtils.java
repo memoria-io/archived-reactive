@@ -28,4 +28,8 @@ public final class VavrUtils {
   public static <V> BiFunction<V, Throwable, Try<V>> handle() {
     return (v, t) -> (t == null) ? Try.success(v) : Try.failure(t);
   }
+
+  public static <V> BiFunction<V, Throwable, Try<Void>> handleToVoid() {
+    return (v, t) -> (t == null) ? Try.success(null) : Try.failure(t);
+  }
 }

@@ -1,8 +1,7 @@
 package com.marmoush.jutils.adapter.msgbus.kafka;
 
 import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
-import com.marmoush.jutils.domain.value.msg.ConsumerResp;
-import com.marmoush.jutils.domain.value.msg.Msg;
+import com.marmoush.jutils.domain.entity.Msg;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.vavr.Function1;
 import io.vavr.collection.List;
@@ -20,7 +19,6 @@ import java.util.function.Consumer;
 
 import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.blockingToMono;
 import static com.marmoush.jutils.utils.functional.VavrUtils.traversableT;
-import static io.vavr.control.Option.some;
 
 public class KafkaMsgConsumer implements MsgConsumer<Void> {
   private final KafkaConsumer<String, String> consumer;
@@ -34,17 +32,17 @@ public class KafkaMsgConsumer implements MsgConsumer<Void> {
   }
 
   @Override
-  public Flux<Try<ConsumerResp<Void>>> consume(String topic, String partitionStr, long offset) {
+  public Flux<Try<Msg>> consume(String topic, String partitionStr, long offset) {
     var partition = Integer.parseInt(partitionStr);
+    var tp = new TopicPartition(topic, partition);
     var subscribeMono = Mono.create(s -> {
-      consumer.assign(List.of(new TopicPartition(topic, partition)).toJavaList());
+      consumer.assign(List.of(tp).toJavaList());
       // must call poll before seek
       consumer.poll(timeout);
-      consumer.seek(new TopicPartition(topic, partition), offset);
+      consumer.seek(tp, offset);
       s.success();
     });
-
-    Consumer<SynchronousSink<List<Try<ConsumerResp<Void>>>>> poll = s -> s.next(pollOnce(topic, partition));
+    Consumer<SynchronousSink<List<Try<Msg>>>> poll = s -> s.next(pollOnce(tp));
     var consumerFlux = Flux.generate(poll).flatMap(Flux::fromIterable);
     return Flux.defer(() -> subscribeMono.thenMany(consumerFlux).subscribeOn(scheduler));
   }
@@ -54,14 +52,11 @@ public class KafkaMsgConsumer implements MsgConsumer<Void> {
     return blockingToMono(() -> Try.run(() -> consumer.close(timeout)), scheduler);
   }
 
-  private List<Try<ConsumerResp<Void>>> pollOnce(String topic, int partition) {
-    var t = Try.of(() -> consumer.poll(timeout)).map(toConsumeResponses(topic, partition));
+  private List<Try<Msg>> pollOnce(TopicPartition tp) {
+    var t = Try.of(() -> consumer.poll(timeout))
+               .map(crs -> crs.records(tp))
+               .map(List::ofAll)
+               .map(l -> l.map(r -> new Msg(r.key(), r.value())));
     return List.ofAll(traversableT(t));
-  }
-
-  private static Function1<ConsumerRecords<String, String>, List<ConsumerResp<Void>>> toConsumeResponses(String topic,
-                                                                                                         int partition) {
-    return crs -> List.ofAll(crs.records(new TopicPartition(topic, partition)))
-                      .map(cr -> new ConsumerResp<Void>(new Msg(cr.value())));
   }
 }

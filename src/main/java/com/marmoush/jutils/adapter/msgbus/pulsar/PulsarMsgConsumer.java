@@ -1,8 +1,7 @@
 package com.marmoush.jutils.adapter.msgbus.pulsar;
 
+import com.marmoush.jutils.domain.entity.Msg;
 import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
-import com.marmoush.jutils.domain.value.msg.ConsumerResp;
-import com.marmoush.jutils.domain.value.msg.Msg;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.vavr.control.Try;
 import org.apache.pulsar.client.api.*;
@@ -10,10 +9,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 
 import static com.marmoush.jutils.utils.functional.VavrUtils.handle;
-import static io.vavr.control.Option.some;
 import static java.util.function.Function.identity;
 
 public class PulsarMsgConsumer implements MsgConsumer<Message<String>> {
@@ -28,7 +25,7 @@ public class PulsarMsgConsumer implements MsgConsumer<Message<String>> {
   }
 
   @Override
-  public Flux<Try<ConsumerResp<Message<String>>>> consume(String topicId, String partition, long offset) {
+  public Flux<Try<Msg>> consume(String topicId, String partition, long offset) {
     return createConsumer(client, topicId, offset).map(PulsarMsgConsumer::consumeFrom)
                                                   .getOrElseGet(t -> Flux.just(Try.failure(t)))
                                                   .timeout(timeout);
@@ -50,17 +47,15 @@ public class PulsarMsgConsumer implements MsgConsumer<Message<String>> {
     });
   }
 
-  private static Flux<Try<ConsumerResp<Message<String>>>> consumeFrom(Consumer<String> c) {
-    var f = Flux.<Flux<Try<Message<String>>>>generate(s -> s.next(receive(c).flux())).flatMap(identity());
-    return f.map(t -> t.map(PulsarMsgConsumer::toConsumerResp)).doFinally(s -> close(c));
+  private static Flux<Try<Msg>> consumeFrom(Consumer<String> c) {
+    var f = Flux.<Flux<Try<Msg>>>generate(s -> s.next(receive(c))).flatMap(identity());
+    return f.doFinally(s -> close(c));
   }
 
-  private static Mono<Try<Message<String>>> receive(Consumer<String> c) {
-    return Mono.fromFuture(c.receiveAsync().handle(handle()));
-  }
-
-  private static ConsumerResp<Message<String>> toConsumerResp(Message<String> msg) {
-    return new ConsumerResp<>(new Msg(msg.getValue()), LocalDateTime.now(), some(msg));
+  private static Flux<Try<Msg>> receive(Consumer<String> c) {
+    return Mono.fromFuture(c.receiveAsync().handle(handle()))
+               .map(m -> m.map(msg -> new Msg(msg.getKey(), msg.getValue())))
+               .flux();
   }
 
   private static Mono<Void> close(Consumer<String> con) {

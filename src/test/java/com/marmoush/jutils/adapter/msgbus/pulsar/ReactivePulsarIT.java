@@ -1,6 +1,6 @@
 package com.marmoush.jutils.adapter.msgbus.pulsar;
 
-import com.marmoush.jutils.domain.value.msg.Msg;
+import com.marmoush.jutils.domain.entity.Msg;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import com.marmoush.jutils.utils.yaml.YamlUtils;
 import io.vavr.control.Try;
@@ -20,7 +20,7 @@ public class ReactivePulsarIT {
 
   public ReactivePulsarIT() {
     config = YamlUtils.parseYamlResource("pulsar.yaml").get();
-    msgs = Flux.interval(Duration.ofMillis(10)).log().map(i -> new Msg("Msg number" + i));
+    msgs = Flux.interval(Duration.ofMillis(10)).log().map(i -> new Msg(i + "", "Msg number" + i));
   }
 
   @Test

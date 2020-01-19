@@ -1,8 +1,7 @@
 package com.marmoush.jutils.adapter.msgbus.nats;
 
+import com.marmoush.jutils.domain.entity.Msg;
 import com.marmoush.jutils.domain.port.msgbus.MsgProducer;
-import com.marmoush.jutils.domain.value.msg.Msg;
-import com.marmoush.jutils.domain.value.msg.ProducerResp;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.nats.client.Connection;
 import io.vavr.control.Try;
@@ -30,11 +29,11 @@ public class NatsMsgProducer implements MsgProducer<Void> {
   }
 
   @Override
-  public Flux<Try<ProducerResp<Void>>> produce(String topic, String partition, Flux<Msg> msgFlux) {
-    return msgFlux.publishOn(scheduler).timeout(timeout).map(msg -> Try.of(() -> {
-      nc.publish(topic + CHANNEL_SEPARATOR + partition, msg.value.getBytes(StandardCharsets.UTF_8));
-      return new ProducerResp<>();
-    }));
+  public Flux<Try<Void>> produce(String topic, String partition, Flux<Msg> msgFlux) {
+    return msgFlux.publishOn(scheduler)
+                  .timeout(timeout)
+                  .map(msg -> Try.run(() -> nc.publish(topic + CHANNEL_SEPARATOR + partition,
+                                                       msg.value.getBytes(StandardCharsets.UTF_8))));
   }
 
   @Override

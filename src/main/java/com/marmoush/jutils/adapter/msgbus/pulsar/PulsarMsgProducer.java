@@ -1,8 +1,7 @@
 package com.marmoush.jutils.adapter.msgbus.pulsar;
 
+import com.marmoush.jutils.domain.entity.Msg;
 import com.marmoush.jutils.domain.port.msgbus.MsgProducer;
-import com.marmoush.jutils.domain.value.msg.Msg;
-import com.marmoush.jutils.domain.value.msg.ProducerResp;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.vavr.Function1;
 import io.vavr.control.Try;
@@ -14,7 +13,7 @@ import java.time.Duration;
 import java.util.function.Function;
 
 import static com.marmoush.jutils.utils.functional.VavrUtils.handle;
-import static io.vavr.control.Option.some;
+import static com.marmoush.jutils.utils.functional.VavrUtils.handleToVoid;
 
 public class PulsarMsgProducer implements MsgProducer<MessageId> {
 
@@ -28,17 +27,14 @@ public class PulsarMsgProducer implements MsgProducer<MessageId> {
   }
 
   @Override
-  public Flux<Try<ProducerResp<MessageId>>> produce(String topic, String partitionStr, Flux<Msg> msgFlux) {
+  public Flux<Try<Void>> produce(String topic, String partitionStr, Flux<Msg> msgFlux) {
     return createProducer(client, topic).map(produceFrom(msgFlux, partitionStr))
                                         .getOrElseGet(f -> Flux.just(Try.failure(f)))
                                         .timeout(timeout);
   }
 
-  private Function<Producer<String>, Flux<Try<ProducerResp<MessageId>>>> produceFrom(Flux<Msg> msgFlux,
-                                                                                     String partition) {
-    return prod -> msgFlux.flatMap(send(prod, partition))
-                          .map(PulsarMsgProducer::toProducerResp)
-                          .doFinally(s -> close(prod).subscribe());
+  private Function<Producer<String>, Flux<Try<Void>>> produceFrom(Flux<Msg> msgFlux, String partition) {
+    return prod -> msgFlux.flatMap(send(prod, partition)).doFinally(s -> close(prod).subscribe());
   }
 
   @Override
@@ -50,12 +46,12 @@ public class PulsarMsgProducer implements MsgProducer<MessageId> {
     return Try.of(() -> client.newProducer(Schema.STRING).topic(topic).create());
   }
 
-  private static Function1<Msg, Mono<Try<MessageId>>> send(Producer<String> producer, String partition) {
-    return msg -> Mono.fromFuture(producer.newMessage().key(partition).value(msg.value).sendAsync().handle(handle()));
-  }
-
-  private static Try<ProducerResp<MessageId>> toProducerResp(Try<MessageId> k) {
-    return k.map(id -> new ProducerResp<>(some(id)));
+  private static Function1<Msg, Mono<Try<Void>>> send(Producer<String> producer, String partition) {
+    return msg -> Mono.fromFuture(producer.newMessage()
+                                          .key(partition)
+                                          .value(msg.value)
+                                          .sendAsync()
+                                          .handle(handleToVoid()));
   }
 
   private static Mono<Void> close(Producer<String> prod) {

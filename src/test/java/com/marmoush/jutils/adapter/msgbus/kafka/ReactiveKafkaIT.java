@@ -1,6 +1,6 @@
 package com.marmoush.jutils.adapter.msgbus.kafka;
 
-import com.marmoush.jutils.domain.value.msg.Msg;
+import com.marmoush.jutils.domain.entity.Msg;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import com.marmoush.jutils.utils.yaml.YamlUtils;
 import io.vavr.control.Try;
@@ -13,8 +13,6 @@ import reactor.test.StepVerifier;
 import java.time.Duration;
 import java.util.Random;
 
-import static io.vavr.control.Option.some;
-
 public class ReactiveKafkaIT {
   private final YamlConfigMap config;
 
@@ -26,7 +24,7 @@ public class ReactiveKafkaIT {
     config = YamlUtils.parseYamlResource("kafka.yaml").get();
     msgProducer = new KafkaMsgProducer(config, Schedulers.elastic());
     msgConsumer = new KafkaMsgConsumer(config, Schedulers.elastic());
-    msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg("Msg number" + i));
+    msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg(i + "", "Msg number" + i));
   }
 
   @Test
@@ -47,10 +45,7 @@ public class ReactiveKafkaIT {
                 .verify();
     msgProducer.close().subscribe();
 
-    StepVerifier.create(consumer)
-                .expectNextCount(3)
-                .expectComplete()
-                .verify();
+    StepVerifier.create(consumer).expectNextCount(3).expectComplete().verify();
     msgConsumer.close().subscribe();
   }
 }

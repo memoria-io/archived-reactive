@@ -1,10 +1,8 @@
 package com.marmoush.jutils.adapter.msgbus.kafka;
 
+import com.marmoush.jutils.domain.entity.Msg;
 import com.marmoush.jutils.domain.port.msgbus.MsgProducer;
-import com.marmoush.jutils.domain.value.msg.Msg;
-import com.marmoush.jutils.domain.value.msg.ProducerResp;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
-import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -30,14 +28,11 @@ public class KafkaMsgProducer implements MsgProducer<RecordMetadata> {
   }
 
   @Override
-  public Flux<Try<ProducerResp<RecordMetadata>>> produce(String topic, String partitionStr, Flux<Msg> msgFlux) {
+  public Flux<Try<Void>> produce(String topic, String partitionStr, Flux<Msg> msgFlux) {
     return Try.of(() -> Integer.parseInt(partitionStr))
               .map(partition -> msgFlux.publishOn(scheduler)
-                                       .map(msg -> toProducerRecord(msg, topic, partition))
-                                       .map(prodRec -> Try.of(() -> kafkaProducer.send(prodRec)
-                                                                                 .get(timeout.toMillis(),
-                                                                                      TimeUnit.MILLISECONDS)))
-                                       .map(t -> t.map(KafkaMsgProducer::toPublishResponse)))
+                                       .map(msg -> new ProducerRecord<>(topic, partition, msg.id, msg.value))
+                                       .map(prodRec -> Try.run(() -> send(prodRec))))
               .getOrElseGet(t -> Flux.just(Try.failure(t)));
   }
 
@@ -46,11 +41,8 @@ public class KafkaMsgProducer implements MsgProducer<RecordMetadata> {
     return blockingToMono(() -> Try.run(() -> kafkaProducer.close(timeout)), scheduler);
   }
 
-  private static ProducerRecord<String, String> toProducerRecord(Msg msg, String topic, int partition) {
-    return new ProducerRecord<>(topic, partition, partition + "", msg.value);
-  }
-
-  private static ProducerResp<RecordMetadata> toPublishResponse(RecordMetadata meta) {
-    return new ProducerResp<>(Option.of(meta));
+  private RecordMetadata send(ProducerRecord<String, String> prodRec)
+          throws InterruptedException, java.util.concurrent.ExecutionException, java.util.concurrent.TimeoutException {
+    return kafkaProducer.send(prodRec).get(timeout.toMillis(), TimeUnit.MILLISECONDS);
   }
 }
