@@ -18,7 +18,7 @@ public class Entity<T> {
     if (o == null || getClass() != o.getClass())
       return false;
     Entity<?> entity = (Entity<?>) o;
-    return Objects.equals(id, entity.id) && Objects.equals(value, entity.value);
+    return id.equals(entity.id) && value.equals(entity.value);
   }
 
   @Override
