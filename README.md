@@ -21,14 +21,28 @@ As soon as it gets more stability and users (if you're using it, please star it)
 ```
 <groupId>com.marmoush</groupId>
 <artifactId>jutils</artifactId>
-<version>0.2.6</version>
+<version>0.3.4</version>
 ``` 
+
+## Features
+* Vavr + Reactor Functional utilities
+* Reactor Netty adapter with error handling escalation
+* Simple Reactive Message bus implementation for:
+  * Apache Kafka
+  * Nats
+  * Apache Pulsar
+* Yaml adapter with features like nesting, fluent api, resource and file loading
+* Vavr GSON Json implementation
+* Argon2 Hashing adapter
+* In memory generic crud
 
 ## Contribution
 You can just do pull requests and I will check them asap.
 
 ## Todos
-
+* Argon hashing with Mono
+* Eventsourcing
 
 ## Release notes
-
+* v0.3.4
+  * Opinionated initial implementation of kafka, nats and pulsar api
