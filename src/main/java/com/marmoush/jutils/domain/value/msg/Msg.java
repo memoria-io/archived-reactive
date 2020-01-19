@@ -8,8 +8,7 @@ public class Msg {
   public final LocalDateTime creationTime;
 
   public Msg(String value) {
-    this.value = value;
-    this.creationTime = LocalDateTime.now();
+    this(value, LocalDateTime.now());
   }
 
   public Msg(String value, LocalDateTime creationTime) {
@@ -24,11 +23,11 @@ public class Msg {
     if (o == null || getClass() != o.getClass())
       return false;
     Msg msg = (Msg) o;
-    return Objects.equals(value, msg.value);
+    return value.equals(msg.value) && creationTime.equals(msg.creationTime);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(value);
+    return Objects.hash(value, creationTime);
   }
 }
