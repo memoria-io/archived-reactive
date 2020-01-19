@@ -1,30 +1,19 @@
 package com.marmoush.jutils.domain.value.msg;
 
-import io.vavr.control.Option;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import static io.vavr.control.Option.none;
-
 public class ConsumerResp<T> {
+  public final T response;
+  public final LocalDateTime consumptionTime;
 
-  public final Msg msg;
-  public final LocalDateTime consumingTime;
-  public final Option<T> t;
-
-  public ConsumerResp(Msg msg) {
-    this(msg, LocalDateTime.now());
+  public ConsumerResp(T response) {
+    this(response, LocalDateTime.now());
   }
 
-  public ConsumerResp(Msg msg, LocalDateTime consumingTime) {
-    this(msg, consumingTime, none());
-  }
-
-  public ConsumerResp(Msg msg, LocalDateTime consumingTime, Option<T> t) {
-    this.msg = msg;
-    this.consumingTime = consumingTime;
-    this.t = t;
+  public ConsumerResp(T response, LocalDateTime consumptionTime) {
+    this.response = response;
+    this.consumptionTime = consumptionTime;
   }
 
   @Override
@@ -33,13 +22,12 @@ public class ConsumerResp<T> {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    ConsumerResp<?> consumerResp = (ConsumerResp<?>) o;
-    return Objects.equals(msg, consumerResp.msg) && Objects.equals(consumingTime, consumerResp.consumingTime) &&
-           Objects.equals(t, consumerResp.t);
+    ConsumerResp<?> that = (ConsumerResp<?>) o;
+    return response.equals(that.response) && consumptionTime.equals(that.consumptionTime);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(msg, consumingTime, t);
+    return Objects.hash(response, consumptionTime);
   }
 }

@@ -1,27 +1,18 @@
 package com.marmoush.jutils.domain.value.msg;
 
-import io.vavr.control.Option;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import static io.vavr.control.Option.none;
-
 public class ProducerResp<T> {
-  public final Option<T> t;
+  public final T response;
   public final LocalDateTime publishTime;
 
-  public ProducerResp() {
-    this(none());
+  public ProducerResp(T response) {
+    this(response, LocalDateTime.now());
   }
 
-  public ProducerResp(Option<T> t) {
-    this.t = t;
-    this.publishTime = LocalDateTime.now();
-  }
-
-  public ProducerResp(Option<T> t, LocalDateTime publishTime) {
-    this.t = t;
+  public ProducerResp(T response, LocalDateTime publishTime) {
+    this.response = response;
     this.publishTime = publishTime;
   }
 
@@ -31,12 +22,12 @@ public class ProducerResp<T> {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    ProducerResp<?> producerResp = (ProducerResp<?>) o;
-    return Objects.equals(t, producerResp.t);
+    ProducerResp<?> that = (ProducerResp<?>) o;
+    return response.equals(that.response) && publishTime.equals(that.publishTime);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(t);
+    return Objects.hash(response, publishTime);
   }
 }
