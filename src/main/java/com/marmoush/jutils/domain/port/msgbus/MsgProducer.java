@@ -5,7 +5,7 @@ import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface MsgProducer<T> {
+public interface MsgProducer {
   Flux<Try<Void>> produce(String topic, String partition, Flux<Msg> msgFlux);
 
   Mono<Try<Void>> close();

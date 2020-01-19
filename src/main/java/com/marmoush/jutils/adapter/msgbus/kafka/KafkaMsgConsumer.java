@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.blockingToMono;
 import static com.marmoush.jutils.utils.functional.VavrUtils.traversableT;
 
-public class KafkaMsgConsumer implements MsgConsumer<Void> {
+public class KafkaMsgConsumer implements MsgConsumer {
   private final KafkaConsumer<String, String> consumer;
   private final Scheduler scheduler;
   private final Duration timeout;

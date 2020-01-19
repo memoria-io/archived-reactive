@@ -4,7 +4,10 @@ import com.marmoush.jutils.domain.entity.Msg;
 import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.vavr.control.Try;
-import org.apache.pulsar.client.api.*;
+import org.apache.pulsar.client.api.Consumer;
+import org.apache.pulsar.client.api.PulsarClient;
+import org.apache.pulsar.client.api.PulsarClientException;
+import org.apache.pulsar.client.api.Schema;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -13,7 +16,7 @@ import java.time.Duration;
 import static com.marmoush.jutils.utils.functional.VavrUtils.handle;
 import static java.util.function.Function.identity;
 
-public class PulsarMsgConsumer implements MsgConsumer<Message<String>> {
+public class PulsarMsgConsumer implements MsgConsumer {
 
   private final PulsarClient client;
   private final Duration timeout;

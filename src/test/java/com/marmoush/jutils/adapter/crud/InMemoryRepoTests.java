@@ -48,7 +48,7 @@ public class InMemoryRepoTests {
   @Test
   @DisplayName("Already exists")
   public void alreadyExists() {
-    db.put(this.entity.id,this.entity);
+    db.put(this.entity.id, this.entity);
     StepVerifier.create(repo.create(entity))
                 .expectNextMatches(s -> s.getCause().equals(ALREADY_EXISTS))
                 .expectComplete()

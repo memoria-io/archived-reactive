@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class InMemoryMsgProducer implements MsgProducer<Integer> {
+public class InMemoryMsgProducer implements MsgProducer {
   private final Map<String, HashMap<String, LinkedList<Msg>>> db;
 
   public InMemoryMsgProducer(Map<String, HashMap<String, LinkedList<Msg>>> db) {

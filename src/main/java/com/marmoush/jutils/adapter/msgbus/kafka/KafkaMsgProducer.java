@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.blockingToMono;
 
-public class KafkaMsgProducer implements MsgProducer<RecordMetadata> {
+public class KafkaMsgProducer implements MsgProducer {
   private final KafkaProducer<String, String> kafkaProducer;
   private final Scheduler scheduler;
   private final Duration timeout;

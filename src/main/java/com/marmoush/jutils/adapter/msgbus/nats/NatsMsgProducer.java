@@ -17,7 +17,7 @@ import static com.marmoush.jutils.adapter.msgbus.nats.NatsConnection.CHANNEL_SEP
 import static com.marmoush.jutils.adapter.msgbus.nats.NatsConnection.create;
 import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.blockingToMono;
 
-public class NatsMsgProducer implements MsgProducer<Void> {
+public class NatsMsgProducer implements MsgProducer {
   private final Connection nc;
   private final Scheduler scheduler;
   private final Duration timeout;
