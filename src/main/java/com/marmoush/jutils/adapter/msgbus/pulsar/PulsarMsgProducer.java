@@ -29,13 +29,14 @@ public class PulsarMsgProducer implements MsgProducer<MessageId> {
 
   @Override
   public Flux<Try<ProducerResp<MessageId>>> produce(String topic, String partitionStr, Flux<Msg> msgFlux) {
-    return createProducer(client, topic).map(produceFrom(msgFlux))
+    return createProducer(client, topic).map(produceFrom(msgFlux, partitionStr))
                                         .getOrElseGet(f -> Flux.just(Try.failure(f)))
                                         .timeout(timeout);
   }
 
-  private Function<Producer<String>, Flux<Try<ProducerResp<MessageId>>>> produceFrom(Flux<Msg> msgFlux) {
-    return prod -> msgFlux.flatMap(send(prod))
+  private Function<Producer<String>, Flux<Try<ProducerResp<MessageId>>>> produceFrom(Flux<Msg> msgFlux,
+                                                                                     String partition) {
+    return prod -> msgFlux.flatMap(send(prod, partition))
                           .map(PulsarMsgProducer::toProducerResp)
                           .doFinally(s -> close(prod).subscribe());
   }
@@ -49,13 +50,8 @@ public class PulsarMsgProducer implements MsgProducer<MessageId> {
     return Try.of(() -> client.newProducer(Schema.STRING).topic(topic).create());
   }
 
-  private static Function1<Msg, Mono<Try<MessageId>>> send(Producer<String> producer) {
-    return msg -> Mono.fromFuture(msgAdapter(producer, msg).sendAsync().handle(handle()));
-  }
-
-  private static TypedMessageBuilder<String> msgAdapter(Producer<String> producer, Msg msg) {
-    return msg.pkey.map(key -> producer.newMessage().key(key).value(msg.value))
-                   .getOrElse(producer.newMessage().value(msg.value));
+  private static Function1<Msg, Mono<Try<MessageId>>> send(Producer<String> producer, String partition) {
+    return msg -> Mono.fromFuture(producer.newMessage().key(partition).value(msg.value).sendAsync().handle(handle()));
   }
 
   private static Try<ProducerResp<MessageId>> toProducerResp(Try<MessageId> k) {

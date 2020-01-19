@@ -48,7 +48,7 @@ public class NatsMsgConsumer implements MsgConsumer<Void> {
   }
 
   private static ConsumerResp<Void> toConsumeResponse(Message m) {
-    return new ConsumerResp<>(new Msg(new String(m.getData()), none()));
+    return new ConsumerResp<>(new Msg(new String(m.getData())));
   }
 
   private static String subject(String topic, String partition) {

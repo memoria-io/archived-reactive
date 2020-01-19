@@ -1,20 +1,20 @@
 package com.marmoush.jutils.domain.value.msg;
 
-import io.vavr.control.Option;
-
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Msg {
   public final String value;
+  public final LocalDateTime creationTime;
 
-  /**
-   * Partitioning Key
-   */
-  public final Option<String> pkey;
-
-  public Msg(String value, Option<String> pkey) {
+  public Msg(String value) {
     this.value = value;
-    this.pkey = pkey;
+    this.creationTime = LocalDateTime.now();
+  }
+
+  public Msg(String value, LocalDateTime creationTime) {
+    this.value = value;
+    this.creationTime = creationTime;
   }
 
   @Override
@@ -24,11 +24,11 @@ public class Msg {
     if (o == null || getClass() != o.getClass())
       return false;
     Msg msg = (Msg) o;
-    return Objects.equals(pkey, msg.pkey) && Objects.equals(value, msg.value);
+    return Objects.equals(value, msg.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(pkey, value);
+    return Objects.hash(value);
   }
 }

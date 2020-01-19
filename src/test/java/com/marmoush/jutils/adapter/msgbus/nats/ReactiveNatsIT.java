@@ -27,12 +27,12 @@ public class ReactiveNatsIT {
     config = YamlUtils.parseYamlResource("nats.yaml").get();
     msgProducer = new NatsMsgProducer(config, Schedulers.elastic());
     msgConsumer = new NatsMsgConsumer(config, Schedulers.elastic());
-    msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg("Msg number" + i, some(i + "")));
+    msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg("Msg number" + i));
   }
 
   @Test
   @DisplayName("Consumed messages should be same as published ones.")
-  public void NatsPubSub() throws TimeoutException, InterruptedException {
+  public void NatsPubSub() {
     final var TOPIC = "topic-" + new Random().nextInt(1000);
     final String PARTITION = "0";
     final int MSG_COUNT = 3;

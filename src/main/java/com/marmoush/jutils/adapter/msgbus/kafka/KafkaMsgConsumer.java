@@ -62,6 +62,6 @@ public class KafkaMsgConsumer implements MsgConsumer<Void> {
   private static Function1<ConsumerRecords<String, String>, List<ConsumerResp<Void>>> toConsumeResponses(String topic,
                                                                                                          int partition) {
     return crs -> List.ofAll(crs.records(new TopicPartition(topic, partition)))
-                      .map(cr -> new ConsumerResp<Void>(new Msg(cr.value(), some(cr.key()))));
+                      .map(cr -> new ConsumerResp<Void>(new Msg(cr.value())));
   }
 }

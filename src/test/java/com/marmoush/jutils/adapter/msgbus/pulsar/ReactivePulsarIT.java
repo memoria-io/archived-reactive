@@ -7,16 +7,12 @@ import io.vavr.control.Try;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
 import java.util.Random;
 
-import static io.vavr.control.Option.some;
-
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ReactivePulsarIT {
 
   private final YamlConfigMap config;
@@ -24,7 +20,7 @@ public class ReactivePulsarIT {
 
   public ReactivePulsarIT() {
     config = YamlUtils.parseYamlResource("pulsar.yaml").get();
-    msgs = Flux.interval(Duration.ofMillis(10)).log().map(i -> new Msg("Msg number" + i, some(i + "")));
+    msgs = Flux.interval(Duration.ofMillis(10)).log().map(i -> new Msg("Msg number" + i));
   }
 
   @Test

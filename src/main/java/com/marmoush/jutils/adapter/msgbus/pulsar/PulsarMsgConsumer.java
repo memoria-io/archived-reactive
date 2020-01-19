@@ -60,7 +60,7 @@ public class PulsarMsgConsumer implements MsgConsumer<Message<String>> {
   }
 
   private static ConsumerResp<Message<String>> toConsumerResp(Message<String> msg) {
-    return new ConsumerResp<>(new Msg(msg.getValue(), some(msg.getKey())), LocalDateTime.now(), some(msg));
+    return new ConsumerResp<>(new Msg(msg.getValue()), LocalDateTime.now(), some(msg));
   }
 
   private static Mono<Void> close(Consumer<String> con) {

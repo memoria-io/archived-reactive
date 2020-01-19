@@ -47,8 +47,7 @@ public class KafkaMsgProducer implements MsgProducer<RecordMetadata> {
   }
 
   private static ProducerRecord<String, String> toProducerRecord(Msg msg, String topic, int partition) {
-    return msg.pkey.map(key -> new ProducerRecord<>(topic, partition, key, msg.value))
-                   .getOrElse(new ProducerRecord<>(topic, msg.value));
+    return new ProducerRecord<>(topic, partition, partition + "", msg.value);
   }
 
   private static ProducerResp<RecordMetadata> toPublishResponse(RecordMetadata meta) {

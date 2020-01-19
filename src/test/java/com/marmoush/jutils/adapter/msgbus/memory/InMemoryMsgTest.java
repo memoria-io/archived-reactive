@@ -18,7 +18,7 @@ public class InMemoryMsgTest {
   private final String PARTITION = "0";
   private final int MSG_COUNT = 3;
   private final Flux<Msg> msgs = Flux.interval(Duration.ofMillis(10))
-                                     .map(i -> new Msg("Msg number" + i, some(i + "")))
+                                     .map(i -> new Msg("Msg number" + i))
                                      .take(MSG_COUNT);
 
   @Test
@@ -48,7 +48,7 @@ public class InMemoryMsgTest {
     StepVerifier.create(consumed)
                 .expectNextMatches(Try::isSuccess)
                 .expectNextMatches(Try::isSuccess)
-                .expectNextMatches(pr -> pr.get().msg.pkey.equals(some("2")))
+                .expectNextMatches(Try::isSuccess)
                 .expectComplete()
                 .verify();
     StepVerifier.create(msgConsumer.close()).expectNextMatches(Try::isSuccess).expectComplete().verify();
