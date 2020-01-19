@@ -1,7 +1,7 @@
 package com.marmoush.jutils.adapter.msgbus.nats;
 
-import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
 import com.marmoush.jutils.domain.entity.Msg;
+import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.nats.client.Connection;
 import io.nats.client.Subscription;
@@ -12,7 +12,6 @@ import reactor.core.scheduler.Scheduler;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static com.marmoush.jutils.adapter.msgbus.nats.NatsConnection.CHANNEL_SEPARATOR;
 import static com.marmoush.jutils.adapter.msgbus.nats.NatsConnection.create;

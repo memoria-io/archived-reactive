@@ -1,12 +1,10 @@
 package com.marmoush.jutils.adapter.msgbus.kafka;
 
-import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
 import com.marmoush.jutils.domain.entity.Msg;
+import com.marmoush.jutils.domain.port.msgbus.MsgConsumer;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
-import io.vavr.Function1;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import reactor.core.publisher.Flux;
