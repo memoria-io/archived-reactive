@@ -42,6 +42,8 @@ public class UserCmdService implements CommandService {
                             Case($(instanceOf(SendMessage.class)), sendMessageAction()));
   }
 
+  // TODO check state, create events , evolve
+  // instead of the current
   private MFn1<CreateUser, List<Event>> createUserAction() {
     return s -> ucr.create(new UserEntity(s.userName, new User(s.userName, s.age)))
                    .map(tryMap(UserCmdService::toUserCreated))
