@@ -1,17 +1,21 @@
-package com.marmoush.jutils.adapter.eventsourcing;
+package com.marmoush.jutils.adapter.eventsourcing.cmd;
 
-import com.marmoush.jutils.domain.port.eventsourcing.cmd.WriteRequest;
+import com.marmoush.jutils.domain.port.eventsourcing.cmd.Command;
 
 public class Commands {
-  public static class CreateUser implements WriteRequest {
-    public final String userName;
+  private Commands() {}
 
-    public CreateUser(String userName) {
+  public static class CreateUser implements Command {
+    public final String userName;
+    public final int age;
+
+    public CreateUser(String userName, int age) {
       this.userName = userName;
+      this.age = age;
     }
   }
 
-  public static class AddFriend implements WriteRequest {
+  public static class AddFriend implements Command {
     public final String userId;
     public final String friendId;
 
@@ -21,7 +25,7 @@ public class Commands {
     }
   }
 
-  public static class SendMessage implements WriteRequest {
+  public static class SendMessage implements Command {
     public final String fromUserId;
     public final String toUserId;
     public final String message;

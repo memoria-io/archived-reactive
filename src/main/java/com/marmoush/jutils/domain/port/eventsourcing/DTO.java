@@ -1,3 +1,3 @@
 package com.marmoush.jutils.domain.port.eventsourcing;
 
-public interface DTO extends Event {}
+public interface DTO {}

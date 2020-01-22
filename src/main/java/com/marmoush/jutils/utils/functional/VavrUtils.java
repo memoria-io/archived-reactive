@@ -4,11 +4,15 @@ import io.vavr.API;
 import io.vavr.collection.List;
 import io.vavr.collection.Traversable;
 import io.vavr.control.Try;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
+import static io.vavr.API.*;
+import static io.vavr.Patterns.$Failure;
+import static io.vavr.Patterns.$Success;
 import static io.vavr.Predicates.instanceOf;
 
 public final class VavrUtils {
@@ -31,5 +35,9 @@ public final class VavrUtils {
 
   public static <V> BiFunction<V, Throwable, Try<Void>> handleToVoid() {
     return (v, t) -> (t == null) ? Try.success(null) : Try.failure(t);
+  }
+
+  public static <A, B> Function<Try<A>, Try<B>> tryMap(Function<A, B> f) {
+    return a -> a.map(g -> f.apply(g));
   }
 }
