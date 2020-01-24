@@ -1,4 +1,4 @@
-package com.marmoush.jutils.general.adapter.eventsourcing.socialnetwork;
+package com.marmoush.jutils.eventsourcing.socialnetwork;
 
 import org.junit.jupiter.api.Test;
 

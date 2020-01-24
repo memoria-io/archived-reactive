@@ -1,6 +1,6 @@
-package com.marmoush.jutils.general.adapter.eventsourcing.socialnetwork.cmd.entity;
+package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.entity;
 
-import com.marmoush.jutils.general.adapter.eventsourcing.socialnetwork.cmd.value.User;
+import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.value.User;
 import com.marmoush.jutils.general.domain.entity.Entity;
 
 public class UserEntity extends Entity<User> {

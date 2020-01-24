@@ -1,4 +1,4 @@
-package com.marmoush.jutils.general.adapter.eventsourcing.socialnetwork.cmd;
+package com.marmoush.jutils.eventsourcing.socialnetwork.cmd;
 
 import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.cmd.Command;
 

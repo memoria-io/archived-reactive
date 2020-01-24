@@ -1,4 +1,4 @@
-package com.marmoush.jutils.general.adapter.eventsourcing.socialnetwork.cmd.value;
+package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.value;
 
 public class User {
   public final String name;
