@@ -8,5 +8,5 @@ import reactor.core.publisher.Mono;
 public interface CommandService {
   Mono<Try<List<Event>>> handle(Command cmdReq);
 
-  Try<Void> evolve(Event event);
+  Mono<Try<Void>> evolve(Event event);
 }

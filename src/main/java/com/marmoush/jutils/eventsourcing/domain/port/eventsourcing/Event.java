@@ -1,9 +1,9 @@
 package com.marmoush.jutils.eventsourcing.domain.port.eventsourcing;
 
 public class Event {
-  public final String eventId;
+  public final String flowId;
 
-  public Event(String eventId) {
-    this.eventId = eventId;
+  public Event(String flowId) {
+    this.flowId = flowId;
   }
 }

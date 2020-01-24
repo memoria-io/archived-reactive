@@ -37,4 +37,8 @@ public final class VavrUtils {
   public static <A, B> Function<Try<A>, Try<B>> tryMap(Function<A, B> f) {
     return a -> a.map(g -> f.apply(g));
   }
+
+  public static <A, B> Function<Try<A>, Try<B>> tryVoid() {
+    return a -> a.map(g -> null);
+  }
 }

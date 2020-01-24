@@ -19,12 +19,14 @@ public class Events {
   }
 
   public static class MessageCreated extends Event {
+    public final String msgId;
     public final String from;
     public final String to;
     public final String body;
 
-    public MessageCreated(String eventId, String from, String to, String body) {
+    public MessageCreated(String eventId, String msgId, String from, String to, String body) {
       super(eventId);
+      this.msgId = msgId;
       this.from = from;
       this.to = to;
       this.body = body;
@@ -32,19 +34,23 @@ public class Events {
   }
 
   public static class MessageSent extends Event {
+    public final String msgId;
     public final String userId;
 
-    public MessageSent(String eventId, String userId) {
+    public MessageSent(String eventId, String msgId, String userId) {
       super(eventId);
+      this.msgId = msgId;
       this.userId = userId;
     }
   }
 
   public static class MessageReceived extends Event {
+    public final String msgId;
     public final String userId;
 
-    public MessageReceived(String eventId, String userId) {
+    public MessageReceived(String eventId, String msgId, String userId) {
       super(eventId);
+      this.msgId = msgId;
       this.userId = userId;
     }
   }
