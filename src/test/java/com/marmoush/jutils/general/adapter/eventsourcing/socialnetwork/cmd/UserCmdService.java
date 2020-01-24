@@ -1,5 +1,8 @@
 package com.marmoush.jutils.general.adapter.eventsourcing.socialnetwork.cmd;
 
+import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.Event;
+import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.cmd.Command;
+import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.cmd.CommandService;
 import com.marmoush.jutils.general.adapter.eventsourcing.socialnetwork.cmd.Commands.CreateUser;
 import com.marmoush.jutils.general.adapter.eventsourcing.socialnetwork.cmd.Commands.SendMessage;
 import com.marmoush.jutils.general.adapter.eventsourcing.socialnetwork.cmd.Events.MessageCreated;
@@ -13,9 +16,6 @@ import com.marmoush.jutils.general.adapter.eventsourcing.socialnetwork.cmd.repo.
 import com.marmoush.jutils.general.adapter.eventsourcing.socialnetwork.cmd.value.Message;
 import com.marmoush.jutils.general.adapter.eventsourcing.socialnetwork.cmd.value.User;
 import com.marmoush.jutils.general.domain.port.IdGenerator;
-import com.marmoush.jutils.general.domain.port.eventsourcing.Event;
-import com.marmoush.jutils.general.domain.port.eventsourcing.cmd.Command;
-import com.marmoush.jutils.general.domain.port.eventsourcing.cmd.CommandService;
 import com.marmoush.jutils.utils.functional.ReactorVavrUtils.MFn1;
 import io.vavr.collection.List;
 import io.vavr.control.Try;

@@ -1,6 +1,6 @@
-package com.marmoush.jutils.general.domain.port.eventsourcing.qry;
+package com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.qry;
 
-import com.marmoush.jutils.general.domain.port.eventsourcing.Event;
+import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.Event;
 import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 

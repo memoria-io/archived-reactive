@@ -1,4 +1,4 @@
-package com.marmoush.jutils.security.adapter.security;
+package com.marmoush.jutils.security.adapter.hash;
 
 import com.marmoush.jutils.security.domain.port.Hasher;
 import de.mkammerer.argon2.Argon2;

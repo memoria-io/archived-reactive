@@ -1,6 +1,6 @@
 package com.marmoush.jutils.general.adapter.eventsourcing.socialnetwork.cmd;
 
-import com.marmoush.jutils.general.domain.port.eventsourcing.cmd.Command;
+import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.cmd.Command;
 
 public class Commands {
   private Commands() {}

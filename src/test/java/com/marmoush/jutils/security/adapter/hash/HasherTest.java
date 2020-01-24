@@ -1,5 +1,6 @@
-package com.marmoush.jutils.security.adapter.security;
+package com.marmoush.jutils.security.adapter.hash;
 
+import com.marmoush.jutils.security.adapter.random.RandomUtils;
 import com.marmoush.jutils.security.domain.port.Hasher;
 import io.vavr.collection.Stream;
 import org.junit.jupiter.api.Assertions;

@@ -1,4 +1,6 @@
-package com.marmoush.jutils.general.domain.entity;
+package com.marmoush.jutils.messaging.domain.entity;
+
+import com.marmoush.jutils.general.domain.entity.Entity;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

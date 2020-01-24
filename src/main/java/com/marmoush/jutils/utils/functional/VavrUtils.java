@@ -4,15 +4,12 @@ import io.vavr.API;
 import io.vavr.collection.List;
 import io.vavr.collection.Traversable;
 import io.vavr.control.Try;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static io.vavr.API.*;
-import static io.vavr.Patterns.$Failure;
-import static io.vavr.Patterns.$Success;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
 import static io.vavr.Predicates.instanceOf;
 
 public final class VavrUtils {

@@ -1,4 +1,4 @@
-package com.marmoush.jutils.security.adapter.security;
+package com.marmoush.jutils.security.adapter.random;
 
 import java.util.Random;
 

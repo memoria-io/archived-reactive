@@ -1,6 +1,6 @@
 package com.marmoush.jutils.messaging.adapter.msgbus.memory;
 
-import com.marmoush.jutils.general.domain.entity.Msg;
+import com.marmoush.jutils.messaging.domain.entity.Msg;
 import com.marmoush.jutils.messaging.domain.port.msgbus.MsgProducer;
 import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
