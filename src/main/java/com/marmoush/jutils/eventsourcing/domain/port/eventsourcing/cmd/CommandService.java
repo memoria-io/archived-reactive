@@ -6,5 +6,5 @@ import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 
 public interface CommandService {
-  Mono<Try<List<Event>>> write(Command cmdReq);
+  Mono<Try<List<Event>>> handle(Command cmdReq);
 }

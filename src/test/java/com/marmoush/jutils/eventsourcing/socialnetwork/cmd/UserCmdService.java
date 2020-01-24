@@ -37,7 +37,7 @@ public class UserCmdService implements CommandService {
   }
 
   @Override
-  public Mono<Try<List<Event>>> write(Command cmdReq) {
+  public Mono<Try<List<Event>>> handle(Command cmdReq) {
     return Match(cmdReq).of(Case($(instanceOf(CreateUser.class)), createUserAction()),
                             Case($(instanceOf(SendMessage.class)), sendMessageAction()));
   }
