@@ -1,4 +1,4 @@
-package com.marmoush.jutils.security.adapter.hash;
+package com.marmoush.jutils.security.adapter.random;
 
 import com.marmoush.jutils.security.adapter.random.RandomUtils;
 import io.vavr.collection.Stream;
