@@ -1,4 +1,4 @@
-package com.marmoush.jutils.messaging.adapter.msgbus.kafka;
+package com.marmoush.jutils.messaging.adapter.nats;
 
 import com.marmoush.jutils.messaging.domain.entity.Msg;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
@@ -10,27 +10,27 @@ import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Random;
 
-public class ReactiveKafkaIT {
+public class ReactiveNatsIT {
   private final YamlConfigMap config;
-
-  private final KafkaMsgProducer msgProducer;
-  private final KafkaMsgConsumer msgConsumer;
+  private final NatsMsgProducer msgProducer;
+  private final NatsMsgConsumer msgConsumer;
   private final Flux<Msg> msgs;
 
-  public ReactiveKafkaIT() {
-    config = YamlUtils.parseYamlResource("kafka.yaml").get();
-    msgProducer = new KafkaMsgProducer(config, Schedulers.elastic());
-    msgConsumer = new KafkaMsgConsumer(config, Schedulers.elastic());
+  public ReactiveNatsIT() throws IOException, InterruptedException {
+    config = YamlUtils.parseYamlResource("nats.yaml").get();
+    msgProducer = new NatsMsgProducer(config, Schedulers.elastic());
+    msgConsumer = new NatsMsgConsumer(config, Schedulers.elastic());
     msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg(i + "", "Msg number" + i));
   }
 
   @Test
   @DisplayName("Consumed messages should be same as published ones.")
-  public void kafkaPubSub() {
-    final String TOPIC = "topic-" + new Random().nextInt(1000);
+  public void NatsPubSub() {
+    final var TOPIC = "topic-" + new Random().nextInt(1000);
     final String PARTITION = "0";
     final int MSG_COUNT = 3;
 
@@ -44,8 +44,12 @@ public class ReactiveKafkaIT {
                 .expectComplete()
                 .verify();
     msgProducer.close().subscribe();
-
-    StepVerifier.create(consumer).expectNextCount(3).expectComplete().verify();
+    StepVerifier.create(consumer)
+                .expectNextMatches(s -> s.get().value.equals("Msg number" + 0))
+                .expectNextMatches(s -> s.get().value.equals("Msg number" + 1))
+                .expectNextMatches(s -> s.get().value.equals("Msg number" + 2))
+                .expectComplete()
+                .verify();
     msgConsumer.close().subscribe();
   }
 }

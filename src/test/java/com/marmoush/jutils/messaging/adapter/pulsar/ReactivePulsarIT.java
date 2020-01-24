@@ -1,4 +1,4 @@
-package com.marmoush.jutils.messaging.adapter.msgbus.pulsar;
+package com.marmoush.jutils.messaging.adapter.pulsar;
 
 import com.marmoush.jutils.messaging.domain.entity.Msg;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;

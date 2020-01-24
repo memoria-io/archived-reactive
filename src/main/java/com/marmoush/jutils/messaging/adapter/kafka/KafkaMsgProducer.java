@@ -1,7 +1,7 @@
-package com.marmoush.jutils.messaging.adapter.msgbus.kafka;
+package com.marmoush.jutils.messaging.adapter.kafka;
 
 import com.marmoush.jutils.messaging.domain.entity.Msg;
-import com.marmoush.jutils.messaging.domain.port.msgbus.MsgProducer;
+import com.marmoush.jutils.messaging.domain.port.MsgProducer;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.vavr.control.Try;
 import org.apache.kafka.clients.producer.KafkaProducer;

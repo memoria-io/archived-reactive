@@ -1,7 +1,7 @@
-package com.marmoush.jutils.messaging.adapter.msgbus.nats;
+package com.marmoush.jutils.messaging.adapter.nats;
 
 import com.marmoush.jutils.messaging.domain.entity.Msg;
-import com.marmoush.jutils.messaging.domain.port.msgbus.MsgConsumer;
+import com.marmoush.jutils.messaging.domain.port.MsgConsumer;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.nats.client.Connection;
 import io.nats.client.Subscription;
@@ -13,8 +13,6 @@ import reactor.core.scheduler.Scheduler;
 import java.io.IOException;
 import java.time.Duration;
 
-import static com.marmoush.jutils.messaging.adapter.msgbus.nats.NatsConnection.CHANNEL_SEPARATOR;
-import static com.marmoush.jutils.messaging.adapter.msgbus.nats.NatsConnection.create;
 import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.blockingToMono;
 
 public class NatsMsgConsumer implements MsgConsumer {
@@ -25,7 +23,7 @@ public class NatsMsgConsumer implements MsgConsumer {
   public NatsMsgConsumer(YamlConfigMap map, Scheduler scheduler) throws IOException, InterruptedException {
     this.scheduler = scheduler;
     this.timeout = Duration.ofMillis(map.asMap("reactorNats").asLong("consumer.request.timeout"));
-    this.nc = create(map);
+    this.nc = NatsConnection.create(map);
   }
 
   /**
@@ -33,7 +31,7 @@ public class NatsMsgConsumer implements MsgConsumer {
    */
   @Override
   public Flux<Try<Msg>> consume(String topic, String partition, long offset) {
-    Subscription subscription = nc.subscribe(topic + CHANNEL_SEPARATOR + partition);
+    Subscription subscription = nc.subscribe(topic + NatsConnection.CHANNEL_SEPARATOR + partition);
     var poll = Flux.<Try<Msg>>generate(s -> s.next(pollOnce(subscription)));
     return Flux.defer(() -> poll.subscribeOn(scheduler).skip(offset));
   }
