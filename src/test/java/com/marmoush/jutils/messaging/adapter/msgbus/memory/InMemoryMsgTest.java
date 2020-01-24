@@ -1,4 +1,4 @@
-package com.marmoush.jutils.general.adapter.msgbus.memory;
+package com.marmoush.jutils.messaging.adapter.msgbus.memory;
 
 import com.marmoush.jutils.general.domain.entity.Msg;
 import io.vavr.control.Try;

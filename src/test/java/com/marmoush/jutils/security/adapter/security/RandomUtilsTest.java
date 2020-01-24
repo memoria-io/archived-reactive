@@ -1,4 +1,4 @@
-package com.marmoush.jutils.general.adapter.security;
+package com.marmoush.jutils.security.adapter.security;
 
 import io.vavr.collection.Stream;
 import org.junit.jupiter.api.Assertions;
