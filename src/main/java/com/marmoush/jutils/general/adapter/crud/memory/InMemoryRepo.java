@@ -1,4 +1,4 @@
-package com.marmoush.jutils.general.adapter.crud;
+package com.marmoush.jutils.general.adapter.crud.memory;
 
 import com.marmoush.jutils.general.domain.entity.Entity;
 import com.marmoush.jutils.general.domain.port.crud.EntityReadRepo;
