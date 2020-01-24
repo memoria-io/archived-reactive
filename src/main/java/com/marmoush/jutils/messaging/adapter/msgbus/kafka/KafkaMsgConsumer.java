@@ -1,7 +1,7 @@
-package com.marmoush.jutils.general.adapter.msgbus.kafka;
+package com.marmoush.jutils.messaging.adapter.msgbus.kafka;
 
 import com.marmoush.jutils.general.domain.entity.Msg;
-import com.marmoush.jutils.general.domain.port.msgbus.MsgConsumer;
+import com.marmoush.jutils.messaging.domain.port.msgbus.MsgConsumer;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.vavr.collection.List;
 import io.vavr.control.Try;

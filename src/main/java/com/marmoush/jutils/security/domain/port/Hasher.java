@@ -1,4 +1,4 @@
-package com.marmoush.jutils.general.domain.port;
+package com.marmoush.jutils.security.domain.port;
 
 public interface Hasher {
   String hash(String password, String salt);

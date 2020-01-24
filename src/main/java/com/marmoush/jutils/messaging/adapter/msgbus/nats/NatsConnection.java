@@ -1,4 +1,4 @@
-package com.marmoush.jutils.general.adapter.msgbus.nats;
+package com.marmoush.jutils.messaging.adapter.msgbus.nats;
 
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.nats.client.*;

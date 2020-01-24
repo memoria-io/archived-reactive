@@ -1,6 +1,6 @@
-package com.marmoush.jutils.general.adapter.security;
+package com.marmoush.jutils.security.adapter.security;
 
-import com.marmoush.jutils.general.domain.port.Hasher;
+import com.marmoush.jutils.security.domain.port.Hasher;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 

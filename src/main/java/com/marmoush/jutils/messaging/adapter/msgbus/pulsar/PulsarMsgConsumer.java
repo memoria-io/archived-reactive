@@ -1,7 +1,7 @@
-package com.marmoush.jutils.general.adapter.msgbus.pulsar;
+package com.marmoush.jutils.messaging.adapter.msgbus.pulsar;
 
 import com.marmoush.jutils.general.domain.entity.Msg;
-import com.marmoush.jutils.general.domain.port.msgbus.MsgConsumer;
+import com.marmoush.jutils.messaging.domain.port.msgbus.MsgConsumer;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.vavr.control.Try;
 import org.apache.pulsar.client.api.Consumer;
