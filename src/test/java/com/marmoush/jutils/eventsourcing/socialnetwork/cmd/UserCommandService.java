@@ -49,25 +49,25 @@ public class UserCommandService implements CommandService {
 
   @Override
   public Mono<Try<Void>> evolve(Event event) {
-    return Match(event).of(Case($(instanceOf(UserCreated.class)), this::userCreatedEffect),
-                           Case($(instanceOf(MessageCreated.class)), this::messageCreatedEffect),
-                           Case($(instanceOf(MessageSent.class)), this::messageSentEffect),
-                           Case($(instanceOf(MessageReceived.class)), this::messageReceivedEffect));
+    return Match(event).of(Case($(instanceOf(UserCreated.class)), this::userCreatedHandler),
+                           Case($(instanceOf(MessageCreated.class)), this::messageCreatedHandler),
+                           Case($(instanceOf(MessageSent.class)), this::messageSentHandler),
+                           Case($(instanceOf(MessageReceived.class)), this::messageReceivedHandler));
   }
 
-  private Mono<Try<Void>> userCreatedEffect(UserCreated u) {
+  private Mono<Try<Void>> userCreatedHandler(UserCreated u) {
     return ucr.create(new UserEntity(u.userId, new User(u.name, u.age))).map(tryVoid());
   }
 
-  private Mono<Try<Void>> messageCreatedEffect(MessageCreated m) {
+  private Mono<Try<Void>> messageCreatedHandler(MessageCreated m) {
     return mcr.create(new MessageEntity(m.msgId, new Message(m.from, m.to, m.body))).map(tryVoid());
   }
 
-  private Mono<Try<Void>> messageSentEffect(MessageSent m) {
+  private Mono<Try<Void>> messageSentHandler(MessageSent m) {
     return unr.create(new NotificationEntity(m.msgId, Notification.messageSentNote(m.msgId))).map(tryVoid());
   }
 
-  private Mono<Try<Void>> messageReceivedEffect(MessageReceived m) {
+  private Mono<Try<Void>> messageReceivedHandler(MessageReceived m) {
     return unr.create(new NotificationEntity(m.msgId, Notification.messageReceivedNote(m.msgId))).map(tryVoid());
   }
 
