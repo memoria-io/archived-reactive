@@ -43,16 +43,16 @@ public class UserCommandService implements CommandService {
 
   @Override
   public Mono<Try<List<Event>>> handle(Command cmdReq) {
-    return Match(cmdReq).of(Case($(instanceOf(CreateUser.class)), e -> createUserAction(e)),
-                            Case($(instanceOf(SendMessage.class)), e -> sendMessageAction(e)));
+    return Match(cmdReq).of(Case($(instanceOf(CreateUser.class)), this::createUserAction),
+                            Case($(instanceOf(SendMessage.class)), this::sendMessageAction));
   }
 
   @Override
   public Mono<Try<Void>> evolve(Event event) {
-    return Match(event).of(Case($(instanceOf(UserCreated.class)), e -> userCreatedEffect(e)),
-                           Case($(instanceOf(MessageCreated.class)), e -> messageCreatedEffect(e)),
-                           Case($(instanceOf(MessageSent.class)), e -> messageSentEffect(e)),
-                           Case($(instanceOf(MessageReceived.class)), e -> messageReceivedEffect(e)));
+    return Match(event).of(Case($(instanceOf(UserCreated.class)), this::userCreatedEffect),
+                           Case($(instanceOf(MessageCreated.class)), this::messageCreatedEffect),
+                           Case($(instanceOf(MessageSent.class)), this::messageSentEffect),
+                           Case($(instanceOf(MessageReceived.class)), this::messageReceivedEffect));
   }
 
   private Mono<Try<Void>> userCreatedEffect(UserCreated u) {
