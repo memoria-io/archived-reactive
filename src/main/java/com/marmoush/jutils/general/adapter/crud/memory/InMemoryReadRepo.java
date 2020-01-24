@@ -18,4 +18,9 @@ public class InMemoryReadRepo<T extends Entity<?>> implements EntityReadRepo<T> 
   public Mono<Option<T>> get(String id) {
     return Mono.just(Option.of(db.get(id)));
   }
+
+  @Override
+  public Mono<Boolean> exists(String id) {
+    return Mono.just(db.containsValue(id));
+  }
 }

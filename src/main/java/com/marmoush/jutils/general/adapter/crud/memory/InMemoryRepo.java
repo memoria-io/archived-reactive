@@ -37,6 +37,11 @@ public class InMemoryRepo<T extends Entity<?>> implements EntityRepo<T> {
   }
 
   @Override
+  public Mono<Boolean> exists(String id) {
+    return this.entityReadRepo.exists(id);
+  }
+
+  @Override
   public Mono<Void> delete(String id) {
     return this.entityWriteRepo.delete(id);
   }

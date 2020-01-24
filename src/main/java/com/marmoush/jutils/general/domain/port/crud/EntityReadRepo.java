@@ -6,4 +6,6 @@ import reactor.core.publisher.Mono;
 
 public interface EntityReadRepo<T extends Entity<?>> {
   Mono<Option<T>> get(String id);
+
+  Mono<Boolean> exists(String id);
 }

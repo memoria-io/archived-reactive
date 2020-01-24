@@ -15,12 +15,16 @@ import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.repo.MessageCmdRepo;
 import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.repo.UserCmdRepo;
 import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.value.Message;
 import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.value.User;
+import com.marmoush.jutils.general.domain.error.AlreadyExists;
 import com.marmoush.jutils.general.domain.port.IdGenerator;
 import com.marmoush.jutils.utils.functional.ReactorVavrUtils.MFn1;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 
+import java.util.concurrent.CompletableFuture;
+
+import static com.marmoush.jutils.general.domain.error.AlreadyExists.ALREADY_EXISTS;
 import static com.marmoush.jutils.utils.functional.VavrUtils.tryMap;
 import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
@@ -38,16 +42,24 @@ public class UserCmdService implements CommandService {
 
   @Override
   public Mono<Try<List<Event>>> handle(Command cmdReq) {
-    return Match(cmdReq).of(Case($(instanceOf(CreateUser.class)), createUserAction()),
-                            Case($(instanceOf(SendMessage.class)), sendMessageAction()));
+    Match(cmdReq).of(Case($(instanceOf(CreateUser.class)), createUserAction()),
+                     Case($(instanceOf(SendMessage.class)), sendMessageAction()));
+    return null;
+  }
+
+  @Override
+  public Try<Void> evolve(Event event) {
+    return null;
   }
 
   // TODO check state, create events , evolve
   // instead of the current
   private MFn1<CreateUser, List<Event>> createUserAction() {
-    return s -> ucr.create(new UserEntity(s.userName, new User(s.userName, s.age)))
-                   .map(tryMap(UserCmdService::toUserCreated))
+    return s -> ucr.exists(s.userName)
+                   .map(b -> (b) ? Try.<UserCreated>failure(ALREADY_EXISTS)
+                                 : Try.success(new UserCreated(s.userName, s.userName, s.age)))
                    .map(tryMap(List::of));
+
   }
 
   private MFn1<SendMessage, List<Event>> sendMessageAction() {

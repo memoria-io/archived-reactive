@@ -1,3 +1,9 @@
 package com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.cmd;
 
-public interface Command {}
+import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.Event;
+
+public class Command extends Event {
+  public Command(String id) {
+    super(id);
+  }
+}

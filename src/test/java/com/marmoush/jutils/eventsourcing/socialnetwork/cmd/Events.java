@@ -5,48 +5,46 @@ import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.Event;
 public class Events {
   private Events() {}
 
-  public static class UserCreated implements Event {
-    public final String id;
+  public static class UserCreated extends Event {
+    public final String userId;
     public final String name;
     public final int age;
 
-    public UserCreated(String id, String name, int age) {
-      this.id = id;
+    public UserCreated(String eventId, String userId, String name, int age) {
+      super(eventId);
+      this.userId = userId;
       this.name = name;
       this.age = age;
     }
   }
 
-  public static class MessageCreated implements Event {
-    public final String id;
+  public static class MessageCreated extends Event {
     public final String from;
     public final String to;
     public final String body;
 
-    public MessageCreated(String id, String from, String to, String body) {
-      this.id = id;
+    public MessageCreated(String eventId, String from, String to, String body) {
+      super(eventId);
       this.from = from;
       this.to = to;
       this.body = body;
     }
   }
 
-  public static class MessageSent implements Event {
-    public final String messageId;
+  public static class MessageSent extends Event {
     public final String userId;
 
-    public MessageSent(String messageId, String userId) {
-      this.messageId = messageId;
+    public MessageSent(String eventId, String userId) {
+      super(eventId);
       this.userId = userId;
     }
   }
 
-  public static class MessageReceived implements Event {
-    public final String messageId;
+  public static class MessageReceived extends Event {
     public final String userId;
 
-    public MessageReceived(String messageId, String userId) {
-      this.messageId = messageId;
+    public MessageReceived(String eventId, String userId) {
+      super(eventId);
       this.userId = userId;
     }
   }
