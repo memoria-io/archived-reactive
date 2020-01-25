@@ -13,6 +13,6 @@ public class UserEventHandler implements EventHandler<User, UserEvent> {
   }
 
   private User addFriend(User u, FriendAdded friendAdded) {
-    return new User(u.name, u.age, u.friends.append(friendAdded.friendId));
+    return u.withNewFriend(friendAdded.friendId);
   }
 }

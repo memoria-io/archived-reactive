@@ -2,10 +2,10 @@ package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user;
 
 import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.Event;
 import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.cmd.CommandHandler;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.inbox.msg.MessageEvent.*;
 import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserCommand.AddFriend;
 import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserCommand.SendMessage;
 import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserEvent.FriendAdded;
+import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserEvent.MessageCreated;
 import com.marmoush.jutils.general.domain.port.IdGenerator;
 import io.vavr.collection.List;
 import io.vavr.control.Try;

@@ -1,9 +1,9 @@
 package com.marmoush.jutils.eventsourcing.socialnetwork.cmd;
 
 import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.Event;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.inbox.msg.MessageEventHandler;
 import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.*;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserCommand.*;
+import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserCommand.AddFriend;
+import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserCommand.SendMessage;
 import com.marmoush.jutils.general.adapter.generator.id.SerialIdGenerator;
 import com.marmoush.jutils.utils.functional.VavrUtils;
 import io.vavr.collection.List;
@@ -17,11 +17,11 @@ import static io.vavr.Predicates.instanceOf;
 
 public class CmdTest {
   private UserEventHandler userEventHandler = new UserEventHandler();
-  private MessageEventHandler messageEventHandler=new MessageEventHandler();
+
   @Test
   public void writerTest() {
     var commandHandler = new UserCommandHandler(new SerialIdGenerator(new AtomicInteger()));
-    var user1 = new UserEntity("user1", new User("name1", 19, List.empty()));
+    var user1 = new UserEntity("user1", new User("name1", 19)); // TODO decide entity or value
     var add = new AddFriend("2", "user1", "user2"); // TODO handle ordering
     var send = new SendMessage("1", "user1", "user2", "hello");
     var commands = Flux.just(add, send);
