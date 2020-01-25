@@ -14,8 +14,8 @@ public class MessageEvent extends Event {
     public final String to;
     public final String body;
 
-    public MessageCreated(String eventId, String msgId, String from, String to, String body) {
-      super(eventId);
+    public MessageCreated(String flowId, String msgId, String from, String to, String body) {
+      super(flowId);
       this.msgId = msgId;
       this.from = from;
       this.to = to;
@@ -23,25 +23,11 @@ public class MessageEvent extends Event {
     }
   }
 
-  public static class MessageSent extends MessageEvent {
+  public static class MessageSeen extends MessageEvent{
     public final String msgId;
-    public final String userId;
-
-    public MessageSent(String eventId, String msgId, String userId) {
-      super(eventId);
+    private MessageSeen(String flowId, String msgId) {
+      super(flowId);
       this.msgId = msgId;
-      this.userId = userId;
-    }
-  }
-
-  public static class MessageReceived extends MessageEvent {
-    public final String msgId;
-    public final String userId;
-
-    public MessageReceived(String eventId, String msgId, String userId) {
-      super(eventId);
-      this.msgId = msgId;
-      this.userId = userId;
     }
   }
 }
