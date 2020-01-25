@@ -16,7 +16,7 @@ import java.time.Duration;
 import java.util.function.Consumer;
 
 import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.blockingToMono;
-import static com.marmoush.jutils.utils.functional.VavrUtils.traversableT;
+import static com.marmoush.jutils.utils.functional.VavrUtils.traverseOfTry;
 
 public class KafkaMsgConsumer implements MsgConsumer {
   private final KafkaConsumer<String, String> consumer;
@@ -55,6 +55,6 @@ public class KafkaMsgConsumer implements MsgConsumer {
                .map(crs -> crs.records(tp))
                .map(List::ofAll)
                .map(l -> l.map(r -> new Msg(r.key(), r.value())));
-    return List.ofAll(traversableT(t));
+    return List.ofAll(traverseOfTry(t));
   }
 }

@@ -19,7 +19,14 @@ public final class VavrUtils {
     return Case($(instanceOf(c)), () -> r);
   }
 
-  public static <A extends Traversable<B>, B> Traversable<Try<B>> traversableT(Try<A> tt) {
+  public static <A extends Traversable<B>, B> Traversable<Try<B>> traverseOfTry(Try<A> tt) {
+    if (tt.isSuccess())
+      return tt.get().map(Try::success);
+    else
+      return List.of(Try.failure(tt.getCause()));
+  }
+
+  public static <T> List<Try<T>> listOfTry(Try<List<T>> tt) {
     if (tt.isSuccess())
       return tt.get().map(Try::success);
     else
