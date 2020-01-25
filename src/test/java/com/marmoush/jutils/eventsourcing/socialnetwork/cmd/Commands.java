@@ -5,7 +5,13 @@ import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.cmd.Command;
 public class Commands {
   private Commands() {}
 
-  public static class CreateUser extends Command {
+  public static class UserCommand extends Command {
+    public UserCommand(String id) {
+      super(id);
+    }
+  }
+
+  public static class CreateUser extends UserCommand {
     public final String userName;
     public final int age;
 
@@ -16,7 +22,7 @@ public class Commands {
     }
   }
 
-  public static class AddFriend extends Command {
+  public static class AddFriend extends UserCommand {
     public final String userId;
     public final String friendId;
 
@@ -27,7 +33,7 @@ public class Commands {
     }
   }
 
-  public static class SendMessage extends Command {
+  public static class SendMessage extends UserCommand {
     public final String fromUserId;
     public final String toUserId;
     public final String message;

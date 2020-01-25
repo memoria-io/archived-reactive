@@ -5,7 +5,14 @@ import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.Event;
 public class Events {
   private Events() {}
 
-  public static class UserCreated extends Event {
+  public static class UserEvent extends Event {
+
+    public UserEvent(String flowId) {
+      super(flowId);
+    }
+  }
+
+  public static class UserCreated extends UserEvent {
     public final String userId;
     public final String name;
     public final int age;
@@ -18,7 +25,18 @@ public class Events {
     }
   }
 
-  public static class MessageCreated extends Event {
+  public static class FriendAdded extends UserEvent {
+    public final String userId;
+    public final String friendId;
+
+    public FriendAdded(String eventId, String userId, String friendId) {
+      super(eventId);
+      this.userId = userId;
+      this.friendId = friendId;
+    }
+  }
+
+  public static class MessageCreated extends UserEvent {
     public final String msgId;
     public final String from;
     public final String to;
@@ -33,7 +51,7 @@ public class Events {
     }
   }
 
-  public static class MessageSent extends Event {
+  public static class MessageSent extends UserEvent {
     public final String msgId;
     public final String userId;
 
@@ -44,7 +62,7 @@ public class Events {
     }
   }
 
-  public static class MessageReceived extends Event {
+  public static class MessageReceived extends UserEvent {
     public final String msgId;
     public final String userId;
 

@@ -1,12 +1,9 @@
 package com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.cmd;
 
 import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.Event;
+import io.vavr.Function2;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
-import reactor.core.publisher.Mono;
 
-public interface CommandService {
-  Mono<Try<List<Event>>> handle(Command cmdReq);
-
-  Mono<Try<Void>> evolve(Event event);
-}
+@FunctionalInterface
+public interface CommandHandler<S, C extends Command, R extends Event> extends Function2<S, C, Try<List<R>>> {}

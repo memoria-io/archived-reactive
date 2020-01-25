@@ -3,4 +3,4 @@ package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.repo;
 import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.entity.UserEntity;
 import com.marmoush.jutils.general.domain.port.crud.EntityRepo;
 
-public interface UserCmdRepo extends EntityRepo<UserEntity> {}
+public interface UserRepo extends EntityRepo<UserEntity> {}
