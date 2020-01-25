@@ -1,17 +1,14 @@
-package com.marmoush.jutils.eventsourcing.socialnetwork.cmd;
+package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user;
 
 import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.cmd.Command;
 
-public class Commands {
-  private Commands() {}
+public abstract class UserCommand extends Command {
 
-  public static class UserCommand extends Command {
-    public UserCommand(String id) {
-      super(id);
-    }
+  private UserCommand(String id) {
+    super(id);
   }
 
-  public static class CreateUser extends UserCommand {
+  public static final class CreateUser extends UserCommand {
     public final String userName;
     public final int age;
 
@@ -22,7 +19,7 @@ public class Commands {
     }
   }
 
-  public static class AddFriend extends UserCommand {
+  public static final class AddFriend extends UserCommand {
     public final String userId;
     public final String friendId;
 
@@ -33,7 +30,7 @@ public class Commands {
     }
   }
 
-  public static class SendMessage extends UserCommand {
+  public static final class SendMessage extends UserCommand {
     public final String fromUserId;
     public final String toUserId;
     public final String message;

@@ -1,10 +1,6 @@
-package com.marmoush.jutils.eventsourcing.socialnetwork.cmd;
+package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user;
 
 import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.cmd.CommandHandler;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.Commands.UserCommand;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.Events.UserEvent;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.adapter.UserCommandHandler;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.value.User;
 import com.marmoush.jutils.general.domain.port.IdGenerator;
 
 public class UserCommandService {

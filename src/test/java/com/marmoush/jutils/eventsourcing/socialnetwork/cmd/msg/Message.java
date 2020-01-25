@@ -1,4 +1,4 @@
-package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.value;
+package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.msg;
 
 public class Message {
   public final String from;

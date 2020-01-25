@@ -1,4 +1,4 @@
-package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.value;
+package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user;
 
 import io.vavr.collection.List;
 

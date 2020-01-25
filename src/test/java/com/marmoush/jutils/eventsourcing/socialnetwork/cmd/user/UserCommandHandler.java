@@ -1,11 +1,9 @@
-package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.adapter;
+package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user;
 
 import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.cmd.CommandHandler;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.Commands.AddFriend;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.Commands.SendMessage;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.Commands.UserCommand;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.Events.*;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.value.User;
+import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.msg.MessageEvent.*;
+import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserCommand.AddFriend;
+import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserCommand.SendMessage;
 import com.marmoush.jutils.general.domain.port.IdGenerator;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
