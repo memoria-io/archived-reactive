@@ -4,7 +4,6 @@ import com.marmoush.jutils.general.domain.entity.Entity;
 import com.marmoush.jutils.general.domain.port.crud.EntityReadRepo;
 import com.marmoush.jutils.general.domain.port.crud.EntityRepo;
 import com.marmoush.jutils.general.domain.port.crud.EntityWriteRepo;
-import io.vavr.control.Option;
 import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 
@@ -32,17 +31,17 @@ public class InMemoryRepo<T extends Entity<?>> implements EntityRepo<T> {
   }
 
   @Override
-  public Mono<Option<T>> get(String id) {
+  public Mono<Void> delete(String id) {
+    return this.entityWriteRepo.delete(id);
+  }
+
+  @Override
+  public Mono<Try<T>> get(String id) {
     return this.entityReadRepo.get(id);
   }
 
   @Override
-  public Mono<Boolean> exists(String id) {
+  public Mono<Try<Void>> exists(String id) {
     return this.entityReadRepo.exists(id);
-  }
-
-  @Override
-  public Mono<Void> delete(String id) {
-    return this.entityWriteRepo.delete(id);
   }
 }
