@@ -1,4 +1,4 @@
-package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.msg;
+package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.inbox;
 
 public class Message {
   public final String from;

@@ -1,7 +1,7 @@
 package com.marmoush.jutils.eventsourcing.socialnetwork.cmd;
 
 import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.Event;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.msg.MessageEventHandler;
+import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.inbox.msg.MessageEventHandler;
 import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.*;
 import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserCommand.*;
 import com.marmoush.jutils.general.adapter.generator.id.SerialIdGenerator;

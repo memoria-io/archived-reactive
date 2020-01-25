@@ -31,4 +31,28 @@ public abstract class UserEvent extends Event {
       this.friendId = friendId;
     }
   }
+
+  public static final class MessageCreated extends UserEvent {
+    public final String msgId;
+    public final String from;
+    public final String to;
+    public final String body;
+
+    public MessageCreated(String flowId, String msgId, String from, String to, String body) {
+      super(flowId);
+      this.msgId = msgId;
+      this.from = from;
+      this.to = to;
+      this.body = body;
+    }
+  }
+
+  public static class MessageSeen extends UserEvent {
+    public final String msgId;
+
+    private MessageSeen(String flowId, String msgId) {
+      super(flowId);
+      this.msgId = msgId;
+    }
+  }
 }

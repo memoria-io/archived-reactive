@@ -2,7 +2,7 @@ package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user;
 
 import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.Event;
 import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.cmd.CommandHandler;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.msg.MessageEvent.*;
+import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.inbox.msg.MessageEvent.*;
 import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserCommand.AddFriend;
 import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserCommand.SendMessage;
 import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserEvent.FriendAdded;
@@ -33,9 +33,7 @@ public class UserCommandHandler implements CommandHandler<User, UserCommand, Eve
     return r.map(v -> {
       var id = idGenerator.generate();
       var created = new MessageCreated(m.flowId, id, m.fromUserId, m.toUserId, m.message);
-      var sent = new MessageSent(m.flowId, id, m.fromUserId);
-      var received = new MessageReceived(m.flowId, id, m.toUserId);
-      return List.of(created, sent, received);
+      return List.of(created);
     });
   }
 
