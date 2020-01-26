@@ -1,23 +1,41 @@
 package com.marmoush.jutils.eventsourcing.socialnetwork.test;
 
 import com.marmoush.jutils.eventsourcing.domain.port.EventHandler;
-import com.marmoush.jutils.eventsourcing.domain.value.Event;
 import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.*;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.UserEvent.*;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.inbox.*;
 import io.vavr.collection.List;
-import org.junit.jupiter.api.Test;
-
-import static io.vavr.API.*;
-import static io.vavr.Predicates.instanceOf;
+import org.junit.jupiter.api.*;
 
 public class UserEventsTest {
-  private EventHandler<User, UserEvent> userEventHandler = new UserEventHandler();
+  private static final String ALEX = "alex";
+  private static final String BOB = "bob";
+  private static final int ALEX_AGE = 19;
+
+  private static EventHandler<User, UserEvent> userEventHandler = new UserEventHandler();
 
   @Test
-  void userEvents() {
+  void messageCreatedTest() {
+    var alex = new User(ALEX, ALEX_AGE, List.of(BOB), new Inbox());
+    var newAlex = userEventHandler.apply(alex, new MessageCreated(ALEX, BOB, "Hello"));
+    var expectedAlex = alex.withNewMessage(new Message(ALEX, BOB, "Hello", false));
+    Assertions.assertEquals(expectedAlex, newAlex);
   }
 
-  private User evolve(User user, List<Event> e) {
-    return e.foldLeft(user,
-                      (u, event) -> Match(event).of(Case($(instanceOf(UserEvent.class)), userEventHandler.apply(u))));
+  @Test
+  void friendAddedTest() {
+    var alex = new User(ALEX, ALEX_AGE);
+    var newAlex = userEventHandler.apply(alex, new FriendAdded(ALEX, BOB));
+    var expectedAlex = alex.withNewFriend(BOB);
+    Assertions.assertEquals(expectedAlex, newAlex);
+  }
+
+  @Test
+  void multipleEvents() {
+    var alex = new User(ALEX, ALEX_AGE);
+    var newAlex = userEventHandler.curried(alex)
+                                  .apply(List.of(new FriendAdded(ALEX, BOB), new MessageCreated(ALEX, BOB, "Hello")));
+    var expectedAlex = alex.withNewFriend(BOB).withNewMessage(new Message(ALEX, BOB, "Hello"));
+    Assertions.assertEquals(expectedAlex, newAlex);
   }
 }

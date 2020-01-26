@@ -8,6 +8,10 @@ public class Message {
   public final String body;
   public final boolean seen;
 
+  public Message(String from, String to, String body) {
+    this(from, to, body, false);
+  }
+
   public Message(String from, String to, String body, boolean seen) {
     this.from = from;
     this.to = to;
@@ -21,8 +25,8 @@ public class Message {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    Message that = (Message) o;
-    return seen == that.seen && from.equals(that.from) && to.equals(that.to) && body.equals(that.body);
+    Message message = (Message) o;
+    return seen == message.seen && from.equals(message.from) && to.equals(message.to) && body.equals(message.body);
   }
 
   @Override
