@@ -1,9 +1,9 @@
 package com.marmoush.jutils.eventsourcing.domain.entity;
 
-import java.time.LocalDateTime;
+import com.marmoush.jutils.general.domain.entity.Meta;
 
 public class QueryRequest extends Event {
-  public QueryRequest(String id, String flowId, LocalDateTime creationTime) {
-    super(id, flowId, creationTime);
+  public QueryRequest(Meta meta) {
+    super(meta);
   }
 }

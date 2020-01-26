@@ -1,17 +1,14 @@
 package com.marmoush.jutils.eventsourcing.domain.entity;
 
-import java.time.LocalDateTime;
+import com.marmoush.jutils.general.domain.entity.Meta;
+
 import java.util.Objects;
 
 public class Event {
-  public final String id;
-  public final String flowId;
-  public final LocalDateTime creationTime;
+  public final Meta meta;
 
-  public Event(String id, String flowId, LocalDateTime creationTime) {
-    this.id = id;
-    this.flowId = flowId;
-    this.creationTime = creationTime;
+  public Event(Meta meta) {
+    this.meta = meta;
   }
 
   @Override
@@ -21,11 +18,11 @@ public class Event {
     if (o == null || getClass() != o.getClass())
       return false;
     Event event = (Event) o;
-    return id.equals(event.id) && flowId.equals(event.flowId) && creationTime.equals(event.creationTime);
+    return meta.equals(event.meta);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, flowId, creationTime);
+    return Objects.hash(meta);
   }
 }
