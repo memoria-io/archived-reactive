@@ -1,4 +1,4 @@
-package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.inbox;
+package com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.inbox;
 
 import java.util.Objects;
 

@@ -1,22 +1,20 @@
-package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user;
+package com.marmoush.jutils.eventsourcing.socialnetwork.domain.user;
 
-import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.Event;
+import com.marmoush.jutils.eventsourcing.domain.value.Event;
 
 import java.util.Objects;
 
-public abstract class UserEvent extends Event {
+public abstract class UserEvent implements Event {
 
-  private UserEvent(String flowId) {
-    super(flowId);
-  }
+  private UserEvent() { }
 
   public static final class UserCreated extends UserEvent {
     public final String userId;
     public final String name;
     public final int age;
 
-    public UserCreated(String eventId, String userId, String name, int age) {
-      super(eventId);
+    public UserCreated(String userId, String name, int age) {
+
       this.userId = userId;
       this.name = name;
       this.age = age;
@@ -42,8 +40,8 @@ public abstract class UserEvent extends Event {
     public final String userId;
     public final String friendId;
 
-    public FriendAdded(String eventId, String userId, String friendId) {
-      super(eventId);
+    public FriendAdded(String userId, String friendId) {
+
       this.userId = userId;
       this.friendId = friendId;
     }
@@ -69,8 +67,8 @@ public abstract class UserEvent extends Event {
     public final String to;
     public final String body;
 
-    public MessageCreated(String flowId, String from, String to, String body) {
-      super(flowId);
+    public MessageCreated(String from, String to, String body) {
+
       this.from = from;
       this.to = to;
       this.body = body;
@@ -95,8 +93,8 @@ public abstract class UserEvent extends Event {
   public static class MessageSeen extends UserEvent {
     public final String msgId;
 
-    private MessageSeen(String flowId, String msgId) {
-      super(flowId);
+    private MessageSeen(String msgId) {
+
       this.msgId = msgId;
     }
 

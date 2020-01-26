@@ -1,7 +1,7 @@
 package com.marmoush.jutils.eventsourcing.domain.port;
 
-import com.marmoush.jutils.eventsourcing.domain.entity.Command;
-import com.marmoush.jutils.eventsourcing.domain.entity.Event;
+import com.marmoush.jutils.eventsourcing.domain.value.Command;
+import com.marmoush.jutils.eventsourcing.domain.value.Event;
 import io.vavr.Function2;
 import io.vavr.collection.List;
 import io.vavr.control.Try;

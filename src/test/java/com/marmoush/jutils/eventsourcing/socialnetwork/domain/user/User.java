@@ -1,7 +1,7 @@
-package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user;
+package com.marmoush.jutils.eventsourcing.socialnetwork.domain.user;
 
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.inbox.Inbox;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.inbox.Message;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.inbox.Inbox;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.inbox.Message;
 import io.vavr.collection.List;
 
 import java.util.Objects;

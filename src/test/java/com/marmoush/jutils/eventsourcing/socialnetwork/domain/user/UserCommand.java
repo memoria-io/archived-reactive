@@ -1,21 +1,18 @@
-package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user;
+package com.marmoush.jutils.eventsourcing.socialnetwork.domain.user;
 
-import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.cmd.Command;
+import com.marmoush.jutils.eventsourcing.domain.value.Command;
 
 import java.util.Objects;
 
-public abstract class UserCommand extends Command {
+public abstract class UserCommand implements Command {
 
-  private UserCommand(String id) {
-    super(id);
-  }
+  private UserCommand() { }
 
   public static final class CreateUser extends UserCommand {
     public final String userName;
     public final int age;
 
-    public CreateUser(String eventId, String userName, int age) {
-      super(eventId);
+    public CreateUser(String userName, int age) {
       this.userName = userName;
       this.age = age;
     }
@@ -26,13 +23,15 @@ public abstract class UserCommand extends Command {
         return true;
       if (o == null || getClass() != o.getClass())
         return false;
+      if (!super.equals(o))
+        return false;
       CreateUser that = (CreateUser) o;
       return age == that.age && userName.equals(that.userName);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(userName, age);
+      return Objects.hash(super.hashCode(), userName, age);
     }
   }
 
@@ -40,8 +39,8 @@ public abstract class UserCommand extends Command {
     public final String userId;
     public final String friendId;
 
-    public AddFriend(String eventId, String userId, String friendId) {
-      super(eventId);
+    public AddFriend(String userId, String friendId) {
+
       this.userId = userId;
       this.friendId = friendId;
     }
@@ -52,13 +51,15 @@ public abstract class UserCommand extends Command {
         return true;
       if (o == null || getClass() != o.getClass())
         return false;
+      if (!super.equals(o))
+        return false;
       AddFriend addFriend = (AddFriend) o;
       return userId.equals(addFriend.userId) && friendId.equals(addFriend.friendId);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(userId, friendId);
+      return Objects.hash(super.hashCode(), userId, friendId);
     }
   }
 
@@ -67,8 +68,8 @@ public abstract class UserCommand extends Command {
     public final String toUserId;
     public final String message;
 
-    public SendMessage(String eventId, String fromUserId, String toUserId, String message) {
-      super(eventId);
+    public SendMessage(String fromUserId, String toUserId, String message) {
+
       this.fromUserId = fromUserId;
       this.toUserId = toUserId;
       this.message = message;
@@ -80,14 +81,15 @@ public abstract class UserCommand extends Command {
         return true;
       if (o == null || getClass() != o.getClass())
         return false;
+      if (!super.equals(o))
+        return false;
       SendMessage that = (SendMessage) o;
       return fromUserId.equals(that.fromUserId) && toUserId.equals(that.toUserId) && message.equals(that.message);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(fromUserId, toUserId, message);
+      return Objects.hash(super.hashCode(), fromUserId, toUserId, message);
     }
   }
-
 }

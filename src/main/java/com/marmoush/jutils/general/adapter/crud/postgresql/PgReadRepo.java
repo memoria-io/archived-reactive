@@ -2,7 +2,6 @@ package com.marmoush.jutils.general.adapter.crud.postgresql;
 
 import com.marmoush.jutils.general.domain.entity.Entity;
 import com.marmoush.jutils.general.domain.port.crud.EntityReadRepo;
-import io.vavr.control.Option;
 import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 

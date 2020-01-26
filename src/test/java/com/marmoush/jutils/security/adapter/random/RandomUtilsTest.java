@@ -1,6 +1,5 @@
 package com.marmoush.jutils.security.adapter.random;
 
-import com.marmoush.jutils.security.adapter.random.RandomUtils;
 import io.vavr.collection.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

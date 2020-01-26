@@ -1,20 +1,14 @@
-package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user;
+package com.marmoush.jutils.eventsourcing.socialnetwork.domain.user;
 
-import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.EventHandler;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserEvent.FriendAdded;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.UserEvent.MessageCreated;
-import com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user.inbox.Message;
-import com.marmoush.jutils.general.domain.port.IdGenerator;
+import com.marmoush.jutils.eventsourcing.domain.port.EventHandler;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.UserEvent.FriendAdded;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.UserEvent.MessageCreated;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.inbox.Message;
 
 import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
 public class UserEventHandler implements EventHandler<User, UserEvent> {
-  private final IdGenerator id;
-
-  public UserEventHandler(IdGenerator id) {
-    this.id = id;
-  }
 
   @Override
   public User apply(User user, UserEvent userEvent) {

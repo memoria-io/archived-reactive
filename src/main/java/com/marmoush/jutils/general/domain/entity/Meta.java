@@ -18,6 +18,14 @@ public class Meta {
     this.creationTime = creationTime;
   }
 
+  public Meta withId(String id) {
+    return new Meta(id, this.flowId);
+  }
+
+  public Meta withId(String id, LocalDateTime time) {
+    return new Meta(id, this.flowId, time);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o)

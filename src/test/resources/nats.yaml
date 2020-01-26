@@ -6,5 +6,5 @@ nats:
   pingInterval: 1000
 
 reactorNats:
-    producer.request.timeout: 1000
-    consumer.request.timeout: 1000
+  producer.request.timeout: 1000
+  consumer.request.timeout: 1000
