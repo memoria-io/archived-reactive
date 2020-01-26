@@ -26,6 +26,8 @@ deploy:
   on:
     branch: master
     tags: true
+    condition: $TRAVIS_TAG =~ /v\d+\.\d+\.\d+/
+
 env:
   global:
     - secure: Q03gRquDHtOqEqZyOKS8G5QhX7ktDvJyQlXmb07k+wfLY8K2FtACU9KIvbLe0AHEfmh8HKrTMWRFCuRQq/OryoRMm9BqbcH7RM8CUGAxh7kG9ZVfuHmo+cmJCuso92YGI7p1sh7uVtcDe21rrxKCbzn4Q5IZLyD8yJBTEEO1mIAh7ObDN+w8ulJpiCD4sQ8TWZoPS9S/0fFpjg6g5BakeyL9/O3FgrF337DKfZZSczGalUggw07Nu6KCU7r9DhzBtbLmra+M452pDSIgbY1+XKwmXvTvEcK+eLZVDrl3l1XGmKuD8uEzPsOkipGa7gFLbdOI0h3Yzde7z84M7UVPtWmMzeHo6m+3CZ8+vbFOimd397j24O4ZZQOHitpe8JvKDDxX6zNbOkncN9Vnpw/MnIjDsGGFrMsoC2bLVesLQYv4KYvsca1kmc/TM5gcfyB2vKF1eC6i+FSkOjE5ZpttrCdKPPWlA44kE5FmOTQNcroFTSONMtqnONd0DOpma029dvEh2A4Eq2rm189LvZiUrp0/xQg2eg/ZIB5KOzzx7+6JMgyq6vEUXfEPSSZhgCVgurKt+gplO+Hn595gDSVWAZ62tjGhzr27dxcz3Qv0h4bWP5tt6lCxrhKypd/w6eg5zbXGNVelNnXrGmpWFSslqwJpG0q5bPFx1IMz0svnU6I=
