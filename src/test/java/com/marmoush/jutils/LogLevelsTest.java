@@ -1,9 +1,7 @@
 package com.marmoush.jutils;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.*;
+import org.slf4j.*;
 
 public class LogLevelsTest {
   private static final Logger log = LoggerFactory.getLogger(LogLevelsTest.class.getName());

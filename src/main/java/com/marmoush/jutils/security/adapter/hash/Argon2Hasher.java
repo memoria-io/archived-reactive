@@ -1,8 +1,7 @@
 package com.marmoush.jutils.security.adapter.hash;
 
 import com.marmoush.jutils.security.domain.port.Hasher;
-import de.mkammerer.argon2.Argon2;
-import de.mkammerer.argon2.Argon2Factory;
+import de.mkammerer.argon2.*;
 
 public class Argon2Hasher implements Hasher {
   private final Argon2 argon2;

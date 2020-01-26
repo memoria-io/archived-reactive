@@ -2,8 +2,7 @@ package com.marmoush.jutils.utils.functional;
 
 import io.vavr.collection.List;
 import io.vavr.control.Try;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import static com.marmoush.jutils.utils.functional.VavrUtils.traverseOfTry;
 

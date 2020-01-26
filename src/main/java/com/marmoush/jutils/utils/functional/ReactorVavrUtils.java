@@ -1,21 +1,16 @@
 package com.marmoush.jutils.utils.functional;
 
-import io.vavr.Function1;
-import io.vavr.Function2;
-import io.vavr.Function3;
-import io.vavr.Function4;
-import io.vavr.control.Either;
+import io.vavr.*;
 import io.vavr.control.Try;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import io.vavr.control.*;
+import reactor.core.publisher.*;
 import reactor.core.scheduler.Scheduler;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 import static io.vavr.API.*;
-import static io.vavr.Patterns.$Failure;
-import static io.vavr.Patterns.$Success;
+import static io.vavr.Patterns.*;
 
 public class ReactorVavrUtils {
   private ReactorVavrUtils() {}

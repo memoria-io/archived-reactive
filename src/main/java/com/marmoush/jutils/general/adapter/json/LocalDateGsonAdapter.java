@@ -1,9 +1,7 @@
 package com.marmoush.jutils.general.adapter.json;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import com.google.gson.*;
+import com.google.gson.stream.*;
 
 import java.io.IOException;
 import java.time.LocalDate;

@@ -1,8 +1,7 @@
 package com.marmoush.jutils.general.adapter.generator.id;
 
 import com.marmoush.jutils.general.domain.port.IdGenerator;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

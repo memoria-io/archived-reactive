@@ -3,8 +3,7 @@ package com.marmoush.jutils.messaging.adapter.nats;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
 import io.nats.client.*;
 import io.vavr.control.Option;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
 import java.io.IOException;
 import java.time.Duration;

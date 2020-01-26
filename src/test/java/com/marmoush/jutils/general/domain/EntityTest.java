@@ -1,9 +1,7 @@
 package com.marmoush.jutils.general.domain;
 
 import com.marmoush.jutils.general.domain.entity.Entity;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 public class EntityTest {
   @Test

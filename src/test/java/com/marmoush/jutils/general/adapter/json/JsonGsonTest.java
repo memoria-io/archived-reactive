@@ -2,11 +2,9 @@ package com.marmoush.jutils.general.adapter.json;
 
 import com.google.gson.Gson;
 import com.marmoush.jutils.general.domain.port.Json;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.marmoush.jutils.utils.file.FileUtils.resource;
 

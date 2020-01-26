@@ -3,11 +3,9 @@ package com.marmoush.jutils.messaging.adapter.nats;
 import com.marmoush.jutils.messaging.domain.entity.Msg;
 import com.marmoush.jutils.messaging.domain.port.MsgConsumer;
 import com.marmoush.jutils.utils.yaml.YamlConfigMap;
-import io.nats.client.Connection;
-import io.nats.client.Subscription;
+import io.nats.client.*;
 import io.vavr.control.Try;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.*;
 import reactor.core.scheduler.Scheduler;
 
 import java.io.IOException;

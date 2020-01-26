@@ -1,7 +1,6 @@
 package com.marmoush.jutils.general.adapter.json;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import com.marmoush.jutils.general.domain.port.Json;
 import org.junit.jupiter.api.Test;
 

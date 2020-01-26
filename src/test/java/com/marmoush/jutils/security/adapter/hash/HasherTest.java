@@ -3,8 +3,7 @@ package com.marmoush.jutils.security.adapter.hash;
 import com.marmoush.jutils.security.adapter.random.RandomUtils;
 import com.marmoush.jutils.security.domain.port.Hasher;
 import io.vavr.collection.Stream;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.security.SecureRandom;
 

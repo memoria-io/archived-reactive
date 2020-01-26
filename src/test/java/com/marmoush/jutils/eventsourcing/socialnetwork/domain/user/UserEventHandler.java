@@ -1,8 +1,7 @@
 package com.marmoush.jutils.eventsourcing.socialnetwork.domain.user;
 
 import com.marmoush.jutils.eventsourcing.domain.port.EventHandler;
-import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.UserEvent.FriendAdded;
-import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.UserEvent.MessageCreated;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.UserEvent.*;
 import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.inbox.Message;
 
 import static io.vavr.API.*;
