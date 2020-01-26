@@ -16,11 +16,6 @@ import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
 public class UserCommandHandler implements CommandHandler<User, UserCommand, Event> {
-  private final IdGenerator idGenerator;
-
-  public UserCommandHandler(IdGenerator idGenerator) {
-    this.idGenerator = idGenerator;
-  }
 
   @Override
   public Try<List<Event>> apply(User user, UserCommand userCommand) {
@@ -31,8 +26,7 @@ public class UserCommandHandler implements CommandHandler<User, UserCommand, Eve
   private Try<List<Event>> sendMessage(User user, SendMessage m) {
     var r = (user.friends.contains(m.toUserId)) ? Try.<Void>success(null) : Try.<Void>failure(NOT_FOUND);
     return r.map(v -> {
-      var id = idGenerator.generate();
-      var created = new MessageCreated(m.flowId, id, m.fromUserId, m.toUserId, m.message);
+      var created = new MessageCreated(m.flowId, m.fromUserId, m.toUserId, m.message);
       return List.of(created);
     });
   }

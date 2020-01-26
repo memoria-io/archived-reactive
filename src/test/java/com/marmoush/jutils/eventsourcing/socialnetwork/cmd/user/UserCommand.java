@@ -2,6 +2,8 @@ package com.marmoush.jutils.eventsourcing.socialnetwork.cmd.user;
 
 import com.marmoush.jutils.eventsourcing.domain.port.eventsourcing.cmd.Command;
 
+import java.util.Objects;
+
 public abstract class UserCommand extends Command {
 
   private UserCommand(String id) {
@@ -17,6 +19,21 @@ public abstract class UserCommand extends Command {
       this.userName = userName;
       this.age = age;
     }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
+      CreateUser that = (CreateUser) o;
+      return age == that.age && userName.equals(that.userName);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(userName, age);
+    }
   }
 
   public static final class AddFriend extends UserCommand {
@@ -27,6 +44,21 @@ public abstract class UserCommand extends Command {
       super(eventId);
       this.userId = userId;
       this.friendId = friendId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
+      AddFriend addFriend = (AddFriend) o;
+      return userId.equals(addFriend.userId) && friendId.equals(addFriend.friendId);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(userId, friendId);
     }
   }
 
@@ -41,5 +73,21 @@ public abstract class UserCommand extends Command {
       this.toUserId = toUserId;
       this.message = message;
     }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
+      SendMessage that = (SendMessage) o;
+      return fromUserId.equals(that.fromUserId) && toUserId.equals(that.toUserId) && message.equals(that.message);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(fromUserId, toUserId, message);
+    }
   }
+
 }
