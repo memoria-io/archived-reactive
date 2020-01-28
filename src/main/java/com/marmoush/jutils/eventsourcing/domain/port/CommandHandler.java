@@ -6,4 +6,4 @@ import io.vavr.collection.List;
 import io.vavr.control.Try;
 
 @FunctionalInterface
-public interface CommandHandler<S, C extends Command, R extends Event> extends Function2<S, C, Try<List<R>>> {}
+public interface CommandHandler<T1, T2 extends Command, R extends Event> extends Function2<T1, T2, Try<List<R>>> {}
