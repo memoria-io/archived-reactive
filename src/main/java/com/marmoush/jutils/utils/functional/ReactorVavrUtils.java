@@ -1,17 +1,16 @@
 package com.marmoush.jutils.utils.functional;
 
-import io.vavr.control.Either;
+import io.vavr.*;
 import io.vavr.control.Try;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import io.vavr.control.*;
+import reactor.core.publisher.*;
 import reactor.core.scheduler.Scheduler;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 import static io.vavr.API.*;
-import static io.vavr.Patterns.$Failure;
-import static io.vavr.Patterns.$Success;
+import static io.vavr.Patterns.*;
 
 public class ReactorVavrUtils {
   private ReactorVavrUtils() {}
@@ -47,5 +46,21 @@ public class ReactorVavrUtils {
     else
       return Mono.error(either.getLeft());
   }
+
+  public interface MFn1<T, R> extends Function1<T, Mono<Try<R>>> {}
+
+  public interface FFn1<T, R> extends Function1<T, Flux<Try<R>>> {}
+
+  public interface MFn2<T1, T2, R> extends Function2<T1, T2, Mono<Try<R>>> {}
+
+  public interface FFn2<T1, T2, R> extends Function2<T1, T2, Flux<Try<R>>> {}
+
+  public interface MFn3<T1, T2, T3, R> extends Function3<T1, T2, T3, Mono<Try<R>>> {}
+
+  public interface FFn3<T1, T2, T3, R> extends Function3<T1, T2, T3, Flux<Try<R>>> {}
+
+  public interface MFn4<T1, T2, T3, T4, R> extends Function4<T1, T2, T3, T4, Mono<Try<R>>> {}
+
+  public interface FFn4<T1, T2, T3, T4, R> extends Function4<T1, T2, T3, T4, Flux<Try<R>>> {}
 
 }

@@ -2,13 +2,13 @@ package com.marmoush.jutils.utils.functional;
 
 import io.vavr.API;
 import io.vavr.collection.List;
-import io.vavr.collection.Traversable;
+import io.vavr.collection.*;
 import io.vavr.control.Try;
 
-import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.*;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
+import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
 public final class VavrUtils {
@@ -18,7 +18,14 @@ public final class VavrUtils {
     return Case($(instanceOf(c)), () -> r);
   }
 
-  public static <A extends Traversable<B>, B> Traversable<Try<B>> traversableT(Try<A> tt) {
+  public static <A extends Traversable<B>, B> Traversable<Try<B>> traverseOfTry(Try<A> tt) {
+    if (tt.isSuccess())
+      return tt.get().map(Try::success);
+    else
+      return List.of(Try.failure(tt.getCause()));
+  }
+
+  public static <T> List<Try<T>> listOfTry(Try<List<T>> tt) {
     if (tt.isSuccess())
       return tt.get().map(Try::success);
     else
@@ -31,5 +38,13 @@ public final class VavrUtils {
 
   public static <V> BiFunction<V, Throwable, Try<Void>> handleToVoid() {
     return (v, t) -> (t == null) ? Try.success(null) : Try.failure(t);
+  }
+
+  public static <A, B> Function<Try<A>, Try<B>> tryMap(Function<A, B> f) {
+    return a -> a.map(g -> f.apply(g));
+  }
+
+  public static <A, B> Function<Try<A>, Try<B>> tryVoid() {
+    return a -> a.map(g -> null);
   }
 }

@@ -1,7 +1,6 @@
 package com.marmoush.jutils.utils.netty;
 
-import io.netty.handler.codec.http.DefaultHttpHeaders;
-import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.*;
 import io.vavr.control.Option;
 
 import static io.vavr.control.Option.none;

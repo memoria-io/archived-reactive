@@ -1,8 +1,6 @@
 package com.marmoush.jutils.utils.yaml;
 
-import io.vavr.collection.HashMap;
-import io.vavr.collection.List;
-import io.vavr.collection.Map;
+import io.vavr.collection.*;
 
 import java.util.ArrayList;
 

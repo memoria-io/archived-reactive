@@ -10,10 +10,16 @@ it became clear that there was a need for functional utility methods like in
     
 You might look at jutils as a new reactive Guava like library but of course not as mature as Guava yet.
 You can also look at it as a dumb of code that I see reused, and can be extracted and generalized, therefore it is opinionated indeed.
+But you can definitely consider this library as an ongoing pragmatic learning effort,
+with my humble understanding to couple of theories and methods.
  
-This library is on edge, breaking changes are bound to happen occasionally, and 
-I'm not currently following the semantic versioning literally. 
-As soon as it gets more stability and users (if you're using it, please star it) there will hopefully be less breaking changes.
+Therefore this library is on edge, and breaking changes are bound to happen occasionally.
+
+Beware that, I'm **NOT** following the semantic versioning literally,
+but one rule I'm trying to follow is having the Major segment as `0` to
+indicate [initial](https://semver.org/#how-should-i-deal-with-revisions-in-the-0yz-initial-development-phase) breaking releases.
+
+Rest assured that as soon as it gets more stability and users (if you're using it, please star it) there will hopefully be less breaking changes.
 
 
 ## Usage
@@ -45,4 +51,4 @@ You can just do pull requests and I will check them asap.
 
 ## Release notes
 * v0.3.4
-  * Opinionated initial implementation of kafka, nats and pulsar api
+  * Initial short implementation of kafka, nats and pulsar APIs with Reactor and Vavr
