@@ -15,7 +15,7 @@ with my humble understanding to couple of theories and methods.
  
 Therefore this library is on edge, and breaking changes are bound to happen occasionally.
 
-Beware that, I'm **NOT** following the semantic versioning literally,
+Beware that currently unfortunately I'm not following the semantic versioning literally,
 but one rule I'm trying to follow is having the Major segment as `0` to
 indicate [initial](https://semver.org/#how-should-i-deal-with-revisions-in-the-0yz-initial-development-phase) breaking releases.
 
