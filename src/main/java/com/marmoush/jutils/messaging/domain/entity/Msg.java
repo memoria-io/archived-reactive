@@ -1,6 +1,6 @@
 package com.marmoush.jutils.messaging.domain.entity;
 
-import com.marmoush.jutils.general.domain.entity.*;
+import com.marmoush.jutils.core.domain.entity.*;
 import io.vavr.control.Option;
 
 import java.time.LocalDateTime;

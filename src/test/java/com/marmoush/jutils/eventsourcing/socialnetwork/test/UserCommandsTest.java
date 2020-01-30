@@ -10,7 +10,7 @@ import io.vavr.collection.List;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.*;
 
-import static com.marmoush.jutils.general.domain.error.AlreadyExists.ALREADY_EXISTS;
+import static com.marmoush.jutils.core.domain.error.AlreadyExists.ALREADY_EXISTS;
 
 public class UserCommandsTest {
   private static final String ALEX = "alex";

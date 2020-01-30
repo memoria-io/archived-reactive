@@ -40,9 +40,11 @@ If you're using the library or like it, it would be great feedback if you star i
 You can just do pull requests and I will check them asap.
 
 ## Todos
+* Split to modules
 * Argon hashing with Mono
-* Initial EventSourcing implementation
 
 ## Release notes
+* v0.3.5
+  * Initial EventSourcing implementation
 * v0.3.4
   * Initial short implementation of kafka, nats and pulsar APIs with Reactor and Vavr

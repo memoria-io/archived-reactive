@@ -8,8 +8,8 @@ import io.vavr.API;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 
-import static com.marmoush.jutils.general.domain.error.AlreadyExists.ALREADY_EXISTS;
-import static com.marmoush.jutils.general.domain.error.NotFound.NOT_FOUND;
+import static com.marmoush.jutils.core.domain.error.AlreadyExists.ALREADY_EXISTS;
+import static com.marmoush.jutils.core.domain.error.NotFound.NOT_FOUND;
 import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
