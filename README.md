@@ -3,7 +3,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.marmoush/jutils/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/com.marmoush/jutils/)
 
 # jutils
-jutils is a Java Utils library, an opinionated and pragmatic learning effort.
+jutils is a Java utility library, an opinionated and pragmatic learning effort.
 It came to light because of reused code after combining multiple libraries.
 For example the combination of Project Reactor along with VAVR 
 it became clear that there was a need for functional utility methods like in 
