@@ -1,4 +1,4 @@
-package com.marmoush.jutils.utils.netty;
+package com.marmoush.jutils.core.utils.netty;
 
 import com.marmoush.jutils.core.utils.netty.*;
 import io.vavr.Tuple;

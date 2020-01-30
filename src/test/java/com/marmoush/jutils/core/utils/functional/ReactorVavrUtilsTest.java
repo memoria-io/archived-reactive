@@ -1,4 +1,4 @@
-package com.marmoush.jutils.utils.functional;
+package com.marmoush.jutils.core.utils.functional;
 
 import io.vavr.control.*;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.marmoush.jutils.utils.functional;
+package com.marmoush.jutils.core.utils.functional;
 
 import io.vavr.collection.List;
 import io.vavr.control.Try;
