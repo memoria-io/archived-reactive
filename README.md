@@ -36,7 +36,7 @@ If you're using the library or like it, it would be great feedback if you star i
 ```
 <groupId>com.marmoush</groupId>
 <artifactId>jutils</artifactId>
-<version>0.3.4</version>
+<version>0.3.5</version>
 ```
 
 ## Contribution
