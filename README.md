@@ -7,7 +7,7 @@ jutils is a Java based Reactive utility library, an opinionated and pragmatic le
 It came to light because I found much reused code after combining multiple libraries,  
 one example is the combination of Project Reactor along with VAVR
 it became clear that there was a need for functional utility methods like in 
-[functional](src/main/java/com/marmoush/jutils/utils/functional) package 
+[functional](src/main/java/com/marmoush/jutils/core/utils/functional) package
 
 This library is on edge, and breaking changes are bound to happen occasionally,  
 at least as long as the version's Major segment was still

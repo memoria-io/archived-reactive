@@ -1,4 +1,4 @@
-package com.marmoush.jutils.utils.file;
+package com.marmoush.jutils.core.utils.file;
 
 import io.vavr.collection.List;
 import io.vavr.control.Try;
@@ -7,7 +7,7 @@ import reactor.core.scheduler.Scheduler;
 
 import java.nio.file.*;
 
-import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.blockingToMono;
+import static com.marmoush.jutils.core.utils.functional.ReactorVavrUtils.blockingToMono;
 import static java.nio.file.StandardOpenOption.CREATE;
 
 public class FileUtils {

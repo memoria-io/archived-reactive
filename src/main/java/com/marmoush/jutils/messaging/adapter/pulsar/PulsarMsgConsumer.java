@@ -2,14 +2,14 @@ package com.marmoush.jutils.messaging.adapter.pulsar;
 
 import com.marmoush.jutils.messaging.domain.entity.Msg;
 import com.marmoush.jutils.messaging.domain.port.MsgConsumer;
-import com.marmoush.jutils.utils.yaml.YamlConfigMap;
+import com.marmoush.jutils.core.utils.yaml.YamlConfigMap;
 import io.vavr.control.Try;
 import org.apache.pulsar.client.api.*;
 import reactor.core.publisher.*;
 
 import java.time.Duration;
 
-import static com.marmoush.jutils.utils.functional.VavrUtils.handle;
+import static com.marmoush.jutils.core.utils.functional.VavrUtils.handle;
 import static java.util.function.Function.identity;
 
 public class PulsarMsgConsumer implements MsgConsumer {

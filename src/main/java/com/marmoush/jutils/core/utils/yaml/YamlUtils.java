@@ -1,7 +1,7 @@
-package com.marmoush.jutils.utils.yaml;
+package com.marmoush.jutils.core.utils.yaml;
 
 import com.esotericsoftware.yamlbeans.*;
-import com.marmoush.jutils.utils.file.FileUtils;
+import com.marmoush.jutils.core.utils.file.FileUtils;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 

@@ -1,8 +1,9 @@
-package com.marmoush.jutils.utils.netty;
+package com.marmoush.jutils.core.utils.netty;
+
+import com.marmoush.jutils.core.utils.functional.VavrUtils;
 
 import java.util.function.Function;
 
-import static com.marmoush.jutils.utils.functional.VavrUtils.instanceOfCase;
 import static io.vavr.API.Match;
 
 public class NettyHttpErrorAdapter implements Function<Throwable, NettyHttpError> {
@@ -18,6 +19,6 @@ public class NettyHttpErrorAdapter implements Function<Throwable, NettyHttpError
   }
 
   public static <T extends Throwable> Match.Case<T, NettyHttpError> nettyHttpErrorCase(Class<?> c, T t, int status) {
-    return instanceOfCase(c, new NettyHttpError(t, status));
+    return VavrUtils.instanceOfCase(c, new NettyHttpError(t, status));
   }
 }

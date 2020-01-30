@@ -2,7 +2,7 @@ package com.marmoush.jutils.messaging.adapter.kafka;
 
 import com.marmoush.jutils.messaging.domain.entity.Msg;
 import com.marmoush.jutils.messaging.domain.port.MsgProducer;
-import com.marmoush.jutils.utils.yaml.YamlConfigMap;
+import com.marmoush.jutils.core.utils.yaml.YamlConfigMap;
 import io.vavr.control.Try;
 import org.apache.kafka.clients.producer.*;
 import reactor.core.publisher.*;
@@ -11,7 +11,7 @@ import reactor.core.scheduler.Scheduler;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.blockingToMono;
+import static com.marmoush.jutils.core.utils.functional.ReactorVavrUtils.blockingToMono;
 
 public class KafkaMsgProducer implements MsgProducer {
   private final KafkaProducer<String, String> kafkaProducer;

@@ -1,6 +1,6 @@
 package com.marmoush.jutils.messaging.adapter.nats;
 
-import com.marmoush.jutils.utils.yaml.YamlConfigMap;
+import com.marmoush.jutils.core.utils.yaml.YamlConfigMap;
 import io.nats.client.*;
 import io.vavr.control.Option;
 import org.slf4j.*;

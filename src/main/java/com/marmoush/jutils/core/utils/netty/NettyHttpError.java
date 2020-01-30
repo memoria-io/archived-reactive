@@ -1,4 +1,4 @@
-package com.marmoush.jutils.utils.netty;
+package com.marmoush.jutils.core.utils.netty;
 
 import io.netty.handler.codec.http.*;
 import io.vavr.control.Option;

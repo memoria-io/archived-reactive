@@ -1,4 +1,4 @@
-package com.marmoush.jutils.utils.yaml;
+package com.marmoush.jutils.core.utils.yaml;
 
 import io.vavr.collection.*;
 
