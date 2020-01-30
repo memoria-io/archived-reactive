@@ -15,15 +15,6 @@ at least as long as the version's Major segment was still
 
 If you're using the library or like it, it would be great feedback if you star it. Thanks!.
 
-
-## Usage
-
-```
-<groupId>com.marmoush</groupId>
-<artifactId>jutils</artifactId>
-<version>0.3.4</version>
-``` 
-
 ## Features
 * Vavr + Reactor Functional utilities
 * Reactor Netty adapter with error handling escalation
@@ -35,6 +26,18 @@ If you're using the library or like it, it would be great feedback if you star i
 * Vavr GSON Json implementation
 * Argon2 Hashing adapter
 * In memory generic crud
+
+## Related Articles
+* [Error handling using Reactor and VAVR](https://marmoush.com/2019/11/12/Error-Handling.html)
+* [Why I stopped using getters and setters](https://marmoush.com/2019/12/13/stopped-using-getters-and-setters.html)
+
+## Usage
+
+```
+<groupId>com.marmoush</groupId>
+<artifactId>jutils</artifactId>
+<version>0.3.4</version>
+```
 
 ## Contribution
 You can just do pull requests and I will check them asap.
