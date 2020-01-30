@@ -9,7 +9,9 @@ import reactor.core.publisher.*;
 import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static com.marmoush.jutils.core.utils.functional.ReactorVavrUtils.blockingToMono;
 
@@ -39,7 +41,7 @@ public class KafkaMsgProducer implements MsgProducer {
   }
 
   private RecordMetadata send(ProducerRecord<String, String> prodRec)
-          throws InterruptedException, java.util.concurrent.ExecutionException, java.util.concurrent.TimeoutException {
+          throws InterruptedException, ExecutionException, TimeoutException {
     return kafkaProducer.send(prodRec).get(timeout.toMillis(), TimeUnit.MILLISECONDS);
   }
 }

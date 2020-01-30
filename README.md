@@ -49,5 +49,6 @@ You can just do pull requests and I will check them asap.
 ## Release notes
 * v0.3.5
   * Initial EventSourcing implementation
+  * Fix infinite wait in kafka producer
 * v0.3.4
   * Initial short implementation of kafka, nats and pulsar APIs with Reactor and Vavr

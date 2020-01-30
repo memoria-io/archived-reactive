@@ -5,6 +5,7 @@ kafka:
     retries: 0
     batch.size: 1
     linger.ms: 1
+    max.block.ms: 2000
     key.serializer: org.apache.kafka.common.serialization.StringSerializer
     value.serializer: org.apache.kafka.common.serialization.StringSerializer
 
@@ -14,7 +15,7 @@ kafka:
     max.partition.fetch.bytes: 135
     group.id: group_1
     heartbeat.interval.ms:  3000
-    session.timeout.ms:  6001
+    session.timeout.ms:  6000
     key.deserializer:  org.apache.kafka.common.serialization.StringDeserializer
     value.deserializer:  org.apache.kafka.common.serialization.StringDeserializer
 
