@@ -8,7 +8,7 @@ docker network create pulsar
 
 Run Standalone docker image
 ```
-docker run -it \
+docker run -it -d \
   -p 6650:6650 \
   -p 8080:8080 \
   --network=pulsar \

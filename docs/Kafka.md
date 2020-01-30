@@ -2,7 +2,7 @@
 
 ## Kafka Docker
 ```bash
-docker-compose -f deploy/kafka-docker-compose.yml  up
+docker-compose -f deploy/kafka-docker-compose.yml up -d
 ```
 
 ## Kafka shells
