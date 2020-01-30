@@ -1,0 +1,28 @@
+projectName: bank
+nodeControllerPath: /nodes
+include: utils/sub-config.yaml
+
+stringValue: hello world
+integerValue: 10
+longValue: 100000000001
+doubleValue: 1000000.000001
+
+stringList:
+  - hi
+  - hello
+  - bye
+
+integerList:
+  - 1
+  - 2
+  - 3
+
+longList:
+  - 1000000000001
+  - 1000000000002
+  - 1000000000003
+
+doubleList:
+  - 1000000000001.23
+  - 1000000000002.23
+  - 1000000000003.23

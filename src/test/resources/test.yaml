@@ -1,7 +1,0 @@
-projectName: bank
-nodeControllerPath: /nodes
-include: sub-config.yaml
-list:
-  - hi
-  - hello
-  - bye

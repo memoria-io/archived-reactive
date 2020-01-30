@@ -21,5 +21,5 @@ kafka:
 
 reactorKafka:
   producer.request.timeout: 1000
-  consumer.request.timeout: 1000
+  consumer.request.timeout: 2000
 

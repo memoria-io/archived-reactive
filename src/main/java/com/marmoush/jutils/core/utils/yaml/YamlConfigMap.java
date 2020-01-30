@@ -1,8 +1,11 @@
 package com.marmoush.jutils.core.utils.yaml;
 
 import io.vavr.collection.*;
+import io.vavr.collection.HashMap;
+import io.vavr.collection.List;
+import io.vavr.collection.Map;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class YamlConfigMap {
   private Map<String, Object> map;
@@ -59,5 +62,20 @@ public class YamlConfigMap {
 
   public java.util.Map<String, Object> toJavaMap() {
     return this.map.toJavaMap();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    YamlConfigMap that = (YamlConfigMap) o;
+    return map.equals(that.map);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(map);
   }
 }

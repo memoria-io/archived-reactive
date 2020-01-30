@@ -14,7 +14,7 @@ public class YamlUtils {
   private static final class MapInstance extends HashMap<String, Object> {}
 
   /**
-   * @param filename      path of the file under e.g resources/filename
+   * @param filename      path of the file
    * @param ignoreUnknown ignore extra values in when parsing
    * @return Try of class type T
    */

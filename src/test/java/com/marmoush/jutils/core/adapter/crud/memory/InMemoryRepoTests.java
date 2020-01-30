@@ -38,7 +38,6 @@ public class InMemoryRepoTests {
                 .expectNextMatches(s -> s.getCause().equals(NOT_FOUND))
                 .expectComplete()
                 .verify();
-    StepVerifier.create(repo.delete("ids")).expectComplete().verify();
   }
 
   @Test
@@ -49,6 +48,21 @@ public class InMemoryRepoTests {
                 .expectNextMatches(s -> s.getCause().equals(ALREADY_EXISTS))
                 .expectComplete()
                 .verify();
-    StepVerifier.create(repo.delete("ids")).expectComplete().verify();
+  }
+
+  @Test
+  @DisplayName("Should exists")
+  public void exists() {
+    db.put(this.entity.id, this.entity);
+    StepVerifier.create(repo.get(entity.id)).expectNext(Try.success(entity)).expectComplete().verify();
+    StepVerifier.create(repo.exists(entity.id)).expectNext(Try.success(null)).expectComplete().verify();
+  }
+
+  @Test
+  @DisplayName("Should delete successfully")
+  public void delete() {
+    db.put(this.entity.id, this.entity);
+    StepVerifier.create(repo.delete(entity.id)).expectComplete().verify();
+    Assertions.assertNull(db.get(entity.id));
   }
 }
