@@ -1,7 +1,7 @@
 package com.marmoush.jutils.messaging.adapter.nats;
 
+import com.marmoush.jutils.core.utils.yaml.*;
 import com.marmoush.jutils.messaging.domain.entity.Msg;
-import com.marmoush.jutils.utils.yaml.*;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.*;
 import reactor.core.publisher.Flux;

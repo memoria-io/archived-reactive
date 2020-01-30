@@ -6,7 +6,7 @@ import org.junit.jupiter.api.*;
 
 import java.util.*;
 
-import static com.marmoush.jutils.utils.file.FileUtils.resource;
+import static com.marmoush.jutils.core.utils.file.FileUtils.resource;
 
 public class JsonGsonTest {
   private Json json = new JsonGson(new Gson());

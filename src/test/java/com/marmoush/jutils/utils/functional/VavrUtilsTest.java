@@ -4,7 +4,7 @@ import io.vavr.collection.List;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.*;
 
-import static com.marmoush.jutils.utils.functional.VavrUtils.traverseOfTry;
+import static com.marmoush.jutils.core.utils.functional.VavrUtils.traverseOfTry;
 
 public class VavrUtilsTest {
   @Test

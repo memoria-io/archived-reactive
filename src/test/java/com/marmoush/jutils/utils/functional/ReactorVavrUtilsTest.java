@@ -8,8 +8,8 @@ import reactor.test.StepVerifier;
 
 import java.util.function.Function;
 
-import static com.marmoush.jutils.utils.file.FileUtils.writeFile;
-import static com.marmoush.jutils.utils.functional.ReactorVavrUtils.*;
+import static com.marmoush.jutils.core.utils.file.FileUtils.writeFile;
+import static com.marmoush.jutils.core.utils.functional.ReactorVavrUtils.*;
 import static io.vavr.control.Either.*;
 
 public class ReactorVavrUtilsTest {
@@ -23,7 +23,7 @@ public class ReactorVavrUtilsTest {
     // Failure
     Function<String, Mono<Try<String>>> opError = t -> Mono.just(Try.failure(new Exception("should fail")));
     tryMono = tryMono.flatMap(k -> tryToMonoTry(k, opError));
-    StepVerifier.create(tryMono).expectNextMatches(t -> t.isFailure()).expectComplete().verify();
+    StepVerifier.create(tryMono).expectNextMatches(Try::isFailure).expectComplete().verify();
   }
 
   @Test
@@ -36,7 +36,7 @@ public class ReactorVavrUtilsTest {
     // Failure
     Function<String, Flux<Try<String>>> opError = t -> Flux.just(Try.failure(new Exception("should fail")));
     tryFlux = tryFlux.flatMap(k -> tryToFluxTry(k, opError));
-    StepVerifier.create(tryFlux).expectNextMatches(t -> t.isFailure()).expectComplete().verify();
+    StepVerifier.create(tryFlux).expectNextMatches(Try::isFailure).expectComplete().verify();
   }
 
   @Test
@@ -49,7 +49,7 @@ public class ReactorVavrUtilsTest {
     // Failure
     Function<String, Mono<Try<String>>> opError = t -> Mono.just(Try.failure(new Exception("should fail")));
     tryMono = tryMono.flatMap(tryToMonoTry(opError));
-    StepVerifier.create(tryMono).expectNextMatches(t -> t.isFailure()).expectComplete().verify();
+    StepVerifier.create(tryMono).expectNextMatches(Try::isFailure).expectComplete().verify();
   }
 
   @Test
@@ -62,7 +62,7 @@ public class ReactorVavrUtilsTest {
     // Failure
     Function<String, Flux<Try<String>>> opError = t -> Flux.just(Try.failure(new Exception("should fail")));
     tryFlux = tryFlux.flatMap(tryToFluxTry(opError));
-    StepVerifier.create(tryFlux).expectNextMatches(t -> t.isFailure()).expectComplete().verify();
+    StepVerifier.create(tryFlux).expectNextMatches(Try::isFailure).expectComplete().verify();
   }
 
   @Test
