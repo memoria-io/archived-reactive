@@ -1,4 +1,4 @@
-package com.marmoush.jutils;
+package com.marmoush.jutils.core;
 
 import org.junit.jupiter.api.*;
 import org.slf4j.*;
