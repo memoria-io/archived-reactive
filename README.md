@@ -3,17 +3,19 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.marmoush/jutils/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/com.marmoush/jutils/)
 
 # jutils
-jutils is a Java based Reactive utility library, an opinionated and pragmatic learning effort.
-It came to light because I found much reused code after combining multiple libraries,  
-one example is the combination of Project Reactor along with VAVR
-it became clear that there was a need for functional utility methods like in 
-[functional](src/main/java/com/marmoush/jutils/core/utils/functional) package
+`jutils` is a functional reactive utility library, an opinionated and pragmatic learning effort.
+It was created because I found much reused code after combining multiple libraries.
 
-This library is on edge, and breaking changes are bound to happen occasionally,  
+One example is the combination of [Project Reactor](https://projectreactor.io/) along with [VAVR](https://vavr.io), it
+became clear that there was a need for functional utility methods like the ones in
+[functional](src/main/java/com/marmoush/jutils/core/utils/functional) package.
+
+Please beware, that this library is on edge, and breaking changes are bound to happen occasionally,
 at least as long as the version's Major segment was still
 [`0`](https://semver.org/#how-should-i-deal-with-revisions-in-the-0yz-initial-development-phase).
 
-If you're using the library or like it, it would be great feedback if you star it. Thanks!.
+If you're using the library or like it, it would be great feedback if you star it,
+more users mean less breaking changes hopefully.
 
 ## Features
 * Vavr + Reactor Functional utilities
