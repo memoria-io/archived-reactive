@@ -9,12 +9,12 @@
     </parent>
 
     <groupId>com.marmoush.jutils</groupId>
-    <artifactId>kafka</artifactId>
+    <artifactId>nats</artifactId>
     <version>0.4.1</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
-    <description>Kafka Module</description>
+    <description>Nats Module</description>
 
     <dependencies>
         <!--======================================================================================== -->
@@ -29,9 +29,9 @@
         <!-- Messaging Dependencies -->
         <!--======================================================================================== -->
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>${kafka.version}</version>
+            <groupId>io.nats</groupId>
+            <artifactId>jnats</artifactId>
+            <version>${nats.version}</version>
         </dependency>
     </dependencies>
 </project>

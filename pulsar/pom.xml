@@ -9,16 +9,16 @@
     </parent>
 
     <groupId>com.marmoush.jutils</groupId>
-    <artifactId>kafka</artifactId>
+    <artifactId>pulsar</artifactId>
     <version>0.4.1</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
-    <description>Kafka Module</description>
+    <description>Pulsar Module</description>
 
     <dependencies>
         <!--======================================================================================== -->
-        <!-- Modules Dependencies -->
+        <!-- Module Dependencies -->
         <!--======================================================================================== -->
         <dependency>
             <groupId>com.marmoush.jutils</groupId>
@@ -29,9 +29,9 @@
         <!-- Messaging Dependencies -->
         <!--======================================================================================== -->
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>${kafka.version}</version>
+            <groupId>org.apache.pulsar</groupId>
+            <artifactId>pulsar-client</artifactId>
+            <version>${pulsar.version}</version>
         </dependency>
     </dependencies>
 </project>
