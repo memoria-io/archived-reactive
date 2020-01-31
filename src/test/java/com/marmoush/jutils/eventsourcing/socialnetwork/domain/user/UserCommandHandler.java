@@ -10,7 +10,7 @@ import io.vavr.control.Try;
 
 import static com.marmoush.jutils.core.domain.error.AlreadyExists.ALREADY_EXISTS;
 import static com.marmoush.jutils.core.domain.error.NotFound.NOT_FOUND;
-import static io.vavr.API.*;
+import static io.vavr.API.Match;
 import static io.vavr.Predicates.instanceOf;
 
 public class UserCommandHandler implements CommandHandler<User, UserCommand, Event> {

@@ -13,7 +13,7 @@ public class RandomUtilsTest {
     Stream.range(0, 100).forEach(t -> {
       int min = secRand.nextInt(10);
       int max = min + 200;
-      Assertions.assertTrue(ru.randomHex(max).length() == max);
+      Assertions.assertEquals(ru.randomHex(max).length(), max);
       Assertions.assertTrue(ru.randomMinMaxHex(min, max).length() <= max);
       Assertions.assertTrue(ru.randomMinMaxHex(min, max).length() >= min);
       Assertions.assertFalse(ru.randomMinMaxHex(min, max).contains("g") || ru.randomMinMaxHex(min, max).contains("h"));
@@ -27,7 +27,7 @@ public class RandomUtilsTest {
     Stream.range(0, 100).forEach(t -> {
       int min = secRand.nextInt(10);
       int max = min + 200;
-      Assertions.assertTrue(ru.randomAlphanumeric(max).length() == max);
+      Assertions.assertEquals(ru.randomAlphanumeric(max).length(), max);
       Assertions.assertTrue(ru.randomMinMaxAlphanumeric(min, max).length() <= max);
       Assertions.assertTrue(ru.randomMinMaxAlphanumeric(min, max).length() >= min);
     });

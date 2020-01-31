@@ -1,8 +1,8 @@
 package com.marmoush.jutils.messaging.adapter.pulsar;
 
+import com.marmoush.jutils.core.utils.yaml.YamlConfigMap;
 import com.marmoush.jutils.messaging.domain.entity.Msg;
 import com.marmoush.jutils.messaging.domain.port.MsgProducer;
-import com.marmoush.jutils.core.utils.yaml.YamlConfigMap;
 import io.vavr.Function1;
 import io.vavr.control.Try;
 import org.apache.pulsar.client.api.*;

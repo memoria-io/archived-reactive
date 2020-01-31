@@ -1,8 +1,8 @@
 package com.marmoush.jutils.messaging.adapter.nats;
 
+import com.marmoush.jutils.core.utils.yaml.YamlConfigMap;
 import com.marmoush.jutils.messaging.domain.entity.Msg;
 import com.marmoush.jutils.messaging.domain.port.MsgConsumer;
-import com.marmoush.jutils.core.utils.yaml.YamlConfigMap;
 import io.nats.client.*;
 import io.vavr.control.Try;
 import reactor.core.publisher.*;

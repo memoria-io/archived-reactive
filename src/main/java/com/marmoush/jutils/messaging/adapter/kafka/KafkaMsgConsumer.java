@@ -1,8 +1,8 @@
 package com.marmoush.jutils.messaging.adapter.kafka;
 
+import com.marmoush.jutils.core.utils.yaml.YamlConfigMap;
 import com.marmoush.jutils.messaging.domain.entity.Msg;
 import com.marmoush.jutils.messaging.domain.port.MsgConsumer;
-import com.marmoush.jutils.core.utils.yaml.YamlConfigMap;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 import org.apache.kafka.clients.consumer.KafkaConsumer;

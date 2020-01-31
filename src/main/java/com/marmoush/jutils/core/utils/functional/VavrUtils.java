@@ -5,8 +5,7 @@ import io.vavr.collection.List;
 import io.vavr.collection.*;
 import io.vavr.control.Try;
 
-import java.util.function.Function;
-import java.util.function.*;
+import java.util.function.BiFunction;
 
 import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
@@ -38,13 +37,5 @@ public final class VavrUtils {
 
   public static <V> BiFunction<V, Throwable, Try<Void>> handleToVoid() {
     return (v, t) -> (t == null) ? Try.success(null) : Try.failure(t);
-  }
-
-  public static <A, B> Function<Try<A>, Try<B>> tryMap(Function<A, B> f) {
-    return a -> a.map(g -> f.apply(g));
-  }
-
-  public static <A, B> Function<Try<A>, Try<B>> tryVoid() {
-    return a -> a.map(g -> null);
   }
 }

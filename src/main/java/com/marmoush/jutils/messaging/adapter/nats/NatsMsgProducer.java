@@ -1,8 +1,8 @@
 package com.marmoush.jutils.messaging.adapter.nats;
 
+import com.marmoush.jutils.core.utils.yaml.YamlConfigMap;
 import com.marmoush.jutils.messaging.domain.entity.Msg;
 import com.marmoush.jutils.messaging.domain.port.MsgProducer;
-import com.marmoush.jutils.core.utils.yaml.YamlConfigMap;
 import io.nats.client.Connection;
 import io.vavr.control.Try;
 import reactor.core.publisher.*;
@@ -12,8 +12,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
-import static com.marmoush.jutils.messaging.adapter.nats.NatsConnection.*;
 import static com.marmoush.jutils.core.utils.functional.ReactorVavrUtils.blockingToMono;
+import static com.marmoush.jutils.messaging.adapter.nats.NatsConnection.*;
 
 public class NatsMsgProducer implements MsgProducer {
   private final Connection nc;
