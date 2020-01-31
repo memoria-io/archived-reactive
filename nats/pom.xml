@@ -15,11 +15,23 @@
 
     <name>${project.artifactId}</name>
     <description>Nats Module</description>
+
     <dependencies>
+        <!--======================================================================================== -->
+        <!-- Modules Dependencies -->
+        <!--======================================================================================== -->
         <dependency>
             <groupId>com.marmoush.jutils</groupId>
             <artifactId>core</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        <!--======================================================================================== -->
+        <!-- Messaging Dependencies -->
+        <!--======================================================================================== -->
+        <dependency>
+            <groupId>io.nats</groupId>
+            <artifactId>jnats</artifactId>
+            <version>${nats.version}</version>
         </dependency>
     </dependencies>
 </project>

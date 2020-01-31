@@ -26,6 +26,7 @@
         <module>kafka</module>
         <module>pulsar</module>
         <module>nats</module>
+        <module>security</module>
     </modules>
 
     <properties>
@@ -50,44 +51,7 @@
         </snapshotRepository>
     </distributionManagement>
     <dependencies>
-        <!--======================================================================================== -->
-        <!-- Messaging Dependencies -->
-        <!--======================================================================================== -->
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>${kafka.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.nats</groupId>
-            <artifactId>jnats</artifactId>
-            <version>${nats.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.pulsar</groupId>
-            <artifactId>pulsar-client</artifactId>
-            <version>${pulsar.version}</version>
-        </dependency>
-        <!--======================================================================================== -->
-        <!-- Security Dependencies -->
-        <!--======================================================================================== -->
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>${jsonwebtoken.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>${jsonwebtoken.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <version>${jsonwebtoken.version}</version>
-            <scope>runtime</scope>
-        </dependency>
+
     </dependencies>
 </project>
 

@@ -17,10 +17,21 @@
     <description>Pulsar Module</description>
 
     <dependencies>
+        <!--======================================================================================== -->
+        <!-- Module Dependencies -->
+        <!--======================================================================================== -->
         <dependency>
             <groupId>com.marmoush.jutils</groupId>
             <artifactId>core</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        <!--======================================================================================== -->
+        <!-- Messaging Dependencies -->
+        <!--======================================================================================== -->
+        <dependency>
+            <groupId>org.apache.pulsar</groupId>
+            <artifactId>pulsar-client</artifactId>
+            <version>${pulsar.version}</version>
         </dependency>
     </dependencies>
 </project>
