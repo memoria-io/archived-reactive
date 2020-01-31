@@ -38,17 +38,18 @@ more users mean less breaking changes hopefully.
 ```
 <groupId>com.marmoush</groupId>
 <artifactId>jutils</artifactId>
-<version>0.3.7</version>
+<version>0.4.1</version>
 ```
 
 ## Contribution
 You can just do pull requests and I will check them asap.
 
 ## Todos
-* Split to modules
 * Argon hashing with Mono
 
 ## Release notes
+* v0.4.1
+  * Split to modules for better dependency handling
 * v0.3.7
   * Fix missing jacoco.exe file
   * Add coverage for uncovered utilities
