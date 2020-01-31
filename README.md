@@ -38,7 +38,7 @@ more users mean less breaking changes hopefully.
 ```
 <groupId>com.marmoush</groupId>
 <artifactId>jutils</artifactId>
-<version>0.3.5</version>
+<version>0.3.7</version>
 ```
 
 ## Contribution
@@ -49,6 +49,9 @@ You can just do pull requests and I will check them asap.
 * Argon hashing with Mono
 
 ## Release notes
+* v0.3.7
+  * Fix missing jacoco.exe file
+  * Add coverage for uncovered utilities
 * v0.3.5
   * Initial EventSourcing implementation
   * Fix infinite wait in kafka producer
