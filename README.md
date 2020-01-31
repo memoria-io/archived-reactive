@@ -8,7 +8,7 @@ It was created because I found much reused code after combining multiple librari
 
 One example is the combination of [Project Reactor](https://projectreactor.io/) along with [VAVR](https://vavr.io), it
 became clear that there was a need for functional utility methods like the ones in
-[functional](src/main/java/com/marmoush/jutils/core/utils/functional) package.
+[functional](core/src/main/java/com/marmoush/jutils/core/utils/functional) package.
 
 Please beware, that this library is on edge, and breaking changes are bound to happen occasionally,
 at least as long as the version's Major segment was still
