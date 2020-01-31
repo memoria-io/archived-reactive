@@ -46,6 +46,7 @@ You can just do pull requests and I will check them asap.
 
 ## Todos
 * Argon hashing with Mono
+* A deep code review, find bugs, refactoring and more tests for v0.4.X
 
 ## Release notes
 * v0.4.1
