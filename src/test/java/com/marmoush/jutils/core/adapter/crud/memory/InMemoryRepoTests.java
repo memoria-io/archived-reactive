@@ -56,6 +56,8 @@ public class InMemoryRepoTests {
     db.put(this.entity.id, this.entity);
     StepVerifier.create(repo.get(entity.id)).expectNext(Try.success(entity)).expectComplete().verify();
     StepVerifier.create(repo.exists(entity.id)).expectNext(Try.success(null)).expectComplete().verify();
+    db.clear();
+    StepVerifier.create(repo.exists(entity.id)).expectNext(Try.failure(NOT_FOUND)).expectComplete().verify();
   }
 
   @Test
