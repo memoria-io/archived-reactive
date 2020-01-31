@@ -1,8 +1,9 @@
 package com.marmoush.jutils.core.utils.yaml;
 
-import com.marmoush.jutils.core.utils.yaml.*;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.*;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,6 +37,8 @@ public class YamlUtilsTest {
     // double list
     assertEquals(List.of(1000000000001.23, 1000000000002.23, 1000000000003.23), map.asDoubleList("doubleList"));
     // map
+    assertEquals(java.util.Map.of("key1", (Object) "value1", "key2", "value2"), map.asJavaMap("map"));
+
   }
 
   @Test

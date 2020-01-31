@@ -1,6 +1,5 @@
 package com.marmoush.jutils.core.utils.yaml;
 
-import io.vavr.collection.*;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
@@ -56,7 +55,7 @@ public class YamlConfigMap {
 
   public java.util.Map<String, Object> asJavaMap(String key) {
     @SuppressWarnings("unchecked")
-    var m = (java.util.Map<String, Object>) map.get(key);
+    var m = (java.util.Map<String, Object>) map.get(key).get();
     return HashMap.ofAll(m).toJavaMap();
   }
 
