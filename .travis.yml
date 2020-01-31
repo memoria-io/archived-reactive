@@ -26,7 +26,6 @@ deploy:
   on:
     branch: master
     tags: true
-    condition: $TRAVIS_TAG =~ /v\d+\.\d+\.\d+/
 
 env:
   global:
