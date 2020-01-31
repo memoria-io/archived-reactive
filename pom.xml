@@ -5,13 +5,12 @@
     <parent>
         <groupId>com.marmoush</groupId>
         <artifactId>jbom</artifactId>
-        <version>0.3.2</version>
+        <version>0.3.3</version>
     </parent>
 
     <artifactId>jutils</artifactId>
-    <version>0.3.8</version>
-
-    <packaging>jar</packaging>
+    <version>0.4.0</version>
+    <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
     <description>Java utilities</description>
@@ -21,6 +20,11 @@
         <name>marmoush.com</name>
         <url>https://marmoush.com</url>
     </organization>
+
+    <modules>
+        <module>core</module>
+        <module>kafka</module>
+    </modules>
 
     <properties>
         <jsonwebtoken.version>0.10.7</jsonwebtoken.version>
