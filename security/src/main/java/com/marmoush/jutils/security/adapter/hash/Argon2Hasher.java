@@ -22,22 +22,22 @@ public class Argon2Hasher implements Hasher {
 
   @Override
   public Mono<String> hash(String password, String salt) {
-    return Mono.defer(() -> Mono.just(hashPassword(password, salt)).subscribeOn(scheduler));
+    return Mono.defer(() -> Mono.just(blockingHash(password, salt)).subscribeOn(scheduler));
   }
 
   @Override
   public Mono<Boolean> verify(String password, String hash, String salt) {
-    return Mono.defer(() -> Mono.just(verifyPassword(password, hash, salt)).subscribeOn(scheduler));
+    return Mono.defer(() -> Mono.just(blockingVerify(password, hash, salt)).subscribeOn(scheduler));
   }
 
-  private String hashPassword(String password, String salt) {
+  public String blockingHash(String password, String salt) {
     String saltedPass = password + salt;
     String hash = argon2.hash(iterations, memory, parallelism, saltedPass);
     argon2.wipeArray(saltedPass.toCharArray());
     return hash;
   }
 
-  private boolean verifyPassword(String password, String hash, String salt) {
+  public boolean blockingVerify(String password, String hash, String salt) {
     boolean verify = argon2.verify(hash, password + salt);
     argon2.wipeArray(password.toCharArray());
     return verify;
