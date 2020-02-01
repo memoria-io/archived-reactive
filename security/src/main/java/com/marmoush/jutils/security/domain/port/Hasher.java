@@ -1,7 +1,9 @@
 package com.marmoush.jutils.security.domain.port;
 
-public interface Hasher {
-  String hash(String password, String salt);
+import reactor.core.publisher.Mono;
 
-  boolean verify(String password, String hash, String salt);
+public interface Hasher {
+  Mono<String> hash(String password, String salt);
+
+  Mono<Boolean> verify(String password, String hash, String salt);
 }

@@ -45,10 +45,11 @@ more users mean less breaking changes in the future hopefully. Thanks!
 You can just do pull requests and I will check them asap.
 
 ## Todos
-* Argon hashing with Mono
-* A deep code review, find bugs, refactoring and more tests for v0.4.X
+
 
 ## Release notes
+* v0.4.2
+    * Argon hashing with Mono
 * v0.4.1
   * Split to modules for better dependency handling
 * v0.3.7
