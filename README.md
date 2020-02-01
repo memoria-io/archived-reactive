@@ -14,8 +14,8 @@ Please beware, that this library is on edge, and breaking changes are bound to h
 at least as long as the version's Major segment was still
 [`0`](https://semver.org/#how-should-i-deal-with-revisions-in-the-0yz-initial-development-phase).
 
-If you're using the library or like it, it would be great feedback if you star it,
-more users mean less breaking changes hopefully.
+If you're using the library or you like it, it would be great feedback if you star it,
+more users mean less breaking changes in the future hopefully. Thanks!
 
 ## Features
 * Vavr + Reactor Functional utilities
