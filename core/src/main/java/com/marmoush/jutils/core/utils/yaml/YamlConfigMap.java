@@ -47,20 +47,28 @@ public class YamlConfigMap {
     return List.ofAll(asStringList(key)).map(Double::parseDouble);
   }
 
-  public YamlConfigMap asMap(String key) {
+  public Map<String, Object> asMap() {
+    return this.map;
+  }
+
+  public Map<String, Object> asMap(String key) {
     @SuppressWarnings("unchecked")
     var m = (java.util.Map<String, Object>) map.get(key).get();
-    return new YamlConfigMap(m);
+    return HashMap.ofAll(m);
+  }
+
+  public java.util.Map<String, Object> asJavaMap() {
+    return asMap().toJavaMap();
   }
 
   public java.util.Map<String, Object> asJavaMap(String key) {
-    @SuppressWarnings("unchecked")
-    var m = (java.util.Map<String, Object>) map.get(key).get();
-    return HashMap.ofAll(m).toJavaMap();
+    return asMap(key).toJavaMap();
   }
 
-  public java.util.Map<String, Object> toJavaMap() {
-    return this.map.toJavaMap();
+  public YamlConfigMap asYamlConfigMap(String key) {
+    @SuppressWarnings("unchecked")
+    var m = (java.util.Map<String, Object>) map.get(key).get();
+    return new YamlConfigMap(m);
   }
 
   @Override

@@ -19,9 +19,9 @@ public class PulsarMsgProducer implements MsgProducer {
   private final Duration timeout;
 
   public PulsarMsgProducer(YamlConfigMap map) throws PulsarClientException {
-    String url = map.asMap("pulsar").asString("serviceUrl");
+    String url = map.asYamlConfigMap("pulsar").asString("serviceUrl");
     this.client = PulsarClient.builder().serviceUrl(url).build();
-    this.timeout = Duration.ofMillis(map.asMap("reactorPulsar").asLong("request.timeout"));
+    this.timeout = Duration.ofMillis(map.asYamlConfigMap("reactorPulsar").asLong("request.timeout"));
   }
 
   @Override

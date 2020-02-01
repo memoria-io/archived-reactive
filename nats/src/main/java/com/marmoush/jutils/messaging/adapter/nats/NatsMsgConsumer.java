@@ -20,7 +20,7 @@ public class NatsMsgConsumer implements MsgConsumer {
 
   public NatsMsgConsumer(YamlConfigMap map, Scheduler scheduler) throws IOException, InterruptedException {
     this.scheduler = scheduler;
-    this.timeout = Duration.ofMillis(map.asMap("reactorNats").asLong("consumer.request.timeout"));
+    this.timeout = Duration.ofMillis(map.asYamlConfigMap("reactorNats").asLong("consumer.request.timeout"));
     this.nc = NatsConnection.create(map);
   }
 

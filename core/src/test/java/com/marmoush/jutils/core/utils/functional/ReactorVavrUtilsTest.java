@@ -1,7 +1,7 @@
 package com.marmoush.jutils.core.utils.functional;
 
 import io.vavr.control.*;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import reactor.core.publisher.*;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
@@ -66,7 +66,8 @@ public class ReactorVavrUtilsTest {
   }
 
   @Test
-  public void tryToMonoVoidTest() {
+  @DisplayName("tryToMonoVoid test")
+  public void tryToMonoVoidsTest() {
     Mono<Try<String>> original = Mono.just(Try.success("one"));
     Function<String, Mono<Void>> deferredOp = (String content) -> writeFile("target/one.txt",
                                                                             content,

@@ -4,6 +4,11 @@ import io.vavr.collection.List;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.*;
 
+import java.util.concurrent.*;
+
+import static com.marmoush.jutils.core.utils.functional.VavrUtils.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class VavrUtilsTest {
   private Try<List<Integer>> success = Try.of(() -> List.of(1, 2, 3));
   private Exception e = new Exception();
@@ -13,15 +18,35 @@ public class VavrUtilsTest {
   public void traverseOfTryTest() {
     List<Try<Integer>> su = List.ofAll(VavrUtils.traverseOfTry(success));
     List<Try<Integer>> fa = List.ofAll(VavrUtils.traverseOfTry(failure));
-    Assertions.assertEquals(List.of(Try.success(1), Try.success(2), Try.success(3)), su);
-    Assertions.assertEquals(List.of(Try.failure(e)), fa);
+    assertEquals(List.of(Try.success(1), Try.success(2), Try.success(3)), su);
+    assertEquals(List.of(Try.failure(e)), fa);
   }
 
   @Test
-  void listOfTryTest() {
+  public void listOfTryTest() {
     List<Try<Integer>> su = List.ofAll(VavrUtils.listOfTry(success));
     List<Try<Integer>> fa = List.ofAll(VavrUtils.listOfTry(failure));
-    Assertions.assertEquals(List.of(Try.success(1), Try.success(2), Try.success(3)), su);
-    Assertions.assertEquals(List.of(Try.failure(e)), fa);
+    assertEquals(List.of(Try.success(1), Try.success(2), Try.success(3)), su);
+    assertEquals(List.of(Try.failure(e)), fa);
+  }
+
+  @Test
+  public void handleTest() throws ExecutionException, InterruptedException {
+    var success = CompletableFuture.completedFuture("success");
+    assertEquals(Try.success("success"), success.handle(handle()).get());
+
+    var e = new Exception("failure");
+    var failure = CompletableFuture.failedFuture(e);
+    assertEquals(Try.failure(e), failure.handle(handle()).get());
+  }
+
+  @Test
+  void handleToVoidTest() throws ExecutionException, InterruptedException {
+    var success = CompletableFuture.completedFuture("success");
+    assertEquals(Try.success(null), success.handle(handleToVoid()).get());
+
+    var e = new Exception("failure");
+    var failure = CompletableFuture.failedFuture(e);
+    assertEquals(Try.failure(e), failure.handle(handleToVoid()).get());
   }
 }

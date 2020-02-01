@@ -15,7 +15,7 @@ public class NatsConnection {
   private NatsConnection() {}
 
   public static Connection create(YamlConfigMap c) throws IOException, InterruptedException {
-    var nats = c.asMap("nats");
+    var nats = c.asYamlConfigMap("nats");
     var server = nats.asString("server");
     var conTimeout = Duration.ofMillis(nats.asLong("connectionTimeout"));
     var reconTimeout = Duration.ofMillis(nats.asLong("reconnectionTimeout"));

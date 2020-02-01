@@ -22,7 +22,7 @@ public class NatsMsgProducer implements MsgProducer {
 
   public NatsMsgProducer(YamlConfigMap map, Scheduler scheduler) throws IOException, InterruptedException {
     this.scheduler = scheduler;
-    this.timeout = Duration.ofMillis(map.asMap("reactorNats").asLong("producer.request.timeout"));
+    this.timeout = Duration.ofMillis(map.asYamlConfigMap("reactorNats").asLong("producer.request.timeout"));
     this.nc = create(map);
   }
 
