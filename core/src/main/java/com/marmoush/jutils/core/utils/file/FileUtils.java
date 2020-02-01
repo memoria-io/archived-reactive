@@ -5,6 +5,7 @@ import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 
 import static com.marmoush.jutils.core.utils.functional.ReactorVavrUtils.blockingToMono;
@@ -22,6 +23,7 @@ public class FileUtils {
   }
 
   public static Try<List<String>> resourceLines(String fileName) {
+    //noinspection ConstantConditions
     return Try.of(() -> List.ofAll(Files.readAllLines(Paths.get(ClassLoader.getSystemClassLoader()
                                                                            .getResource(fileName)
                                                                            .toURI()))));
@@ -39,6 +41,6 @@ public class FileUtils {
                                           String content,
                                           Scheduler scheduler,
                                           StandardOpenOption... options) {
-    return blockingToMono(() -> Try.of(() -> Files.write(Paths.get(path), content.getBytes(), options)), scheduler);
+    return blockingToMono(() -> Try.of(() -> Files.writeString(Paths.get(path), content, options)), scheduler);
   }
 }
