@@ -16,6 +16,10 @@
     <name>${project.artifactId}</name>
     <description>Nats Module</description>
 
+    <properties>
+        <nats.version>2.6.6</nats.version>
+    </properties>
+
     <dependencies>
         <!--======================================================================================== -->
         <!-- Modules Dependencies -->

@@ -16,6 +16,10 @@
     <name>${project.artifactId}</name>
     <description>Security Module</description>
 
+    <properties>
+        <jsonwebtoken.version>0.10.7</jsonwebtoken.version>
+    </properties>
+
     <dependencies>
         <!--======================================================================================== -->
         <!-- Modules Dependencies -->

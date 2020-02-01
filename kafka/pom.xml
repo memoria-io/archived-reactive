@@ -16,6 +16,10 @@
     <name>${project.artifactId}</name>
     <description>Kafka Module</description>
 
+    <properties>
+        <kafka.version>2.4.0</kafka.version>
+    </properties>
+
     <dependencies>
         <!--======================================================================================== -->
         <!-- Modules Dependencies -->

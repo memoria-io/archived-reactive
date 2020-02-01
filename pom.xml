@@ -29,13 +29,6 @@
         <module>security</module>
     </modules>
 
-    <properties>
-        <jsonwebtoken.version>0.10.7</jsonwebtoken.version>
-        <kafka.version>2.4.0</kafka.version>
-        <nats.version>2.6.6</nats.version>
-        <pulsar.version>2.4.2</pulsar.version>
-    </properties>
-
     <distributionManagement>
         <site>
             <id>${project.artifactId}-site</id>

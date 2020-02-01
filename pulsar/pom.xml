@@ -16,6 +16,10 @@
     <name>${project.artifactId}</name>
     <description>Pulsar Module</description>
 
+    <properties>
+        <pulsar.version>2.4.2</pulsar.version>
+    </properties>
+
     <dependencies>
         <!--======================================================================================== -->
         <!-- Module Dependencies -->
