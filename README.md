@@ -34,12 +34,21 @@ more users mean less breaking changes in the future hopefully. Thanks!
 * [Why I stopped using getters and setters](https://marmoush.com/2019/12/13/stopped-using-getters-and-setters.html)
 
 ## Usage
+All modules depend on core. There are currently no other inter-dependencies between them.
 
+```xml
+<dependencies>
+    <groupId>com.marmoush.jutils</groupId>
+    <artifactId>core</artifactId>
+    <version>0.4.2</version>
+    
+    <!-- replace module_name with you preferred module -->
+    <groupId>com.marmoush.jutils</groupId>
+    <artifactId> module_name </artifactId>
+    <version>0.4.2</version>
+</dependencies>
 ```
-<groupId>com.marmoush</groupId>
-<artifactId>jutils</artifactId>
-<version>0.4.1</version>
-```
+
 
 ## Contribution
 You can just do pull requests and I will check them asap.
