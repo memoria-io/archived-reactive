@@ -68,4 +68,4 @@ You can just do pull requests and I will check them asap.
   * Initial EventSourcing implementation
   * Fix infinite wait in kafka producer
 * v0.3.4
-  * Initial short implementation of kafka, nats and pulsar APIs with Reactor and Vavr
+  * Initial short implementation of Kafka, Nats and Pulsar APIs with Reactor and Vavr
