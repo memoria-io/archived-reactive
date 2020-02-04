@@ -17,6 +17,10 @@ public class YamlConfigMap {
     return (String) map.get(key).get();
   }
 
+  public Boolean asBoolean(String key) {
+    return Boolean.parseBoolean(asString(key));
+  }
+
   public Integer asInteger(String key) {
     return Integer.parseInt(asString(key));
   }
@@ -32,6 +36,11 @@ public class YamlConfigMap {
   public List<String> asStringList(String key) {
     @SuppressWarnings("unchecked")
     var list = (ArrayList<String>) map.get(key).get();
+    return List.ofAll(list);
+  }
+
+  public List<Boolean> asBooleanList(String key) {
+    var list = asStringList(key).map(Boolean::parseBoolean);
     return List.ofAll(list);
   }
 

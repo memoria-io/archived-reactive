@@ -3,7 +3,7 @@ package com.marmoush.jutils.core.utils.yaml;
 import io.vavr.collection.*;
 import org.junit.jupiter.api.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class YamlUtilsTest {
 
@@ -22,6 +22,9 @@ public class YamlUtilsTest {
     // string
     assertEquals("hello world", map.asString("stringValue"));
 
+    // boolean
+    assertTrue(map.asBoolean("booleanValue"));
+
     // integer
     assertEquals(10, map.asInteger("integerValue"));
 
@@ -33,6 +36,9 @@ public class YamlUtilsTest {
 
     // string list
     assertEquals(List.of("hi", "hello", "bye"), map.asStringList("stringList"));
+
+    // boolean list
+    assertEquals(List.of(true, false, true), map.asBooleanList("booleanList"));
 
     // integer list
     assertEquals(List.of(1, 2, 3), map.asIntegerList("integerList"));
@@ -68,7 +74,7 @@ public class YamlUtilsTest {
 
   @Test
   @DisplayName("Reading same file should produce same map")
-  public void sameFileTest(){
+  public void sameFileTest() {
     YamlConfigMap map = YamlUtils.parseYamlResource("utils/test.yaml").get();
     YamlConfigMap map2 = YamlUtils.parseYamlResource("utils/test.yaml").get();
 

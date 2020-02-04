@@ -2,6 +2,7 @@ projectName: bank
 nodeControllerPath: /nodes
 
 stringValue: hello world
+booleanValue: true
 integerValue: 10
 longValue: 100000000001
 doubleValue: 1000000.000001
@@ -10,6 +11,11 @@ stringList:
   - hi
   - hello
   - bye
+
+booleanList:
+  - true
+  - false
+  - true
 
 integerList:
   - 1
