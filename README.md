@@ -41,7 +41,7 @@ All modules depend on core. There are currently no other inter-dependencies betw
 <dependencies>
     <groupId>com.marmoush.jutils</groupId>
     <artifactId>core</artifactId>
-    <version>0.4.2</version>
+    <version>0.4.7</version>
     
     <!-- replace module_name with you preferred module -->
     <groupId>com.marmoush.jutils</groupId>
@@ -58,6 +58,9 @@ You can just do pull requests and I will check them asap.
 
 
 ## Release notes
+* v0.4.7
+    * Fixing hashcode and equals bugs
+    * Consolidating the use of handlers into apply method by making events/commands implement vavr's Function1.
 * v0.4.2
     * Argon hashing with Mono
 * v0.4.1
