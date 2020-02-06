@@ -19,12 +19,13 @@ more users mean less breaking changes in the future hopefully. Thanks!
 
 ## Features
 * Vavr + Reactor Functional utilities
-* Reactor Netty adapter with error handling escalation
+* CQRS and Eventsourcing utilities.
 * Simple Reactive Message bus implementation for:
   * Apache Kafka
   * Nats
   * Apache Pulsar
-* Yaml adapter with features like nesting, fluent api, resource and file loading
+* Reactor Netty adapter with error handling escalation
+* Yaml adapter with features e.g nesting, fluent api, resource and file loading
 * Vavr GSON Json implementation
 * Argon2 Hashing adapter
 * In memory generic crud

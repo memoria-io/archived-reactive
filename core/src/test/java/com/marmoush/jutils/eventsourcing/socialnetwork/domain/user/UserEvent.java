@@ -14,7 +14,6 @@ public abstract class UserEvent implements Event {
     public final int age;
 
     public UserCreated(String userId, String name, int age) {
-
       this.userId = userId;
       this.name = name;
       this.age = age;
@@ -41,7 +40,6 @@ public abstract class UserEvent implements Event {
     public final String friendId;
 
     public FriendAdded(String userId, String friendId) {
-
       this.userId = userId;
       this.friendId = friendId;
     }
@@ -68,7 +66,6 @@ public abstract class UserEvent implements Event {
     public final String body;
 
     public MessageCreated(String from, String to, String body) {
-
       this.from = from;
       this.to = to;
       this.body = body;
@@ -94,7 +91,6 @@ public abstract class UserEvent implements Event {
     public final String msgId;
 
     private MessageSeen(String msgId) {
-
       this.msgId = msgId;
     }
 
