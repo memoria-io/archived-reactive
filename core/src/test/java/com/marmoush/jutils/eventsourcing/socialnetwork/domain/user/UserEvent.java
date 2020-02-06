@@ -1,10 +1,11 @@
 package com.marmoush.jutils.eventsourcing.socialnetwork.domain.user;
 
-import com.marmoush.jutils.eventsourcing.domain.value.Event;
+import com.marmoush.jutils.eventsourcing.Event;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.inbox.Message;
 
 import java.util.Objects;
 
-public abstract class UserEvent implements Event {
+public abstract class UserEvent implements Event<User> {
 
   private UserEvent() { }
 
@@ -17,6 +18,11 @@ public abstract class UserEvent implements Event {
       this.userId = userId;
       this.name = name;
       this.age = age;
+    }
+
+    @Override
+    public User apply(User user) {
+      return null;
     }
 
     @Override
@@ -42,6 +48,11 @@ public abstract class UserEvent implements Event {
     public FriendAdded(String userId, String friendId) {
       this.userId = userId;
       this.friendId = friendId;
+    }
+
+    @Override
+    public User apply(User user) {
+      return user.withNewFriend(friendId);
     }
 
     @Override
@@ -72,6 +83,12 @@ public abstract class UserEvent implements Event {
     }
 
     @Override
+    public User apply(User user) {
+      var m = new Message(from, to, body, false);
+      return user.withNewMessage(m);
+    }
+
+    @Override
     public boolean equals(Object o) {
       if (this == o)
         return true;
@@ -92,6 +109,11 @@ public abstract class UserEvent implements Event {
 
     private MessageSeen(String msgId) {
       this.msgId = msgId;
+    }
+
+    @Override
+    public User apply(User user) {
+      return null;
     }
 
     @Override

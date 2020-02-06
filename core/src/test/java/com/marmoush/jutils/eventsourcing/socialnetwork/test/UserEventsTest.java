@@ -1,7 +1,6 @@
 package com.marmoush.jutils.eventsourcing.socialnetwork.test;
 
-import com.marmoush.jutils.eventsourcing.domain.port.EventHandler;
-import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.*;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.User;
 import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.UserEvent.*;
 import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.inbox.*;
 import io.vavr.collection.List;
@@ -12,12 +11,10 @@ public class UserEventsTest {
   private static final String BOB = "bob";
   private static final int ALEX_AGE = 19;
 
-  private static EventHandler<User, UserEvent> userEventHandler = new UserEventHandler();
-
   @Test
   void messageCreatedTest() {
     var alex = new User(ALEX, ALEX_AGE, List.of(BOB), new Inbox());
-    var newAlex = userEventHandler.apply(alex, new MessageCreated(ALEX, BOB, "Hello"));
+    var newAlex = new MessageCreated(ALEX, BOB, "Hello").apply(alex);
     var expectedAlex = alex.withNewMessage(new Message(ALEX, BOB, "Hello", false));
     Assertions.assertEquals(expectedAlex, newAlex);
   }
@@ -25,7 +22,7 @@ public class UserEventsTest {
   @Test
   void friendAddedTest() {
     var alex = new User(ALEX, ALEX_AGE);
-    var newAlex = userEventHandler.apply(alex, new FriendAdded(ALEX, BOB));
+    var newAlex = new FriendAdded(ALEX, BOB).apply(alex);
     var expectedAlex = alex.withNewFriend(BOB);
     Assertions.assertEquals(expectedAlex, newAlex);
   }
@@ -33,8 +30,8 @@ public class UserEventsTest {
   @Test
   void multipleEvents() {
     var alex = new User(ALEX, ALEX_AGE);
-    var newAlex = userEventHandler.curried(alex)
-                                  .apply(List.of(new FriendAdded(ALEX, BOB), new MessageCreated(ALEX, BOB, "Hello")));
+    var list = List.of(new FriendAdded(ALEX, BOB), new MessageCreated(ALEX, BOB, "Hello"));
+    var newAlex = list.foldLeft(alex, (u, e) -> e.apply(u));
     var expectedAlex = alex.withNewFriend(BOB).withNewMessage(new Message(ALEX, BOB, "Hello"));
     Assertions.assertEquals(expectedAlex, newAlex);
   }

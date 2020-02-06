@@ -2,7 +2,7 @@ package com.marmoush.jutils.core.utils.functional;
 
 import io.vavr.collection.List;
 import io.vavr.control.Try;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.*;
 

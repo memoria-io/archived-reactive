@@ -1,7 +1,5 @@
 package com.marmoush.jutils.eventsourcing.socialnetwork.test;
 
-import com.marmoush.jutils.eventsourcing.domain.port.CommandHandler;
-import com.marmoush.jutils.eventsourcing.domain.value.Event;
 import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.*;
 import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.UserCommand.*;
 import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.UserEvent.FriendAdded;
@@ -16,23 +14,22 @@ public class UserCommandsTest {
   private static final String ALEX = "alex";
   private static final String BOB = "bob";
   private static final int ALEX_AGE = 19;
-  private static CommandHandler<User, UserCommand, Event> commandHandler = new UserCommandHandler();
 
   @Test
   public void addFriendTest() {
     var user = new User(ALEX, ALEX_AGE);
-    var events = commandHandler.apply(user, new AddFriend(ALEX, BOB));
+    var events = new AddFriend(ALEX, BOB).apply(user);
     Assertions.assertEquals(Try.success(List.of(new FriendAdded(ALEX, BOB))), events);
 
     var otherUser = new User(ALEX, ALEX_AGE, List.of(BOB), new Inbox());
-    var otherEvents = commandHandler.apply(otherUser, new AddFriend(ALEX, BOB));
+    var otherEvents = new AddFriend(ALEX, BOB).apply(otherUser);
     Assertions.assertEquals(Try.failure(ALREADY_EXISTS), otherEvents);
   }
 
   @Test
   void sendMessageTest() {
     var user = new User(ALEX, ALEX_AGE, List.of(BOB), new Inbox());
-    var events = commandHandler.apply(user, new SendMessage(ALEX, BOB, "hello"));
+    var events = new SendMessage(ALEX, BOB, "hello").apply(user);
     Assertions.assertEquals(Try.success(List.of(new UserEvent.MessageCreated(ALEX, BOB, "hello"))), events);
   }
 }
