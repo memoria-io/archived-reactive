@@ -31,11 +31,12 @@ public class Entity<T> {
     if (o == null || getClass() != o.getClass())
       return false;
     Entity<?> entity = (Entity<?>) o;
-    return id.equals(entity.id) && value.equals(entity.value);
+    return id.equals(entity.id) && value.equals(entity.value) && creationTime.equals(entity.creationTime) &&
+           flowId.equals(entity.flowId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, value);
+    return Objects.hash(id, value, creationTime, flowId);
   }
 }
