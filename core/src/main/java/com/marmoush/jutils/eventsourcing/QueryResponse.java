@@ -1,3 +1,5 @@
 package com.marmoush.jutils.eventsourcing;
 
-public interface QueryResponse {}
+import com.marmoush.jutils.core.domain.port.DTO;
+
+public interface QueryResponse extends DTO {}
