@@ -58,7 +58,7 @@ You can just do pull requests and I will check them asap.
 
 
 ## Release notes
-* v0.4.8
+* v0.4.9
     * Marking eventsourcing interfaces as DTOs
 * v0.4.7
     * Fixing hashcode and equals bugs
