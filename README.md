@@ -58,6 +58,8 @@ You can just do pull requests and I will check them asap.
 
 
 ## Release notes
+* v0.4.8
+    * Marking eventsourcing interfaces as DTOs
 * v0.4.7
     * Fixing hashcode and equals bugs
     * Consolidating the use of handlers into apply method by making events/commands implement vavr's Function1.
