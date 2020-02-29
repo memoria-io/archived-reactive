@@ -6,18 +6,9 @@ public abstract class Notification {
   public final String tip;
   public final boolean seen;
 
-  private Notification(String tip, boolean seen) {
+  public Notification(String tip, boolean seen) {
     this.tip = tip;
     this.seen = seen;
-  }
-
-  public static final class NewMessageNotification extends Notification {
-    public final Message message;
-
-    public NewMessageNotification(boolean seen, Message message) {
-      super("New message received", seen);
-      this.message = message;
-    }
   }
 
   @Override

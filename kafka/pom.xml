@@ -5,12 +5,12 @@
     <parent>
         <groupId>com.marmoush</groupId>
         <artifactId>jutils</artifactId>
-        <version>v0.4.9</version>
+        <version>0.5.0</version>
     </parent>
 
     <groupId>com.marmoush.jutils</groupId>
     <artifactId>kafka</artifactId>
-    <version>v0.4.9</version>
+    <version>0.5.0</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
