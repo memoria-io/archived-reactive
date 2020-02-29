@@ -38,15 +38,18 @@ more users mean less breaking changes in the future hopefully. Thanks!
 All modules depend on core. There are currently no other inter-dependencies between them.
 
 ```xml
+<properties>
+    <jutils.version>0.5.0</jutils.version>
+</properties>
 <dependencies>
     <groupId>com.marmoush.jutils</groupId>
     <artifactId>core</artifactId>
-    <version>0.4.7</version>
+    <version>${jutils.version}</version>
     
     <!-- replace module_name with you preferred module -->
     <groupId>com.marmoush.jutils</groupId>
     <artifactId> module_name </artifactId>
-    <version>0.4.2</version>
+    <version>${jutils.version}</version>
 </dependencies>
 ```
 
@@ -58,6 +61,10 @@ You can just do pull requests and I will check them asap.
 
 
 ## Release notes
+* V0.5.0
+    * Back to using EventHandler and CommandHandlers 
+        * Using thin DTOs for lower coupling between Event/Command DTOs and Entity
+        * Also there would be more usability by creating more Event and command handlers  
 * v0.4.9
     * Marking eventsourcing interfaces as DTOs
 * v0.4.7
