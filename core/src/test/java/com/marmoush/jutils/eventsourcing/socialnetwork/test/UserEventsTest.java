@@ -14,7 +14,7 @@ public class UserEventsTest {
   private static UserEventHandler userEventHandler = new UserEventHandler();
 
   @Test
-  void messageCreatedTest() {
+  public void messageCreatedTest() {
     var alex = new User(ALEX, ALEX_AGE, List.of(BOB), new Inbox());
     var newAlex = userEventHandler.apply(alex, new MessageCreated(ALEX, BOB, "Hello"));
     var expectedAlex = alex.withNewMessage(new Message(ALEX, BOB, "Hello", false));
@@ -22,7 +22,7 @@ public class UserEventsTest {
   }
 
   @Test
-  void friendAddedTest() {
+  public void friendAddedTest() {
     var alex = new User(ALEX, ALEX_AGE);
     var newAlex = userEventHandler.apply(alex, new FriendAdded(ALEX, BOB));
     var expectedAlex = alex.withNewFriend(BOB);
@@ -30,7 +30,7 @@ public class UserEventsTest {
   }
 
   @Test
-  void multipleEvents() {
+  public void multipleEvents() {
     var alex = new User(ALEX, ALEX_AGE);
     var newAlex = userEventHandler.curried(alex)
                                   .apply(List.of(new FriendAdded(ALEX, BOB), new MessageCreated(ALEX, BOB, "Hello")));
