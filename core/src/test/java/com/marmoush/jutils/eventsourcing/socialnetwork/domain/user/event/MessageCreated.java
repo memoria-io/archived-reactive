@@ -13,12 +13,6 @@ public final class MessageCreated implements UserEvent {
     this.body = body;
   }
 
-  //    @Override
-  //    public User apply(User user) {
-  //      var m = new Message(from, to, body, false);
-  //      return user.withNewMessage(m);
-  //    }
-
   @Override
   public boolean equals(Object o) {
     if (this == o)
