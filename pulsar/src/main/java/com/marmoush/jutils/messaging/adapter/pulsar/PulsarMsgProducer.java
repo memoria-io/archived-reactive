@@ -5,13 +5,18 @@ import com.marmoush.jutils.messaging.domain.entity.Msg;
 import com.marmoush.jutils.messaging.domain.port.MsgProducer;
 import io.vavr.Function1;
 import io.vavr.control.Try;
-import org.apache.pulsar.client.api.*;
-import reactor.core.publisher.*;
+import org.apache.pulsar.client.api.Producer;
+import org.apache.pulsar.client.api.PulsarClient;
+import org.apache.pulsar.client.api.PulsarClientException;
+import org.apache.pulsar.client.api.Schema;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.function.Function;
 
-import static com.marmoush.jutils.core.utils.functional.VavrUtils.*;
+import static com.marmoush.jutils.core.utils.functional.VavrUtils.handle;
+import static com.marmoush.jutils.core.utils.functional.VavrUtils.handleToVoid;
 
 public class PulsarMsgProducer implements MsgProducer {
 

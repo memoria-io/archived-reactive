@@ -2,12 +2,13 @@ package com.marmoush.jutils.core.utils.functional;
 
 import io.vavr.API;
 import io.vavr.collection.List;
-import io.vavr.collection.*;
+import io.vavr.collection.Traversable;
 import io.vavr.control.Try;
 
 import java.util.function.BiFunction;
 
-import static io.vavr.API.*;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
 import static io.vavr.Predicates.instanceOf;
 
 public final class VavrUtils {

@@ -1,7 +1,9 @@
 package com.marmoush.jutils.core.adapter.crud.memory;
 
 import com.marmoush.jutils.core.domain.entity.Entity;
-import com.marmoush.jutils.core.domain.port.crud.*;
+import com.marmoush.jutils.core.domain.port.crud.EntityReadRepo;
+import com.marmoush.jutils.core.domain.port.crud.EntityRepo;
+import com.marmoush.jutils.core.domain.port.crud.EntityWriteRepo;
 import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 

@@ -4,7 +4,8 @@ import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class YamlConfigMap {
   private Map<String, Object> map;

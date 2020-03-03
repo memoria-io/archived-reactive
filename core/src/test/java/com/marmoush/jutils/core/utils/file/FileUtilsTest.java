@@ -2,14 +2,17 @@ package com.marmoush.jutils.core.utils.file;
 
 import com.marmoush.jutils.core.utils.functional.ReactorVavrUtils;
 import io.vavr.control.Try;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.nio.file.Path;
 
-import static com.marmoush.jutils.core.utils.file.FileUtils.*;
+import static com.marmoush.jutils.core.utils.file.FileUtils.file;
+import static com.marmoush.jutils.core.utils.file.FileUtils.resource;
+import static com.marmoush.jutils.core.utils.file.FileUtils.writeFile;
 
 public class FileUtilsTest {
   @Test

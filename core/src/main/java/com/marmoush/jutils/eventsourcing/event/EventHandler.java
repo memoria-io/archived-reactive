@@ -1,6 +1,7 @@
 package com.marmoush.jutils.eventsourcing.event;
 
-import io.vavr.*;
+import io.vavr.Function1;
+import io.vavr.Function2;
 import io.vavr.collection.Traversable;
 
 @FunctionalInterface

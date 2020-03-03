@@ -4,9 +4,11 @@ import io.vavr.collection.List;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-import static com.marmoush.jutils.core.utils.functional.VavrUtils.*;
+import static com.marmoush.jutils.core.utils.functional.VavrUtils.handle;
+import static com.marmoush.jutils.core.utils.functional.VavrUtils.handleToVoid;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class VavrUtilsTest {

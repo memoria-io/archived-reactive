@@ -1,13 +1,16 @@
 package com.marmoush.jutils.core.utils.netty;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.function.Function;
 
 import static com.marmoush.jutils.core.utils.functional.VavrUtils.instanceOfCase;
 import static com.marmoush.jutils.core.utils.netty.NettyHttpErrorAdapter.nettyHttpErrorCase;
-import static io.vavr.API.*;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
 import static io.vavr.Predicates.instanceOf;
 
 public class NettyHttpErrorAdapterTest {

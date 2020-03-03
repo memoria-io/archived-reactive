@@ -1,9 +1,12 @@
 package com.marmoush.jutils.core.utils.yaml;
 
-import io.vavr.collection.*;
-import org.junit.jupiter.api.*;
+import io.vavr.collection.HashMap;
+import io.vavr.collection.List;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class YamlUtilsTest {
 

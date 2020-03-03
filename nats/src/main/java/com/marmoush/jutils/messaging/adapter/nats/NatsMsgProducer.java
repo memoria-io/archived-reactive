@@ -5,7 +5,8 @@ import com.marmoush.jutils.messaging.domain.entity.Msg;
 import com.marmoush.jutils.messaging.domain.port.MsgProducer;
 import io.nats.client.Connection;
 import io.vavr.control.Try;
-import reactor.core.publisher.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
 import java.io.IOException;
@@ -13,7 +14,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 import static com.marmoush.jutils.core.utils.functional.ReactorVavrUtils.blockingToMono;
-import static com.marmoush.jutils.messaging.adapter.nats.NatsConnection.*;
+import static com.marmoush.jutils.messaging.adapter.nats.NatsConnection.CHANNEL_SEPARATOR;
+import static com.marmoush.jutils.messaging.adapter.nats.NatsConnection.create;
 
 public class NatsMsgProducer implements MsgProducer {
   private final Connection nc;
