@@ -13,15 +13,6 @@ public final class SendMessage implements UserCommand {
     this.message = message;
   }
 
-  //    @Override
-  //    public Try<List<Event<User>>> apply(User user) {
-  //      var validate = (user.friends.contains(this.toUserId)) ? Try.success(null) : Try.failure(NOT_FOUND);
-  //      return validate.map(v -> {
-  //        var created = new MessageCreated(fromUserId, toUserId, message);
-  //        return List.of(created);
-  //      });
-  //    }
-
   @Override
   public boolean equals(Object o) {
     if (this == o)

@@ -64,7 +64,7 @@ You can just do pull requests and I will check them asap.
 * V0.5.0
     * Back to using EventHandler and CommandHandlers 
         * Using thin DTOs for lower coupling between Event/Command DTOs and Entity
-        * Also there would be more usability by creating more Event and command handlers  
+        * Also there would be more reusability of DTOs by creating more Event and command handlers
 * v0.4.9
     * Marking eventsourcing interfaces as DTOs
 * v0.4.7
