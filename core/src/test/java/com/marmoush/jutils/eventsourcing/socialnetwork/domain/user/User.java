@@ -6,28 +6,32 @@ import io.vavr.collection.List;
 import java.util.Objects;
 
 public class User {
-  public final String userName;
+  public final String id;
   public final int age;
   public final List<String> friends;
   public final Inbox inbox;
 
-  public User(String userName, int age) {
-    this(userName, age, List.empty(), new Inbox());
+  public User(String id, int age) {
+    this(id, age, List.empty(), new Inbox());
   }
 
-  public User(String userName, int age, List<String> friends, Inbox inbox) {
-    this.userName = userName;
+  public User(String id, int age, List<String> friends, Inbox inbox) {
+    this.id = id;
     this.age = age;
     this.friends = friends;
     this.inbox = inbox;
   }
 
   public User withNewFriend(String friendId) {
-    return new User(this.userName, this.age, this.friends.append(friendId), this.inbox);
+    return new User(this.id, this.age, this.friends.append(friendId), this.inbox);
   }
 
   public User withNewMessage(Message message) {
-    return new User(this.userName, this.age, this.friends, this.inbox.withNewMessage(message));
+    return new User(this.id, this.age, this.friends, this.inbox.withNewMessage(message));
+  }
+
+  public User withMessageSeen(String conversationId, String messageId) {
+    return new User(this.id, this.age, this.friends, this.inbox.withMessageSeen(conversationId, messageId));
   }
 
   @Override
@@ -37,11 +41,11 @@ public class User {
     if (o == null || getClass() != o.getClass())
       return false;
     User user = (User) o;
-    return age == user.age && userName.equals(user.userName) && friends.equals(user.friends) && inbox.equals(user.inbox);
+    return age == user.age && id.equals(user.id) && friends.equals(user.friends) && inbox.equals(user.inbox);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(userName, age, friends, inbox);
+    return Objects.hash(id, age, friends, inbox);
   }
 }

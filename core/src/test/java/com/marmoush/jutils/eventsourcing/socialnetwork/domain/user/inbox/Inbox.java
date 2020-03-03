@@ -1,25 +1,28 @@
 package com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.inbox;
 
-import io.vavr.collection.List;
+import io.vavr.collection.HashMap;
 
 import java.util.Objects;
 
 public class Inbox {
-  public final List<Message> messages;
-  public final List<Notification> notifications;
+  public final HashMap<String, Conversation> conversations;
 
   public Inbox() {
-    this(List.empty(), List.empty());
+    this(HashMap.empty());
   }
 
-  public Inbox(List<Message> messages, List<Notification> notifications) {
-    this.messages = messages;
-    this.notifications = notifications;
+  public Inbox(HashMap<String, Conversation> conversations) {
+    this.conversations = conversations;
   }
 
   public Inbox withNewMessage(Message message) {
-    return new Inbox(this.messages.append(message),
-                     this.notifications.append(new NewMessageNotification(false, message)));
+    var conversation = conversations.getOrElse(message.from, new Conversation().withNewMessage(message));
+    return new Inbox(this.conversations.put(message.from, conversation));
+  }
+
+  public Inbox withMessageSeen(String conversationId, String messageId) {
+    var conversation = conversations.get(conversationId).get().withMessageSeen(messageId);
+    return new Inbox(this.conversations.put(conversationId, conversation));
   }
 
   @Override
@@ -29,11 +32,11 @@ public class Inbox {
     if (o == null || getClass() != o.getClass())
       return false;
     Inbox inbox = (Inbox) o;
-    return messages.equals(inbox.messages) && notifications.equals(inbox.notifications);
+    return conversations.equals(inbox.conversations);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(messages, notifications);
+    return Objects.hash(conversations);
   }
 }

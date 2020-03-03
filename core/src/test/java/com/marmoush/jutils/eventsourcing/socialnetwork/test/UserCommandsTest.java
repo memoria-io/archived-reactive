@@ -1,6 +1,6 @@
 package com.marmoush.jutils.eventsourcing.socialnetwork.test;
 
-import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.*;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.User;
 import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.cmd.*;
 import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.event.*;
 import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.inbox.Inbox;
@@ -31,6 +31,6 @@ public class UserCommandsTest {
   public void sendMessageTest() {
     var user = new User(ALEX, ALEX_AGE, List.of(BOB), new Inbox());
     var events = commandHandler.apply(user, new SendMessage(ALEX, BOB, "hello"));
-    Assertions.assertEquals(Try.success(List.of(new MessageCreated(ALEX, BOB, "hello"))), events);
+    Assertions.assertEquals(Try.success(List.of(new MessageCreated("messageId", ALEX, BOB, "hello"))), events);
   }
 }

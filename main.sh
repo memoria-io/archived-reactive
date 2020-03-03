@@ -10,4 +10,4 @@ docker run -it -d \
   --network=pulsar \
   apachepulsar/pulsar-standalone:2.4.2 && echo "Pulsar Started"
 
-docker run -d  -p 9000:9000 sonarqube && echo "Sonarqube started"
+docker run -d -p 9000:9000 sonarqube && echo "Sonarqube started"

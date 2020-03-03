@@ -2,11 +2,13 @@ package com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.event;
 
 import java.util.Objects;
 
-public class MessageSeen implements UserEvent {
-  public final String msgId;
+public class MessageSeen {
+  public final String conversationId;
+  public final String messageId;
 
-  private MessageSeen(String msgId) {
-    this.msgId = msgId;
+  public MessageSeen(String conversationId, String messageId) {
+    this.conversationId = conversationId;
+    this.messageId = messageId;
   }
 
   @Override
@@ -16,11 +18,11 @@ public class MessageSeen implements UserEvent {
     if (o == null || getClass() != o.getClass())
       return false;
     MessageSeen that = (MessageSeen) o;
-    return msgId.equals(that.msgId);
+    return conversationId.equals(that.conversationId) && messageId.equals(that.messageId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(msgId);
+    return Objects.hash(conversationId, messageId);
   }
 }

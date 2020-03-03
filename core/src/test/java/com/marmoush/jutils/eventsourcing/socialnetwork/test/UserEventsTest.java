@@ -16,25 +16,26 @@ public class UserEventsTest {
   @Test
   public void messageCreatedTest() {
     var alex = new User(ALEX, ALEX_AGE, List.of(BOB), new Inbox());
-    var newAlex = userEventHandler.apply(alex, new MessageCreated(ALEX, BOB, "Hello"));
-    var expectedAlex = alex.withNewMessage(new Message(ALEX, BOB, "Hello", false));
-    Assertions.assertEquals(expectedAlex, newAlex);
+    var actualAlex = userEventHandler.apply(alex, new MessageCreated("messageId", ALEX, BOB, "Hello"));
+    var expectedAlex = alex.withNewMessage(new Message("messageId", ALEX, BOB, "Hello", false));
+    Assertions.assertEquals(expectedAlex, actualAlex);
   }
 
   @Test
   public void friendAddedTest() {
     var alex = new User(ALEX, ALEX_AGE);
-    var newAlex = userEventHandler.apply(alex, new FriendAdded(ALEX, BOB));
+    var actualAlex = userEventHandler.apply(alex, new FriendAdded(ALEX, BOB));
     var expectedAlex = alex.withNewFriend(BOB);
-    Assertions.assertEquals(expectedAlex, newAlex);
+    Assertions.assertEquals(expectedAlex, actualAlex);
   }
 
   @Test
   public void multipleEvents() {
     var alex = new User(ALEX, ALEX_AGE);
-    var newAlex = userEventHandler.curried(alex)
-                                  .apply(List.of(new FriendAdded(ALEX, BOB), new MessageCreated(ALEX, BOB, "Hello")));
-    var expectedAlex = alex.withNewFriend(BOB).withNewMessage(new Message(ALEX, BOB, "Hello"));
-    Assertions.assertEquals(expectedAlex, newAlex);
+    var actualAlex = userEventHandler.apply(alex,
+                                            List.of(new FriendAdded(ALEX, BOB),
+                                                    new MessageCreated("messageId", ALEX, BOB, "Hello")));
+    var expectedAlex = alex.withNewFriend(BOB).withNewMessage(new Message("messageId", ALEX, BOB, "Hello"));
+    Assertions.assertEquals(expectedAlex, actualAlex);
   }
 }

@@ -23,7 +23,7 @@ public class UserCommandHandler implements CommandHandler<User, UserCommand, Eve
 
   private static Try<List<Event>> sendMessage(User user, SendMessage m) {
     return validateSendMessage(user, m).map(v -> {
-      var created = new MessageCreated(m.fromUserId, m.toUserId, m.message);
+      var created = new MessageCreated("messageId", m.fromUserId, m.toUserId, m.message);
       return List.of(created);
     });
   }

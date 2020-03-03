@@ -3,16 +3,18 @@ package com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.inbox;
 import java.util.Objects;
 
 public class Message {
+  public final String id;
   public final String from;
   public final String to;
   public final String body;
   public final boolean seen;
 
-  public Message(String from, String to, String body) {
-    this(from, to, body, false);
+  public Message(String id, String from, String to, String body) {
+    this(id, from, to, body, false);
   }
 
-  public Message(String from, String to, String body, boolean seen) {
+  public Message(String id, String from, String to, String body, boolean seen) {
+    this.id = id;
     this.from = from;
     this.to = to;
     this.body = body;
@@ -26,11 +28,12 @@ public class Message {
     if (o == null || getClass() != o.getClass())
       return false;
     Message message = (Message) o;
-    return seen == message.seen && from.equals(message.from) && to.equals(message.to) && body.equals(message.body);
+    return seen == message.seen && id.equals(message.id) && from.equals(message.from) && to.equals(message.to) &&
+           body.equals(message.body);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(from, to, body, seen);
+    return Objects.hash(id, from, to, body, seen);
   }
 }
