@@ -9,11 +9,6 @@ public class MessageSeen implements UserEvent {
     this.msgId = msgId;
   }
 
-  //    @Override
-  //    public User apply(User user) {
-  //      return null;
-  //    }
-
   @Override
   public boolean equals(Object o) {
     if (this == o)
