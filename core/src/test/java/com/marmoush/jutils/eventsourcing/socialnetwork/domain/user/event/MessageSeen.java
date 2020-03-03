@@ -2,7 +2,7 @@ package com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.event;
 
 import java.util.Objects;
 
-public class MessageSeen {
+public class MessageSeen implements UserEvent {
   public final String conversationId;
   public final String messageId;
 

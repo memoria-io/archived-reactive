@@ -1,10 +1,12 @@
 package com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.event;
 
 import com.marmoush.jutils.eventsourcing.event.EventHandler;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.Message;
 import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.User;
-import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.inbox.Message;
 
-import static io.vavr.API.*;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
 import static io.vavr.Predicates.instanceOf;
 
 public class UserEventHandler implements EventHandler<User, UserEvent> {
@@ -21,11 +23,11 @@ public class UserEventHandler implements EventHandler<User, UserEvent> {
   }
 
   private User createMessage(User u, MessageCreated msg) {
-    return u.withNewMessage(new Message(msg.messageId, msg.from, msg.to, msg.body, false));
+    return u.withNewMessage(new Message(msg.messageId, msg.from, msg.to, msg.body));
   }
 
   private User messageSeen(User u, MessageSeen messageSeen) {
-    return u.withMessageSeen(messageSeen.conversationId, messageSeen.messageId);
+    return u.withMessageSeen(messageSeen.messageId, true);
   }
 }
 

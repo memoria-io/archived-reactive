@@ -1,4 +1,4 @@
-package com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.inbox;
+package com.marmoush.jutils.eventsourcing.socialnetwork.domain.user;
 
 import java.util.Objects;
 
@@ -19,6 +19,10 @@ public class Message {
     this.to = to;
     this.body = body;
     this.seen = seen;
+  }
+
+  public Message withSeen(boolean isSeen) {
+    return new Message(id, from, to, body, isSeen);
   }
 
   @Override

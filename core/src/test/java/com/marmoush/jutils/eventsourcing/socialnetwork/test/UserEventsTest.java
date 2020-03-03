@@ -1,10 +1,15 @@
 package com.marmoush.jutils.eventsourcing.socialnetwork.test;
 
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.Message;
 import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.User;
-import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.event.*;
-import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.inbox.*;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.event.FriendAdded;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.event.MessageCreated;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.event.MessageSeen;
+import com.marmoush.jutils.eventsourcing.socialnetwork.domain.user.event.UserEventHandler;
+import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class UserEventsTest {
   private static final String ALEX = "alex";
@@ -15,9 +20,9 @@ public class UserEventsTest {
 
   @Test
   public void messageCreatedTest() {
-    var alex = new User(ALEX, ALEX_AGE, List.of(BOB), new Inbox());
+    var alex = new User(ALEX, ALEX_AGE, HashSet.of(BOB), HashSet.empty());
     var actualAlex = userEventHandler.apply(alex, new MessageCreated("messageId", ALEX, BOB, "Hello"));
-    var expectedAlex = alex.withNewMessage(new Message("messageId", ALEX, BOB, "Hello", false));
+    var expectedAlex = alex.withNewMessage(new Message("messageId", ALEX, BOB, "Hello"));
     Assertions.assertEquals(expectedAlex, actualAlex);
   }
 
@@ -34,8 +39,11 @@ public class UserEventsTest {
     var alex = new User(ALEX, ALEX_AGE);
     var actualAlex = userEventHandler.apply(alex,
                                             List.of(new FriendAdded(ALEX, BOB),
-                                                    new MessageCreated("messageId", ALEX, BOB, "Hello")));
-    var expectedAlex = alex.withNewFriend(BOB).withNewMessage(new Message("messageId", ALEX, BOB, "Hello"));
+                                                    new MessageCreated("messageId", ALEX, BOB, "Hello"),
+                                                    new MessageSeen(BOB, "messageId")));
+    var expectedAlex = alex.withNewFriend(BOB)
+                           .withNewMessage(new Message("messageId", ALEX, BOB, "Hello"))
+                           .withMessageSeen("messageId", true);
     Assertions.assertEquals(expectedAlex, actualAlex);
   }
 }
