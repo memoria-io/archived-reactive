@@ -2,17 +2,17 @@ package com.marmoush.jutils.core.adapter.generator.id;
 
 import com.marmoush.jutils.core.domain.port.IdGenerator;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class SerialIdGenerator implements IdGenerator {
-  private final AtomicInteger atomicInteger;
+  private final AtomicLong atomicLong;
 
-  public SerialIdGenerator(AtomicInteger atomicInteger) {
-    this.atomicInteger = atomicInteger;
+  public SerialIdGenerator(AtomicLong atomicLong) {
+    this.atomicLong = atomicLong;
   }
 
   @Override
   public String generate() {
-    return atomicInteger.getAndIncrement() + "";
+    return atomicLong.getAndIncrement() + "";
   }
 }
