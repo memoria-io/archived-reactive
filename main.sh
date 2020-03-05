@@ -10,3 +10,5 @@ docker run -it -d \
   apachepulsar/pulsar-standalone:2.4.2 && echo "Pulsar Started"
 
 docker run -d -p 9000:9000 sonarqube && echo "Sonarqube started"
+
+docker run -d --net=host quay.io/coreos/etcd:v3.4.4

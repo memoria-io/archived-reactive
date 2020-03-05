@@ -5,12 +5,12 @@
     <parent>
         <groupId>com.marmoush</groupId>
         <artifactId>jutils</artifactId>
-        <version>0.5.4</version>
+        <version>0.5.5</version>
     </parent>
 
     <groupId>com.marmoush.jutils</groupId>
     <artifactId>pulsar</artifactId>
-    <version>0.5.4</version>
+    <version>0.5.5</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>

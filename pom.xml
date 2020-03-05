@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>jutils</artifactId>
-    <version>0.5.4</version>
+    <version>0.5.5</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
@@ -27,6 +27,7 @@
         <module>pulsar</module>
         <module>nats</module>
         <module>security</module>
+        <module>etcd</module>
     </modules>
 
     <distributionManagement>
