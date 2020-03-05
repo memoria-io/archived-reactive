@@ -1,19 +1,19 @@
 version: '2'
 networks:
-  etcd_network:
+  kafka_network:
 services:
   zookeeper:
     image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
     networks:
-      etcd_network:
+      kafka_network:
   kafka:
     image: wurstmeister/kafka
     ports:
       - "9092:9092"
     networks:
-      etcd_network:
+      kafka_network:
     environment:
       KAFKA_ADVERTISED_HOST_NAME: localhost
       KAFKA_CREATE_TOPICS: "test:1:1"
