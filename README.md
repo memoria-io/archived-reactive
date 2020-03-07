@@ -61,7 +61,9 @@ You can just do pull requests and I will check them asap.
 
 
 ## Release notes
-* V0.5.0
+* v0.5.5
+    * ETCD client wrapper
+* v0.5.0
     * Back to using EventHandler and CommandHandlers 
         * Using thin DTOs for lower coupling between Event/Command DTOs and Entity
         * Also there would be more reusability of DTOs by creating more Event and command handlers
