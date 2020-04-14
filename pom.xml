@@ -5,11 +5,11 @@
     <parent>
         <groupId>com.marmoush</groupId>
         <artifactId>jbom</artifactId>
-        <version>0.3.5</version>
+        <version>0.4.3</version>
     </parent>
 
     <artifactId>jutils</artifactId>
-    <version>0.5.8</version>
+    <version>0.6.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
