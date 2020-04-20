@@ -1,0 +1,28 @@
+name: publish
+
+on:
+  push:
+    tags:
+      - v*.*.*
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: publish
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          GPG_KEYNAME: ${{ secrets.GPG_KEYNAME }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          DEPLOY_DIR: ".github/deploy"
+        run: |
+          GPG_TTY=$(tty || echo "")
+          export GPG_TTY
+          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.FILE_ENCRYPTION_PASSWORD }}" --output $DEPLOY_DIR/marmoush.com.gpg $DEPLOY_DIR/marmoush.com.gpg.gpg
+          gpg --import --no-tty --batch --yes $DEPLOY_DIR/marmoush.com.gpg
+          mvn deploy --settings $DEPLOY_DIR/maven-settings.xml -P cloud_deployment
+          bash <(curl -s https://codecov.io/bash)

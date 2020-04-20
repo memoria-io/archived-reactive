@@ -1,0 +1,17 @@
+name: buildpr
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  buildpr:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: buildpr
+        run: |
+          mvn install
