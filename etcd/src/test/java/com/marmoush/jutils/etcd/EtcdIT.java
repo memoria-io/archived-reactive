@@ -11,14 +11,14 @@ import java.util.Random;
 import static io.vavr.API.Some;
 import static io.vavr.control.Option.none;
 
-public class EtcdTest {
+public class EtcdIT {
   private final YamlConfigMap config;
   private final Client clientBuilt;
   private final EtcdStoreClient client;
   private final String keyPrefix = "myKey";
   private final String value = "myValue";
 
-  public EtcdTest() {
+  public EtcdIT() {
     config = YamlUtils.parseYamlResource("etcd.yaml").get();
     clientBuilt = Client.builder().endpoints(config.asString("etcd.url")).build();
     client = new EtcdStoreClient(clientBuilt);
