@@ -12,6 +12,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: External Dependencies
+        run: docker-compose up
       - name: buildpr
         run: |
           mvn install
