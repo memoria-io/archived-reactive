@@ -1,6 +1,6 @@
 
-[![Build](https://github.com/IsmailMarmoush/jutils/workflows/build/badge.svg)](https://github.com/IsmailMarmoush/jutils/actions?query=workflow%3Abuild)
-[![Publish](https://github.com/IsmailMarmoush/jutils/workflows/publish/badge.svg)](https://github.com/IsmailMarmoush/jutils/actions?query=workflow%3APublish)
+[![Build](https://github.com/IsmailMarmoush/jutils/workflows/Build/badge.svg)](https://github.com/IsmailMarmoush/jutils/actions?query=workflow%3Abuild)
+[![Publish](https://github.com/IsmailMarmoush/jutils/workflows/Publish/badge.svg)](https://github.com/IsmailMarmoush/jutils/actions?query=workflow%3APublish)
 [![Codecove](https://codecov.io/github/ismailmarmoush/jutils/coverage.svg?precision=2)](https://codecov.io/gh/IsmailMarmoush/jutils)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.marmoush/jutils/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/com.marmoush/jutils/)
 
@@ -41,17 +41,21 @@ All modules depend on core. There are currently no other inter-dependencies betw
 
 ```xml
 <properties>
-    <jutils.version>0.5.0</jutils.version>
+    <jutils.version>0.6.3</jutils.version>
 </properties>
 <dependencies>
-    <groupId>com.marmoush.jutils</groupId>
-    <artifactId>core</artifactId>
-    <version>${jutils.version}</version>
-    
-    <!-- replace module_name with you preferred module -->
-    <groupId>com.marmoush.jutils</groupId>
-    <artifactId> module_name </artifactId>
-    <version>${jutils.version}</version>
+    <dependency>
+        <groupId>com.marmoush.jutils</groupId>
+        <artifactId>core</artifactId>
+        <version>${jutils.version}</version>
+    </dependency>
+
+    <dependency>
+        <!-- replace module_name with your preferred module -->
+        <groupId>com.marmoush.jutils</groupId>
+        <artifactId> module_name </artifactId>
+        <version>${jutils.version}</version>
+    </dependency>
 </dependencies>
 ```
 
@@ -63,6 +67,9 @@ You can just do pull requests and I will check them asap.
 
 
 ## Release notes
+* v0.6.0
+    * Moving to Github actions
+    * Fixing and clean up
 * v0.5.5
     * ETCD client wrapper
 * v0.5.0
