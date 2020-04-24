@@ -5,7 +5,7 @@ compile(){
           --volume ${PWD}:/jutils \
           --workdir /jutils \
           --network jutils_default \
-          ismailmarmoush/jbom:latest /bin/bash -c "mvn install"
+          ismailmarmoush/jutils:latest /bin/bash -c "mvn install"
 }
 
 $@

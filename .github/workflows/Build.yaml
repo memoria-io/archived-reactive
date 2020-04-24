@@ -11,30 +11,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Build image
-        run: docker build . --tag ${GITHUB_REPOSITORY,,}:${GITHUB_SHA::8}
-
       - name: External Dependencies
         run: docker-compose up -d
-
-      - name: mvn install
-        run: |
-          docker run -it \
-            --volume ${PWD}:/jutils \
-            --workdir /jutils \
-            --network jutils_default \
-            ismailmarmoush/jbom:latest /bin/bash -c "mvn install"
-
-      - name: Log into registry
-        if: github.event_name == 'push'
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-
-      - name: Push Docker image
-        if: github.event_name == 'push'
-        run: |
-          docker tag ${GITHUB_REPOSITORY,,}:${GITHUB_SHA::8} ${GITHUB_REPOSITORY,,}:latest
-          docker push ${GITHUB_REPOSITORY,,}:${GITHUB_SHA::8}
-          docker push ${GITHUB_REPOSITORY,,}:latest
-
-
+      - name: Wait
+        run: sleep 15
+      - name: Maven Install
+        run: mvn install
