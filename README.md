@@ -1,6 +1,6 @@
 
-[![build](https://github.com/IsmailMarmoush/jutils/workflows/build/badge.svg)](https://github.com/IsmailMarmoush/jutils/actions?query=workflow%3Abuild)
-[![publish](https://github.com/IsmailMarmoush/jutils/workflows/publish/badge.svg)](https://github.com/IsmailMarmoush/jutils/actions?query=workflow%3Apublish)
+[![Build](https://github.com/IsmailMarmoush/jutils/workflows/build/badge.svg)](https://github.com/IsmailMarmoush/jutils/actions?query=workflow%3Abuild)
+[![Publish](https://github.com/IsmailMarmoush/jutils/workflows/publish/badge.svg)](https://github.com/IsmailMarmoush/jutils/actions?query=workflow%3APublish)
 [![Codecove](https://codecov.io/github/ismailmarmoush/jutils/coverage.svg?precision=2)](https://codecov.io/gh/IsmailMarmoush/jutils)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.marmoush/jutils/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/com.marmoush/jutils/)
 

@@ -1,4 +1,4 @@
-name: Maven
+name: Publish
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - v*.*.*
 
 jobs:
-  Maven:
+  Publish:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
 
@@ -19,7 +19,7 @@ jobs:
         run: docker-compose up -d
       - name: Wait
         run: sleep 15
-      - name: Publish
+      - name: Publish to Maven
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
