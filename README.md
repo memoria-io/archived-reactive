@@ -67,7 +67,8 @@ You can just do pull requests and I will check them asap.
 
 
 ## Release notes
-* v0.6.0
+* v0.6.+
+    * Using Openjdk14
     * Moving to Github actions
     * Fixing and clean up
 * v0.5.5
