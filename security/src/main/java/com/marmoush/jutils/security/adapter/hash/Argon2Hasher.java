@@ -33,13 +33,13 @@ public class Argon2Hasher implements Hasher {
 
   public String blockingHash(String password, String salt) {
     String saltedPass = password + salt;
-    String hash = argon2.hash(iterations, memory, parallelism, saltedPass);
+    String hash = argon2.hash(iterations, memory, parallelism, saltedPass.getBytes());
     argon2.wipeArray(saltedPass.toCharArray());
     return hash;
   }
 
   public boolean blockingVerify(String password, String hash, String salt) {
-    boolean verify = argon2.verify(hash, password + salt);
+    boolean verify = argon2.verify(hash, (password + salt).getBytes());
     argon2.wipeArray(password.toCharArray());
     return verify;
   }
