@@ -1,8 +1,8 @@
 
-[![Build](https://github.com/IsmailMarmoush/jutils/workflows/Build/badge.svg)](https://github.com/IsmailMarmoush/jutils/actions?query=workflow%3Abuild)
-[![Publish](https://github.com/IsmailMarmoush/jutils/workflows/Publish/badge.svg)](https://github.com/IsmailMarmoush/jutils/actions?query=workflow%3APublish)
-[![Codecove](https://codecov.io/github/ismailmarmoush/jutils/coverage.svg?precision=2)](https://codecov.io/gh/IsmailMarmoush/jutils)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.marmoush/jutils/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/com.marmoush/jutils/)
+[![Build](https://github.com/memoria-io/jutils/workflows/Build/badge.svg)](https://github.com/memoria-io/jutils/actions?query=workflow%3Abuild)
+[![Publish](https://github.com/memoria-io/jutils/workflows/Publish/badge.svg)](https://github.com/memoria-io/jutils/actions?query=workflow%3APublish)
+[![Codecove](https://codecov.io/github/memoria-io/jutils/coverage.svg?precision=2)](https://codecov.io/gh/memoria-io/jutils)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.memoria/jutils/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/io.memoria/jutils/)
 
 # jutils
 `jutils` is a functional reactive utility library, an opinionated and pragmatic learning effort.
@@ -10,7 +10,7 @@ It was created because I found much reused code after combining multiple librari
 
 One example is the combination of [Project Reactor](https://projectreactor.io/) along with [VAVR](https://vavr.io), it
 became clear that there was a need for functional utility methods like the ones in
-[functional](core/src/main/java/com/marmoush/jutils/core/utils/functional) package.
+[functional](core/src/main/java/io/memoria/jutils/core/utils/functional) package.
 
 Please beware, that this library is on edge, and breaking changes are bound to happen occasionally,
 at least as long as the version's Major segment was still
@@ -45,14 +45,14 @@ All modules depend on core. There are currently no other inter-dependencies betw
 </properties>
 <dependencies>
     <dependency>
-        <groupId>com.marmoush.jutils</groupId>
+        <groupId>io.memoria.jutils</groupId>
         <artifactId>core</artifactId>
         <version>${jutils.version}</version>
     </dependency>
 
     <dependency>
         <!-- replace module_name with your preferred module -->
-        <groupId>com.marmoush.jutils</groupId>
+        <groupId>io.memoria.jutils</groupId>
         <artifactId> module_name </artifactId>
         <version>${jutils.version}</version>
     </dependency>
