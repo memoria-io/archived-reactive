@@ -23,7 +23,7 @@ public class InMemoryReadRepo<T extends Entity<?>> implements EntityReadRepo<T> 
   }
 
   @Override
-  public Mono<Try<Void>> exists(String id) {
-    return Mono.just((db.containsKey(id)) ? Try.success(null) : Try.failure(NOT_FOUND));
+  public Mono<Try<Boolean>> exists(String id) {
+    return Mono.just((db.containsKey(id)) ? Try.success(true) : Try.success(true));
   }
 }

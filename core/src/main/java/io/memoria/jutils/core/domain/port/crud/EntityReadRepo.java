@@ -7,5 +7,5 @@ import reactor.core.publisher.Mono;
 public interface EntityReadRepo<T extends Entity<?>> {
   Mono<Try<T>> get(String id);
 
-  Mono<Try<Void>> exists(String id);
+  Mono<Try<Boolean>> exists(String id);
 }
