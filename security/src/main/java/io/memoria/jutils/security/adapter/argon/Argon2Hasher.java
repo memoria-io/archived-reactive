@@ -1,8 +1,8 @@
-package io.memoria.jutils.security.adapter.hash;
+package io.memoria.jutils.security.adapter.argon;
 
-import io.memoria.jutils.security.domain.port.Hasher;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
+import io.memoria.jutils.security.domain.port.Hasher;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
@@ -27,20 +27,10 @@ public class Argon2Hasher implements Hasher {
   }
 
   @Override
-  public Mono<Boolean> verify(String password, String hash, String salt) {
-    return Mono.defer(() -> Mono.just(blockingVerify(password, hash, salt)).subscribeOn(scheduler));
-  }
-
   public String blockingHash(String password, String salt) {
     String saltedPass = password + salt;
     String hash = argon2.hash(iterations, memory, parallelism, saltedPass.getBytes());
     argon2.wipeArray(saltedPass.toCharArray());
     return hash;
-  }
-
-  public boolean blockingVerify(String password, String hash, String salt) {
-    boolean verify = argon2.verify(hash, (password + salt).getBytes());
-    argon2.wipeArray(password.toCharArray());
-    return verify;
   }
 }
