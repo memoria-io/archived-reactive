@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class InMemoryRepo<T extends Entity<?>> implements EntityRepo<T> {
   protected final Map<String, T> db;
-  private EntityReadRepo<T> entityReadRepo;
-  private EntityWriteRepo<T> entityWriteRepo;
+  private final EntityReadRepo<T> entityReadRepo;
+  private final EntityWriteRepo<T> entityWriteRepo;
 
   public InMemoryRepo(Map<String, T> db) {
     this.db = db;
