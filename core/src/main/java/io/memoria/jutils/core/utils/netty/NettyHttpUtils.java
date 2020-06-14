@@ -1,8 +1,6 @@
 package io.memoria.jutils.core.utils.netty;
 
 import io.memoria.jutils.core.utils.http.HttpUtils;
-import io.netty.handler.codec.http.EmptyHttpHeaders;
-import io.netty.handler.codec.http.HttpHeaders;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -19,10 +17,9 @@ public class NettyHttpUtils {
   }
 
   public static NettyOutbound sendError(HttpServerResponse resp, NettyHttpError nhe) {
-    HttpHeaders header = nhe.httpHeaders.isDefined() ? nhe.httpHeaders.get() : EmptyHttpHeaders.INSTANCE;
-    return resp.status(nhe.statusCode)
-               .headers(resp.responseHeaders().add(header))
-               .sendString(Mono.just(nhe.message.getOrElse("Error message unavailable.")));
+    return resp.status(nhe.statusCode())
+               .headers(resp.responseHeaders().add(nhe.httpHeaders()))
+               .sendString(Mono.just(nhe.message()));
   }
 
   public static Try<Tuple2<String, String>> basicAuth(HttpServerRequest req) {
