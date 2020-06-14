@@ -10,6 +10,12 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.server.HttpServer;
 import reactor.test.StepVerifier;
 
+import java.util.Base64;
+
+import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.basicAuth;
+import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.send;
+import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.sendError;
+
 public class NettyHttpUtilsTest {
   private static NettyHttpError error = new NettyHttpError(new Exception("test error"), 400);
   private static DisposableServer server;
@@ -20,8 +26,10 @@ public class NettyHttpUtilsTest {
     server = HttpServer.create()
                        .host("127.0.0.1")
                        .port(8081)
-                       .route(r -> r.get("/happy", (req, resp) -> NettyHttpUtils.send(resp, 200, "hello"))
-                                    .get("/sad", (req, resp) -> NettyHttpUtils.sendError(resp, error)))
+                       .route(r -> r.get("/happy", (req, resp) -> send(resp, 200, "hello"))
+                                    .get("/sad", (req, resp) -> sendError(resp, error))
+                                    .get("/authenticate",
+                                         (req, resp) -> send(resp, 200, basicAuth(req).get().toString())))
                        .bindNow();
     client = HttpClient.create().baseUrl("127.0.0.1:8081");
   }
@@ -42,6 +50,17 @@ public class NettyHttpUtilsTest {
                          .responseSingle((res, body) -> Mono.just(res.status().code()).zipWith(body.asString()))
                          .map(t -> Tuple.of(t.getT1(), t.getT2()));
     StepVerifier.create(monoResp).expectNext(Tuple.of(400, "test error")).expectComplete().verify();
+  }
+
+  @Test
+  public void sendBasicAuthTest() {
+    var cred = Base64.getEncoder().encodeToString(("bob:password").getBytes());
+    var monoResp = client.headers(b -> b.add("Authorization", "Basic " + cred))
+                         .get()
+                         .uri("/authenticate")
+                         .responseSingle((res, body) -> Mono.just(res.status().code()).zipWith(body.asString()))
+                         .map(t -> Tuple.of(t.getT1(), t.getT2()));
+    StepVerifier.create(monoResp).expectNext(Tuple.of(200, "(bob, password)")).expectComplete().verify();
   }
 
   @AfterAll
