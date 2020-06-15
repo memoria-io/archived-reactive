@@ -1,14 +1,12 @@
 package io.memoria.jutils.messaging.adapter.pulsar;
 
 import io.memoria.jutils.core.utils.functional.VavrUtils;
-import io.memoria.jutils.core.utils.yaml.YamlConfigMap;
 import io.memoria.jutils.messaging.domain.entity.Msg;
 import io.memoria.jutils.messaging.domain.port.MsgProducer;
 import io.vavr.Function1;
 import io.vavr.control.Try;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClient;
-import org.apache.pulsar.client.api.PulsarClientException;
 import org.apache.pulsar.client.api.Schema;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,10 +16,6 @@ import java.util.function.Function;
 
 public record PulsarMsgProducer(PulsarClient client, Duration timeout) implements MsgProducer {
 
-  public PulsarMsgProducer(YamlConfigMap map) throws PulsarClientException {
-    this(PulsarClient.builder().serviceUrl(map.asYamlConfigMap("pulsar").asString("serviceUrl")).build(),
-         Duration.ofMillis(map.asYamlConfigMap("reactorPulsar").asLong("request.timeout")));
-  }
 
   @Override
   public Flux<Try<Void>> produce(String topic, String partitionStr, Flux<Msg> msgFlux) {

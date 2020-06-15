@@ -20,12 +20,6 @@ import java.util.concurrent.TimeoutException;
 public record KafkaMsgProducer(KafkaProducer<String, String>kafkaProducer, Scheduler scheduler, Duration timeout)
         implements MsgProducer {
 
-  public KafkaMsgProducer(YamlConfigMap map, Scheduler scheduler) {
-    this(new KafkaProducer<>(map.asYamlConfigMap("kafka").asJavaMap("producer")),
-         scheduler,
-         Duration.ofMillis(map.asYamlConfigMap("reactorKafka").asLong("producer.request.timeout")));
-  }
-
   @Override
   public Flux<Try<Void>> produce(String topic, String partitionStr, Flux<Msg> msgFlux) {
     return Try.of(() -> Integer.parseInt(partitionStr))

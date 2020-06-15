@@ -21,11 +21,7 @@ import static io.memoria.jutils.core.utils.functional.VavrUtils.traverseOfTry;
 public record KafkaMsgConsumer(KafkaConsumer<String, String>consumer, Scheduler scheduler, Duration timeout)
         implements MsgConsumer {
 
-  public KafkaMsgConsumer(YamlConfigMap map, Scheduler scheduler) {
-    this(new KafkaConsumer<>(map.asYamlConfigMap("kafka").asJavaMap("consumer")),
-         scheduler,
-         Duration.ofMillis(map.asYamlConfigMap("reactorKafka").asLong("consumer.request.timeout")));
-  }
+
 
   @Override
   public Flux<Try<Msg>> consume(String topic, String partitionStr, long offset) {

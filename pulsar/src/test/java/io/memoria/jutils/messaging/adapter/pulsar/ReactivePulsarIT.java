@@ -29,7 +29,7 @@ public class ReactivePulsarIT {
     final String TOPIC = "topic-" + new Random().nextInt(1000);
     final String PARTITION = "0";
 
-    var producer = new PulsarMsgProducer(config);
+    var producer = PulsarUtils.pulsarMsgProducer(config);
     StepVerifier.create(producer.produce(TOPIC, PARTITION, msgs.take(3)))
                 .expectNextMatches(Try::isSuccess)
                 .expectNextMatches(Try::isSuccess)
@@ -37,7 +37,7 @@ public class ReactivePulsarIT {
                 .expectComplete()
                 .verify();
     producer.close().subscribe();
-    var consumer = new PulsarMsgConsumer(config);
+    var consumer = PulsarUtils.pulsarMsgConsumer(config);
     var c = consumer.consume(TOPIC, PARTITION, 0);
     StepVerifier.create(c.take(3)).expectNextCount(2).expectNextMatches(Try::isSuccess).expectComplete().verify();
     consumer.close().subscribe();

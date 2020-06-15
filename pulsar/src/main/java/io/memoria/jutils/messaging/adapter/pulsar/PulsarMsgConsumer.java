@@ -18,11 +18,6 @@ import static java.util.function.Function.identity;
 
 public record PulsarMsgConsumer(PulsarClient client, Duration timeout) implements MsgConsumer {
 
-  public PulsarMsgConsumer(YamlConfigMap map) throws PulsarClientException {
-    this(PulsarClient.builder().serviceUrl(map.asYamlConfigMap("pulsar").asString("serviceUrl")).build(),
-         Duration.ofMillis(map.asYamlConfigMap("reactorPulsar").asLong("request.timeout")));
-  }
-
   @Override
   public Flux<Try<Msg>> consume(String topicId, String partition, long offset) {
     return createConsumer(client, topicId, offset).map(PulsarMsgConsumer::consumeFrom)

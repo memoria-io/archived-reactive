@@ -22,8 +22,8 @@ public class ReactiveKafkaIT {
 
   public ReactiveKafkaIT() {
     config = YamlUtils.parseYamlResource("kafka.yaml").get();
-    msgProducer = new KafkaMsgProducer(config, Schedulers.elastic());
-    msgConsumer = new KafkaMsgConsumer(config, Schedulers.elastic());
+    msgProducer = KafkaUtils.kafkaMsgProducer(config, Schedulers.elastic());
+    msgConsumer = KafkaUtils.kafkaMsgConsumer(config, Schedulers.elastic());
     msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg(i + "", "Msg number" + i));
   }
 

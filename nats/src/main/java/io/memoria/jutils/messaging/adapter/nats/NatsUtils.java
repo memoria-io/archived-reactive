@@ -9,15 +9,32 @@ import io.nats.client.Options;
 import io.vavr.control.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.scheduler.Scheduler;
 
 import java.io.IOException;
 import java.time.Duration;
 
-public class NatsConnection {
+public class NatsUtils {
   public static final String CHANNEL_SEPARATOR = ".";
-  private static final Logger log = LoggerFactory.getLogger(NatsConnection.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(NatsUtils.class.getName());
 
-  private NatsConnection() {}
+  private NatsUtils() {}
+
+  public static NatsMsgConsumer natsMsgConsumer(YamlConfigMap map, Scheduler scheduler)
+          throws IOException, InterruptedException {
+    return new NatsMsgConsumer(NatsUtils.create(map),
+                               scheduler,
+                               Duration.ofMillis(map.asYamlConfigMap("reactorNats")
+                                                    .asLong("consumer.request.timeout")));
+  }
+
+  public static NatsMsgProducer natsMsgProducer(YamlConfigMap map, Scheduler scheduler)
+          throws IOException, InterruptedException {
+    return new NatsMsgProducer(create(map),
+                               scheduler,
+                               Duration.ofMillis(map.asYamlConfigMap("reactorNats")
+                                                    .asLong("producer.request.timeout")));
+  }
 
   public static Connection create(YamlConfigMap c) throws IOException, InterruptedException {
     var nats = c.asYamlConfigMap("nats");
