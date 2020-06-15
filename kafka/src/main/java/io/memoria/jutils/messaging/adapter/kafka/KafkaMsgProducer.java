@@ -1,9 +1,9 @@
 package io.memoria.jutils.messaging.adapter.kafka;
 
+import io.memoria.jutils.core.utils.functional.ReactorVavrUtils;
 import io.memoria.jutils.core.utils.yaml.YamlConfigMap;
 import io.memoria.jutils.messaging.domain.entity.Msg;
 import io.memoria.jutils.messaging.domain.port.MsgProducer;
-import io.memoria.jutils.core.utils.functional.ReactorVavrUtils;
 import io.vavr.control.Try;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -17,15 +17,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class KafkaMsgProducer implements MsgProducer {
-  private final KafkaProducer<String, String> kafkaProducer;
-  private final Scheduler scheduler;
-  private final Duration timeout;
+public record KafkaMsgProducer(KafkaProducer<String, String>kafkaProducer, Scheduler scheduler, Duration timeout)
+        implements MsgProducer {
 
   public KafkaMsgProducer(YamlConfigMap map, Scheduler scheduler) {
-    this.scheduler = scheduler;
-    this.timeout = Duration.ofMillis(map.asYamlConfigMap("reactorKafka").asLong("producer.request.timeout"));
-    this.kafkaProducer = new KafkaProducer<>(map.asYamlConfigMap("kafka").asJavaMap("producer"));
+    this(new KafkaProducer<>(map.asYamlConfigMap("kafka").asJavaMap("producer")),
+         scheduler,
+         Duration.ofMillis(map.asYamlConfigMap("reactorKafka").asLong("producer.request.timeout")));
   }
 
   @Override

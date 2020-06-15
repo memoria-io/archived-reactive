@@ -6,19 +6,11 @@ import io.memoria.jutils.security.domain.port.Hasher;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
-public class Argon2Hasher implements Hasher {
-  private final Argon2 argon2;
-  private final int iterations;
-  private final int memory;
-  private final int parallelism;
-  private final Scheduler scheduler;
+public record Argon2Hasher(Argon2 argon2, int iterations, int memory, int parallelism, Scheduler scheduler)
+        implements Hasher {
 
   public Argon2Hasher(int iterations, int memory, int parallelism, Scheduler scheduler) {
-    argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-    this.iterations = iterations;
-    this.memory = memory;
-    this.parallelism = parallelism;
-    this.scheduler = scheduler;
+    this(Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id), iterations, memory, parallelism, scheduler);
   }
 
   @Override

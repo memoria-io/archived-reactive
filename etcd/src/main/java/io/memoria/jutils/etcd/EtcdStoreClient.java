@@ -1,6 +1,5 @@
 package io.memoria.jutils.etcd;
 
-import io.memoria.jutils.keyvaluestore.KeyValueStoreClient;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
 import io.etcd.jetcd.KV;
@@ -8,6 +7,7 @@ import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
+import io.memoria.jutils.keyvaluestore.KeyValueStoreClient;
 import io.vavr.Tuple;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.Map;
@@ -16,11 +16,10 @@ import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 
-public class EtcdStoreClient implements KeyValueStoreClient {
-  private final KV kvClient;
+public record EtcdStoreClient(KV kvClient) implements KeyValueStoreClient {
 
   public EtcdStoreClient(Client client) {
-    this.kvClient = client.getKVClient();
+    this(client.getKVClient());
   }
 
   public Mono<Option<String>> get(String key) {

@@ -1,9 +1,9 @@
 package io.memoria.jutils.messaging.adapter.nats;
 
+import io.memoria.jutils.core.utils.functional.ReactorVavrUtils;
 import io.memoria.jutils.core.utils.yaml.YamlConfigMap;
 import io.memoria.jutils.messaging.domain.entity.Msg;
 import io.memoria.jutils.messaging.domain.port.MsgConsumer;
-import io.memoria.jutils.core.utils.functional.ReactorVavrUtils;
 import io.nats.client.Connection;
 import io.nats.client.Subscription;
 import io.vavr.control.Try;
@@ -14,15 +14,12 @@ import reactor.core.scheduler.Scheduler;
 import java.io.IOException;
 import java.time.Duration;
 
-public class NatsMsgConsumer implements MsgConsumer {
-  private final Scheduler scheduler;
-  private final Duration timeout;
-  private final Connection nc;
+public record NatsMsgConsumer(Connection nc, Scheduler scheduler, Duration timeout) implements MsgConsumer {
 
   public NatsMsgConsumer(YamlConfigMap map, Scheduler scheduler) throws IOException, InterruptedException {
-    this.scheduler = scheduler;
-    this.timeout = Duration.ofMillis(map.asYamlConfigMap("reactorNats").asLong("consumer.request.timeout"));
-    this.nc = NatsConnection.create(map);
+    this(NatsConnection.create(map),
+         scheduler,
+         Duration.ofMillis(map.asYamlConfigMap("reactorNats").asLong("consumer.request.timeout")));
   }
 
   /**

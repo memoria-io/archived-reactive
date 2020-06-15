@@ -6,13 +6,9 @@ import io.memoria.jutils.security.domain.port.Verifier;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
-public class Argon2Verifier implements Verifier {
-  private final Argon2 argon2;
-  private final Scheduler scheduler;
-
+public record Argon2Verifier(Argon2 argon2, Scheduler scheduler) implements Verifier {
   public Argon2Verifier(Scheduler scheduler) {
-    this.argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-    this.scheduler = scheduler;
+    this(Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id), scheduler);
   }
 
   @Override

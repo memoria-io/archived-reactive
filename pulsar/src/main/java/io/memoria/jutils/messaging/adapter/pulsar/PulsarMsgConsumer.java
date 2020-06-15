@@ -1,9 +1,9 @@
 package io.memoria.jutils.messaging.adapter.pulsar;
 
+import io.memoria.jutils.core.utils.functional.VavrUtils;
 import io.memoria.jutils.core.utils.yaml.YamlConfigMap;
 import io.memoria.jutils.messaging.domain.entity.Msg;
 import io.memoria.jutils.messaging.domain.port.MsgConsumer;
-import io.memoria.jutils.core.utils.functional.VavrUtils;
 import io.vavr.control.Try;
 import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.PulsarClient;
@@ -16,15 +16,11 @@ import java.time.Duration;
 
 import static java.util.function.Function.identity;
 
-public class PulsarMsgConsumer implements MsgConsumer {
-
-  private final PulsarClient client;
-  private final Duration timeout;
+public record PulsarMsgConsumer(PulsarClient client, Duration timeout) implements MsgConsumer {
 
   public PulsarMsgConsumer(YamlConfigMap map) throws PulsarClientException {
-    String url = map.asYamlConfigMap("pulsar").asString("serviceUrl");
-    this.client = PulsarClient.builder().serviceUrl(url).build();
-    this.timeout = Duration.ofMillis(map.asYamlConfigMap("reactorPulsar").asLong("request.timeout"));
+    this(PulsarClient.builder().serviceUrl(map.asYamlConfigMap("pulsar").asString("serviceUrl")).build(),
+         Duration.ofMillis(map.asYamlConfigMap("reactorPulsar").asLong("request.timeout")));
   }
 
   @Override

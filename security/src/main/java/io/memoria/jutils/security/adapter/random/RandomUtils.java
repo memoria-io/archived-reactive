@@ -2,14 +2,8 @@ package io.memoria.jutils.security.adapter.random;
 
 import java.util.Random;
 
-public class RandomUtils {
+public record RandomUtils(Random random) {
   public static final String ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
-  private Random random;
-
-  public RandomUtils(Random random) {
-    this.random = random;
-  }
 
   public String randomHex(int length) {
     StringBuilder sb = new StringBuilder();

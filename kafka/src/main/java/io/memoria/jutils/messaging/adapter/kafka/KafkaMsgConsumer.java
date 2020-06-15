@@ -18,15 +18,13 @@ import java.util.function.Consumer;
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.blockingToMono;
 import static io.memoria.jutils.core.utils.functional.VavrUtils.traverseOfTry;
 
-public class KafkaMsgConsumer implements MsgConsumer {
-  private final KafkaConsumer<String, String> consumer;
-  private final Scheduler scheduler;
-  private final Duration timeout;
+public record KafkaMsgConsumer(KafkaConsumer<String, String>consumer, Scheduler scheduler, Duration timeout)
+        implements MsgConsumer {
 
   public KafkaMsgConsumer(YamlConfigMap map, Scheduler scheduler) {
-    this.scheduler = scheduler;
-    this.timeout = Duration.ofMillis(map.asYamlConfigMap("reactorKafka").asLong("consumer.request.timeout"));
-    this.consumer = new KafkaConsumer<>(map.asYamlConfigMap("kafka").asJavaMap("consumer"));
+    this(new KafkaConsumer<>(map.asYamlConfigMap("kafka").asJavaMap("consumer")),
+         scheduler,
+         Duration.ofMillis(map.asYamlConfigMap("reactorKafka").asLong("consumer.request.timeout")));
   }
 
   @Override
