@@ -12,12 +12,6 @@ One example is the combination of [Project Reactor](https://projectreactor.io/) 
 became clear that there was a need for functional utility methods like the ones in
 [functional](core/src/main/java/io/memoria/jutils/core/utils/functional) package.
 
-Please beware, that this library is on edge, and breaking changes are bound to happen occasionally,
-at least as long as the version's Major segment was still
-[`0`](https://semver.org/#how-should-i-deal-with-revisions-in-the-0yz-initial-development-phase).
-
-If you're using the library or you like it, it would be great feedback if you star it,
-more users mean less breaking changes in the future hopefully. Thanks!
 
 ## Features
 * Vavr + Reactor Functional utilities
@@ -41,7 +35,7 @@ All modules depend on core. There are currently no other inter-dependencies betw
 
 ```xml
 <properties>
-    <jutils.version>0.6.3</jutils.version>
+    <jutils.version>0.7.8</jutils.version>
 </properties>
 <dependencies>
     <dependency>
@@ -67,6 +61,11 @@ You can just do pull requests and I will check them asap.
 
 
 ## Release notes
+* v0.7.0-8
+    * Using records
+    * Adding new methods to NettyHttpUtils
+    * Improving and decoupling classes in Kafka, Pulsar, and Nats
+    * Decoupling Argon verifier from Argon Hasher
 * v0.6.+
     * Using Openjdk14
     * Moving to Github actions
