@@ -45,9 +45,9 @@ public class ReactiveNatsIT {
                 .verify();
     msgProducer.close().subscribe();
     StepVerifier.create(consumer)
-                .expectNextMatches(s -> s.get().value.equals("Msg number" + 0))
-                .expectNextMatches(s -> s.get().value.equals("Msg number" + 1))
-                .expectNextMatches(s -> s.get().value.equals("Msg number" + 2))
+                .expectNextMatches(s -> s.get().value().equals("Msg number" + 0))
+                .expectNextMatches(s -> s.get().value().equals("Msg number" + 1))
+                .expectNextMatches(s -> s.get().value().equals("Msg number" + 2))
                 .expectComplete()
                 .verify();
     msgConsumer.close().subscribe();

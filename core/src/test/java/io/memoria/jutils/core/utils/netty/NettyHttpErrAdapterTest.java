@@ -13,7 +13,7 @@ import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 import static io.vavr.Predicates.instanceOf;
 
-public class NettyHttpErrorAdapterTest {
+public class NettyHttpErrAdapterTest {
   @Test
   public void adaptTest() {
     Function<Throwable, NettyHttpError> mapping = t -> Match(t).of(nettyHttpErrorCase(CreationError.class, t, 400),

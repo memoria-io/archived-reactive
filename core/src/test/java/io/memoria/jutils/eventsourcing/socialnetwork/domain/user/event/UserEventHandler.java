@@ -13,21 +13,21 @@ public class UserEventHandler implements EventHandler<User, UserEvent> {
 
   @Override
   public User apply(User user, UserEvent userEvent) {
-    return Match(userEvent).of(Case($(instanceOf(MessageCreated.class)), ev -> createMessage(user, ev)),
-                               Case($(instanceOf(FriendAdded.class)), ev -> addFriend(user, ev)),
-                               Case($(instanceOf(MessageSeen.class)), ev -> messageSeen(user, ev)));
+    return Match(userEvent).of(Case($(instanceOf(UserEvent.MessageCreated.class)), ev -> createMessage(user, ev)),
+                               Case($(instanceOf(UserEvent.FriendAdded.class)), ev -> addFriend(user, ev)),
+                               Case($(instanceOf(UserEvent.MessageSeen.class)), ev -> messageSeen(user, ev)));
   }
 
-  private User addFriend(User u, FriendAdded friendAdded) {
-    return u.withNewFriend(friendAdded.friendId);
+  private User addFriend(User u, UserEvent.FriendAdded friendAdded) {
+    return u.withNewFriend(friendAdded.friendId());
   }
 
-  private User createMessage(User u, MessageCreated msg) {
-    return u.withNewMessage(new Message(msg.messageId, msg.from, msg.to, msg.body));
+  private User createMessage(User u, UserEvent.MessageCreated msg) {
+    return u.withNewMessage(new Message(msg.messageId(), msg.from(), msg.to(), msg.body()));
   }
 
-  private User messageSeen(User u, MessageSeen messageSeen) {
-    return u.withMessageSeen(messageSeen.messageId, true);
+  private User messageSeen(User u, UserEvent.MessageSeen messageSeen) {
+    return u.withMessageSeen(messageSeen.messageId(), true);
   }
 }
 

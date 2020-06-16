@@ -24,7 +24,7 @@ public record KafkaMsgProducer(KafkaProducer<String, String>kafkaProducer, Sched
   public Flux<Try<Void>> produce(String topic, String partitionStr, Flux<Msg> msgFlux) {
     return Try.of(() -> Integer.parseInt(partitionStr))
               .map(partition -> msgFlux.publishOn(scheduler)
-                                       .map(msg -> new ProducerRecord<>(topic, partition, msg.id, msg.value))
+                                       .map(msg -> new ProducerRecord<>(topic, partition, msg.id(), msg.value()))
                                        .map(prodRec -> Try.run(() -> send(prodRec))))
               .getOrElseGet(t -> Flux.just(Try.failure(t)));
   }

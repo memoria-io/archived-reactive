@@ -10,12 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class InMemoryMsgProducer implements MsgProducer {
-  private final Map<String, HashMap<String, LinkedList<Msg>>> db;
-
-  public InMemoryMsgProducer(Map<String, HashMap<String, LinkedList<Msg>>> db) {
-    this.db = db;
-  }
+public record InMemoryMsgProducer(Map<String, HashMap<String, LinkedList<Msg>>>db) implements MsgProducer {
 
   @Override
   public Flux<Try<Void>> produce(String topic, String partition, Flux<Msg> msgFlux) {

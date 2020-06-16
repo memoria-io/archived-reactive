@@ -21,7 +21,7 @@ public record NatsMsgProducer(Connection nc, Scheduler scheduler, Duration timeo
     return msgFlux.publishOn(scheduler)
                   .timeout(timeout)
                   .map(msg -> Try.run(() -> nc.publish(topic + CHANNEL_SEPARATOR + partition,
-                                                       msg.value.getBytes(StandardCharsets.UTF_8))));
+                                                       msg.value().getBytes(StandardCharsets.UTF_8))));
   }
 
   @Override

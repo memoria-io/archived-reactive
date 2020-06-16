@@ -2,9 +2,9 @@ package io.memoria.jutils.eventsourcing.socialnetwork.test;
 
 import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.Message;
 import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.User;
-import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.event.FriendAdded;
-import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.event.MessageCreated;
-import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.event.MessageSeen;
+import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.event.UserEvent.FriendAdded;
+import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.event.UserEvent.MessageCreated;
+import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.event.UserEvent.MessageSeen;
 import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.event.UserEventHandler;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;

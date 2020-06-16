@@ -1,16 +1,16 @@
 package io.memoria.jutils.core.adapter.crud.memory;
 
-import io.memoria.jutils.core.domain.entity.Entity;
-import io.memoria.jutils.core.domain.port.crud.EntityReadRepo;
+import io.memoria.jutils.core.domain.port.crud.ReadRepo;
+import io.memoria.jutils.core.domain.port.crud.Storable;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
-import static io.memoria.jutils.core.domain.error.NotFound.NOT_FOUND;
+import static io.memoria.jutils.core.domain.NotFound.NOT_FOUND;
 
-public class InMemoryReadRepo<T extends Entity<?>> implements EntityReadRepo<T> {
+public class InMemoryReadRepo<T extends Storable> implements ReadRepo<T> {
   protected final Map<String, T> db;
 
   public InMemoryReadRepo(Map<String, T> db) {

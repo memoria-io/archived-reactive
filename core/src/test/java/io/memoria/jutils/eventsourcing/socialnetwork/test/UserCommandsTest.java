@@ -1,18 +1,18 @@
 package io.memoria.jutils.eventsourcing.socialnetwork.test;
 
 import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.User;
-import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.cmd.AddFriend;
-import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.cmd.SendMessage;
+import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.cmd.UserCommand.AddFriend;
+import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.cmd.UserCommand.SendMessage;
 import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.cmd.UserCommandHandler;
-import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.event.FriendAdded;
-import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.event.MessageCreated;
+import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.event.UserEvent.FriendAdded;
+import io.memoria.jutils.eventsourcing.socialnetwork.domain.user.event.UserEvent.MessageCreated;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static io.memoria.jutils.core.domain.error.AlreadyExists.ALREADY_EXISTS;
+import static io.memoria.jutils.core.domain.AlreadyExists.ALREADY_EXISTS;
 
 public class UserCommandsTest {
   private static final String ALEX = "alex";

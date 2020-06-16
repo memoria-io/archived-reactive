@@ -10,12 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class InMemoryMsgConsumer implements MsgConsumer {
-  private final Map<String, HashMap<String, LinkedList<Msg>>> db;
-
-  public InMemoryMsgConsumer(Map<String, HashMap<String, LinkedList<Msg>>> db) {
-    this.db = db;
-  }
+public record InMemoryMsgConsumer(Map<String, HashMap<String, LinkedList<Msg>>>db) implements MsgConsumer {
 
   @Override
   public Flux<Try<Msg>> consume(String topicId, String partition, long offset) {

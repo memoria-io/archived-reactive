@@ -1,17 +1,5 @@
 package io.memoria.jutils.messaging.domain.entity;
 
-import io.memoria.jutils.core.domain.entity.Entity;
-import io.vavr.control.Option;
+import io.memoria.jutils.core.domain.port.crud.Storable;
 
-import java.time.LocalDateTime;
-
-public class Msg extends Entity<String> {
-
-  public Msg(String id, String value) {
-    super(id, value);
-  }
-
-  public Msg(String id, String value, LocalDateTime creationTime, Option<String> flowId) {
-    super(id, value, creationTime, flowId);
-  }
-}
+public record Msg(String id, String value) implements Storable {}

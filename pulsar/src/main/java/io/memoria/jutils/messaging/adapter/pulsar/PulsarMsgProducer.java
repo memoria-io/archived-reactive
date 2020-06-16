@@ -40,7 +40,7 @@ public record PulsarMsgProducer(PulsarClient client, Duration timeout) implement
   private static Function1<Msg, Mono<Try<Void>>> send(Producer<String> producer, String partition) {
     return msg -> Mono.fromFuture(producer.newMessage()
                                           .key(partition)
-                                          .value(msg.value)
+                                          .value(msg.value())
                                           .sendAsync()
                                           .handle(VavrUtils.handleToVoid()));
   }
