@@ -5,13 +5,11 @@ import io.vavr.collection.List;
 import io.vavr.collection.Map;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
-public class YamlConfigMap {
-  private Map<String, Object> map;
+public record YamlConfigMap(Map<String, Object>map) {
 
   public YamlConfigMap(java.util.Map<String, Object> conf) {
-    map = HashMap.ofAll(conf);
+    this(HashMap.ofAll(conf));
   }
 
   public String asString(String key) {
@@ -79,20 +77,5 @@ public class YamlConfigMap {
     @SuppressWarnings("unchecked")
     var m = (java.util.Map<String, Object>) map.get(key).get();
     return new YamlConfigMap(m);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
-    YamlConfigMap that = (YamlConfigMap) o;
-    return map.equals(that.map);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(map);
   }
 }
