@@ -24,6 +24,6 @@ public class InMemoryReadRepo<T extends Storable> implements ReadRepo<T> {
 
   @Override
   public Mono<Try<Boolean>> exists(String id) {
-    return Mono.just((db.containsKey(id)) ? Try.success(true) : Try.success(true));
+    return Mono.just((db.containsKey(id)) ? Try.success(true) : Try.success(false));
   }
 }
