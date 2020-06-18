@@ -2,28 +2,26 @@ package io.memoria.jutils.core.adapter.crud.memory;
 
 import io.memoria.jutils.core.domain.port.crud.ReadRepo;
 import io.memoria.jutils.core.domain.port.crud.Storable;
-import io.vavr.control.Option;
-import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
 import static io.memoria.jutils.core.domain.NotFound.NOT_FOUND;
 
-public class InMemoryReadRepo<T extends Storable> implements ReadRepo<T> {
-  protected final Map<String, T> db;
+public class InMemoryReadRepo<K, V extends Storable<K>> implements ReadRepo<K, V> {
+  protected final Map<K, V> db;
 
-  public InMemoryReadRepo(Map<String, T> db) {
+  public InMemoryReadRepo(Map<K, V> db) {
     this.db = db;
   }
 
   @Override
-  public Mono<Try<T>> get(String id) {
-    return Mono.just(Option.of(db.get(id)).toTry(() -> NOT_FOUND));
+  public Mono<V> get(K id) {
+    return Mono.justOrEmpty(db.get(id)).switchIfEmpty(Mono.error(NOT_FOUND));
   }
 
   @Override
-  public Mono<Try<Boolean>> exists(String id) {
-    return Mono.just((db.containsKey(id)) ? Try.success(true) : Try.success(false));
+  public Mono<Boolean> exists(K id) {
+    return Mono.just(db.containsKey(id));
   }
 }

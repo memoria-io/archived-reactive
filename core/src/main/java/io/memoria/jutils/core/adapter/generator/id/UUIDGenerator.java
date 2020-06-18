@@ -4,7 +4,7 @@ import io.memoria.jutils.core.domain.port.IdGenerator;
 
 import java.util.UUID;
 
-public class UUIDGenerator implements IdGenerator {
+public class UUIDGenerator implements IdGenerator<String> {
   @Override
   public String generate() {
     return UUID.randomUUID().toString();

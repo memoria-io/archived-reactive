@@ -1,5 +1,5 @@
 package io.memoria.jutils.core.domain.port;
 
-public interface IdGenerator {
-  String generate();
+public interface IdGenerator<T> {
+  T generate();
 }

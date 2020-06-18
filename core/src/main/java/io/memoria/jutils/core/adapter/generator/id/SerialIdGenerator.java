@@ -4,7 +4,7 @@ import io.memoria.jutils.core.domain.port.IdGenerator;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class SerialIdGenerator implements IdGenerator {
+public class SerialIdGenerator implements IdGenerator<Long> {
   private final AtomicLong atomicLong;
 
   public SerialIdGenerator(AtomicLong atomicLong) {
@@ -12,7 +12,7 @@ public class SerialIdGenerator implements IdGenerator {
   }
 
   @Override
-  public String generate() {
-    return atomicLong.getAndIncrement() + "";
+  public Long generate() {
+    return atomicLong.getAndIncrement();
   }
 }

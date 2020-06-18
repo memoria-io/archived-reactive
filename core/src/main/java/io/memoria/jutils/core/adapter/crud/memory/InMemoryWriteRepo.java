@@ -2,7 +2,6 @@ package io.memoria.jutils.core.adapter.crud.memory;
 
 import io.memoria.jutils.core.domain.port.crud.Storable;
 import io.memoria.jutils.core.domain.port.crud.WriteRepo;
-import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -10,33 +9,34 @@ import java.util.Map;
 import static io.memoria.jutils.core.domain.AlreadyExists.ALREADY_EXISTS;
 import static io.memoria.jutils.core.domain.NotFound.NOT_FOUND;
 
-public class InMemoryWriteRepo<T extends Storable> implements WriteRepo<T> {
-  protected final Map<String, T> db;
+public class InMemoryWriteRepo<K, V extends Storable<K>> implements WriteRepo<K, V> {
+  protected final Map<K, V> db;
 
-  public InMemoryWriteRepo(Map<String, T> db) {
+  public InMemoryWriteRepo(Map<K, V> db) {
     this.db = db;
   }
 
   @Override
-  public Mono<Try<T>> create(T t) {
-    if (db.containsKey(t.id())) {
-      return Mono.just(Try.failure(ALREADY_EXISTS));
+  public Mono<V> create(V v) {
+    if (db.containsKey(v.id())) {
+      return Mono.error(ALREADY_EXISTS);
     }
-    db.put(t.id(), t);
-    return Mono.just(Try.success(t));
+    db.put(v.id(), v);
+    return Mono.justOrEmpty(v);
   }
 
   @Override
-  public Mono<Try<T>> update(T t) {
-    if (db.containsKey(t.id())) {
-      return Mono.just(Try.success(db.put(t.id(), t)));
+  public Mono<V> update(V v) {
+    if (db.containsKey(v.id())) {
+      db.put(v.id(), v);
+      return Mono.just(v);
     } else {
-      return Mono.just(Try.failure(NOT_FOUND));
+      return Mono.error(NOT_FOUND);
     }
   }
 
   @Override
-  public Mono<Void> delete(String id) {
+  public Mono<Void> delete(K id) {
     db.remove(id);
     return Mono.empty();
   }

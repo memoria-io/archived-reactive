@@ -1,12 +1,11 @@
 package io.memoria.jutils.core.domain.port.crud;
 
-import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 
-public interface WriteRepo<T extends Storable> {
-  Mono<Try<T>> create(T t);
+public interface WriteRepo<K, V extends Storable<K>> {
+  Mono<V> create(V v);
 
-  Mono<Try<T>> update(T t);
+  Mono<V> update(V v);
 
-  Mono<Void> delete(String id);
+  Mono<Void> delete(K k);
 }
