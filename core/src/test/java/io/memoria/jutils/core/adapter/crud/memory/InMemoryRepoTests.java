@@ -66,7 +66,7 @@ public class InMemoryRepoTests {
     StepVerifier.create(readRepo.get(user.id)).expectNext(Try.success(user)).expectComplete().verify();
     StepVerifier.create(readRepo.exists(user.id)).expectNext(Try.success(true)).expectComplete().verify();
     db.clear();
-    StepVerifier.create(readRepo.exists(user.id)).expectNext(Try.success(true)).expectComplete().verify();
+    StepVerifier.create(readRepo.exists(user.id)).expectNext(Try.success(false)).expectComplete().verify();
   }
 
   @Test
