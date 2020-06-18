@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jutils</artifactId>
-        <version>up</version>
+        <version>0.8.3</version>
     </parent>
 
     <groupId>io.memoria.jutils</groupId>
     <artifactId>kafka</artifactId>
-    <version>up</version>
+    <version>0.8.3</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
