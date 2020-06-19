@@ -1,8 +1,8 @@
 package io.memoria.jutils.messaging.adapter.memory;
 
 import io.memoria.jutils.messaging.domain.entity.Msg;
+import io.memoria.jutils.messaging.domain.entity.Response;
 import io.memoria.jutils.messaging.domain.port.MsgProducer;
-import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -13,17 +13,17 @@ import java.util.Map;
 public record InMemoryMsgProducer(Map<String, HashMap<String, LinkedList<Msg>>>db) implements MsgProducer {
 
   @Override
-  public Flux<Try<Void>> produce(String topic, String partition, Flux<Msg> msgFlux) {
-    return msgFlux.map(msg -> {
+  public Flux<Response> produce(String topic, String partition, Flux<Msg> msgFlux) {
+    return msgFlux.doOnNext(msg -> {
       db.putIfAbsent(topic, new HashMap<>());
       db.get(topic).putIfAbsent(partition, new LinkedList<>());
       db.get(topic).get(partition).addLast(msg);
-      return Try.success(null);
-    });
+    }).map(m -> m::id);
   }
 
   @Override
-  public Mono<Try<Void>> close() {
-    return Mono.just(Try.run(db::clear));
+  public Mono<Void> close() {
+    db.clear();
+    return Mono.empty();
   }
 }

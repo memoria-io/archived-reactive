@@ -5,4 +5,4 @@ import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 
 @FunctionalInterface
-public interface QueryHandler extends Function1<QueryRequest, Mono<Try<QueryResponse>>> {}
+public interface QueryHandler extends Function1<QueryRequest, Mono<QueryResponse>> {}
