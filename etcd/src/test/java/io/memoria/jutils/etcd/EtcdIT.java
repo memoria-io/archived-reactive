@@ -20,7 +20,7 @@ public class EtcdIT {
 
   public EtcdIT() {
     config = YamlUtils.parseYamlResource("etcd.yaml").block();
-    clientBuilt = Client.builder().endpoints(config.asString("etcd.url")).build();
+    clientBuilt = Client.builder().endpoints(config.asString("etcd.url").get()).build();
     client = new EtcdStoreClient(clientBuilt);
   }
 
