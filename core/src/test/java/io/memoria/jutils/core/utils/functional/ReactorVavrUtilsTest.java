@@ -12,9 +12,6 @@ import reactor.test.StepVerifier;
 
 import java.util.function.Function;
 
-import static io.memoria.jutils.core.utils.file.FileUtils.writeFile;
-import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.tryToFluxTry;
-import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.tryToMonoTry;
 import static io.vavr.control.Either.left;
 import static io.vavr.control.Either.right;
 
@@ -24,8 +21,9 @@ public class ReactorVavrUtilsTest {
     Try<String> h = Try.success("hello");
     Function<String, Mono<Try<Integer>>> op1 = t -> Mono.just(Try.success((t + " world").length()));
     Function<Integer, Mono<Try<String>>> op2 = t -> Mono.just(Try.success("count is " + t));
-    Mono<Try<String>> tryMono = Mono.just(h).flatMap(k -> ReactorVavrUtils.tryToMonoTry(k, op1)).flatMap(r -> ReactorVavrUtils
-            .tryToMonoTry(r, op2));
+    Mono<Try<String>> tryMono = Mono.just(h)
+                                    .flatMap(k -> ReactorVavrUtils.tryToMonoTry(k, op1))
+                                    .flatMap(r -> ReactorVavrUtils.tryToMonoTry(r, op2));
     StepVerifier.create(tryMono).expectNext(Try.success("count is 11")).expectComplete().verify();
     // Failure
     Function<String, Mono<Try<String>>> opError = t -> Mono.just(Try.failure(new Exception("should fail")));
@@ -38,8 +36,9 @@ public class ReactorVavrUtilsTest {
     Try<String> h = Try.success("hello");
     Function<String, Flux<Try<Integer>>> op1 = t -> Flux.just(Try.success((t + " world").length()));
     Function<Integer, Flux<Try<String>>> op2 = t -> Flux.just(Try.success("count is " + t));
-    Flux<Try<String>> tryFlux = Flux.just(h).flatMap(k -> ReactorVavrUtils.tryToFluxTry(k, op1)).flatMap(r -> ReactorVavrUtils
-            .tryToFluxTry(r, op2));
+    Flux<Try<String>> tryFlux = Flux.just(h)
+                                    .flatMap(k -> ReactorVavrUtils.tryToFluxTry(k, op1))
+                                    .flatMap(r -> ReactorVavrUtils.tryToFluxTry(r, op2));
     StepVerifier.create(tryFlux).expectNext(Try.success("count is 11")).expectComplete().verify();
     // Failure
     Function<String, Flux<Try<String>>> opError = t -> Flux.just(Try.failure(new Exception("should fail")));
@@ -52,7 +51,9 @@ public class ReactorVavrUtilsTest {
     Try<String> h = Try.success("hello");
     Function<String, Mono<Try<Integer>>> op1 = t -> Mono.just(Try.success((t + " world").length()));
     Function<Integer, Mono<Try<String>>> op2 = t -> Mono.just(Try.success("count is " + t));
-    Mono<Try<String>> tryMono = Mono.just(h).flatMap(ReactorVavrUtils.tryToMonoTry(op1)).flatMap(ReactorVavrUtils.tryToMonoTry(op2));
+    Mono<Try<String>> tryMono = Mono.just(h)
+                                    .flatMap(ReactorVavrUtils.tryToMonoTry(op1))
+                                    .flatMap(ReactorVavrUtils.tryToMonoTry(op2));
     StepVerifier.create(tryMono).expectNext(Try.success("count is 11")).expectComplete().verify();
     // Failure
     Function<String, Mono<Try<String>>> opError = t -> Mono.just(Try.failure(new Exception("should fail")));
@@ -65,7 +66,9 @@ public class ReactorVavrUtilsTest {
     Try<String> h = Try.success("hello");
     Function<String, Flux<Try<Integer>>> op1 = t -> Flux.just(Try.success((t + " world").length()));
     Function<Integer, Flux<Try<String>>> op2 = t -> Flux.just(Try.success("count is " + t));
-    Flux<Try<String>> tryFlux = Flux.just(h).flatMap(ReactorVavrUtils.tryToFluxTry(op1)).flatMap(ReactorVavrUtils.tryToFluxTry(op2));
+    Flux<Try<String>> tryFlux = Flux.just(h)
+                                    .flatMap(ReactorVavrUtils.tryToFluxTry(op1))
+                                    .flatMap(ReactorVavrUtils.tryToFluxTry(op2));
     StepVerifier.create(tryFlux).expectNext(Try.success("count is 11")).expectComplete().verify();
     // Failure
     Function<String, Flux<Try<String>>> opError = t -> Flux.just(Try.failure(new Exception("should fail")));

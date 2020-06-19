@@ -15,12 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InMemoryRepoTests {
-  private static record User(String id, int age) implements Storable<String> {}
-
   private final Map<String, Storable<String>> db = new HashMap<>();
   private final ReadRepo<String, Storable<String>> readRepo = new InMemoryReadRepo<>(db);
   private final WriteRepo<String, Storable<String>> writeRepo = new InMemoryWriteRepo<>(db);
-
   private final User user = new User("bob", 20);
   private final User otherUser = new User("bob", 23);
 
@@ -68,4 +65,6 @@ public class InMemoryRepoTests {
     StepVerifier.create(writeRepo.delete(user.id)).expectComplete().verify();
     Assertions.assertNull(db.get(user.id));
   }
+
+  private static record User(String id, int age) implements Storable<String> {}
 }

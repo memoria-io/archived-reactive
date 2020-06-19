@@ -10,14 +10,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class LocalDateGsonAdapter extends TypeAdapter<LocalDate> {
-  public static GsonBuilder register(GsonBuilder gsonBuilder, DateTimeFormatter dateFormatter) {
-    return gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateGsonAdapter(dateFormatter));
-  }
-
   private final DateTimeFormatter dateFormat;
 
   public LocalDateGsonAdapter(DateTimeFormatter dateFormat) {
     this.dateFormat = dateFormat;
+  }
+
+  public static GsonBuilder register(GsonBuilder gsonBuilder, DateTimeFormatter dateFormatter) {
+    return gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateGsonAdapter(dateFormatter));
   }
 
   @Override

@@ -19,7 +19,7 @@ public class ReactivePulsarIT {
   private Flux<Msg> msgs;
 
   public ReactivePulsarIT() {
-    config = YamlUtils.parseYamlResource("pulsar.yaml").get();
+    config = YamlUtils.parseYamlResource("pulsar.yaml").block();
     msgs = Flux.interval(Duration.ofMillis(10)).log().map(i -> new Msg(i + "", "Msg number" + i));
   }
 

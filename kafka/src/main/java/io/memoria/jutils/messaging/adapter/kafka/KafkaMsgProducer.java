@@ -1,7 +1,6 @@
 package io.memoria.jutils.messaging.adapter.kafka;
 
 import io.memoria.jutils.core.utils.functional.ReactorVavrUtils;
-import io.memoria.jutils.core.utils.yaml.YamlConfigMap;
 import io.memoria.jutils.messaging.domain.entity.Msg;
 import io.memoria.jutils.messaging.domain.port.MsgProducer;
 import io.vavr.control.Try;

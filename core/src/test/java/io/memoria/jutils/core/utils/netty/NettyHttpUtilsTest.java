@@ -34,6 +34,11 @@ public class NettyHttpUtilsTest {
     client = HttpClient.create().baseUrl("127.0.0.1:8081");
   }
 
+  @AfterAll
+  public static void afterAll() {
+    server.dispose();
+  }
+
   @Test
   public void sendTest() {
     var monoResp = client.get()
@@ -61,10 +66,5 @@ public class NettyHttpUtilsTest {
                          .responseSingle((res, body) -> Mono.just(res.status().code()).zipWith(body.asString()))
                          .map(t -> Tuple.of(t.getT1(), t.getT2()));
     StepVerifier.create(monoResp).expectNext(Tuple.of(200, "(bob, password)")).expectComplete().verify();
-  }
-
-  @AfterAll
-  public static void afterAll() {
-    server.dispose();
   }
 }

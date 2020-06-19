@@ -16,16 +16,11 @@ import java.util.function.Function;
 
 public record PulsarMsgProducer(PulsarClient client, Duration timeout) implements MsgProducer {
 
-
   @Override
   public Flux<Try<Void>> produce(String topic, String partitionStr, Flux<Msg> msgFlux) {
     return createProducer(client, topic).map(produceFrom(msgFlux, partitionStr))
                                         .getOrElseGet(f -> Flux.just(Try.failure(f)))
                                         .timeout(timeout);
-  }
-
-  private Function<Producer<String>, Flux<Try<Void>>> produceFrom(Flux<Msg> msgFlux, String partition) {
-    return prod -> msgFlux.flatMap(send(prod, partition)).doFinally(s -> close(prod).subscribe());
   }
 
   @Override
@@ -35,6 +30,10 @@ public record PulsarMsgProducer(PulsarClient client, Duration timeout) implement
 
   private static Try<Producer<String>> createProducer(PulsarClient client, String topic) {
     return Try.of(() -> client.newProducer(Schema.STRING).topic(topic).create());
+  }
+
+  private Function<Producer<String>, Flux<Try<Void>>> produceFrom(Flux<Msg> msgFlux, String partition) {
+    return prod -> msgFlux.flatMap(send(prod, partition)).doFinally(s -> close(prod).subscribe());
   }
 
   private static Function1<Msg, Mono<Try<Void>>> send(Producer<String> producer, String partition) {

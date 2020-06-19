@@ -8,6 +8,5 @@ public interface UserCommand extends Command {
 
   }
 
-  record SendMessage(String fromUserId, String toUserId, String message) implements UserCommand{
-}
+  record SendMessage(String fromUserId, String toUserId, String message) implements UserCommand {}
 }

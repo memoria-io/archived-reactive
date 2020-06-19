@@ -1,6 +1,5 @@
 package io.memoria.jutils.messaging.adapter.kafka;
 
-import io.memoria.jutils.core.utils.yaml.YamlConfigMap;
 import io.memoria.jutils.messaging.domain.entity.Msg;
 import io.memoria.jutils.messaging.domain.port.MsgConsumer;
 import io.vavr.collection.List;
@@ -20,8 +19,6 @@ import static io.memoria.jutils.core.utils.functional.VavrUtils.traverseOfTry;
 
 public record KafkaMsgConsumer(KafkaConsumer<String, String>consumer, Scheduler scheduler, Duration timeout)
         implements MsgConsumer {
-
-
 
   @Override
   public Flux<Try<Msg>> consume(String topic, String partitionStr, long offset) {

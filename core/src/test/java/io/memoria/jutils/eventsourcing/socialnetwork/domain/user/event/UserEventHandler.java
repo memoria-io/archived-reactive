@@ -18,12 +18,12 @@ public class UserEventHandler implements EventHandler<User, UserEvent> {
                                Case($(instanceOf(UserEvent.MessageSeen.class)), ev -> messageSeen(user, ev)));
   }
 
-  private User addFriend(User u, UserEvent.FriendAdded friendAdded) {
-    return u.withNewFriend(friendAdded.friendId());
-  }
-
   private User createMessage(User u, UserEvent.MessageCreated msg) {
     return u.withNewMessage(new Message(msg.messageId(), msg.from(), msg.to(), msg.body()));
+  }
+
+  private User addFriend(User u, UserEvent.FriendAdded friendAdded) {
+    return u.withNewFriend(friendAdded.friendId());
   }
 
   private User messageSeen(User u, UserEvent.MessageSeen messageSeen) {

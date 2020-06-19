@@ -21,7 +21,7 @@ public class ReactiveNatsIT {
   private final Flux<Msg> msgs;
 
   public ReactiveNatsIT() throws IOException, InterruptedException {
-    config = YamlUtils.parseYamlResource("nats.yaml").get();
+    config = YamlUtils.parseYamlResource("nats.yaml").block();
     msgProducer = NatsUtils.natsMsgProducer(config, Schedulers.elastic());
     msgConsumer = NatsUtils.natsMsgConsumer(config, Schedulers.elastic());
     msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Msg(i + "", "Msg number" + i));

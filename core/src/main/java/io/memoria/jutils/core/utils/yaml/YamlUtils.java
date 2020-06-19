@@ -14,8 +14,6 @@ import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.checkedMo
 public class YamlUtils {
   private YamlUtils() {}
 
-  private static final class MapInstance extends HashMap<String, Object> {}
-
   /**
    * @param filename      path of the file
    * @param ignoreUnknown ignore extra values in when parsing
@@ -34,25 +32,6 @@ public class YamlUtils {
    */
   public static <T> Mono<T> parseYamlFile(Class<T> t, String filename, boolean ignoreUnknown) {
     return parseYaml(t, filename, FileUtils::fileLines, ignoreUnknown);
-  }
-
-  /**
-   * @param filename path of the file under e.g resources/filename
-   * @return Try of class type T
-   */
-  public static Mono<YamlConfigMap> parseYamlResource(String filename) {
-    return parseYamlResource(MapInstance.class, filename, false).map(YamlConfigMap::new);
-  }
-
-  /**
-   * @param t             Class type
-   * @param filename      path of the file under e.g resources/filename
-   * @param ignoreUnknown ignore extra values in when parsing
-   * @param <T>           Type param
-   * @return Try of class type T
-   */
-  public static <T> Mono<T> parseYamlResource(Class<T> t, String filename, boolean ignoreUnknown) {
-    return parseYaml(t, filename, FileUtils::resourceLines, ignoreUnknown);
   }
 
   private static <T> Mono<T> parseYaml(Class<T> t,
@@ -75,5 +54,26 @@ public class YamlUtils {
       return Flux.just(line);
     }
   }
+
+  /**
+   * @param filename path of the file under e.g resources/filename
+   * @return Try of class type T
+   */
+  public static Mono<YamlConfigMap> parseYamlResource(String filename) {
+    return parseYamlResource(MapInstance.class, filename, false).map(YamlConfigMap::new);
+  }
+
+  /**
+   * @param t             Class type
+   * @param filename      path of the file under e.g resources/filename
+   * @param ignoreUnknown ignore extra values in when parsing
+   * @param <T>           Type param
+   * @return Try of class type T
+   */
+  public static <T> Mono<T> parseYamlResource(Class<T> t, String filename, boolean ignoreUnknown) {
+    return parseYaml(t, filename, FileUtils::resourceLines, ignoreUnknown);
+  }
+
+  private static final class MapInstance extends HashMap<String, Object> {}
 }
 

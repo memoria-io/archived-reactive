@@ -12,17 +12,16 @@ import java.time.format.DateTimeFormatter;
 
 public class LocalDateTimeGsonAdapter extends TypeAdapter<LocalDateTime> {
 
-  public static GsonBuilder register(GsonBuilder gsonBuilder, DateTimeFormatter dateFormatter, ZoneOffset zoneOffset) {
-    return gsonBuilder.registerTypeAdapter(LocalDateTime.class,
-                                           new LocalDateTimeGsonAdapter(dateFormatter, zoneOffset));
-  }
-
   private final DateTimeFormatter dateTimeFormat;
   private final ZoneOffset zoneOffset;
-
   public LocalDateTimeGsonAdapter(DateTimeFormatter dateTimeFormat, ZoneOffset zoneOffset) {
     this.dateTimeFormat = dateTimeFormat;
     this.zoneOffset = zoneOffset;
+  }
+
+  public static GsonBuilder register(GsonBuilder gsonBuilder, DateTimeFormatter dateFormatter, ZoneOffset zoneOffset) {
+    return gsonBuilder.registerTypeAdapter(LocalDateTime.class,
+                                           new LocalDateTimeGsonAdapter(dateFormatter, zoneOffset));
   }
 
   @Override

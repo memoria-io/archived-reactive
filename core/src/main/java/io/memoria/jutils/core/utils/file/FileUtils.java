@@ -22,10 +22,6 @@ public class FileUtils {
     return resourceLines(fileName).reduce((a, b) -> a + "\n" + b);
   }
 
-  public static Mono<String> file(String fileName) {
-    return fileLines(fileName).reduce((a, b) -> a + "\n" + b);
-  }
-
   public static Flux<String> resourceLines(String fileName) {
     try {
       var p = Paths.get(requireNonNull(ClassLoader.getSystemClassLoader().getResource(fileName)).toURI());
@@ -33,6 +29,10 @@ public class FileUtils {
     } catch (URISyntaxException | IOException e) {
       return Flux.error(e);
     }
+  }
+
+  public static Mono<String> file(String fileName) {
+    return fileLines(fileName).reduce((a, b) -> a + "\n" + b);
   }
 
   public static Flux<String> fileLines(String fileName) {

@@ -17,6 +17,20 @@ import java.time.Duration;
 public class NatsUtils {
   public static final String CHANNEL_SEPARATOR = ".";
   private static final Logger log = LoggerFactory.getLogger(NatsUtils.class.getName());
+  private static ErrorListener err = new ErrorListener() {
+    public void errorOccurred(Connection conn, String type) {
+      log.error("Error {}", type);
+    }
+
+    public void exceptionOccurred(Connection conn, Exception exp) {
+      log.error("Exception", exp);
+    }
+
+    public void slowConsumerDetected(Connection conn, Consumer consumer) {
+      var url = Option.of(conn.getConnectedUrl()).getOrElse("");
+      log.error("Slow consumer on connection {}", url);
+    }
+  };
 
   private NatsUtils() {}
 
@@ -26,14 +40,6 @@ public class NatsUtils {
                                scheduler,
                                Duration.ofMillis(map.asYamlConfigMap("reactorNats")
                                                     .asLong("consumer.request.timeout")));
-  }
-
-  public static NatsMsgProducer natsMsgProducer(YamlConfigMap map, Scheduler scheduler)
-          throws IOException, InterruptedException {
-    return new NatsMsgProducer(create(map),
-                               scheduler,
-                               Duration.ofMillis(map.asYamlConfigMap("reactorNats")
-                                                    .asLong("producer.request.timeout")));
   }
 
   public static Connection create(YamlConfigMap c) throws IOException, InterruptedException {
@@ -56,18 +62,11 @@ public class NatsUtils {
     return Nats.connect(config);
   }
 
-  private static ErrorListener err = new ErrorListener() {
-    public void exceptionOccurred(Connection conn, Exception exp) {
-      log.error("Exception", exp);
-    }
-
-    public void errorOccurred(Connection conn, String type) {
-      log.error("Error {}", type);
-    }
-
-    public void slowConsumerDetected(Connection conn, Consumer consumer) {
-      var url = Option.of(conn.getConnectedUrl()).getOrElse("");
-      log.error("Slow consumer on connection {}", url);
-    }
-  };
+  public static NatsMsgProducer natsMsgProducer(YamlConfigMap map, Scheduler scheduler)
+          throws IOException, InterruptedException {
+    return new NatsMsgProducer(create(map),
+                               scheduler,
+                               Duration.ofMillis(map.asYamlConfigMap("reactorNats")
+                                                    .asLong("producer.request.timeout")));
+  }
 }

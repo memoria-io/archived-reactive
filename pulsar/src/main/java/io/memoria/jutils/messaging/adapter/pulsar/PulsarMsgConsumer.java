@@ -1,13 +1,11 @@
 package io.memoria.jutils.messaging.adapter.pulsar;
 
 import io.memoria.jutils.core.utils.functional.VavrUtils;
-import io.memoria.jutils.core.utils.yaml.YamlConfigMap;
 import io.memoria.jutils.messaging.domain.entity.Msg;
 import io.memoria.jutils.messaging.domain.port.MsgConsumer;
 import io.vavr.control.Try;
 import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.PulsarClient;
-import org.apache.pulsar.client.api.PulsarClientException;
 import org.apache.pulsar.client.api.Schema;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

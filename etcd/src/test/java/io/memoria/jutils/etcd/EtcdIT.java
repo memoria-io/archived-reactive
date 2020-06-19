@@ -1,8 +1,8 @@
 package io.memoria.jutils.etcd;
 
+import io.etcd.jetcd.Client;
 import io.memoria.jutils.core.utils.yaml.YamlConfigMap;
 import io.memoria.jutils.core.utils.yaml.YamlUtils;
-import io.etcd.jetcd.Client;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
@@ -19,7 +19,7 @@ public class EtcdIT {
   private final String value = "myValue";
 
   public EtcdIT() {
-    config = YamlUtils.parseYamlResource("etcd.yaml").get();
+    config = YamlUtils.parseYamlResource("etcd.yaml").block();
     clientBuilt = Client.builder().endpoints(config.asString("etcd.url")).build();
     client = new EtcdStoreClient(clientBuilt);
   }

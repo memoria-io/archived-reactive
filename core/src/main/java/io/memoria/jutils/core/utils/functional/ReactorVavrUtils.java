@@ -47,6 +47,10 @@ public class ReactorVavrUtils {
       return Mono.error(either.getLeft());
   }
 
+  public static <A> Mono<A> blockingToMono(CheckedFunction0<A> supplier, Scheduler scheduler) {
+    return Mono.defer(() -> checkedMono(supplier).subscribeOn(scheduler));
+  }
+
   public static <T> Mono<T> checkedMono(CheckedFunction0<? extends T> supplier) {
     Objects.requireNonNull(supplier, "supplier is null");
     try {
@@ -54,9 +58,5 @@ public class ReactorVavrUtils {
     } catch (Throwable t) {
       return Mono.error(t);
     }
-  }
-
-  public static <A> Mono<A> blockingToMono(CheckedFunction0<A> supplier, Scheduler scheduler) {
-    return Mono.defer(() -> checkedMono(supplier).subscribeOn(scheduler));
   }
 }
