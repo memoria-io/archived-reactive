@@ -1,13 +1,14 @@
 package io.memoria.jutils.core.utils.functional;
 
+import io.vavr.CheckedFunction0;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
+import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
@@ -39,14 +40,23 @@ public class ReactorVavrUtils {
     return a -> Match(a).of(Case($Success($()), f), Case($Failure($()), f2));
   }
 
-  public static <A> Mono<A> blockingToMono(Supplier<A> f, Scheduler scheduler) {
-    return Mono.defer(() -> Mono.just(f.get()).subscribeOn(scheduler));
-  }
-
   public static <L extends Throwable, R> Mono<R> eitherToMono(Either<L, R> either) {
     if (either.isRight())
       return Mono.just(either.get());
     else
       return Mono.error(either.getLeft());
+  }
+
+  public static <T> Mono<T> checkedMono(CheckedFunction0<? extends T> supplier) {
+    Objects.requireNonNull(supplier, "supplier is null");
+    try {
+      return Mono.just(supplier.apply());
+    } catch (Throwable t) {
+      return Mono.error(t);
+    }
+  }
+
+  public static <A> Mono<A> blockingToMono(CheckedFunction0<A> supplier, Scheduler scheduler) {
+    return Mono.defer(() -> checkedMono(supplier).subscribeOn(scheduler));
   }
 }

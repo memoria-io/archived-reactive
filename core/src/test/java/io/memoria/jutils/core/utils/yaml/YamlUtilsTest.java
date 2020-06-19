@@ -6,22 +6,23 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class YamlUtilsTest {
 
   @Test
   void parseYamlFile() {
-    YamlConfigMap resource = YamlUtils.parseYamlResource("utils/test.yaml").get();
-    YamlConfigMap file = YamlUtils.parseYamlFile("src/test/resources/utils/test.yaml", false).get();
+    YamlConfigMap resource = YamlUtils.parseYamlResource("utils/test.yaml").block();
+    YamlConfigMap file = YamlUtils.parseYamlFile("src/test/resources/utils/test.yaml", false).block();
     assertEquals(resource, file);
   }
 
   @Test
   @DisplayName("Values should be parsed correctly")
   public void values() {
-    YamlConfigMap map = YamlUtils.parseYamlResource("utils/test.yaml").get();
-
+    YamlConfigMap map = YamlUtils.parseYamlResource("utils/test.yaml").block();
+    assertNotNull(map);
     // string
     assertEquals("hello world", map.asString("stringValue"));
 
@@ -69,7 +70,8 @@ public class YamlUtilsTest {
   @Test
   @DisplayName("Subvalues should be parsed correctly")
   public void subValues() {
-    YamlConfigMap map = YamlUtils.parseYamlResource("utils/main-config.yaml").get();
+    YamlConfigMap map = YamlUtils.parseYamlResource("utils/main-config.yaml").block();
+    assertNotNull(map);
     assertEquals("hello world", map.asString("sub.config.name"));
     assertEquals("byebye", map.asString("sub.other.value"));
     assertEquals(List.of("hi", "hello", "bye"), map.asStringList("sub.list"));
@@ -78,8 +80,8 @@ public class YamlUtilsTest {
   @Test
   @DisplayName("Reading same file should produce same map")
   public void sameFileTest() {
-    YamlConfigMap map = YamlUtils.parseYamlResource("utils/test.yaml").get();
-    YamlConfigMap map2 = YamlUtils.parseYamlResource("utils/test.yaml").get();
+    YamlConfigMap map = YamlUtils.parseYamlResource("utils/test.yaml").block();
+    YamlConfigMap map2 = YamlUtils.parseYamlResource("utils/test.yaml").block();
 
     assertEquals(map, map2);
   }
