@@ -3,6 +3,7 @@ package io.memoria.jutils.core.utils.yaml;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
+import io.vavr.control.Option;
 
 import java.util.ArrayList;
 
@@ -12,47 +13,45 @@ public record YamlConfigMap(Map<String, Object>map) {
     this(HashMap.ofAll(conf));
   }
 
-  public Boolean asBoolean(String key) {
-    return Boolean.parseBoolean(asString(key));
+  public Option<Boolean> asBoolean(String key) {
+    return asString(key).map(Boolean::parseBoolean);
   }
 
-  public String asString(String key) {
-    return (String) map.get(key).get();
+  public Option<String> asString(String key) {
+    return map.get(key).map(s -> (String) s);
   }
 
-  public Integer asInteger(String key) {
-    return Integer.parseInt(asString(key));
+  public Option<Integer> asInteger(String key) {
+    return asString(key).map(Integer::parseInt);
   }
 
-  public Long asLong(String key) {
-    return Long.parseLong(asString(key));
+  public Option<Long> asLong(String key) {
+    return asString(key).map(Long::parseLong);
   }
 
-  public Double asDouble(String key) {
-    return Double.parseDouble(asString(key));
+  public Option<Double> asDouble(String key) {
+    return asString(key).map(Double::parseDouble);
   }
 
-  public List<Boolean> asBooleanList(String key) {
-    var list = asStringList(key).map(Boolean::parseBoolean);
-    return List.ofAll(list);
+  public Option<List<Boolean>> asBooleanList(String key) {
+    return asStringList(key).map(l -> l.map(Boolean::parseBoolean));
   }
 
-  public List<String> asStringList(String key) {
-    @SuppressWarnings("unchecked")
-    var list = (ArrayList<String>) map.get(key).get();
-    return List.ofAll(list);
+  public Option<List<String>> asStringList(String key) {
+    //noinspection unchecked
+    return map.get(key).map(l -> (ArrayList<String>) l).map(List::ofAll);
   }
 
-  public List<Integer> asIntegerList(String key) {
-    return List.ofAll(asStringList(key)).map(Integer::parseInt);
+  public Option<List<Integer>> asIntegerList(String key) {
+    return asStringList(key).map(o -> o.map(Integer::parseInt));
   }
 
-  public List<Long> asLongList(String key) {
-    return List.ofAll(asStringList(key)).map(Long::parseLong);
+  public Option<List<Long>> asLongList(String key) {
+    return asStringList(key).map(o -> o.map(Long::parseLong));
   }
 
-  public List<Double> asDoubleList(String key) {
-    return List.ofAll(asStringList(key)).map(Double::parseDouble);
+  public Option<List<Double>> asDoubleList(String key) {
+    return asStringList(key).map(o -> o.map(Double::parseDouble));
   }
 
   public java.util.Map<String, Object> asJavaMap() {
@@ -63,19 +62,17 @@ public record YamlConfigMap(Map<String, Object>map) {
     return this.map;
   }
 
-  public java.util.Map<String, Object> asJavaMap(String key) {
-    return asMap(key).toJavaMap();
+  public Option<java.util.Map<String, Object>> asJavaMap(String key) {
+    return asMap(key).map(Map::toJavaMap);
   }
 
-  public Map<String, Object> asMap(String key) {
-    @SuppressWarnings("unchecked")
-    var m = (java.util.Map<String, Object>) map.get(key).get();
-    return HashMap.ofAll(m);
+  public Option<Map<String, Object>> asMap(String key) {
+    //noinspection unchecked
+    return map.get(key).map(m -> (java.util.Map<String, Object>) m).map(HashMap::ofAll);
   }
 
-  public YamlConfigMap asYamlConfigMap(String key) {
-    @SuppressWarnings("unchecked")
-    var m = (java.util.Map<String, Object>) map.get(key).get();
-    return new YamlConfigMap(m);
+  public Option<YamlConfigMap> asYamlConfigMap(String key) {
+    //noinspection unchecked
+    return map.get(key).map(m -> (java.util.Map<String, Object>) m).map(YamlConfigMap::new);
   }
 }
