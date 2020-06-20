@@ -1,7 +1,7 @@
 package io.memoria.jutils.messaging.adapter.memory;
 
-import io.memoria.jutils.messaging.domain.entity.Msg;
-import io.memoria.jutils.messaging.domain.port.MsgConsumer;
+import io.memoria.jutils.messaging.domain.Message;
+import io.memoria.jutils.messaging.domain.port.MsgReceiver;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -9,10 +9,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public record InMemoryMsgConsumer(Map<String, HashMap<String, LinkedList<Msg>>>db) implements MsgConsumer {
+public record InMemoryMsgReceiver(Map<String, HashMap<String, LinkedList<Message>>>db) implements MsgReceiver {
 
   @Override
-  public Flux<Msg> consume(String topicId, String partition, long offset) {
+  public Flux<? extends Message> receive(String topicId, String partition, long offset) {
     return Flux.fromIterable(db.get(topicId).get(partition)).skip(offset);
   }
 

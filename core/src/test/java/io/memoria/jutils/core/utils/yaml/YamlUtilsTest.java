@@ -24,57 +24,56 @@ public class YamlUtilsTest {
     YamlConfigMap map = YamlUtils.parseYamlResource("utils/test.yaml").block();
     assertNotNull(map);
     // string
-    assertEquals("hello world", map.asString("stringValue"));
+    assertEquals("hello world", map.asString("stringValue").get());
 
     // boolean
-    assertTrue(map.asBoolean("booleanValue"));
+    assertTrue(map.asBoolean("booleanValue").get());
 
     // integer
-    assertEquals(10, map.asInteger("integerValue"));
+    assertEquals(10, map.asInteger("integerValue").get());
 
     // long
-    assertEquals(100000000001L, map.asLong("longValue"));
+    assertEquals(100000000001L, map.asLong("longValue").get());
 
     // double
-    assertEquals(1000000.000001, map.asDouble("doubleValue"));
+    assertEquals(1000000.000001, map.asDouble("doubleValue").get());
 
     // string list
-    assertEquals(List.of("hi", "hello", "bye"), map.asStringList("stringList"));
+    assertEquals(List.of("hi", "hello", "bye"), map.asStringList("stringList").get());
 
     // boolean list
-    assertEquals(List.of(true, false, true), map.asBooleanList("booleanList"));
+    assertEquals(List.of(true, false, true), map.asBooleanList("booleanList").get());
 
     // integer list
-    assertEquals(List.of(1, 2, 3), map.asIntegerList("integerList"));
+    assertEquals(List.of(1, 2, 3), map.asIntegerList("integerList").get());
 
     // long list
-    assertEquals(List.of(1000000000001L, 1000000000002L, 1000000000003L), map.asLongList("longList"));
+    assertEquals(List.of(1000000000001L, 1000000000002L, 1000000000003L), map.asLongList("longList").get());
 
     // double list
-    assertEquals(List.of(1000000000001.23, 1000000000002.23, 1000000000003.23), map.asDoubleList("doubleList"));
+    assertEquals(List.of(1000000000001.23, 1000000000002.23, 1000000000003.23), map.asDoubleList("doubleList").get());
 
     // vavr map
-    assertEquals(HashMap.of("key1", "string value", "key2", "2"), map.asMap("map"));
+    assertEquals(HashMap.of("key1", "string value", "key2", "2"), map.asMap("map").get());
     assertEquals("hello world", map.asMap().get("stringValue").get());
 
     // asYamlConfigMap
-    assertEquals("string value", map.asYamlConfigMap("map").asString("key1"));
+    assertEquals("string value", map.asYamlConfigMap("map").get().asString("key1").get());
 
     // as java map
-    //noinspection AssertEqualsBetweenInconvertibleTypes
     assertEquals(HashMap.of("key1", "string value", "key2", "2").toJavaMap(), map.asJavaMap("map"));
     assertEquals(HashMap.of("key1", "string value", "key2", "2").toJavaMap(), map.asJavaMap().get("map"));
 
   }
 
   @Test
-  @DisplayName("Subvalues should be parsed correctly")
+  @DisplayName("Sub values should be parsed correctly")
   public void subValues() {
     YamlConfigMap map = YamlUtils.parseYamlResource("utils/main-config.yaml").block();
     assertNotNull(map);
-    assertEquals("hello world", map.asString("sub.config.name"));
-    assertEquals("byebye", map.asString("sub.other.value"));
-    assertEquals(List.of("hi", "hello", "bye"), map.asStringList("sub.list"));
+    assertEquals("hello world", map.asString("sub.config.name").get());
+    assertEquals("byebye", map.asString("sub.other.value").get());
+    assertEquals(List.of("hi", "hello", "bye"), map.asStringList("sub.list").get());
   }
 
   @Test
