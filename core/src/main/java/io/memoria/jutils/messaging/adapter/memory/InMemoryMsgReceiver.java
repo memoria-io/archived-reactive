@@ -12,7 +12,7 @@ import java.util.Map;
 public record InMemoryMsgReceiver(Map<String, HashMap<String, LinkedList<Message>>>db) implements MsgReceiver {
 
   @Override
-  public Flux<? extends Message> receive(String topicId, String partition, long offset) {
+  public Flux<Message> receive(String topicId, String partition, long offset) {
     return Flux.fromIterable(db.get(topicId).get(partition)).skip(offset);
   }
 

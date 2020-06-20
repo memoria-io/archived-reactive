@@ -14,7 +14,7 @@ import java.util.Map;
 public record InMemoryMsgSender(Map<String, HashMap<String, LinkedList<Message>>>db) implements MsgSender {
 
   @Override
-  public Flux<Option<? extends Message>> send(String topic, String partition, Flux<? extends Message> msgFlux) {
+  public Flux<Option<Message>> send(String topic, String partition, Flux<Message> msgFlux) {
     return msgFlux.doOnNext(msg -> {
       db.putIfAbsent(topic, new HashMap<>());
       db.get(topic).putIfAbsent(partition, new LinkedList<>());

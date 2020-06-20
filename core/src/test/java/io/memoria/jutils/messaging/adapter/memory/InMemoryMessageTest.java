@@ -15,14 +15,12 @@ import java.util.LinkedList;
 import static java.lang.String.valueOf;
 
 public class InMemoryMessageTest {
-  private record Mess(String id, String message) implements Message {}
-
   private final String TOPIC = "test_topic";
   private final String PARTITION = "0";
   private final int MSG_COUNT = 3;
-  private final Flux<Mess> msgs = Flux.interval(Duration.ofMillis(10))
-                                      .map(i -> new Mess(i + "", "hello_" + i))
-                                      .take(MSG_COUNT);
+  private final Flux<Message> msgs = Flux.interval(Duration.ofMillis(10))
+                                         .map(i -> new Message(i + "", "hello_" + i))
+                                         .take(MSG_COUNT);
 
   @Test
   @DisplayName("Should publish messages correctly")

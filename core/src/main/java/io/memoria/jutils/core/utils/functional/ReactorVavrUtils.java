@@ -1,6 +1,7 @@
 package io.memoria.jutils.core.utils.functional;
 
 import io.vavr.CheckedFunction0;
+import io.vavr.CheckedRunnable;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
@@ -49,6 +50,20 @@ public class ReactorVavrUtils {
 
   public static <A> Mono<A> blockingToMono(CheckedFunction0<A> supplier, Scheduler scheduler) {
     return Mono.defer(() -> checkedMono(supplier).subscribeOn(scheduler));
+  }
+
+  public static <A> Mono<Void> blockingToMono(CheckedRunnable runnable, Scheduler scheduler) {
+    return Mono.defer(() -> checkedMono(runnable).subscribeOn(scheduler));
+  }
+
+  static Mono<Void> checkedMono(CheckedRunnable runnable) {
+    Objects.requireNonNull(runnable, "runnable is null");
+    try {
+      runnable.run();
+      return Mono.empty(); // null represents the absence of an value, i.e. Void
+    } catch (Throwable t) {
+      return Mono.error(t);
+    }
   }
 
   public static <T> Mono<T> checkedMono(CheckedFunction0<? extends T> supplier) {
