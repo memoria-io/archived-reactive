@@ -61,7 +61,8 @@ public class YamlUtilsTest {
     assertEquals("string value", map.asYamlConfigMap("map").get().asString("key1").get());
 
     // as java map
-    assertEquals(HashMap.of("key1", "string value", "key2", "2").toJavaMap(), map.asJavaMap("map"));
+    //noinspection AssertEqualsBetweenInconvertibleTypes
+    assertEquals(HashMap.of("key1", "string value", "key2", "2").toJavaMap(), map.asJavaMap("map").get());
     assertEquals(HashMap.of("key1", "string value", "key2", "2").toJavaMap(), map.asJavaMap().get("map"));
 
   }
