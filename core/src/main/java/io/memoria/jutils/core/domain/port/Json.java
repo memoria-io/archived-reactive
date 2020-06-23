@@ -5,9 +5,9 @@ import io.vavr.control.Try;
 import java.util.Map;
 
 public interface Json {
-  <T> Try<T> toObject(String str, Class<T> tClass);
+  <T> String toJsonString(T tclass);
 
   Try<Map<String, Object>> toMap(String str);
 
-  <T> String toJsonString(T tclass);
+  <T> Try<T> toObject(String str, Class<T> tClass);
 }

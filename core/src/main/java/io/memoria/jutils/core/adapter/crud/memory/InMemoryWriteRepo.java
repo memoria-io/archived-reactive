@@ -26,6 +26,12 @@ public class InMemoryWriteRepo<K, V extends Storable<K>> implements WriteRepo<K,
   }
 
   @Override
+  public Mono<Void> delete(K id) {
+    db.remove(id);
+    return Mono.empty();
+  }
+
+  @Override
   public Mono<V> update(V v) {
     if (db.containsKey(v.id())) {
       db.put(v.id(), v);
@@ -33,11 +39,5 @@ public class InMemoryWriteRepo<K, V extends Storable<K>> implements WriteRepo<K,
     } else {
       return Mono.error(NOT_FOUND);
     }
-  }
-
-  @Override
-  public Mono<Void> delete(K id) {
-    db.remove(id);
-    return Mono.empty();
   }
 }

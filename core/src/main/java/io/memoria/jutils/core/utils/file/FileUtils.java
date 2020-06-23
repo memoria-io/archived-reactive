@@ -1,5 +1,6 @@
 package io.memoria.jutils.core.utils.file;
 
+import io.memoria.jutils.core.utils.functional.ReactorVavrUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -11,12 +12,21 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.blockingToMono;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.util.Objects.requireNonNull;
 
 public class FileUtils {
-  private FileUtils() {}
+  public static Mono<String> file(String fileName) {
+    return fileLines(fileName).reduce((a, b) -> a + "\n" + b);
+  }
+
+  public static Flux<String> fileLines(String fileName) {
+    try {
+      return Flux.fromStream(Files.lines(Path.of(fileName)));
+    } catch (IOException e) {
+      return Flux.error(e);
+    }
+  }
 
   public static Mono<String> resource(String fileName) {
     return resourceLines(fileName).reduce((a, b) -> a + "\n" + b);
@@ -31,23 +41,13 @@ public class FileUtils {
     }
   }
 
-  public static Mono<String> file(String fileName) {
-    return fileLines(fileName).reduce((a, b) -> a + "\n" + b);
-  }
-
-  public static Flux<String> fileLines(String fileName) {
-    try {
-      return Flux.fromStream(Files.lines(Path.of(fileName)));
-    } catch (IOException e) {
-      return Flux.error(e);
-    }
-  }
-
   public static Mono<Path> writeFile(String path, String content, Scheduler scheduler) {
     return writeFile(path, content, scheduler, CREATE);
   }
 
   public static Mono<Path> writeFile(String path, String content, Scheduler scheduler, StandardOpenOption... options) {
-    return blockingToMono(() -> Files.writeString(Paths.get(path), content, options), scheduler);
+    return ReactorVavrUtils.blockingToMono(() -> Files.writeString(Paths.get(path), content, options), scheduler);
   }
+
+  private FileUtils() {}
 }
