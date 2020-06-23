@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InMemoryRepoTests {
+  private static record User(String id, int age) implements Storable<String> {}
+
   private final Map<String, Storable<String>> db = new HashMap<>();
   private final ReadRepo<String, Storable<String>> readRepo = new InMemoryReadRepo<>(db);
   private final WriteRepo<String, Storable<String>> writeRepo = new InMemoryWriteRepo<>(db);
@@ -27,6 +29,13 @@ public class InMemoryRepoTests {
   }
 
   @Test
+  @DisplayName("Already exists")
+  public void alreadyExists() {
+    db.put(this.user.id, this.user);
+    StepVerifier.create(writeRepo.create(user)).expectError(AlreadyExists.class).verify();
+  }
+
+  @Test
   @DisplayName("Should crud the entity")
   public void crudTest() {
     StepVerifier.create(writeRepo.create(user)).expectNext(user).expectComplete().verify();
@@ -36,16 +45,11 @@ public class InMemoryRepoTests {
   }
 
   @Test
-  @DisplayName("Should be not found")
-  public void notFoundTest() {
-    StepVerifier.create(writeRepo.update(user)).expectError(NotFound.class).verify();
-  }
-
-  @Test
-  @DisplayName("Already exists")
-  public void alreadyExists() {
+  @DisplayName("Should delete successfully")
+  public void delete() {
     db.put(this.user.id, this.user);
-    StepVerifier.create(writeRepo.create(user)).expectError(AlreadyExists.class).verify();
+    StepVerifier.create(writeRepo.delete(user.id)).expectComplete().verify();
+    Assertions.assertNull(db.get(user.id));
   }
 
   @Test
@@ -59,12 +63,8 @@ public class InMemoryRepoTests {
   }
 
   @Test
-  @DisplayName("Should delete successfully")
-  public void delete() {
-    db.put(this.user.id, this.user);
-    StepVerifier.create(writeRepo.delete(user.id)).expectComplete().verify();
-    Assertions.assertNull(db.get(user.id));
+  @DisplayName("Should be not found")
+  public void notFoundTest() {
+    StepVerifier.create(writeRepo.update(user)).expectError(NotFound.class).verify();
   }
-
-  private static record User(String id, int age) implements Storable<String> {}
 }

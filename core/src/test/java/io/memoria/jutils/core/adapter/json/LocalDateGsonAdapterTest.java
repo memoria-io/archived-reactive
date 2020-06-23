@@ -20,14 +20,14 @@ public class LocalDateGsonAdapterTest {
   private String dateString = "2018-11-24";
 
   @Test
-  public void dateSerializer() {
-    String result = j.toJsonString(dateObj);
-    assertEquals(dateString, result);
-  }
-
-  @Test
   public void dateDeserializer() {
     LocalDate result = j.toObject(jsonDate, LocalDate.class).get();
     assertEquals(dateObj, result);
+  }
+
+  @Test
+  public void dateSerializer() {
+    String result = j.toJsonString(dateObj);
+    assertEquals(dateString, result);
   }
 }

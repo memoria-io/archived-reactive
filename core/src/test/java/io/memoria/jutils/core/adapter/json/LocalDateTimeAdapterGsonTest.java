@@ -25,14 +25,14 @@ public class LocalDateTimeAdapterGsonTest {
                                                    .toLocalDateTime();
 
   @Test
-  public void dateTimeSerializer() {
-    String actual = j.toJsonString(dateTimeObj);
-    assertEquals(str, actual);
-  }
-
-  @Test
   public void dateTimeDeserializer() {
     LocalDateTime actual = j.toObject(json, LocalDateTime.class).get();
     assertEquals(dateTimeObj, actual);
+  }
+
+  @Test
+  public void dateTimeSerializer() {
+    String actual = j.toJsonString(dateTimeObj);
+    assertEquals(str, actual);
   }
 }
