@@ -19,6 +19,25 @@ public class YamlUtilsTest {
   }
 
   @Test
+  @DisplayName("Reading same file should produce same map")
+  public void sameFileTest() {
+    YamlConfigMap map = YamlUtils.parseYamlResource("utils/test.yaml").block();
+    YamlConfigMap map2 = YamlUtils.parseYamlResource("utils/test.yaml").block();
+
+    assertEquals(map, map2);
+  }
+
+  @Test
+  @DisplayName("Sub values should be parsed correctly")
+  public void subValues() {
+    YamlConfigMap map = YamlUtils.parseYamlResource("utils/main-config.yaml").block();
+    assertNotNull(map);
+    assertEquals("hello world", map.asString("sub.config.name").get());
+    assertEquals("byebye", map.asString("sub.other.value").get());
+    assertEquals(List.of("hi", "hello", "bye"), map.asStringList("sub.list").get());
+  }
+
+  @Test
   @DisplayName("Values should be parsed correctly")
   public void values() {
     YamlConfigMap map = YamlUtils.parseYamlResource("utils/test.yaml").block();
@@ -65,24 +84,5 @@ public class YamlUtilsTest {
     assertEquals(HashMap.of("key1", "string value", "key2", "2").toJavaMap(), map.asJavaMap("map").get());
     assertEquals(HashMap.of("key1", "string value", "key2", "2").toJavaMap(), map.asJavaMap().get("map"));
 
-  }
-
-  @Test
-  @DisplayName("Sub values should be parsed correctly")
-  public void subValues() {
-    YamlConfigMap map = YamlUtils.parseYamlResource("utils/main-config.yaml").block();
-    assertNotNull(map);
-    assertEquals("hello world", map.asString("sub.config.name").get());
-    assertEquals("byebye", map.asString("sub.other.value").get());
-    assertEquals(List.of("hi", "hello", "bye"), map.asStringList("sub.list").get());
-  }
-
-  @Test
-  @DisplayName("Reading same file should produce same map")
-  public void sameFileTest() {
-    YamlConfigMap map = YamlUtils.parseYamlResource("utils/test.yaml").block();
-    YamlConfigMap map2 = YamlUtils.parseYamlResource("utils/test.yaml").block();
-
-    assertEquals(map, map2);
   }
 }

@@ -12,27 +12,7 @@ import java.util.function.Function;
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.checkedMono;
 
 public class YamlUtils {
-  private YamlUtils() {}
-
-  /**
-   * @param filename      path of the file
-   * @param ignoreUnknown ignore extra values in when parsing
-   * @return Try of class type T
-   */
-  public static Mono<YamlConfigMap> parseYamlFile(String filename, boolean ignoreUnknown) {
-    return parseYamlFile(MapInstance.class, filename, ignoreUnknown).map(YamlConfigMap::new);
-  }
-
-  /**
-   * @param t             Class type
-   * @param filename      absolute path of the file or project relevant path
-   * @param ignoreUnknown ignore extra values in when parsing
-   * @param <T>           Type param
-   * @return Try of class type T
-   */
-  public static <T> Mono<T> parseYamlFile(Class<T> t, String filename, boolean ignoreUnknown) {
-    return parseYaml(t, filename, FileUtils::fileLines, ignoreUnknown);
-  }
+  private static final class MapInstance extends HashMap<String, Object> {}
 
   private static <T> Mono<T> parseYaml(Class<T> t,
                                        String fileName,
@@ -46,21 +26,24 @@ public class YamlUtils {
                      .flatMap(s -> checkedMono(() -> new YamlReader(s, yc).read(t)));
   }
 
-  private static Flux<String> yamlInclude(String line, Function<String, Flux<String>> reader) {
-    if (line.startsWith("include:")) {
-      String file = line.split(":")[1].trim();
-      return reader.apply(file);
-    } else {
-      return Flux.just(line);
-    }
+  /**
+   * @param t             Class type
+   * @param filename      absolute path of the file or project relevant path
+   * @param ignoreUnknown ignore extra values in when parsing
+   * @param <T>           Type param
+   * @return Try of class type T
+   */
+  public static <T> Mono<T> parseYamlFile(Class<T> t, String filename, boolean ignoreUnknown) {
+    return parseYaml(t, filename, FileUtils::fileLines, ignoreUnknown);
   }
 
   /**
-   * @param filename path of the file under e.g resources/filename
+   * @param filename      path of the file
+   * @param ignoreUnknown ignore extra values in when parsing
    * @return Try of class type T
    */
-  public static Mono<YamlConfigMap> parseYamlResource(String filename) {
-    return parseYamlResource(MapInstance.class, filename, false).map(YamlConfigMap::new);
+  public static Mono<YamlConfigMap> parseYamlFile(String filename, boolean ignoreUnknown) {
+    return parseYamlFile(MapInstance.class, filename, ignoreUnknown).map(YamlConfigMap::new);
   }
 
   /**
@@ -74,6 +57,23 @@ public class YamlUtils {
     return parseYaml(t, filename, FileUtils::resourceLines, ignoreUnknown);
   }
 
-  private static final class MapInstance extends HashMap<String, Object> {}
+  /**
+   * @param filename path of the file under e.g resources/filename
+   * @return Try of class type T
+   */
+  public static Mono<YamlConfigMap> parseYamlResource(String filename) {
+    return parseYamlResource(MapInstance.class, filename, false).map(YamlConfigMap::new);
+  }
+
+  private static Flux<String> yamlInclude(String line, Function<String, Flux<String>> reader) {
+    if (line.startsWith("include:")) {
+      String file = line.split(":")[1].trim();
+      return reader.apply(file);
+    } else {
+      return Flux.just(line);
+    }
+  }
+
+  private YamlUtils() {}
 }
 
