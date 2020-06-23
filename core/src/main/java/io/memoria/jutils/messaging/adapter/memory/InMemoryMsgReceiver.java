@@ -15,10 +15,4 @@ public record InMemoryMsgReceiver(Map<String, HashMap<String, LinkedList<Message
   public Flux<Message> receive(String topicId, String partition, long offset) {
     return Flux.fromIterable(db.get(topicId).get(partition)).skip(offset);
   }
-
-  @Override
-  public Mono<Void> close() {
-    db.clear();
-    return Mono.empty();
-  }
 }

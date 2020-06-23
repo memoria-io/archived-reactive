@@ -1,5 +1,5 @@
 package io.memoria.jutils.messaging.domain;
 
-import io.memoria.jutils.core.domain.port.crud.Storable;
+import io.vavr.control.Option;
 
-public record Message(String id, String message) implements Storable<String> {}
+public record Message(Option<String>id, String message) {}

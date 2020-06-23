@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import static io.vavr.API.Some;
 import static java.lang.String.valueOf;
 
 public class InMemoryMessageTest {
@@ -19,24 +20,8 @@ public class InMemoryMessageTest {
   private final String PARTITION = "0";
   private final int MSG_COUNT = 3;
   private final Flux<Message> msgs = Flux.interval(Duration.ofMillis(10))
-                                         .map(i -> new Message(i + "", "hello_" + i))
+                                         .map(i -> new Message(Some(i + ""), "hello_" + i))
                                          .take(MSG_COUNT);
-
-  @Test
-  @DisplayName("Should publish messages correctly")
-  public void publish() {
-    var db = new HashMap<String, HashMap<String, LinkedList<Message>>>();
-    var msgProducer = new InMemoryMsgSender(db);
-    var published = msgProducer.send(TOPIC, PARTITION, msgs).take(MSG_COUNT);
-
-    StepVerifier.create(published.filter(Option::isDefined).map(Option::get).map(Storable::id))
-                .expectNext(valueOf(0L))
-                .expectNext(valueOf(1L))
-                .expectNext(valueOf(2L))
-                .expectComplete()
-                .verify();
-    StepVerifier.create(msgProducer.close()).expectComplete().verify();
-  }
 
   @Test
   @DisplayName("Should consume messages correctly")
@@ -47,12 +32,26 @@ public class InMemoryMessageTest {
     db.get(TOPIC).get(PARTITION).addAll(msgs.collectList().block());
     var msgConsumer = new InMemoryMsgReceiver(db);
     var consumed = msgConsumer.receive(TOPIC, PARTITION, 0).take(MSG_COUNT);
-    StepVerifier.create(consumed.map(Storable::id))
-                .expectNext(valueOf(0L))
-                .expectNext(valueOf(1L))
-                .expectNext(valueOf(2L))
+    StepVerifier.create(consumed.map(Message::id))
+                .expectNext(Some(valueOf(0L)))
+                .expectNext(Some(valueOf(1L)))
+                .expectNext(Some(valueOf(2L)))
                 .expectComplete()
                 .verify();
-    StepVerifier.create(msgConsumer.close()).expectComplete().verify();
+  }
+
+  @Test
+  @DisplayName("Should publish messages correctly")
+  public void publish() {
+    var db = new HashMap<String, HashMap<String, LinkedList<Message>>>();
+    var msgProducer = new InMemoryMsgSender(db);
+    var published = msgProducer.send(TOPIC, PARTITION, msgs).take(MSG_COUNT);
+
+    StepVerifier.create(published.filter(Option::isDefined).map(Option::get).map(Message::id))
+                .expectNext(Some(valueOf(0L)))
+                .expectNext(Some(valueOf(1L)))
+                .expectNext(Some(valueOf(2L)))
+                .expectComplete()
+                .verify();
   }
 }

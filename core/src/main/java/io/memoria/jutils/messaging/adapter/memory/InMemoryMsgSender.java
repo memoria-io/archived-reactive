@@ -21,10 +21,4 @@ public record InMemoryMsgSender(Map<String, HashMap<String, LinkedList<Message>>
       db.get(topic).get(partition).addLast(msg);
     }).map(API::Some);
   }
-
-  @Override
-  public Mono<Void> close() {
-    db.clear();
-    return Mono.empty();
-  }
 }
