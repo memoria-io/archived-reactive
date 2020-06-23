@@ -12,21 +12,21 @@ import java.time.format.DateTimeFormatter;
 public class LocalDateGsonAdapter extends TypeAdapter<LocalDate> {
   private final DateTimeFormatter dateFormat;
 
-  public LocalDateGsonAdapter(DateTimeFormatter dateFormat) {
-    this.dateFormat = dateFormat;
-  }
-
   public static GsonBuilder register(GsonBuilder gsonBuilder, DateTimeFormatter dateFormatter) {
     return gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateGsonAdapter(dateFormatter));
   }
 
-  @Override
-  public void write(JsonWriter out, LocalDate d) throws IOException {
-    out.jsonValue(d.format(dateFormat));
+  public LocalDateGsonAdapter(DateTimeFormatter dateFormat) {
+    this.dateFormat = dateFormat;
   }
 
   @Override
   public LocalDate read(JsonReader in) throws IOException {
     return LocalDate.parse(in.nextString(), dateFormat);
+  }
+
+  @Override
+  public void write(JsonWriter out, LocalDate d) throws IOException {
+    out.jsonValue(d.format(dateFormat));
   }
 }
