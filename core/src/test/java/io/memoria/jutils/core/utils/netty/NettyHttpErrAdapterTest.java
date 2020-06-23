@@ -14,6 +14,16 @@ import static io.vavr.API.Match;
 import static io.vavr.Predicates.instanceOf;
 
 public class NettyHttpErrAdapterTest {
+  private static class CreationError extends Throwable {
+    public CreationError() {
+      super("Couldn't Crate");
+    }
+  }
+
+  private static class LoginError extends Throwable {}
+
+  private static class SavingError extends Throwable {}
+
   @Test
   public void adaptTest() {
     Function<Throwable, NettyHttpError> mapping = t -> Match(t).of(nettyHttpErrorCase(CreationError.class, t, 400),
@@ -32,14 +42,4 @@ public class NettyHttpErrAdapterTest {
     Assertions.assertEquals(400, adapter.apply(new IllegalArgumentException()).statusCode());
     Assertions.assertEquals(500, adapter.apply(new IOException()).statusCode());
   }
-
-  private static class CreationError extends Throwable {
-    public CreationError() {
-      super("Couldn't Crate");
-    }
-  }
-
-  private static class SavingError extends Throwable {}
-
-  private static class LoginError extends Throwable {}
 }

@@ -21,6 +21,11 @@ public class NettyHttpUtilsTest {
   private static DisposableServer server;
   private static HttpClient client;
 
+  @AfterAll
+  public static void afterAll() {
+    server.dispose();
+  }
+
   @BeforeAll
   public static void beforeAll() {
     server = HttpServer.create()
@@ -34,18 +39,15 @@ public class NettyHttpUtilsTest {
     client = HttpClient.create().baseUrl("127.0.0.1:8081");
   }
 
-  @AfterAll
-  public static void afterAll() {
-    server.dispose();
-  }
-
   @Test
-  public void sendTest() {
-    var monoResp = client.get()
-                         .uri("/happy")
+  public void sendBasicAuthTest() {
+    var cred = Base64.getEncoder().encodeToString(("bob:password").getBytes());
+    var monoResp = client.headers(b -> b.add("Authorization", "Basic " + cred))
+                         .get()
+                         .uri("/authenticate")
                          .responseSingle((res, body) -> Mono.just(res.status().code()).zipWith(body.asString()))
                          .map(t -> Tuple.of(t.getT1(), t.getT2()));
-    StepVerifier.create(monoResp).expectNext(Tuple.of(200, "hello")).expectComplete().verify();
+    StepVerifier.create(monoResp).expectNext(Tuple.of(200, "(bob, password)")).expectComplete().verify();
   }
 
   @Test
@@ -58,13 +60,11 @@ public class NettyHttpUtilsTest {
   }
 
   @Test
-  public void sendBasicAuthTest() {
-    var cred = Base64.getEncoder().encodeToString(("bob:password").getBytes());
-    var monoResp = client.headers(b -> b.add("Authorization", "Basic " + cred))
-                         .get()
-                         .uri("/authenticate")
+  public void sendTest() {
+    var monoResp = client.get()
+                         .uri("/happy")
                          .responseSingle((res, body) -> Mono.just(res.status().code()).zipWith(body.asString()))
                          .map(t -> Tuple.of(t.getT1(), t.getT2()));
-    StepVerifier.create(monoResp).expectNext(Tuple.of(200, "(bob, password)")).expectComplete().verify();
+    StepVerifier.create(monoResp).expectNext(Tuple.of(200, "hello")).expectComplete().verify();
   }
 }
