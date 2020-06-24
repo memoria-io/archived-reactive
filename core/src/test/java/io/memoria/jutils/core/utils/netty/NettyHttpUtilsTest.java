@@ -12,12 +12,14 @@ import reactor.test.StepVerifier;
 
 import java.util.Base64;
 
-import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.toBasicAuthCredentials;
+import static io.memoria.jutils.core.utils.http.StatusCode.$400;
+import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.basicCredentials;
 import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.send;
 import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.sendError;
+import static io.vavr.control.Option.none;
 
 public class NettyHttpUtilsTest {
-  private static NettyHttpError error = new NettyHttpError(new Exception("test error"), 400);
+  private static final NettyHttpError error = new NettyHttpError($400, "test error", none());
   private static DisposableServer server;
   private static HttpClient client;
 
@@ -34,7 +36,7 @@ public class NettyHttpUtilsTest {
                        .route(r -> r.get("/happy", (req, resp) -> send(resp, 200, "hello"))
                                     .get("/sad", (req, resp) -> sendError(resp, error))
                                     .get("/authenticate",
-                                         (req, resp) -> send(resp, 200, toBasicAuthCredentials(req).toString())))
+                                         (req, resp) -> send(resp, 200, basicCredentials(req).toString())))
                        .bindNow();
     client = HttpClient.create().baseUrl("127.0.0.1:8081");
   }

@@ -11,14 +11,14 @@ import static io.vavr.Predicates.instanceOf;
 
 public class UserEventHandler implements EventHandler<User, UserEvent> {
 
-  private User addFriend(User u, UserEvent.FriendAdded friendAdded) {
-    return u.withNewFriend(friendAdded.friendId());
-  }
-
   @Override
   public User apply(User user, UserEvent userEvent) {
     return Match(userEvent).of(Case($(instanceOf(UserEvent.MessageCreated.class)), ev -> createMessage(user, ev)),
                                Case($(instanceOf(UserEvent.FriendAdded.class)), ev -> addFriend(user, ev)));
+  }
+
+  private User addFriend(User u, UserEvent.FriendAdded friendAdded) {
+    return u.withNewFriend(friendAdded.friendId());
   }
 
   private User createMessage(User u, UserEvent.MessageCreated msg) {

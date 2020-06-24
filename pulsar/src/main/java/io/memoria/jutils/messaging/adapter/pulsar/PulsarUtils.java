@@ -12,6 +12,10 @@ import reactor.core.publisher.Mono;
 import static io.vavr.API.Some;
 
 public class PulsarUtils {
+  static Mono<Message> consume(Consumer<String> c) {
+    return Mono.fromFuture(c.receiveAsync()).map(m -> new Message(Some(m.getKey()), m.getValue()));
+  }
+
   static Consumer<String> createConsumer(PulsarClient client, String topic, long offset) throws PulsarClientException {
     var consumer = client.newConsumer(Schema.STRING).topic(topic).subscriptionName(topic + "subscription").subscribe();
     consumer.seek(offset);
@@ -25,10 +29,6 @@ public class PulsarUtils {
   public static PulsarClient pulsarClient(YamlConfigMap map) throws PulsarClientException {
     var config = map.asYamlConfigMap("pulsar").get().asString("serviceUrl").get();
     return PulsarClient.builder().serviceUrl(config).build();
-  }
-
-  static Mono<Message> consume(Consumer<String> c) {
-    return Mono.fromFuture(c.receiveAsync()).map(m -> new Message(Some(m.getKey()), m.getValue()));
   }
 
   private PulsarUtils() {}

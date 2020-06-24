@@ -45,7 +45,10 @@ public class PulsarIT {
                 .expectNextCount(MSG_COUNT)
                 .expectComplete()
                 .verify();
-    StepVerifier.create(msgReceiver.receive(TOPIC, PARTITION, 0).take(MSG_COUNT)).expectNextCount(MSG_COUNT).expectComplete().verify();
+    StepVerifier.create(msgReceiver.receive(TOPIC, PARTITION, 0).take(MSG_COUNT))
+                .expectNextCount(MSG_COUNT)
+                .expectComplete()
+                .verify();
   }
 }
 

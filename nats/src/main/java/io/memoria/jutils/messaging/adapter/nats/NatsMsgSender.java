@@ -15,15 +15,15 @@ import static io.memoria.jutils.messaging.adapter.nats.NatsUtils.toSubject;
 
 public record NatsMsgSender(Connection nc, Scheduler scheduler, Duration timeout) implements MsgSender {
 
+  @Override
+  public Flux<Option<Message>> send(String topic, int partition, Flux<Message> msgFlux) {
+    return msgFlux.publishOn(scheduler).timeout(timeout).map(getMessageVoidFunction(topic, partition));
+  }
+
   private Function<Message, Option<Message>> getMessageVoidFunction(String topic, int partition) {
     return msg -> {
       nc.publish(toSubject(topic, partition), msg.message().getBytes(StandardCharsets.UTF_8));
       return Option.none();
     };
-  }
-
-  @Override
-  public Flux<Option<Message>> send(String topic, int partition, Flux<Message> msgFlux) {
-    return msgFlux.publishOn(scheduler).timeout(timeout).map(getMessageVoidFunction(topic, partition));
   }
 }

@@ -12,13 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class YamlUtilsTest {
 
   @Test
-  void parseYamlFile() {
-    YamlConfigMap resource = YamlUtils.parseYamlResource("utils/test.yaml").block();
-    YamlConfigMap file = YamlUtils.parseYamlFile("src/test/resources/utils/test.yaml", false).block();
-    assertEquals(resource, file);
-  }
-
-  @Test
   @DisplayName("Reading same file should produce same map")
   public void sameFileTest() {
     YamlConfigMap map = YamlUtils.parseYamlResource("utils/test.yaml").block();
@@ -84,5 +77,12 @@ public class YamlUtilsTest {
     assertEquals(HashMap.of("key1", "string value", "key2", "2").toJavaMap(), map.asJavaMap("map").get());
     assertEquals(HashMap.of("key1", "string value", "key2", "2").toJavaMap(), map.asJavaMap().get("map"));
 
+  }
+
+  @Test
+  void parseYamlFile() {
+    YamlConfigMap resource = YamlUtils.parseYamlResource("utils/test.yaml").block();
+    YamlConfigMap file = YamlUtils.parseYamlFile("src/test/resources/utils/test.yaml", false).block();
+    assertEquals(resource, file);
   }
 }

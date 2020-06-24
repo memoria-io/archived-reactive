@@ -5,8 +5,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 
 public class KafkaUtils {
-  private KafkaUtils() {}
-
   public static KafkaConsumer<String, String> kafkaConsumer(YamlConfigMap map) {
     return new KafkaConsumer<>(map.asYamlConfigMap("kafka").get().asJavaMap("consumer").get());
   }
@@ -14,4 +12,6 @@ public class KafkaUtils {
   public static KafkaProducer<String, String> kafkaProducer(YamlConfigMap map) {
     return new KafkaProducer<>(map.asYamlConfigMap("kafka").get().asJavaMap("producer").get());
   }
+
+  private KafkaUtils() {}
 }

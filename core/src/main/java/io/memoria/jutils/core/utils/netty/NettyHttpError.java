@@ -1,21 +1,13 @@
 package io.memoria.jutils.core.utils.netty;
 
-import io.netty.handler.codec.http.DefaultHttpHeaders;
-import io.netty.handler.codec.http.EmptyHttpHeaders;
+import io.memoria.jutils.core.utils.http.StatusCode;
 import io.netty.handler.codec.http.HttpHeaders;
+import io.vavr.control.Option;
 
-public record NettyHttpError(Throwable t, int statusCode, String message, HttpHeaders httpHeaders) {
-  public static final HttpHeaders AUTH_CHALLENGES = new DefaultHttpHeaders().add("WWW-Authenticate", "Basic, Bearer");
+import static io.vavr.control.Option.none;
 
-  public NettyHttpError(Throwable t, int statusCode) {
-    this(t, statusCode, t.getMessage(), EmptyHttpHeaders.INSTANCE);
-  }
-
-  public NettyHttpError(Throwable t, int statusCode, String message) {
-    this(t, statusCode, message, EmptyHttpHeaders.INSTANCE);
-  }
-
-  public NettyHttpError(Throwable t, int statusCode, HttpHeaders httpHeaders) {
-    this(t, statusCode, t.getMessage(), httpHeaders);
+public record NettyHttpError(StatusCode statusCode, String message, Option<HttpHeaders>httpHeaders) {
+  public NettyHttpError(StatusCode statusCode, String message) {
+    this(statusCode, message, none());
   }
 }
