@@ -11,7 +11,6 @@ import io.nats.client.Options;
 import io.vavr.control.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.scheduler.Scheduler;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -56,7 +55,7 @@ public class NatsUtils {
   }
 
   private static void onConnectionEvent(Connection conn, Events type) {
-    log.info(String.format("Status change %s ", type));
+    log.info("Status change " + type);
   }
 
   public static Message toMessage(io.nats.client.Message message) {

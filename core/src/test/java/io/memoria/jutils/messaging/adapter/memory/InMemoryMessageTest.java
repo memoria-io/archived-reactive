@@ -1,6 +1,5 @@
 package io.memoria.jutils.messaging.adapter.memory;
 
-import io.memoria.jutils.core.domain.port.crud.Storable;
 import io.memoria.jutils.messaging.domain.Message;
 import io.vavr.control.Option;
 import org.junit.jupiter.api.DisplayName;

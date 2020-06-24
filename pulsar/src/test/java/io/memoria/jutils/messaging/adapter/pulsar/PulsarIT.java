@@ -5,7 +5,6 @@ import io.memoria.jutils.core.utils.yaml.YamlUtils;
 import io.memoria.jutils.messaging.domain.Message;
 import io.memoria.jutils.messaging.domain.port.MsgReceiver;
 import io.memoria.jutils.messaging.domain.port.MsgSender;
-import io.vavr.control.Try;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +13,6 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
-import java.util.Objects;
 import java.util.Random;
 
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.pulsarClient;

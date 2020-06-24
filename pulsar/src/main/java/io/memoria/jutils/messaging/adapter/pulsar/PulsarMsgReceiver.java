@@ -8,7 +8,8 @@ import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 
-import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.*;
+import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.consume;
+import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.createConsumer;
 import static java.util.function.Function.identity;
 
 public record PulsarMsgReceiver(PulsarClient client, Duration timeout) implements MsgReceiver {
