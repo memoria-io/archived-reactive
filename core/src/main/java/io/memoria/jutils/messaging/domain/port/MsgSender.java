@@ -6,5 +6,5 @@ import reactor.core.publisher.Flux;
 
 @FunctionalInterface
 public interface MsgSender {
-  Flux<Option<Message>> send(String topic, String partition, Flux<Message> msgFlux);
+  Flux<Option<Message>> send(String topic, int partition, Flux<Message> msgFlux);
 }

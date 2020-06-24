@@ -5,5 +5,5 @@ import reactor.core.publisher.Flux;
 
 @FunctionalInterface
 public interface MsgReceiver {
-  Flux<Message> receive(String topicId, String partition, long offset);
+  Flux<Message> receive(String topicId, int partition, long offset);
 }

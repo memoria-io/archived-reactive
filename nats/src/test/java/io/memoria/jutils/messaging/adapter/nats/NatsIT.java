@@ -28,7 +28,7 @@ public class NatsIT {
   private final NatsMsgReceiver msgReceiver;
   private final Flux<Message> msgs;
   private final String TOPIC = "topic-" + new Random().nextInt(1000);
-  private final String PARTITION = "0";
+  private final int PARTITION = 0;
   private final String subject = NatsUtils.toSubject(TOPIC, PARTITION);
   private final int MSG_COUNT = 10;
 

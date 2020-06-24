@@ -16,7 +16,7 @@ public record NatsMsgReceiver(Connection nc, Scheduler scheduler, Duration timeo
   private static final Logger log = LoggerFactory.getLogger(NatsMsgReceiver.class.getName());
 
   @Override
-  public Flux<Message> receive(String topic, String partition, long offset) {
+  public Flux<Message> receive(String topic, int partition, long offset) {
     var subject = NatsUtils.toSubject(topic, partition);
     Flux<Message> f = Flux.create(s -> {
       var dispatcher = nc.createDispatcher($ -> {});

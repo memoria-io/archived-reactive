@@ -63,7 +63,7 @@ public class NatsUtils {
     return new Message(none(), new String(message.getData()));
   }
 
-  public static String toSubject(String topic, String partition) {
+  public static String toSubject(String topic, int partition) {
     return topic + CHANNEL_SEPARATOR + partition;
   }
 
