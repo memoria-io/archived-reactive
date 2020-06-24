@@ -10,7 +10,9 @@ import reactor.netty.http.server.HttpServerRequest;
 import reactor.netty.http.server.HttpServerResponse;
 
 public class NettyHttpUtils {
-  private NettyHttpUtils() {}
+  public static Try<Tuple2<String, String>> basicAuth(HttpServerRequest req) {
+    return Option.of(req.requestHeaders().get("Authorization")).toTry().flatMap(HttpUtils::basicAuth);
+  }
 
   public static NettyOutbound send(HttpServerResponse resp, int status, String s) {
     return resp.status(status).sendString(Mono.just(s));
@@ -22,7 +24,5 @@ public class NettyHttpUtils {
                .sendString(Mono.just(nhe.message()));
   }
 
-  public static Try<Tuple2<String, String>> basicAuth(HttpServerRequest req) {
-    return Option.of(req.requestHeaders().get("Authorization")).toTry().flatMap(HttpUtils::basicAuth);
-  }
+  private NettyHttpUtils() {}
 }

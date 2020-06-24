@@ -15,22 +15,6 @@ public class VavrUtilsTest {
   private Try<List<Integer>> failure = Try.failure(e);
 
   @Test
-  public void traverseOfTryTest() {
-    List<Try<Integer>> su = List.ofAll(VavrUtils.traverseOfTry(success));
-    List<Try<Integer>> fa = List.ofAll(VavrUtils.traverseOfTry(failure));
-    assertEquals(List.of(Try.success(1), Try.success(2), Try.success(3)), su);
-    assertEquals(List.of(Try.failure(e)), fa);
-  }
-
-  @Test
-  public void listOfTryTest() {
-    List<Try<Integer>> su = List.ofAll(VavrUtils.listOfTry(success));
-    List<Try<Integer>> fa = List.ofAll(VavrUtils.listOfTry(failure));
-    assertEquals(List.of(Try.success(1), Try.success(2), Try.success(3)), su);
-    assertEquals(List.of(Try.failure(e)), fa);
-  }
-
-  @Test
   public void handleTest() throws ExecutionException, InterruptedException {
     var success = CompletableFuture.completedFuture("success");
     assertEquals(Try.success("success"), success.handle(VavrUtils.handle()).get());
@@ -48,5 +32,21 @@ public class VavrUtilsTest {
     var e = new Exception("failure");
     var failure = CompletableFuture.failedFuture(e);
     assertEquals(Try.failure(e), failure.handle(VavrUtils.handleToVoid()).get());
+  }
+
+  @Test
+  public void listOfTryTest() {
+    List<Try<Integer>> su = List.ofAll(VavrUtils.listOfTry(success));
+    List<Try<Integer>> fa = List.ofAll(VavrUtils.listOfTry(failure));
+    assertEquals(List.of(Try.success(1), Try.success(2), Try.success(3)), su);
+    assertEquals(List.of(Try.failure(e)), fa);
+  }
+
+  @Test
+  public void traverseOfTryTest() {
+    List<Try<Integer>> su = List.ofAll(VavrUtils.traverseOfTry(success));
+    List<Try<Integer>> fa = List.ofAll(VavrUtils.traverseOfTry(failure));
+    assertEquals(List.of(Try.success(1), Try.success(2), Try.success(3)), su);
+    assertEquals(List.of(Try.failure(e)), fa);
   }
 }

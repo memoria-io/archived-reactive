@@ -3,24 +3,27 @@ package io.memoria.jutils.core.utils.yaml;
 import com.esotericsoftware.yamlbeans.YamlConfig;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import io.memoria.jutils.core.utils.file.FileUtils;
-import io.vavr.collection.List;
-import io.vavr.control.Try;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.function.Function;
 
-public class YamlUtils {
-  private YamlUtils() {}
+import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.checkedMono;
 
+public class YamlUtils {
   private static final class MapInstance extends HashMap<String, Object> {}
 
-  /**
-   * @param filename      path of the file
-   * @param ignoreUnknown ignore extra values in when parsing
-   * @return Try of class type T
-   */
-  public static Try<YamlConfigMap> parseYamlFile(String filename, boolean ignoreUnknown) {
-    return parseYamlFile(MapInstance.class, filename, ignoreUnknown).map(YamlConfigMap::new);
+  private static <T> Mono<T> parseYaml(Class<T> t,
+                                       String fileName,
+                                       Function<String, Flux<String>> fileReader,
+                                       boolean ignoreUnknown) {
+    YamlConfig yc = new YamlConfig();
+    yc.readConfig.setIgnoreUnknownProperties(ignoreUnknown);
+    return fileReader.apply(fileName)
+                     .flatMap(f -> yamlInclude(f, fileReader))
+                     .reduce((a, b) -> a + "\n" + b)
+                     .flatMap(s -> checkedMono(() -> new YamlReader(s, yc).read(t)));
   }
 
   /**
@@ -30,16 +33,17 @@ public class YamlUtils {
    * @param <T>           Type param
    * @return Try of class type T
    */
-  public static <T> Try<T> parseYamlFile(Class<T> t, String filename, boolean ignoreUnknown) {
+  public static <T> Mono<T> parseYamlFile(Class<T> t, String filename, boolean ignoreUnknown) {
     return parseYaml(t, filename, FileUtils::fileLines, ignoreUnknown);
   }
 
   /**
-   * @param filename path of the file under e.g resources/filename
+   * @param filename      path of the file
+   * @param ignoreUnknown ignore extra values in when parsing
    * @return Try of class type T
    */
-  public static Try<YamlConfigMap> parseYamlResource(String filename) {
-    return parseYamlResource(MapInstance.class, filename, false).map(YamlConfigMap::new);
+  public static Mono<YamlConfigMap> parseYamlFile(String filename, boolean ignoreUnknown) {
+    return parseYamlFile(MapInstance.class, filename, ignoreUnknown).map(YamlConfigMap::new);
   }
 
   /**
@@ -49,29 +53,27 @@ public class YamlUtils {
    * @param <T>           Type param
    * @return Try of class type T
    */
-  public static <T> Try<T> parseYamlResource(Class<T> t, String filename, boolean ignoreUnknown) {
+  public static <T> Mono<T> parseYamlResource(Class<T> t, String filename, boolean ignoreUnknown) {
     return parseYaml(t, filename, FileUtils::resourceLines, ignoreUnknown);
   }
 
-  private static <T> Try<T> parseYaml(Class<T> t,
-                                      String fileName,
-                                      Function<String, Try<List<String>>> fileReader,
-                                      boolean ignoreUnknown) {
-    YamlConfig yc = new YamlConfig();
-    yc.readConfig.setIgnoreUnknownProperties(ignoreUnknown);
-    return fileReader.apply(fileName)
-                     .map(list -> list.flatMap(line -> yamlInclude(line, fileReader)).reduceLeft(List::appendAll))
-                     .map(l -> String.join("\n", l))
-                     .flatMap(s -> Try.of(() -> new YamlReader(s, yc).read(t)));
+  /**
+   * @param filename path of the file under e.g resources/filename
+   * @return Try of class type T
+   */
+  public static Mono<YamlConfigMap> parseYamlResource(String filename) {
+    return parseYamlResource(MapInstance.class, filename, false).map(YamlConfigMap::new);
   }
 
-  private static Try<List<String>> yamlInclude(String line, Function<String, Try<List<String>>> reader) {
+  private static Flux<String> yamlInclude(String line, Function<String, Flux<String>> reader) {
     if (line.startsWith("include:")) {
       String file = line.split(":")[1].trim();
       return reader.apply(file);
     } else {
-      return Try.success(List.of(line));
+      return Flux.just(line);
     }
   }
+
+  private YamlUtils() {}
 }
 

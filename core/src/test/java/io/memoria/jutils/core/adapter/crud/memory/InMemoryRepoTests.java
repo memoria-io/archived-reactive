@@ -20,13 +20,19 @@ public class InMemoryRepoTests {
   private final Map<String, Storable<String>> db = new HashMap<>();
   private final ReadRepo<String, Storable<String>> readRepo = new InMemoryReadRepo<>(db);
   private final WriteRepo<String, Storable<String>> writeRepo = new InMemoryWriteRepo<>(db);
-
   private final User user = new User("bob", 20);
   private final User otherUser = new User("bob", 23);
 
   @AfterEach
   public void afterEach() {
     db.clear();
+  }
+
+  @Test
+  @DisplayName("Already exists")
+  public void alreadyExists() {
+    db.put(this.user.id, this.user);
+    StepVerifier.create(writeRepo.create(user)).expectError(AlreadyExists.class).verify();
   }
 
   @Test
@@ -39,16 +45,11 @@ public class InMemoryRepoTests {
   }
 
   @Test
-  @DisplayName("Should be not found")
-  public void notFoundTest() {
-    StepVerifier.create(writeRepo.update(user)).expectError(NotFound.class).verify();
-  }
-
-  @Test
-  @DisplayName("Already exists")
-  public void alreadyExists() {
+  @DisplayName("Should delete successfully")
+  public void delete() {
     db.put(this.user.id, this.user);
-    StepVerifier.create(writeRepo.create(user)).expectError(AlreadyExists.class).verify();
+    StepVerifier.create(writeRepo.delete(user.id)).expectComplete().verify();
+    Assertions.assertNull(db.get(user.id));
   }
 
   @Test
@@ -62,10 +63,8 @@ public class InMemoryRepoTests {
   }
 
   @Test
-  @DisplayName("Should delete successfully")
-  public void delete() {
-    db.put(this.user.id, this.user);
-    StepVerifier.create(writeRepo.delete(user.id)).expectComplete().verify();
-    Assertions.assertNull(db.get(user.id));
+  @DisplayName("Should be not found")
+  public void notFoundTest() {
+    StepVerifier.create(writeRepo.update(user)).expectError(NotFound.class).verify();
   }
 }

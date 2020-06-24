@@ -16,12 +16,12 @@ public class InMemoryReadRepo<K, V extends Storable<K>> implements ReadRepo<K, V
   }
 
   @Override
-  public Mono<V> get(K id) {
-    return Mono.justOrEmpty(db.get(id)).switchIfEmpty(Mono.error(NOT_FOUND));
+  public Mono<Boolean> exists(K id) {
+    return Mono.just(db.containsKey(id));
   }
 
   @Override
-  public Mono<Boolean> exists(K id) {
-    return Mono.just(db.containsKey(id));
+  public Mono<V> get(K id) {
+    return Mono.justOrEmpty(db.get(id)).switchIfEmpty(Mono.error(NOT_FOUND));
   }
 }

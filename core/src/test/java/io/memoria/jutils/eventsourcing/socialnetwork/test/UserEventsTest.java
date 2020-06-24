@@ -19,18 +19,18 @@ public class UserEventsTest {
   private static UserEventHandler userEventHandler = new UserEventHandler();
 
   @Test
-  public void messageCreatedTest() {
-    var alex = new User(ALEX, ALEX_AGE, HashSet.of(BOB), HashSet.empty());
-    var actualAlex = userEventHandler.apply(alex, new MessageCreated("messageId", ALEX, BOB, "Hello"));
-    var expectedAlex = alex.withNewMessage(new Message("messageId", ALEX, BOB, "Hello"));
-    Assertions.assertEquals(expectedAlex, actualAlex);
-  }
-
-  @Test
   public void friendAddedTest() {
     var alex = new User(ALEX, ALEX_AGE);
     var actualAlex = userEventHandler.apply(alex, new FriendAdded(ALEX, BOB));
     var expectedAlex = alex.withNewFriend(BOB);
+    Assertions.assertEquals(expectedAlex, actualAlex);
+  }
+
+  @Test
+  public void messageCreatedTest() {
+    var alex = new User(ALEX, ALEX_AGE, HashSet.of(BOB), HashSet.empty());
+    var actualAlex = userEventHandler.apply(alex, new MessageCreated("messageId", ALEX, BOB, "Hello"));
+    var expectedAlex = alex.withNewMessage(new Message("messageId", ALEX, BOB, "Hello"));
     Assertions.assertEquals(expectedAlex, actualAlex);
   }
 

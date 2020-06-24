@@ -14,15 +14,15 @@ public record Argon2Hasher(Argon2 argon2, int iterations, int memory, int parall
   }
 
   @Override
-  public Mono<String> hash(String password, String salt) {
-    return Mono.defer(() -> Mono.just(blockingHash(password, salt)).subscribeOn(scheduler));
-  }
-
-  @Override
   public String blockingHash(String password, String salt) {
     String saltedPass = password + salt;
     String hash = argon2.hash(iterations, memory, parallelism, saltedPass.getBytes());
     argon2.wipeArray(saltedPass.toCharArray());
     return hash;
+  }
+
+  @Override
+  public Mono<String> hash(String password, String salt) {
+    return Mono.defer(() -> Mono.just(blockingHash(password, salt)).subscribeOn(scheduler));
   }
 }

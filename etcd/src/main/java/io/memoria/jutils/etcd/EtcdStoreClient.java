@@ -22,6 +22,11 @@ public record EtcdStoreClient(KV kvClient) implements KeyValueStoreClient {
     this(client.getKVClient());
   }
 
+  public Mono<Void> delete(String key) {
+    ByteSequence byteKey = ByteSequence.from(key.getBytes());
+    return Mono.fromFuture(kvClient.delete(byteKey)).then();
+  }
+
   public Mono<Option<String>> get(String key) {
     ByteSequence byteKey = ByteSequence.from(key.getBytes());
     return Mono.fromFuture(kvClient.get(byteKey)).map(GetResponse::getKvs).map(this::mapOf).map(c -> c.get(key));
@@ -34,20 +39,15 @@ public record EtcdStoreClient(KV kvClient) implements KeyValueStoreClient {
                .map(this::mapOf);
   }
 
+  private Map<String, String> mapOf(java.util.List<KeyValue> keyValues) {
+    return HashMap.ofAll(keyValues.stream(), KeyValue::getKey, KeyValue::getValue)
+                  .map((k, v) -> Tuple.of(k.toString(StandardCharsets.UTF_8), v.toString(StandardCharsets.UTF_8)));
+  }
+
   public Mono<String> put(String key, String value) {
     ByteSequence byteKey = ByteSequence.from(key.getBytes());
     ByteSequence byteValue = ByteSequence.from(value.getBytes());
     return Mono.fromFuture(kvClient.put(byteKey, byteValue, PutOption.newBuilder().withPrevKV().build()))
                .map(c -> c.getPrevKv().getValue().toString(StandardCharsets.UTF_8) + "");
-  }
-
-  public Mono<Void> delete(String key) {
-    ByteSequence byteKey = ByteSequence.from(key.getBytes());
-    return Mono.fromFuture(kvClient.delete(byteKey)).then();
-  }
-
-  private Map<String, String> mapOf(java.util.List<KeyValue> keyValues) {
-    return HashMap.ofAll(keyValues.stream(), KeyValue::getKey, KeyValue::getValue)
-                  .map((k, v) -> Tuple.of(k.toString(StandardCharsets.UTF_8), v.toString(StandardCharsets.UTF_8)));
   }
 }

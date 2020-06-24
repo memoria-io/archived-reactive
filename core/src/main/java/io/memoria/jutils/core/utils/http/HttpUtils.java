@@ -7,8 +7,6 @@ import io.vavr.control.Try;
 import java.util.Base64;
 
 public final class HttpUtils {
-  private HttpUtils() {}
-
   public static Try<Tuple2<String, String>> basicAuth(String header) {
     return Try.of(() -> {
       String content = header.trim().split(" ")[1].trim();
@@ -16,4 +14,6 @@ public final class HttpUtils {
       return Tuple.of(basic[0], basic[1]);
     });
   }
+
+  private HttpUtils() {}
 }

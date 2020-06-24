@@ -15,8 +15,8 @@ public class JsonGson implements Json {
   }
 
   @Override
-  public <T> Try<T> toObject(String str, Class<T> tClass) {
-    return Try.of(() -> gson.fromJson(str, tClass));
+  public <T> String toJsonString(T t) {
+    return gson.toJson(t);
   }
 
   @Override
@@ -25,7 +25,7 @@ public class JsonGson implements Json {
   }
 
   @Override
-  public <T> String toJsonString(T t) {
-    return gson.toJson(t);
+  public <T> Try<T> toObject(String str, Class<T> tClass) {
+    return Try.of(() -> gson.fromJson(str, tClass));
   }
 }
