@@ -12,7 +12,7 @@ import reactor.test.StepVerifier;
 
 import java.util.Base64;
 
-import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.basicAuth;
+import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.toBasicAuthCredentials;
 import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.send;
 import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.sendError;
 
@@ -34,7 +34,7 @@ public class NettyHttpUtilsTest {
                        .route(r -> r.get("/happy", (req, resp) -> send(resp, 200, "hello"))
                                     .get("/sad", (req, resp) -> sendError(resp, error))
                                     .get("/authenticate",
-                                         (req, resp) -> send(resp, 200, basicAuth(req).get().toString())))
+                                         (req, resp) -> send(resp, 200, toBasicAuthCredentials(req).toString())))
                        .bindNow();
     client = HttpClient.create().baseUrl("127.0.0.1:8081");
   }
