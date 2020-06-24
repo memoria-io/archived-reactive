@@ -55,7 +55,7 @@ public class NatsUtils {
   }
 
   private static void onConnectionEvent(Connection conn, Events type) {
-    log.info("Status change " + type);
+    log.info("Status change {}", type);
   }
 
   public static Message toMessage(io.nats.client.Message message) {
