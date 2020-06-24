@@ -18,16 +18,11 @@ public class UserEventHandler implements EventHandler<User, UserEvent> {
   @Override
   public User apply(User user, UserEvent userEvent) {
     return Match(userEvent).of(Case($(instanceOf(UserEvent.MessageCreated.class)), ev -> createMessage(user, ev)),
-                               Case($(instanceOf(UserEvent.FriendAdded.class)), ev -> addFriend(user, ev)),
-                               Case($(instanceOf(UserEvent.MessageSeen.class)), ev -> messageSeen(user, ev)));
+                               Case($(instanceOf(UserEvent.FriendAdded.class)), ev -> addFriend(user, ev)));
   }
 
   private User createMessage(User u, UserEvent.MessageCreated msg) {
     return u.withNewMessage(new Message(msg.messageId(), msg.from(), msg.to(), msg.body()));
-  }
-
-  private User messageSeen(User u, UserEvent.MessageSeen messageSeen) {
-    return u.withMessageSeen(messageSeen.messageId(), true);
   }
 }
 
