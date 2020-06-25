@@ -5,7 +5,8 @@ import io.vavr.collection.List;
 import io.vavr.collection.Map;
 import io.vavr.control.Option;
 
-import java.util.ArrayList;
+import static io.vavr.control.Option.none;
+import static io.vavr.control.Option.some;
 
 public record YamlConfigMap(Map<String, Object>map) {
 
@@ -57,22 +58,37 @@ public record YamlConfigMap(Map<String, Object>map) {
     return this.map;
   }
 
+  @SuppressWarnings("unchecked")
   public Option<Map<String, Object>> asMap(String key) {
-    //noinspection unchecked
-    return map.get(key).map(m -> (java.util.Map<String, Object>) m).map(HashMap::ofAll);
+    return map.get(key).flatMap(m -> {
+      if (m instanceof java.util.Map)
+        return some(HashMap.ofAll((java.util.Map<String, Object>) m));
+      else
+        return none();
+    });
   }
 
   public Option<String> asString(String key) {
     return map.get(key).map(s -> (String) s);
   }
 
+  @SuppressWarnings("unchecked")
   public Option<List<String>> asStringList(String key) {
-    //noinspection unchecked
-    return map.get(key).map(l -> (ArrayList<String>) l).map(List::ofAll);
+    return map.get(key).flatMap(m -> {
+      if (m instanceof java.util.List)
+        return some(List.ofAll((java.util.List<String>) m));
+      else
+        return none();
+    });
   }
 
+  @SuppressWarnings("unchecked")
   public Option<YamlConfigMap> asYamlConfigMap(String key) {
-    //noinspection unchecked
-    return map.get(key).map(m -> (java.util.Map<String, Object>) m).map(YamlConfigMap::new);
+    return map.get(key).flatMap(m -> {
+      if (m instanceof java.util.Map)
+        return some(new YamlConfigMap((java.util.Map<String, Object>) m));
+      else
+        return none();
+    });
   }
 }
