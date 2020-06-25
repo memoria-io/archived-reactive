@@ -13,8 +13,16 @@ import reactor.netty.http.server.HttpServerResponse;
 public class NettyHttpUtils {
   public static final HttpHeaders AUTH_CHALLENGES = new DefaultHttpHeaders().add("WWW-Authenticate", "Basic, Bearer");
 
-  public static NettyOutbound send(HttpServerResponse resp, int status, String s) {
-    return resp.status(status).sendString(Mono.just(s));
+  public static NettyOutbound send(HttpServerResponse resp, int status, String message) {
+    return resp.status(status).sendString(Mono.just(message));
+  }
+
+  public static NettyOutbound sendError(HttpServerResponse resp, int code, String message) {
+    return resp.status(code).sendString(Mono.just(message));
+  }
+
+  public static NettyOutbound sendError(HttpServerResponse resp, int code, String message, HttpHeaders headers) {
+    return resp.status(code).headers(resp.responseHeaders().add(headers)).sendString(Mono.just(message));
   }
 
   public static NettyOutbound sendError(HttpServerResponse resp, NettyHttpError nhe) {
