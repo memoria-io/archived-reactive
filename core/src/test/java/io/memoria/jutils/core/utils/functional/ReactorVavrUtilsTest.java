@@ -3,6 +3,7 @@ package io.memoria.jutils.core.utils.functional;
 import io.memoria.jutils.core.utils.file.FileUtils;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -10,8 +11,11 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
+import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.blockingToVoidMono;
+import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.checkedMono;
 import static io.vavr.control.Either.left;
 import static io.vavr.control.Either.right;
 
@@ -97,5 +101,36 @@ public class ReactorVavrUtilsTest {
     Function<Throwable, Mono<Void>> throwable = t -> Mono.just(Try.failure(new Exception("should not fail"))).then();
     Mono<Void> voidMono = original.flatMap(ReactorVavrUtils.tryToMonoVoid(deferredOp, throwable));
     StepVerifier.create(voidMono).expectComplete().verify();
+  }
+
+  @Test
+  public void checkedMonoTest() {
+    AtomicBoolean b = new AtomicBoolean();
+    var m = checkedMono(() -> {
+      Thread.sleep(1000);
+      b.getAndSet(true);
+      System.out.println(Thread.currentThread().getName());
+    });
+    // Making sure mono isn't executed
+    Assertions.assertFalse(b.get());
+    // Now should be executed
+    m.block();
+    Assertions.assertTrue(b.get());
+  }
+
+  @Test
+  public void blockingToMono() {
+    class ThreadName {
+      public String threadName;
+    }
+    final ThreadName n = new ThreadName();
+    var m = blockingToVoidMono(() -> {
+      Thread.sleep(1000);
+      n.threadName = Thread.currentThread().getName();
+    }, Schedulers.elastic());
+    Assertions.assertNull(n.threadName);
+    m.block();
+    Assertions.assertNotNull(n.threadName);
+    Assertions.assertTrue(n.threadName.contains("elastic"));
   }
 }

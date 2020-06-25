@@ -20,7 +20,7 @@ import static io.vavr.API.Match;
 import static io.vavr.Patterns.$Failure;
 import static io.vavr.Patterns.$Success;
 
-public class ReactorVavrUtils {
+public final class ReactorVavrUtils {
   public static <A> Mono<A> blockingToMono(CheckedFunction0<A> supplier, Scheduler scheduler) {
     return Mono.defer(() -> checkedMono(supplier).subscribeOn(scheduler));
   }
@@ -40,12 +40,14 @@ public class ReactorVavrUtils {
 
   public static Mono<Void> checkedMono(CheckedRunnable runnable) {
     Objects.requireNonNull(runnable, "Runnable is null");
-    try {
-      runnable.run();
-      return Mono.empty();
-    } catch (Throwable t) {
-      return Mono.error(t);
-    }
+    return Mono.create(s -> {
+      try {
+        runnable.run();
+        s.success();
+      } catch (Throwable throwable) {
+        s.error(throwable);
+      }
+    });
   }
 
   public static <L extends Throwable, R> Mono<R> eitherToMono(Either<L, R> either) {
