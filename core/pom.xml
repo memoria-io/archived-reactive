@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jutils</artifactId>
-        <version>0.9.4</version>
+        <version>0.9.5</version>
     </parent>
 
     <groupId>io.memoria.jutils</groupId>
     <artifactId>core</artifactId>
-    <version>0.9.4</version>
+    <version>0.9.5</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
