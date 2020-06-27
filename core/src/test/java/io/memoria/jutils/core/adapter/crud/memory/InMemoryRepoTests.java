@@ -14,6 +14,8 @@ import reactor.test.StepVerifier;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.vavr.control.Option.some;
+
 public class InMemoryRepoTests {
   private static record User(String id, int age) implements Storable<String> {}
 
@@ -40,7 +42,7 @@ public class InMemoryRepoTests {
   public void crudTest() {
     StepVerifier.create(writeRepo.create(user)).expectNext(user).expectComplete().verify();
     Assertions.assertEquals(new User("bob", 20), db.get("bob"));
-    StepVerifier.create(writeRepo.update(otherUser)).expectNext(otherUser).expectComplete().verify();
+    StepVerifier.create(writeRepo.update(otherUser)).expectComplete().verify();
     StepVerifier.create(writeRepo.delete(user.id)).expectComplete().verify();
   }
 
@@ -56,7 +58,7 @@ public class InMemoryRepoTests {
   @DisplayName("Should exists")
   public void exists() {
     db.put(this.user.id, this.user);
-    StepVerifier.create(readRepo.get(user.id)).expectNext(user).expectComplete().verify();
+    StepVerifier.create(readRepo.get(user.id)).expectNext(some(user)).expectComplete().verify();
     StepVerifier.create(readRepo.exists(user.id)).expectNext(true).expectComplete().verify();
     db.clear();
     StepVerifier.create(readRepo.exists(user.id)).expectNext(false).expectComplete().verify();

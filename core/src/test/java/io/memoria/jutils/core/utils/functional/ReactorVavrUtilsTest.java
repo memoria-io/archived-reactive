@@ -109,7 +109,6 @@ public class ReactorVavrUtilsTest {
     var m = checkedMono(() -> {
       Thread.sleep(1000);
       b.getAndSet(true);
-      System.out.println(Thread.currentThread().getName());
     });
     // Making sure mono isn't executed
     Assertions.assertFalse(b.get());
