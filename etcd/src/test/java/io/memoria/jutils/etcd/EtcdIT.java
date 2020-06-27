@@ -6,6 +6,7 @@ import io.memoria.jutils.core.utils.yaml.YamlUtils;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
+import java.util.Objects;
 import java.util.Random;
 
 import static io.vavr.API.Some;
@@ -19,7 +20,7 @@ public class EtcdIT {
   private final String value = "myValue";
 
   public EtcdIT() {
-    config = YamlUtils.parseYamlResource("etcd.yaml").block();
+    config = Objects.requireNonNull(YamlUtils.parseYamlResource("etcd.yaml").block());
     clientBuilt = Client.builder().endpoints(config.asString("etcd.url").get()).build();
     client = new EtcdStoreClient(clientBuilt);
   }
@@ -27,7 +28,7 @@ public class EtcdIT {
   @Test
   public void deletionTest() {
     String key = keyPrefix + new Random().nextInt(1000);
-    StepVerifier.create(client.put(key, value)).expectNext("").expectComplete().verify();
+    StepVerifier.create(client.put(key, value)).expectComplete().verify();
     StepVerifier.create(client.delete(key)).expectComplete().verify();
     StepVerifier.create(client.get(key)).expectNext(none()).expectComplete().verify();
   }
@@ -35,10 +36,10 @@ public class EtcdIT {
   @Test
   public void getMapTest() {
     String key = keyPrefix + new Random().nextInt(1000);
-    StepVerifier.create(client.put(key + "0", value)).expectNext("").expectComplete().verify();
-    StepVerifier.create(client.put(key + "1", value)).expectNext("").expectComplete().verify();
-    StepVerifier.create(client.put(key + "2", value)).expectNext("").expectComplete().verify();
-    StepVerifier.create(client.put(key + "3", value)).expectNext("").expectComplete().verify();
+    StepVerifier.create(client.put(key + "0", value)).expectComplete().verify();
+    StepVerifier.create(client.put(key + "1", value)).expectComplete().verify();
+    StepVerifier.create(client.put(key + "2", value)).expectComplete().verify();
+    StepVerifier.create(client.put(key + "3", value)).expectComplete().verify();
     StepVerifier.create(client.getAllWithPrefix(key))
                 .expectNextMatches(m -> m.get(key + "0").get().equals(value) && m.get(key + "1").get().equals(value) &&
                                         m.get(key + "2").get().equals(value) && m.get(key + "3").get().equals(value));
@@ -47,14 +48,14 @@ public class EtcdIT {
   @Test
   public void getTest() {
     String key = keyPrefix + new Random().nextInt(1000);
-    StepVerifier.create(client.put(key, value)).expectNext("").expectComplete().verify();
+    StepVerifier.create(client.put(key, value)).expectComplete().verify();
     StepVerifier.create(client.get(key)).expectNext(Some(value)).expectComplete().verify();
   }
 
   @Test
   public void putTest() {
     String key = keyPrefix + new Random().nextInt(1000);
-    StepVerifier.create(client.put(key, value)).expectNext("").expectComplete().verify();
-    StepVerifier.create(client.put(key, "new_value")).expectNext(value).expectComplete().verify();
+    StepVerifier.create(client.put(key, value)).expectComplete().verify();
+    StepVerifier.create(client.put(key, "new_value")).expectComplete().verify();
   }
 }

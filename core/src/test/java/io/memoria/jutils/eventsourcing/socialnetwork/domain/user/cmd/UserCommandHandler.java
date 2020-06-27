@@ -9,8 +9,8 @@ import io.vavr.API;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 
-import static io.memoria.jutils.core.domain.AlreadyExists.ALREADY_EXISTS;
-import static io.memoria.jutils.core.domain.NotFound.NOT_FOUND;
+import static io.memoria.jutils.core.domain.Err.AlreadyExists.ALREADY_EXISTS;
+import static io.memoria.jutils.core.domain.Err.NotFound.NOT_FOUND;
 import static io.vavr.API.Match;
 import static io.vavr.Predicates.instanceOf;
 

@@ -12,7 +12,7 @@ import io.vavr.control.Try;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static io.memoria.jutils.core.domain.AlreadyExists.ALREADY_EXISTS;
+import static io.memoria.jutils.core.domain.Err.AlreadyExists.ALREADY_EXISTS;
 
 public class UserCommandsTest {
   private static final String ALEX = "alex";

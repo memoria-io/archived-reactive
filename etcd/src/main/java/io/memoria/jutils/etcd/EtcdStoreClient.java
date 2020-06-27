@@ -6,7 +6,6 @@ import io.etcd.jetcd.KV;
 import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.options.GetOption;
-import io.etcd.jetcd.options.PutOption;
 import io.memoria.jutils.keyvaluestore.KeyValueStoreClient;
 import io.vavr.Tuple;
 import io.vavr.collection.HashMap;
@@ -39,11 +38,10 @@ public record EtcdStoreClient(KV kvClient) implements KeyValueStoreClient {
                .map(this::mapOf);
   }
 
-  public Mono<String> put(String key, String value) {
+  public Mono<Void> put(String key, String value) {
     ByteSequence byteKey = ByteSequence.from(key.getBytes());
     ByteSequence byteValue = ByteSequence.from(value.getBytes());
-    return Mono.fromFuture(kvClient.put(byteKey, byteValue, PutOption.newBuilder().withPrevKV().build()))
-               .map(c -> c.getPrevKv().getValue().toString(StandardCharsets.UTF_8) + "");
+    return Mono.fromFuture(kvClient.put(byteKey, byteValue)).then();
   }
 
   private Map<String, String> mapOf(java.util.List<KeyValue> keyValues) {

@@ -7,5 +7,5 @@ public interface WriteRepo<K, V extends Storable<K>> {
 
   Mono<Void> delete(K k);
 
-  Mono<V> update(V v);
+  Mono<Void> update(V v);
 }

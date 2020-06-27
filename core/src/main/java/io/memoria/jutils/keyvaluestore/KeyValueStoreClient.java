@@ -11,5 +11,5 @@ public interface KeyValueStoreClient {
 
   Mono<Map<String, String>> getAllWithPrefix(String key);
 
-  Mono<String> put(String key, String value);
+  Mono<Void> put(String key, String value);
 }

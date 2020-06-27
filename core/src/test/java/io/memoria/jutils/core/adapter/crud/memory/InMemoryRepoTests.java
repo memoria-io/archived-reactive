@@ -1,7 +1,7 @@
 package io.memoria.jutils.core.adapter.crud.memory;
 
-import io.memoria.jutils.core.domain.AlreadyExists;
-import io.memoria.jutils.core.domain.NotFound;
+import io.memoria.jutils.core.domain.Err.AlreadyExists;
+import io.memoria.jutils.core.domain.Err.NotFound;
 import io.memoria.jutils.core.domain.port.crud.ReadRepo;
 import io.memoria.jutils.core.domain.port.crud.Storable;
 import io.memoria.jutils.core.domain.port.crud.WriteRepo;

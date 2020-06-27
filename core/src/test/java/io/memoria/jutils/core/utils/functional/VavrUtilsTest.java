@@ -1,6 +1,6 @@
 package io.memoria.jutils.core.utils.functional;
 
-import io.memoria.jutils.core.domain.NotFound;
+import io.memoria.jutils.core.domain.Err.NotFound;
 import io.memoria.jutils.core.utils.netty.NettyHttpError;
 import io.vavr.API.Match.Case;
 import io.vavr.Function1;

@@ -6,8 +6,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
-import static io.memoria.jutils.core.domain.AlreadyExists.ALREADY_EXISTS;
-import static io.memoria.jutils.core.domain.NotFound.NOT_FOUND;
+import static io.memoria.jutils.core.domain.Err.AlreadyExists.ALREADY_EXISTS;
+import static io.memoria.jutils.core.domain.Err.NotFound.NOT_FOUND;
 
 public class InMemoryWriteRepo<K, V extends Storable<K>> implements WriteRepo<K, V> {
   protected final Map<K, V> db;
@@ -32,10 +32,10 @@ public class InMemoryWriteRepo<K, V extends Storable<K>> implements WriteRepo<K,
   }
 
   @Override
-  public Mono<V> update(V v) {
+  public Mono<Void> update(V v) {
     if (db.containsKey(v.id())) {
       db.put(v.id(), v);
-      return Mono.just(v);
+      return Mono.empty();
     } else {
       return Mono.error(NOT_FOUND);
     }
