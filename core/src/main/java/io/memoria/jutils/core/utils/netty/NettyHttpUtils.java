@@ -5,6 +5,7 @@ import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.EmptyHttpHeaders;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.vavr.Tuple2;
+import io.vavr.control.Option;
 import reactor.core.publisher.Mono;
 import reactor.netty.NettyOutbound;
 import reactor.netty.http.server.HttpServerRequest;
@@ -31,9 +32,12 @@ public class NettyHttpUtils {
                .sendString(Mono.just(nhe.message()));
   }
 
-  public static Tuple2<String, String> basicCredentials(HttpServerRequest req) {
-    String auth = req.requestHeaders().get("Authorization");
-    return HttpUtils.toBasicAuthCredentials(auth);
+  public static Option<Tuple2<String, String>> basicFrom(HttpServerRequest req) {
+    return Option.of(req.requestHeaders().get("Authorization")).flatMap(HttpUtils::basicFrom);
+  }
+
+  public static Option<String> tokenFrom(HttpServerRequest req) {
+    return Option.of(req.requestHeaders().get("Authorization")).flatMap(HttpUtils::tokenFrom);
   }
 
   private NettyHttpUtils() {}

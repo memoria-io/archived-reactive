@@ -1,6 +1,7 @@
 package io.memoria.jutils.core.utils.functional;
 
 import io.memoria.jutils.core.utils.file.FileUtils;
+import io.memoria.jutils.core.utils.http.HttpUtils;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.Assertions;
@@ -16,6 +17,7 @@ import java.util.function.Function;
 
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.blockingToVoidMono;
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.checkedMono;
+import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.tryToMono;
 import static io.vavr.control.Either.left;
 import static io.vavr.control.Either.right;
 
@@ -29,6 +31,14 @@ public class ReactorVavrUtilsTest {
     k = left(new Exception("exception example"));
     integerMono = ReactorVavrUtils.eitherToMono(k);
     StepVerifier.create(integerMono).expectError().verify();
+  }
+
+  @Test
+  public void tryToMonoTest() {
+    var tSuccess = Try.success("hello");
+    StepVerifier.create(tryToMono(tSuccess)).expectNext("hello").expectComplete().verify();
+    var tFailure = Try.failure(new Exception("Exception Happened"));
+    StepVerifier.create(tryToMono(tFailure)).expectError(Exception.class).verify();
   }
 
   @Test

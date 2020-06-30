@@ -13,9 +13,10 @@ import reactor.test.StepVerifier;
 import java.util.Base64;
 
 import static io.memoria.jutils.core.utils.http.StatusCode.$400;
-import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.basicCredentials;
+import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.basicFrom;
 import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.send;
 import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.sendError;
+import static io.memoria.jutils.core.utils.netty.NettyHttpUtils.tokenFrom;
 import static io.vavr.control.Option.none;
 
 public class NettyHttpUtilsTest {
@@ -35,8 +36,9 @@ public class NettyHttpUtilsTest {
                        .port(8081)
                        .route(r -> r.get("/happy", (req, resp) -> send(resp, 200, "hello"))
                                     .get("/sad", (req, resp) -> sendError(resp, error))
-                                    .get("/authenticate",
-                                         (req, resp) -> send(resp, 200, basicCredentials(req).toString())))
+                                    .get("/authenticate_token", (req, resp) -> send(resp, 200, tokenFrom(req).get()))
+                                    .get("/authenticate_basic",
+                                         (req, resp) -> send(resp, 200, basicFrom(req).get().toString())))
                        .bindNow();
     client = HttpClient.create().baseUrl("127.0.0.1:8081");
   }
@@ -46,10 +48,21 @@ public class NettyHttpUtilsTest {
     var cred = Base64.getEncoder().encodeToString(("bob:password").getBytes());
     var monoResp = client.headers(b -> b.add("Authorization", "Basic " + cred))
                          .get()
-                         .uri("/authenticate")
+                         .uri("/authenticate_basic")
                          .responseSingle((res, body) -> Mono.just(res.status().code()).zipWith(body.asString()))
                          .map(t -> Tuple.of(t.getT1(), t.getT2()));
     StepVerifier.create(monoResp).expectNext(Tuple.of(200, "(bob, password)")).expectComplete().verify();
+  }
+
+  @Test
+  public void sendTokenAuthTest() {
+    var token = "xyz.xyz.xyz";
+    var monoResp = client.headers(b -> b.add("Authorization", "Bearer " + token))
+                         .get()
+                         .uri("/authenticate_token")
+                         .responseSingle((res, body) -> Mono.just(res.status().code()).zipWith(body.asString()))
+                         .map(t -> Tuple.of(t.getT1(), t.getT2()));
+    StepVerifier.create(monoResp).expectNext(Tuple.of(200, token)).expectComplete().verify();
   }
 
   @Test

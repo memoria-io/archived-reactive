@@ -10,40 +10,48 @@ public class HttpUtilsTest {
 
   @Test
   public void basicExtraSpacesFail() {
-    String header = "Basic  " + Base64.getEncoder().encodeToString(("bob" + ":" + "password").getBytes());
-    Assertions.assertThrows(ArrayIndexOutOfBoundsException.class, () -> HttpUtils.toBasicAuthCredentials(header));
+    var header = "Basic  " + Base64.getEncoder().encodeToString(("bob" + ":" + "password").getBytes());
+    Assertions.assertThrows(ArrayIndexOutOfBoundsException.class, () -> HttpUtils.basicFrom(header));
   }
 
   @Test
   public void basicExtraSpacesSuccess() {
-    String header = "   Basic " + Base64.getEncoder().encodeToString(("bob" + ":" + "password").getBytes()) + "   ";
-    var t = HttpUtils.toBasicAuthCredentials(header);
-    Assertions.assertEquals(Tuple.of("bob", "password"), t);
+    var header = "   Basic " + Base64.getEncoder().encodeToString(("bob" + ":" + "password").getBytes()) + "   ";
+    var t = HttpUtils.basicFrom(header);
+    Assertions.assertEquals(Tuple.of("bob", "password"), t.get());
   }
 
   @Test
   public void basicNoColonFail() {
-    String header = "   Basic " + Base64.getEncoder().encodeToString(("bob" + "" + "password").getBytes()) + "   ";
-    Assertions.assertThrows(ArrayIndexOutOfBoundsException.class, () -> HttpUtils.toBasicAuthCredentials(header));
+    var header = "   Basic " + Base64.getEncoder().encodeToString(("bob" + "" + "password").getBytes()) + "   ";
+    Assertions.assertThrows(ArrayIndexOutOfBoundsException.class, () -> HttpUtils.basicFrom(header));
   }
 
   @Test
   public void basicNoIdSuccess() {
-    String header = "   Basic " + Base64.getEncoder().encodeToString(("" + ":" + "password").getBytes()) + "   ";
-    var t = HttpUtils.toBasicAuthCredentials(header);
-    Assertions.assertEquals(Tuple.of("", "password"), t);
+    var header = "   Basic " + Base64.getEncoder().encodeToString(("" + ":" + "password").getBytes()) + "   ";
+    var t = HttpUtils.basicFrom(header);
+    Assertions.assertEquals(Tuple.of("", "password"), t.get());
   }
 
   @Test
   public void basicNoPasswordFail() {
-    String header = "   Basic " + Base64.getEncoder().encodeToString(("bob" + ":" + "").getBytes()) + "   ";
-    Assertions.assertThrows(ArrayIndexOutOfBoundsException.class, () -> HttpUtils.toBasicAuthCredentials(header));
+    var header = "   Basic " + Base64.getEncoder().encodeToString(("bob" + ":" + "").getBytes()) + "   ";
+    Assertions.assertThrows(ArrayIndexOutOfBoundsException.class, () -> HttpUtils.basicFrom(header));
   }
 
   @Test
   public void basicSuccess() {
-    String header = "Basic " + Base64.getEncoder().encodeToString(("bob" + ":" + "password").getBytes());
-    var t = HttpUtils.toBasicAuthCredentials(header);
-    Assertions.assertEquals(Tuple.of("bob", "password"), t);
+    var header = "Basic " + Base64.getEncoder().encodeToString(("bob" + ":" + "password").getBytes());
+    var t = HttpUtils.basicFrom(header);
+    Assertions.assertEquals(Tuple.of("bob", "password"), t.get());
+  }
+
+  @Test
+  public void bearerSuccess() {
+    var token = "xyz.xyz.zyz";
+    var header = "Bearer " + token;
+    var t = HttpUtils.tokenFrom(header);
+    Assertions.assertEquals(token, t.get());
   }
 }
