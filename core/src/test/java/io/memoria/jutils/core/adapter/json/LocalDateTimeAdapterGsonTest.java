@@ -32,7 +32,7 @@ public class LocalDateTimeAdapterGsonTest {
 
   @Test
   public void dateTimeSerializer() {
-    String actual = j.toJsonString(dateTimeObj);
+    String actual = j.toString(dateTimeObj);
     assertEquals(str, actual);
   }
 }

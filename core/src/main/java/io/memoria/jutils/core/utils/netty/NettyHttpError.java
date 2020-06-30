@@ -1,13 +1,18 @@
 package io.memoria.jutils.core.utils.netty;
 
-import io.memoria.jutils.core.utils.http.StatusCode;
 import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vavr.control.Option;
 
 import static io.vavr.control.Option.none;
+import static io.vavr.control.Option.some;
 
-public record NettyHttpError(StatusCode statusCode, String message, Option<HttpHeaders>httpHeaders) {
-  public NettyHttpError(StatusCode statusCode, String message) {
-    this(statusCode, message, none());
+public record NettyHttpError(HttpResponseStatus status, Option<String>message, Option<HttpHeaders>httpHeaders) {
+  public NettyHttpError(HttpResponseStatus status, String message) {
+    this(status, some(message), none());
+  }
+
+  public NettyHttpError(HttpResponseStatus status) {
+    this(status, none(), none());
   }
 }

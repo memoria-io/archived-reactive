@@ -2,6 +2,7 @@ package io.memoria.jutils.core.utils.functional;
 
 import io.memoria.jutils.core.domain.Err.NotFound;
 import io.memoria.jutils.core.utils.netty.NettyHttpError;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vavr.API.Match.Case;
 import io.vavr.Function1;
 import io.vavr.collection.List;
@@ -13,15 +14,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static io.memoria.jutils.core.utils.functional.VavrUtils.instanceOfCase;
-import static io.memoria.jutils.core.utils.http.StatusCode.$400;
-import static io.memoria.jutils.core.utils.http.StatusCode.$404;
+import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.vavr.API.Match;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class VavrUtilsTest {
-  private Try<List<Integer>> success = Try.of(() -> List.of(1, 2, 3));
-  private Exception e = new Exception();
-  private Try<List<Integer>> failure = Try.failure(e);
+  private final Try<List<Integer>> success = Try.of(() -> List.of(1, 2, 3));
+  private final Exception e = new Exception();
+  private final Try<List<Integer>> failure = Try.failure(e);
 
   @Test
   public void handleTest() throws ExecutionException, InterruptedException {
@@ -62,10 +62,12 @@ public class VavrUtilsTest {
   @Test
   public void instanceOfCaseTest() {
     Case<Throwable, NettyHttpError> case1 = instanceOfCase(IllegalArgumentException.class,
-                                                           new NettyHttpError($400, $400.description));
-    Case<Throwable, NettyHttpError> case2 = instanceOfCase(NotFound.class, new NettyHttpError($404, $404.description));
+                                                           new NettyHttpError(BAD_REQUEST, BAD_REQUEST.reasonPhrase()));
+    Case<Throwable, NettyHttpError> case2 = instanceOfCase(NotFound.class,
+                                                           new NettyHttpError(BAD_REQUEST, BAD_REQUEST.reasonPhrase()));
     Function1<Throwable, NettyHttpError> f = t -> Match(t).of(case1, case2);
-    Assertions.assertEquals(f.apply(new IllegalArgumentException()), new NettyHttpError($400, $400.description));
+    Assertions.assertEquals(f.apply(new IllegalArgumentException()),
+                            new NettyHttpError(BAD_REQUEST, BAD_REQUEST.reasonPhrase()));
   }
 
 }

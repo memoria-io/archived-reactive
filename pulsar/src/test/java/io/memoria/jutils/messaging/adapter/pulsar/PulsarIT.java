@@ -31,7 +31,7 @@ public class PulsarIT {
   private final Flux<Message> msgs;
 
   public PulsarIT() throws PulsarClientException {
-    config = requireNonNull(YamlUtils.parseYamlResource("pulsar.yaml").block());
+    config = requireNonNull(YamlUtils.parseYamlResource("pulsar.yaml",false).block());
     client = pulsarClient(config);
     msgSender = new PulsarMsgSender(client, Duration.ofSeconds(1));
     msgReceiver = new PulsarMsgReceiver(client, Duration.ofSeconds(1));

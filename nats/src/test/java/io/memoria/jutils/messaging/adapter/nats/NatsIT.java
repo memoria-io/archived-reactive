@@ -34,7 +34,7 @@ public class NatsIT {
   private final Flux<Message> msgs;
 
   public NatsIT() throws IOException, InterruptedException {
-    config = requireNonNull(YamlUtils.parseYamlResource("nats.yaml").block());
+    config = requireNonNull(YamlUtils.parseYamlResource("nats.yaml",false).block());
     nc = NatsUtils.createConnection(config);
     msgSender = new NatsMsgSender(nc, elastic(), ofSeconds(1));
     msgReceiver = new NatsMsgReceiver(nc, elastic(), ofSeconds(1));

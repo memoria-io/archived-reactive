@@ -7,15 +7,9 @@ import io.vavr.control.Try;
 
 import java.util.Map;
 
-public class JsonGson implements Json {
-  private final Gson gson;
-
-  public JsonGson(Gson gson) {
-    this.gson = gson;
-  }
-
+public record JsonGson(Gson gson) implements Json {
   @Override
-  public <T> String toJsonString(T t) {
+  public <T> String toString(T t) {
     return gson.toJson(t);
   }
 

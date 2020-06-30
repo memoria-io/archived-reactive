@@ -47,6 +47,14 @@ public class YamlUtils {
   }
 
   /**
+   * @param filename path of the file under e.g resources/filename
+   * @return Try of class type T
+   */
+  public static Mono<YamlConfigMap> parseYamlResource(String filename, boolean ignoreUnknown) {
+    return parseYamlResource(MapInstance.class, filename, ignoreUnknown).map(YamlConfigMap::new);
+  }
+
+  /**
    * @param t             Class type
    * @param filename      path of the file under e.g resources/filename
    * @param ignoreUnknown ignore extra values in when parsing
@@ -55,14 +63,6 @@ public class YamlUtils {
    */
   public static <T> Mono<T> parseYamlResource(Class<T> t, String filename, boolean ignoreUnknown) {
     return parseYaml(t, filename, FileUtils::resourceLines, ignoreUnknown);
-  }
-
-  /**
-   * @param filename path of the file under e.g resources/filename
-   * @return Try of class type T
-   */
-  public static Mono<YamlConfigMap> parseYamlResource(String filename) {
-    return parseYamlResource(MapInstance.class, filename, false).map(YamlConfigMap::new);
   }
 
   private static Flux<String> yamlInclude(String line, Function<String, Flux<String>> reader) {
