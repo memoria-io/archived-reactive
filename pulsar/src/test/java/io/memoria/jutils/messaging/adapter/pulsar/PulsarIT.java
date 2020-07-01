@@ -15,6 +15,7 @@ import reactor.test.StepVerifier;
 import java.time.Duration;
 import java.util.Random;
 
+import static io.memoria.jutils.core.utils.yaml.YamlUtils.parseYamlResource;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.pulsarClient;
 import static io.vavr.API.Some;
 import static java.util.Objects.requireNonNull;
@@ -31,7 +32,7 @@ public class PulsarIT {
   private final Flux<Message> msgs;
 
   public PulsarIT() throws PulsarClientException {
-    config = requireNonNull(YamlUtils.parseYamlResource("pulsar.yaml",false).block());
+    config = requireNonNull(parseYamlResource("pulsar.yaml").block());
     client = pulsarClient(config);
     msgSender = new PulsarMsgSender(client, Duration.ofSeconds(1));
     msgReceiver = new PulsarMsgReceiver(client, Duration.ofSeconds(1));

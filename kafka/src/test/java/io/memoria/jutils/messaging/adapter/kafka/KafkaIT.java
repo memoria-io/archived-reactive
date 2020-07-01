@@ -31,7 +31,7 @@ public class KafkaIT {
   private final Flux<Message> msgs;
 
   public KafkaIT() {
-    config = requireNonNull(YamlUtils.parseYamlResource("kafka.yaml", false).block());
+    config = requireNonNull(YamlUtils.parseYamlResource("kafka.yaml").block());
     msgSender = new KafkaMsgSender(kafkaProducer(config), elastic(), ofSeconds(1));
     msgReceiver = new KafkaMsgReceiver(kafkaConsumer(config), elastic(), ofSeconds(1));
     msgs = Flux.interval(ofMillis(10)).map(i -> new Message(Some(i + ""), "Msg number" + i));

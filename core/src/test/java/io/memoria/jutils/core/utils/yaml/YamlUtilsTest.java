@@ -14,8 +14,8 @@ public class YamlUtilsTest {
   @Test
   @DisplayName("Reading same file should produce same map")
   public void sameFileTest() {
-    YamlConfigMap map = YamlUtils.parseYamlResource("utils/test.yaml", false).block();
-    YamlConfigMap map2 = YamlUtils.parseYamlResource("utils/test.yaml", false).block();
+    YamlConfigMap map = YamlUtils.parseYamlResource("utils/test.yaml").block();
+    YamlConfigMap map2 = YamlUtils.parseYamlResource("utils/test.yaml").block();
 
     assertEquals(map, map2);
   }
@@ -23,7 +23,7 @@ public class YamlUtilsTest {
   @Test
   @DisplayName("Sub values should be parsed correctly")
   public void subValues() {
-    YamlConfigMap map = YamlUtils.parseYamlResource("utils/main-config.yaml", false).block();
+    YamlConfigMap map = YamlUtils.parseYamlResource("utils/main-config.yaml").block();
     assertNotNull(map);
     assertEquals("hello world", map.asString("sub.config.name").get());
     assertEquals("byebye", map.asString("sub.other.value").get());
@@ -33,7 +33,7 @@ public class YamlUtilsTest {
   @Test
   @DisplayName("Values should be parsed correctly")
   public void values() {
-    YamlConfigMap map = YamlUtils.parseYamlResource("utils/test.yaml", false).block();
+    YamlConfigMap map = YamlUtils.parseYamlResource("utils/test.yaml").block();
     assertNotNull(map);
     // string
     assertEquals("hello world", map.asString("stringValue").get());
@@ -81,8 +81,8 @@ public class YamlUtilsTest {
 
   @Test
   void parseYamlFile() {
-    YamlConfigMap resource = YamlUtils.parseYamlResource("utils/test.yaml", false).block();
-    YamlConfigMap file = YamlUtils.parseYamlFile("src/test/resources/utils/test.yaml", false).block();
+    YamlConfigMap resource = YamlUtils.parseYamlResource("utils/test.yaml").block();
+    YamlConfigMap file = YamlUtils.parseYamlFile("src/test/resources/utils/test.yaml").block();
     assertEquals(resource, file);
   }
 }

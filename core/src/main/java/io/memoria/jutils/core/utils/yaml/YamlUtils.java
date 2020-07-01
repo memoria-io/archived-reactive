@@ -38,20 +38,23 @@ public class YamlUtils {
   }
 
   /**
-   * @param filename      path of the file
-   * @param ignoreUnknown ignore extra values in when parsing
+   * Unknown is ignored since class is map
+   *
+   * @param filename path of the file
    * @return Try of class type T
    */
-  public static Mono<YamlConfigMap> parseYamlFile(String filename, boolean ignoreUnknown) {
-    return parseYamlFile(MapInstance.class, filename, ignoreUnknown).map(YamlConfigMap::new);
+  public static Mono<YamlConfigMap> parseYamlFile(String filename) {
+    return parseYamlFile(MapInstance.class, filename, true).map(YamlConfigMap::new);
   }
 
   /**
+   * Unknown is ignored since class is map
+   *
    * @param filename path of the file under e.g resources/filename
    * @return Try of class type T
    */
-  public static Mono<YamlConfigMap> parseYamlResource(String filename, boolean ignoreUnknown) {
-    return parseYamlResource(MapInstance.class, filename, ignoreUnknown).map(YamlConfigMap::new);
+  public static Mono<YamlConfigMap> parseYamlResource(String filename) {
+    return parseYamlResource(MapInstance.class, filename, true).map(YamlConfigMap::new);
   }
 
   /**
