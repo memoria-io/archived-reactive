@@ -5,8 +5,8 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.memoria/jutils/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/io.memoria/jutils/)
 
 # jutils
-`jutils` is a functional reactive utility library, an opinionated and pragmatic learning effort.
-It was created because I found much reused code after combining multiple libraries.
+`jutils` is a reactive functional utilities' library, an opinionated and pragmatic learning effort.
+It was created because I found much reused code after combining multiple libraries;
 
 One example is the combination of [Project Reactor](https://projectreactor.io/) along with [VAVR](https://vavr.io), it
 became clear that there was a need for functional utility methods like the ones in
@@ -15,16 +15,18 @@ became clear that there was a need for functional utility methods like the ones 
 
 ## Features
 * Vavr + Reactor Functional utilities
-* CQRS and Eventsourcing utilities.
+* Yaml configuration loader utility (Currently is very tiny utility but hopefully soon to have features like like Scala's HOCON )
+    * Currently, it's non-blocking wrapped in Reactor Mono/Flux
+    * It has nesting capability using  `include: file.yaml` 
+* Reactive CQRS and Eventsourcing utilities.
 * Simple Reactive Message bus implementation for:
   * Apache Kafka
   * Nats
   * Apache Pulsar
 * Reactor Netty adapter with error handling escalation
-* Yaml adapter with features e.g nesting, fluent api, resource and file loading
-* Vavr GSON Json implementation
-* Argon2 Hashing adapter
-* In memory generic crud
+* Vavr + GSON Json implementation
+* Nonblocking Argon2 Hashing adapter
+* Reactive functional in-memory generic cruds.
 
 ## Related Articles
 * [Error handling using Reactor and VAVR](https://marmoush.com/2019/11/12/Error-Handling.html)
