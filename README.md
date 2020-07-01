@@ -57,7 +57,7 @@ All modules depend on core. There are currently no other inter-dependencies betw
 
 
 ## Contribution
-You can just do pull requests and I will check them asap.
+You can just do pull requests, and I will check them asap.
 
 ## Todos
 
