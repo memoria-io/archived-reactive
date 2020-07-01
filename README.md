@@ -37,7 +37,7 @@ All modules depend on core. There are currently no other inter-dependencies betw
 
 ```xml
 <properties>
-    <jutils.version>0.7.8</jutils.version>
+    <jutils.version>0.9.82</jutils.version>
 </properties>
 <dependencies>
     <dependency>
