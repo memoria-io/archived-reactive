@@ -63,7 +63,10 @@ public class NettyHttpUtilsTest {
                          .uri(sadPath)
                          .responseSingle((res, body) -> Mono.just(res.status().code()).zipWith(body.asString()))
                          .map(t -> Tuple.of(t.getT1(), t.getT2()));
-    StepVerifier.create(monoResp).expectNext(Tuple.of(BAD_REQUEST.code(), BAD_REQUEST.reasonPhrase())).expectComplete().verify();
+    StepVerifier.create(monoResp)
+                .expectNext(Tuple.of(BAD_REQUEST.code(), BAD_REQUEST.reasonPhrase()))
+                .expectComplete()
+                .verify();
   }
 
   @Test

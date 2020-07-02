@@ -9,12 +9,36 @@ import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
+import java.util.Objects;
 
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.blockingToMono;
 import static io.vavr.API.Some;
 
-public record KafkaMsgReceiver(KafkaConsumer<String, String>consumer, Scheduler scheduler, Duration timeout)
-        implements MsgReceiver {
+public class KafkaMsgReceiver implements MsgReceiver {
+  private final KafkaConsumer<String, String> consumer;
+  private final Scheduler scheduler;
+  private final Duration timeout;
+
+  public KafkaMsgReceiver(KafkaConsumer<String, String> consumer, Scheduler scheduler, Duration timeout) {
+    this.consumer = consumer;
+    this.scheduler = scheduler;
+    this.timeout = timeout;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    KafkaMsgReceiver that = (KafkaMsgReceiver) o;
+    return consumer.equals(that.consumer) && scheduler.equals(that.scheduler) && timeout.equals(that.timeout);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(consumer, scheduler, timeout);
+  }
 
   @Override
   public Flux<Message> receive(String topic, int partition, long offset) {
@@ -31,4 +55,6 @@ public record KafkaMsgReceiver(KafkaConsumer<String, String>consumer, Scheduler 
                                                                   .flatMapMany(Flux::fromIterable)
                                                                   .map(m -> new Message(Some(m.key()), m.value()));
   }
+
+
 }

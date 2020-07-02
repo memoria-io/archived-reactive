@@ -1,7 +1,6 @@
 package io.memoria.jutils.messaging.adapter.pulsar;
 
 import io.memoria.jutils.core.utils.yaml.YamlConfigMap;
-import io.memoria.jutils.core.utils.yaml.YamlUtils;
 import io.memoria.jutils.messaging.domain.Message;
 import io.memoria.jutils.messaging.domain.port.MsgReceiver;
 import io.memoria.jutils.messaging.domain.port.MsgSender;
@@ -34,8 +33,8 @@ public class PulsarIT {
   public PulsarIT() throws PulsarClientException {
     config = requireNonNull(parseYamlResource("pulsar.yaml").block());
     client = pulsarClient(config);
-    msgSender = new PulsarMsgSender(client, Duration.ofSeconds(1));
-    msgReceiver = new PulsarMsgReceiver(client, Duration.ofSeconds(1));
+    msgSender = new PulsarMsgSender(client);
+    msgReceiver = new PulsarMsgReceiver(client);
     msgs = Flux.interval(Duration.ofMillis(10)).log().map(i -> new Message(Some(i + ""), "Msg number" + i));
   }
 

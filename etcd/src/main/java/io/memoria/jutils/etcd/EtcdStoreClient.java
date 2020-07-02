@@ -14,8 +14,14 @@ import io.vavr.control.Option;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
-public record EtcdStoreClient(KV kvClient) implements KeyValueStoreClient {
+public class EtcdStoreClient implements KeyValueStoreClient {
+  private final KV kvClient;
+
+  public EtcdStoreClient(KV kvClient) {
+    this.kvClient = kvClient;
+  }
 
   public EtcdStoreClient(Client client) {
     this(client.getKVClient());
@@ -47,5 +53,20 @@ public record EtcdStoreClient(KV kvClient) implements KeyValueStoreClient {
   private Map<String, String> mapOf(java.util.List<KeyValue> keyValues) {
     return HashMap.ofAll(keyValues.stream(), KeyValue::getKey, KeyValue::getValue)
                   .map((k, v) -> Tuple.of(k.toString(StandardCharsets.UTF_8), v.toString(StandardCharsets.UTF_8)));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    EtcdStoreClient that = (EtcdStoreClient) o;
+    return kvClient.equals(that.kvClient);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(kvClient);
   }
 }

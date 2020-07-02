@@ -9,11 +9,21 @@ import reactor.core.scheduler.Scheduler;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static io.memoria.jutils.messaging.adapter.nats.NatsUtils.toSubject;
 
-public record NatsMsgSender(Connection nc, Scheduler scheduler, Duration timeout) implements MsgSender {
+public class NatsMsgSender implements MsgSender {
+  private final Connection nc;
+  private final Scheduler scheduler;
+  private final Duration timeout;
+
+  public NatsMsgSender(Connection nc, Scheduler scheduler, Duration timeout) {
+    this.nc = nc;
+    this.scheduler = scheduler;
+    this.timeout = timeout;
+  }
 
   @Override
   public Flux<Option<Message>> send(String topic, int partition, Flux<Message> msgFlux) {
@@ -25,5 +35,20 @@ public record NatsMsgSender(Connection nc, Scheduler scheduler, Duration timeout
       nc.publish(toSubject(topic, partition), msg.message().getBytes(StandardCharsets.UTF_8));
       return Option.none();
     };
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    NatsMsgSender that = (NatsMsgSender) o;
+    return nc.equals(that.nc) && scheduler.equals(that.scheduler) && timeout.equals(that.timeout);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(nc, scheduler, timeout);
   }
 }

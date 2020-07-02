@@ -61,20 +61,20 @@ public final class ReactorVavrUtils {
     return blockingToMono(() -> f.get(d.toMillis(), TimeUnit.MILLISECONDS), scheduler);
   }
 
-  public static <T> Mono<T> tryToMono(Try<T> t) {
-    if (t.isSuccess()) {
-      return Mono.just(t.get());
-    } else {
-      return Mono.error(t.getCause());
-    }
-  }
-
   public static <A, B> Flux<Try<B>> tryToFluxTry(Try<A> a, Function<A, Flux<Try<B>>> f) {
     return Match(a).of(Case($Success($()), f), Case($Failure($()), t -> Flux.just(Try.failure(t))));
   }
 
   public static <A, B> Function<Try<A>, Flux<Try<B>>> tryToFluxTry(Function<A, Flux<Try<B>>> f) {
     return a -> Match(a).of(Case($Success($()), f), Case($Failure($()), t -> Flux.just(Try.<B>failure(t))));
+  }
+
+  public static <T> Mono<T> tryToMono(Try<T> t) {
+    if (t.isSuccess()) {
+      return Mono.just(t.get());
+    } else {
+      return Mono.error(t.getCause());
+    }
   }
 
   public static <A, B> Mono<Try<B>> tryToMonoTry(Try<A> a, Function<A, Mono<Try<B>>> f) {

@@ -9,12 +9,17 @@ import org.apache.pulsar.client.api.PulsarClientException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
+import java.util.Objects;
 
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.createProducer;
 import static io.vavr.API.Some;
 
-public record PulsarMsgSender(PulsarClient client, Duration timeout) implements MsgSender {
+public class PulsarMsgSender implements MsgSender {
+  private final PulsarClient client;
+
+  public PulsarMsgSender(PulsarClient client) {
+    this.client = client;
+  }
 
   @Override
   public Flux<Option<Message>> send(String topic, int partitionStr, Flux<Message> msgFlux) {
@@ -29,5 +34,20 @@ public record PulsarMsgSender(PulsarClient client, Duration timeout) implements 
     } catch (PulsarClientException e) {
       return Flux.error(e);
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    PulsarMsgSender that = (PulsarMsgSender) o;
+    return client.equals(that.client);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(client);
   }
 }

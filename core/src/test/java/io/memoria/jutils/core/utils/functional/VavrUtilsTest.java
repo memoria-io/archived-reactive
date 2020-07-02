@@ -2,7 +2,6 @@ package io.memoria.jutils.core.utils.functional;
 
 import io.memoria.jutils.core.domain.Err.NotFound;
 import io.memoria.jutils.core.utils.netty.NettyHttpError;
-import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vavr.API.Match.Case;
 import io.vavr.Function1;
 import io.vavr.collection.List;
@@ -34,22 +33,6 @@ public class VavrUtilsTest {
   }
 
   @Test
-  public void listOfTryTest() {
-    List<Try<Integer>> su = List.ofAll(VavrUtils.listOfTry(success));
-    List<Try<Integer>> fa = List.ofAll(VavrUtils.listOfTry(failure));
-    assertEquals(List.of(Try.success(1), Try.success(2), Try.success(3)), su);
-    assertEquals(List.of(Try.failure(e)), fa);
-  }
-
-  @Test
-  public void traverseOfTryTest() {
-    List<Try<Integer>> su = List.ofAll(VavrUtils.traverseOfTry(success));
-    List<Try<Integer>> fa = List.ofAll(VavrUtils.traverseOfTry(failure));
-    assertEquals(List.of(Try.success(1), Try.success(2), Try.success(3)), su);
-    assertEquals(List.of(Try.failure(e)), fa);
-  }
-
-  @Test
   public void handleToVoidTest() throws ExecutionException, InterruptedException {
     var success = CompletableFuture.completedFuture("success");
     assertEquals(Try.success(null), success.handle(VavrUtils.handleToVoid()).get());
@@ -68,6 +51,22 @@ public class VavrUtilsTest {
     Function1<Throwable, NettyHttpError> f = t -> Match(t).of(case1, case2);
     Assertions.assertEquals(f.apply(new IllegalArgumentException()),
                             new NettyHttpError(BAD_REQUEST, BAD_REQUEST.reasonPhrase()));
+  }
+
+  @Test
+  public void listOfTryTest() {
+    List<Try<Integer>> su = List.ofAll(VavrUtils.listOfTry(success));
+    List<Try<Integer>> fa = List.ofAll(VavrUtils.listOfTry(failure));
+    assertEquals(List.of(Try.success(1), Try.success(2), Try.success(3)), su);
+    assertEquals(List.of(Try.failure(e)), fa);
+  }
+
+  @Test
+  public void traverseOfTryTest() {
+    List<Try<Integer>> su = List.ofAll(VavrUtils.traverseOfTry(success));
+    List<Try<Integer>> fa = List.ofAll(VavrUtils.traverseOfTry(failure));
+    assertEquals(List.of(Try.success(1), Try.success(2), Try.success(3)), su);
+    assertEquals(List.of(Try.failure(e)), fa);
   }
 
 }

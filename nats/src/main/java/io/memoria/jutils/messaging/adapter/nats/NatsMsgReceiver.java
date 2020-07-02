@@ -9,11 +9,21 @@ import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
+import java.util.Objects;
 
 import static io.memoria.jutils.messaging.adapter.nats.NatsUtils.toMessage;
 
-public record NatsMsgReceiver(Connection nc, Scheduler scheduler, Duration timeout) implements MsgReceiver {
+public class NatsMsgReceiver implements MsgReceiver {
   private static final Logger log = LoggerFactory.getLogger(NatsMsgReceiver.class.getName());
+  private final Connection nc;
+  private final Scheduler scheduler;
+  private final Duration timeout;
+
+  public NatsMsgReceiver(Connection nc, Scheduler scheduler, Duration timeout) {
+    this.nc = nc;
+    this.scheduler = scheduler;
+    this.timeout = timeout;
+  }
 
   @Override
   public Flux<Message> receive(String topic, int partition, long offset) {
@@ -29,6 +39,21 @@ public record NatsMsgReceiver(Connection nc, Scheduler scheduler, Duration timeo
       });
       s.onCancel(() -> log.info("Cancellation signal to subject:" + sub.getSubject()));
     });
-    return Flux.defer(() -> f.subscribeOn(scheduler).skip(offset));
+    return Flux.defer(() -> f.subscribeOn(scheduler).skip(offset).timeout(timeout));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    NatsMsgReceiver that = (NatsMsgReceiver) o;
+    return nc.equals(that.nc) && scheduler.equals(that.scheduler) && timeout.equals(that.timeout);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(nc, scheduler, timeout);
   }
 }

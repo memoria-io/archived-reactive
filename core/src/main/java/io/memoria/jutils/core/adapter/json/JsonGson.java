@@ -6,11 +6,28 @@ import io.memoria.jutils.core.domain.port.Json;
 import io.vavr.control.Try;
 
 import java.util.Map;
+import java.util.Objects;
 
-public record JsonGson(Gson gson) implements Json {
+public class JsonGson implements Json {
+  private final Gson gson;
+
+  public JsonGson(Gson gson) {
+    this.gson = gson;
+  }
+
   @Override
-  public <T> String toString(T t) {
-    return gson.toJson(t);
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    JsonGson jsonGson = (JsonGson) o;
+    return gson.equals(jsonGson.gson);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(gson);
   }
 
   @Override
@@ -21,5 +38,10 @@ public record JsonGson(Gson gson) implements Json {
   @Override
   public <T> Try<T> toObject(String str, Class<T> tClass) {
     return Try.of(() -> gson.fromJson(str, tClass));
+  }
+
+  @Override
+  public <T> String toString(T t) {
+    return gson.toJson(t);
   }
 }

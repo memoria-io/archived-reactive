@@ -1,9 +1,15 @@
 package io.memoria.jutils.security.adapter.random;
 
+import java.util.Objects;
 import java.util.Random;
 
-public record RandomUtils(Random random) {
+public class RandomUtils {
   public static final String ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  private final Random random;
+
+  public RandomUtils(Random random) {
+    this.random = random;
+  }
 
   public String randomAlphanumeric(int length) {
     StringBuilder sb = new StringBuilder(length);
@@ -26,5 +32,20 @@ public record RandomUtils(Random random) {
 
   public String randomMinMaxHex(int min, int max) {
     return randomHex(random.nextInt(max - min) + min);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    RandomUtils that = (RandomUtils) o;
+    return random.equals(that.random);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(random);
   }
 }

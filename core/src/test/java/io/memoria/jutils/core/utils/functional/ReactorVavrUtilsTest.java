@@ -1,7 +1,6 @@
 package io.memoria.jutils.core.utils.functional;
 
 import io.memoria.jutils.core.utils.file.FileUtils;
-import io.memoria.jutils.core.utils.http.HttpUtils;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.Assertions;
@@ -23,6 +22,36 @@ import static io.vavr.control.Either.right;
 
 public class ReactorVavrUtilsTest {
   @Test
+  public void blockingToMono() {
+    class ThreadName {
+      public String threadName;
+    }
+    final ThreadName n = new ThreadName();
+    var m = blockingToVoidMono(() -> {
+      Thread.sleep(1000);
+      n.threadName = Thread.currentThread().getName();
+    }, Schedulers.elastic());
+    Assertions.assertNull(n.threadName);
+    m.block();
+    Assertions.assertNotNull(n.threadName);
+    Assertions.assertTrue(n.threadName.contains("elastic"));
+  }
+
+  @Test
+  public void checkedMonoTest() {
+    AtomicBoolean b = new AtomicBoolean();
+    var m = checkedMono(() -> {
+      Thread.sleep(1000);
+      b.getAndSet(true);
+    });
+    // Making sure mono isn't executed
+    Assertions.assertFalse(b.get());
+    // Now should be executed
+    m.block();
+    Assertions.assertTrue(b.get());
+  }
+
+  @Test
   public void eitherToMonoTest() {
     Either<Exception, Integer> k = right(23);
     Mono<Integer> integerMono = ReactorVavrUtils.eitherToMono(k);
@@ -31,14 +60,6 @@ public class ReactorVavrUtilsTest {
     k = left(new Exception("exception example"));
     integerMono = ReactorVavrUtils.eitherToMono(k);
     StepVerifier.create(integerMono).expectError().verify();
-  }
-
-  @Test
-  public void tryToMonoTest() {
-    var tSuccess = Try.success("hello");
-    StepVerifier.create(tryToMono(tSuccess)).expectNext("hello").expectComplete().verify();
-    var tFailure = Try.failure(new Exception("Exception Happened"));
-    StepVerifier.create(tryToMono(tFailure)).expectError(Exception.class).verify();
   }
 
   @Test
@@ -87,6 +108,14 @@ public class ReactorVavrUtilsTest {
   }
 
   @Test
+  public void tryToMonoTest() {
+    var tSuccess = Try.success("hello");
+    StepVerifier.create(tryToMono(tSuccess)).expectNext("hello").expectComplete().verify();
+    var tFailure = Try.failure(new Exception("Exception Happened"));
+    StepVerifier.create(tryToMono(tFailure)).expectError(Exception.class).verify();
+  }
+
+  @Test
   public void tryToMonoTryTest() {
     Try<String> h = Try.success("hello");
     Function<String, Mono<Try<Integer>>> op1 = t -> Mono.just(Try.success((t + " world").length()));
@@ -111,35 +140,5 @@ public class ReactorVavrUtilsTest {
     Function<Throwable, Mono<Void>> throwable = t -> Mono.just(Try.failure(new Exception("should not fail"))).then();
     Mono<Void> voidMono = original.flatMap(ReactorVavrUtils.tryToMonoVoid(deferredOp, throwable));
     StepVerifier.create(voidMono).expectComplete().verify();
-  }
-
-  @Test
-  public void checkedMonoTest() {
-    AtomicBoolean b = new AtomicBoolean();
-    var m = checkedMono(() -> {
-      Thread.sleep(1000);
-      b.getAndSet(true);
-    });
-    // Making sure mono isn't executed
-    Assertions.assertFalse(b.get());
-    // Now should be executed
-    m.block();
-    Assertions.assertTrue(b.get());
-  }
-
-  @Test
-  public void blockingToMono() {
-    class ThreadName {
-      public String threadName;
-    }
-    final ThreadName n = new ThreadName();
-    var m = blockingToVoidMono(() -> {
-      Thread.sleep(1000);
-      n.threadName = Thread.currentThread().getName();
-    }, Schedulers.elastic());
-    Assertions.assertNull(n.threadName);
-    m.block();
-    Assertions.assertNotNull(n.threadName);
-    Assertions.assertTrue(n.threadName.contains("elastic"));
   }
 }
