@@ -14,14 +14,8 @@ import io.vavr.control.Option;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
-public class EtcdStoreClient implements KeyValueStoreClient {
-  private final KV kvClient;
-
-  public EtcdStoreClient(KV kvClient) {
-    this.kvClient = kvClient;
-  }
+public record EtcdStoreClient(KV kvClient) implements KeyValueStoreClient {
 
   public EtcdStoreClient(Client client) {
     this(client.getKVClient());
@@ -30,16 +24,6 @@ public class EtcdStoreClient implements KeyValueStoreClient {
   public Mono<Void> delete(String key) {
     ByteSequence byteKey = ByteSequence.from(key.getBytes());
     return Mono.fromFuture(kvClient.delete(byteKey)).then();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
-    EtcdStoreClient that = (EtcdStoreClient) o;
-    return kvClient.equals(that.kvClient);
   }
 
   public Mono<Option<String>> get(String key) {
@@ -52,11 +36,6 @@ public class EtcdStoreClient implements KeyValueStoreClient {
     return Mono.fromFuture(kvClient.get(byteKey, GetOption.newBuilder().withPrefix(byteKey).build()))
                .map(GetResponse::getKvs)
                .map(this::mapOf);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(kvClient);
   }
 
   public Mono<Void> put(String key, String value) {

@@ -16,7 +16,7 @@ import java.util.Map;
 
 import static io.vavr.control.Option.some;
 
-public class InMemoryRepoTests {
+public class InMemoryRepoTest {
   private static record User(String id, int age) implements Storable<String> {}
 
   private final Map<String, Storable<String>> db = new HashMap<>();

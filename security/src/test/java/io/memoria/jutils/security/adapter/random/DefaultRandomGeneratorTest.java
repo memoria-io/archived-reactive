@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import java.security.SecureRandom;
 
-public class RandomUtilsTest {
+public class DefaultRandomGeneratorTest {
   @Test
   public void randomAlphanumericTest() {
     SecureRandom secRand = new SecureRandom();
-    RandomUtils ru = new RandomUtils(secRand);
+    DefaultRandomGenerator ru = new DefaultRandomGenerator(secRand);
     Stream.range(0, 100).forEach(t -> {
       int min = secRand.nextInt(10);
       int max = min + 200;
@@ -23,7 +23,7 @@ public class RandomUtilsTest {
   @Test
   public void randomHexTest() {
     SecureRandom secRand = new SecureRandom();
-    RandomUtils ru = new RandomUtils(secRand);
+    DefaultRandomGenerator ru = new DefaultRandomGenerator(secRand);
     Stream.range(0, 100).forEach(t -> {
       int min = secRand.nextInt(10);
       int max = min + 200;

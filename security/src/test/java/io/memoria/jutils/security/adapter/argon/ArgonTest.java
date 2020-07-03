@@ -1,6 +1,6 @@
 package io.memoria.jutils.security.adapter.argon;
 
-import io.memoria.jutils.security.adapter.random.RandomUtils;
+import io.memoria.jutils.security.adapter.random.DefaultRandomGenerator;
 import io.memoria.jutils.security.domain.port.Hasher;
 import io.memoria.jutils.security.domain.port.Verifier;
 import io.vavr.collection.Stream;
@@ -17,7 +17,7 @@ public class ArgonTest {
   @Test
   public void hashAndVerifyTest() {
     SecureRandom secRand = new SecureRandom();
-    RandomUtils ru = new RandomUtils(secRand);
+    DefaultRandomGenerator ru = new DefaultRandomGenerator(secRand);
     Stream.range(0, 10).forEach(t -> {
       int min = secRand.nextInt(20);
       int max = min + 200;
