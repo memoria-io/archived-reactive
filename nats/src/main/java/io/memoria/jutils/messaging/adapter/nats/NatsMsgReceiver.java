@@ -26,6 +26,21 @@ public class NatsMsgReceiver implements MsgReceiver {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    NatsMsgReceiver that = (NatsMsgReceiver) o;
+    return nc.equals(that.nc) && scheduler.equals(that.scheduler) && timeout.equals(that.timeout);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(nc, scheduler, timeout);
+  }
+
+  @Override
   public Flux<Message> receive(String topic, int partition, long offset) {
     var subject = NatsUtils.toSubject(topic, partition);
     Flux<Message> f = Flux.create(s -> {
@@ -40,20 +55,5 @@ public class NatsMsgReceiver implements MsgReceiver {
       s.onCancel(() -> log.info("Cancellation signal to subject:" + sub.getSubject()));
     });
     return Flux.defer(() -> f.subscribeOn(scheduler).skip(offset).timeout(timeout));
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
-    NatsMsgReceiver that = (NatsMsgReceiver) o;
-    return nc.equals(that.nc) && scheduler.equals(that.scheduler) && timeout.equals(that.timeout);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(nc, scheduler, timeout);
   }
 }

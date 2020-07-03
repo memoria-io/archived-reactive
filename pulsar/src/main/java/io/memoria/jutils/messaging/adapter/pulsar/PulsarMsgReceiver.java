@@ -20,16 +20,6 @@ public class PulsarMsgReceiver implements MsgReceiver {
   }
 
   @Override
-  public Flux<Message> receive(String topicId, int partition, long offset) {
-    try {
-      var consumer = createConsumer(client, topicId, offset);
-      return Flux.<Flux<Message>>generate(s -> s.next(consume(consumer).flux())).flatMap(identity());
-    } catch (PulsarClientException e) {
-      return Flux.error(e);
-    }
-  }
-
-  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;
@@ -42,5 +32,14 @@ public class PulsarMsgReceiver implements MsgReceiver {
   @Override
   public int hashCode() {
     return Objects.hash(client);
+  }
+
+  @Override
+  public Flux<Message> receive(String topicId, int partition, long offset) {
+    try (var consumer = createConsumer(client, topicId, offset)) {
+      return Flux.<Flux<Message>>generate(s -> s.next(consume(consumer).flux())).flatMap(identity());
+    } catch (PulsarClientException e) {
+      return Flux.error(e);
+    }
   }
 }

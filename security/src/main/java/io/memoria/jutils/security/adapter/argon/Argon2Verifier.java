@@ -28,11 +28,6 @@ public class Argon2Verifier implements Verifier {
   }
 
   @Override
-  public Mono<Boolean> verify(String password, String hash, String salt) {
-    return Mono.defer(() -> Mono.just(blockingVerify(password, hash, salt)).subscribeOn(scheduler));
-  }
-
-  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;
@@ -45,5 +40,10 @@ public class Argon2Verifier implements Verifier {
   @Override
   public int hashCode() {
     return Objects.hash(argon2, scheduler);
+  }
+
+  @Override
+  public Mono<Boolean> verify(String password, String hash, String salt) {
+    return Mono.defer(() -> Mono.just(blockingVerify(password, hash, salt)).subscribeOn(scheduler));
   }
 }

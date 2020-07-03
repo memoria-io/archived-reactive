@@ -16,7 +16,6 @@ import java.util.Random;
 
 import static io.memoria.jutils.core.utils.yaml.YamlUtils.parseYamlResource;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.pulsarClient;
-import static io.vavr.API.Some;
 import static java.util.Objects.requireNonNull;
 
 public class PulsarIT {
@@ -35,7 +34,7 @@ public class PulsarIT {
     client = pulsarClient(config);
     msgSender = new PulsarMsgSender(client);
     msgReceiver = new PulsarMsgReceiver(client);
-    msgs = Flux.interval(Duration.ofMillis(10)).log().map(i -> new Message(Some(i + ""), "Msg number" + i));
+    msgs = Flux.interval(Duration.ofMillis(10)).log().map(i -> new Message("Msg number" + i).withId(i));
   }
 
   @Test

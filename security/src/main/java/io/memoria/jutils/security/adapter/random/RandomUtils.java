@@ -11,6 +11,21 @@ public class RandomUtils {
     this.random = random;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    RandomUtils that = (RandomUtils) o;
+    return random.equals(that.random);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(random);
+  }
+
   public String randomAlphanumeric(int length) {
     StringBuilder sb = new StringBuilder(length);
     while (sb.length() < length)
@@ -32,20 +47,5 @@ public class RandomUtils {
 
   public String randomMinMaxHex(int min, int max) {
     return randomHex(random.nextInt(max - min) + min);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
-    RandomUtils that = (RandomUtils) o;
-    return random.equals(that.random);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(random);
   }
 }

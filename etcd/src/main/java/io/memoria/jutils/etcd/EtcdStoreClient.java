@@ -32,6 +32,16 @@ public class EtcdStoreClient implements KeyValueStoreClient {
     return Mono.fromFuture(kvClient.delete(byteKey)).then();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    EtcdStoreClient that = (EtcdStoreClient) o;
+    return kvClient.equals(that.kvClient);
+  }
+
   public Mono<Option<String>> get(String key) {
     ByteSequence byteKey = ByteSequence.from(key.getBytes());
     return Mono.fromFuture(kvClient.get(byteKey)).map(GetResponse::getKvs).map(this::mapOf).map(c -> c.get(key));
@@ -44,6 +54,11 @@ public class EtcdStoreClient implements KeyValueStoreClient {
                .map(this::mapOf);
   }
 
+  @Override
+  public int hashCode() {
+    return Objects.hash(kvClient);
+  }
+
   public Mono<Void> put(String key, String value) {
     ByteSequence byteKey = ByteSequence.from(key.getBytes());
     ByteSequence byteValue = ByteSequence.from(value.getBytes());
@@ -53,20 +68,5 @@ public class EtcdStoreClient implements KeyValueStoreClient {
   private Map<String, String> mapOf(java.util.List<KeyValue> keyValues) {
     return HashMap.ofAll(keyValues.stream(), KeyValue::getKey, KeyValue::getValue)
                   .map((k, v) -> Tuple.of(k.toString(StandardCharsets.UTF_8), v.toString(StandardCharsets.UTF_8)));
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
-    EtcdStoreClient that = (EtcdStoreClient) o;
-    return kvClient.equals(that.kvClient);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(kvClient);
   }
 }

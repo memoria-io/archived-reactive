@@ -1,6 +1,7 @@
 package io.memoria.jutils.messaging.adapter.memory;
 
 import io.memoria.jutils.messaging.domain.Message;
+import io.memoria.jutils.messaging.domain.Response;
 import io.vavr.control.Option;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ public class InMemoryMessageTest {
   private final int PARTITION = 0;
   private final int MSG_COUNT = 3;
   private final Flux<Message> msgs = Flux.interval(Duration.ofMillis(10))
-                                         .map(i -> new Message(Some(i + ""), "hello_" + i))
+                                         .map(i -> new Message("hello_" + i).withId(i))
                                          .take(MSG_COUNT);
 
   @Test
@@ -46,10 +47,10 @@ public class InMemoryMessageTest {
     var msgProducer = new InMemoryMsgSender(db);
     var published = msgProducer.send(TOPIC, PARTITION, msgs).take(MSG_COUNT);
 
-    StepVerifier.create(published.filter(Option::isDefined).map(Option::get).map(Message::id))
-                .expectNext(Some(valueOf(0L)))
-                .expectNext(Some(valueOf(1L)))
-                .expectNext(Some(valueOf(2L)))
+    StepVerifier.create(published.map(Response::value).map(Option::get))
+                .expectNext(valueOf(0L))
+                .expectNext(valueOf(1L))
+                .expectNext(valueOf(2L))
                 .expectComplete()
                 .verify();
   }

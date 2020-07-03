@@ -15,7 +15,6 @@ import reactor.test.StepVerifier;
 import java.io.IOException;
 import java.util.Random;
 
-import static io.vavr.API.Some;
 import static java.lang.System.out;
 import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofSeconds;
@@ -38,7 +37,7 @@ public class NatsIT {
     nc = NatsUtils.createConnection(config);
     msgSender = new NatsMsgSender(nc, elastic(), ofSeconds(1));
     msgReceiver = new NatsMsgReceiver(nc, elastic(), ofSeconds(1));
-    msgs = Flux.interval(ofMillis(10)).map(i -> new Message(Some(i + ""), "Msg number" + i));
+    msgs = Flux.interval(ofMillis(10)).map(i -> new Message("Msg number" + i).withId(i));
   }
 
   @Test

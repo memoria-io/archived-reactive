@@ -12,7 +12,6 @@ import java.time.Duration;
 import java.util.Objects;
 
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.blockingToMono;
-import static io.vavr.API.Some;
 
 public class KafkaMsgReceiver implements MsgReceiver {
   private final KafkaConsumer<String, String> consumer;
@@ -53,8 +52,7 @@ public class KafkaMsgReceiver implements MsgReceiver {
   private Flux<Message> pollOnce(TopicPartition tp) {
     return blockingToMono(() -> consumer.poll(timeout), scheduler).map(crs -> crs.records(tp))
                                                                   .flatMapMany(Flux::fromIterable)
-                                                                  .map(m -> new Message(Some(m.key()), m.value()));
+                                                                  .map(m -> new Message(m.value()).withId(m.key()));
   }
-
 
 }

@@ -19,7 +19,7 @@ public class SerialIdGenerator implements IdGenerator {
     if (o == null || getClass() != o.getClass())
       return false;
     SerialIdGenerator that = (SerialIdGenerator) o;
-    return atomicLong.equals(that.atomicLong);
+    return atomicLong.get() == that.atomicLong.get();
   }
 
   @Override

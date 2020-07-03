@@ -36,11 +36,6 @@ public class Argon2Hasher implements Hasher {
   }
 
   @Override
-  public Mono<String> hash(String password, String salt) {
-    return Mono.defer(() -> Mono.just(blockingHash(password, salt)).subscribeOn(scheduler));
-  }
-
-  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;
@@ -49,6 +44,11 @@ public class Argon2Hasher implements Hasher {
     Argon2Hasher that = (Argon2Hasher) o;
     return iterations == that.iterations && memory == that.memory && parallelism == that.parallelism &&
            argon2.equals(that.argon2) && scheduler.equals(that.scheduler);
+  }
+
+  @Override
+  public Mono<String> hash(String password, String salt) {
+    return Mono.defer(() -> Mono.just(blockingHash(password, salt)).subscribeOn(scheduler));
   }
 
   @Override

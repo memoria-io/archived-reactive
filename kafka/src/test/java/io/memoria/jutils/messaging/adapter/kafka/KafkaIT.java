@@ -14,7 +14,6 @@ import java.util.Random;
 
 import static io.memoria.jutils.messaging.adapter.kafka.KafkaUtils.kafkaConsumer;
 import static io.memoria.jutils.messaging.adapter.kafka.KafkaUtils.kafkaProducer;
-import static io.vavr.API.Some;
 import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofSeconds;
 import static java.util.Objects.requireNonNull;
@@ -34,7 +33,7 @@ public class KafkaIT {
     config = requireNonNull(YamlUtils.parseYamlResource("kafka.yaml").block());
     msgSender = new KafkaMsgSender(kafkaProducer(config), elastic(), ofSeconds(1));
     msgReceiver = new KafkaMsgReceiver(kafkaConsumer(config), elastic(), ofSeconds(1));
-    msgs = Flux.interval(ofMillis(10)).map(i -> new Message(Some(i + ""), "Msg number" + i));
+    msgs = Flux.interval(ofMillis(10)).map(i -> new Message("Msg number" + i).withId(i));
   }
 
   @Test

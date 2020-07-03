@@ -15,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.Duration;
 
-import static io.vavr.control.Option.none;
-
 public class NatsUtils {
   public static final String CHANNEL_SEPARATOR = ".";
   private static final Logger log = LoggerFactory.getLogger(NatsUtils.class.getName());
@@ -59,7 +57,7 @@ public class NatsUtils {
   }
 
   public static Message toMessage(io.nats.client.Message message) {
-    return new Message(none(), new String(message.getData()));
+    return new Message(new String(message.getData()));
   }
 
   public static String toSubject(String topic, int partition) {
