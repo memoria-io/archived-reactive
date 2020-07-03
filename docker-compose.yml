@@ -30,7 +30,7 @@ services:
       - 6650:6650
       - 8080:8080
   sonarqube:
-    image: sonarqube
+    image: sonarqube:latest
     ports:
       - 9000:9000
   etcd1:

@@ -10,7 +10,7 @@ import reactor.test.StepVerifier;
 import java.util.List;
 
 public class JsonGsonTest {
-  private Json json = new JsonGson(new Gson());
+  private final Json json = new JsonGson(new Gson());
 
   @Test
   public void toMap() {

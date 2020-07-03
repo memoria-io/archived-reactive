@@ -11,13 +11,13 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LocalDateGsonAdapterTest {
-  private Gson gson = LocalDateGsonAdapter.register(new GsonBuilder(), ofPattern("yyyy-MM-dd")).create();
-  private Json j = new JsonGson(gson);
+  private final Gson gson = LocalDateGsonAdapter.register(new GsonBuilder(), ofPattern("yyyy-MM-dd")).create();
+  private final Json j = new JsonGson(gson);
 
   // Date data
-  private LocalDate dateObj = LocalDate.of(2018, 11, 24);
-  private String jsonDate = "\"2018-11-24\"";
-  private String dateString = "2018-11-24";
+  private final LocalDate dateObj = LocalDate.of(2018, 11, 24);
+  private final String jsonDate = "\"2018-11-24\"";
+  private final String dateString = "2018-11-24";
 
   @Test
   public void dateDeserializer() {

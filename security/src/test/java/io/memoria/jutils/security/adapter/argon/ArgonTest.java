@@ -11,8 +11,8 @@ import reactor.test.StepVerifier;
 import java.security.SecureRandom;
 
 public class ArgonTest {
-  Hasher hasher = new Argon2Hasher(100, 1024, 4, Schedulers.elastic());
-  Verifier verifier = new Argon2Verifier(Schedulers.elastic());
+  private final Hasher hasher = new Argon2Hasher(100, 1024, 4, Schedulers.elastic());
+  private final Verifier verifier = new Argon2Verifier(Schedulers.elastic());
 
   @Test
   public void hashAndVerifyTest() {

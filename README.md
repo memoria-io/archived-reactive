@@ -8,8 +8,8 @@
 `jutils` is a reactive functional utilities' library, an opinionated and pragmatic learning effort.
 It was created because I found much reused code after combining multiple libraries;
 
-One example is the combination of [Project Reactor](https://projectreactor.io/) along with [VAVR](https://vavr.io), it
-became clear that there was a need for functional utility methods like the ones in
+One example is the combination of [Project Reactor](https://projectreactor.io/) along with [VAVR](https://vavr.io), 
+it became clear, that there was a need for functional utility methods like the ones in
 [functional](core/src/main/java/io/memoria/jutils/core/utils/functional) package.
 
 **Why I moved Jutils from my own github account to become under Memoria ?**
@@ -25,7 +25,7 @@ A bar of >90% test coverage would hopefully become stable soon, to allow much sa
 
 ## Features
 * Vavr + Reactor Functional utilities
-* Yaml configuration loader utility (Currently is very tiny utility but hopefully soon to have features like like Scala's HOCON )
+* Yaml configuration loader utility (Currently is very tiny utility but hopefully soon to have features like Scala's HOCON )
     * Currently, it's non-blocking wrapped in Reactor Mono/Flux
     * It has nesting capability using  `include: file.yaml` 
 * Reactive CQRS and Eventsourcing utilities.
@@ -48,7 +48,7 @@ A bar of >90% test coverage would hopefully become stable soon, to allow much sa
 
 
 ## Usage
-All modules depend on core. There are currently no other inter-dependencies between them.
+All modules depend on Core. There are currently no other inter-dependencies between them.
 
 ```xml
 <properties>

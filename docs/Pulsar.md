@@ -25,5 +25,5 @@ For Java client Service URL is `pulsar.serviceUrl: pulsar://localhost:6650`
   --network=pulsar \
   apachepulsar/pulsar-dashboard:2.4.2
 ```
-Then got to [localhost:8090](localhost:8090)
+Then got to [localhost:8090](http://localhost:8090)
 

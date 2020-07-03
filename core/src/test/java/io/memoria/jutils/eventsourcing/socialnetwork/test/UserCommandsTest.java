@@ -18,7 +18,7 @@ public class UserCommandsTest {
   private static final String ALEX = "alex";
   private static final String BOB = "bob";
   private static final int ALEX_AGE = 19;
-  private static UserCommandHandler commandHandler = new UserCommandHandler();
+  private static final UserCommandHandler commandHandler = new UserCommandHandler();
 
   @Test
   public void addFriendTest() {

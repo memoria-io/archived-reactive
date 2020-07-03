@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 
+@SuppressWarnings("UnstableApiUsage")
 public record EtcdStoreClient(KV kvClient) implements KeyValueStoreClient {
 
   public EtcdStoreClient(Client client) {
