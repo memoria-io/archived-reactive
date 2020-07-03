@@ -3,6 +3,7 @@ package io.memoria.jutils.messaging.adapter.nats;
 import io.memoria.jutils.core.utils.yaml.YamlConfigMap;
 import io.memoria.jutils.core.utils.yaml.YamlUtils;
 import io.memoria.jutils.messaging.domain.Message;
+import io.memoria.jutils.messaging.domain.MessageFilter;
 import io.memoria.jutils.messaging.domain.port.MsgReceiver;
 import io.memoria.jutils.messaging.domain.port.MsgSender;
 import io.nats.client.Connection;
@@ -22,8 +23,7 @@ import static java.util.Objects.requireNonNull;
 import static reactor.core.scheduler.Schedulers.elastic;
 
 public class NatsIT {
-  private static final String TOPIC = "topic-" + new Random().nextInt(1000);
-  private static final int PARTITION = 0;
+  private static final MessageFilter mf = new MessageFilter("topic-" + new Random().nextInt(1000), 0, 0);
   private static final int MSG_COUNT = 10;
 
   private final YamlConfigMap config;
@@ -35,16 +35,16 @@ public class NatsIT {
   public NatsIT() throws IOException, InterruptedException {
     config = requireNonNull(YamlUtils.parseYamlResource("nats.yaml").block());
     nc = NatsUtils.createConnection(config);
-    msgSender = new NatsMsgSender(nc, elastic(), ofSeconds(1));
-    msgReceiver = new NatsMsgReceiver(nc, elastic(), ofSeconds(1));
+    msgSender = new NatsMsgSender(nc, mf, elastic(), ofSeconds(1));
+    msgReceiver = new NatsMsgReceiver(nc, mf, elastic(), ofSeconds(1));
     msgs = Flux.interval(ofMillis(10)).map(i -> new Message("Msg number" + i).withId(i));
   }
 
   @Test
   @DisplayName("Consumed messages should be same as published ones.")
   public void NatsPubSub() throws InterruptedException {
-    var sender = msgSender.send(TOPIC, PARTITION, msgs.take(MSG_COUNT));
-    var receiver = msgReceiver.receive(TOPIC, PARTITION, 0).doOnNext(out::println).take(MSG_COUNT);
+    var sender = msgSender.apply(msgs.take(MSG_COUNT));
+    var receiver = msgReceiver.get().doOnNext(out::println).take(MSG_COUNT);
     var t = new Thread(() -> StepVerifier.create(sender).expectNextCount(MSG_COUNT).expectComplete().verify());
     t.start();
     StepVerifier.create(receiver).expectNextCount(MSG_COUNT / 2).thenCancel().verify();

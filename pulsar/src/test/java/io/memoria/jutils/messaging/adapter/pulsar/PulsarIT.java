@@ -2,6 +2,7 @@ package io.memoria.jutils.messaging.adapter.pulsar;
 
 import io.memoria.jutils.core.utils.yaml.YamlConfigMap;
 import io.memoria.jutils.messaging.domain.Message;
+import io.memoria.jutils.messaging.domain.MessageFilter;
 import io.memoria.jutils.messaging.domain.port.MsgReceiver;
 import io.memoria.jutils.messaging.domain.port.MsgSender;
 import org.apache.pulsar.client.api.PulsarClient;
@@ -15,12 +16,13 @@ import java.time.Duration;
 import java.util.Random;
 
 import static io.memoria.jutils.core.utils.yaml.YamlUtils.parseYamlResource;
+import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.createConsumer;
+import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.createProducer;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.pulsarClient;
 import static java.util.Objects.requireNonNull;
 
 public class PulsarIT {
-  private static final String TOPIC = "topic-" + new Random().nextInt(1000);
-  private static final int PARTITION = 0;
+  private static final MessageFilter mf = new MessageFilter("topic-" + new Random().nextInt(1000), 0, 0);
   private static final int MSG_COUNT = 10;
 
   private final YamlConfigMap config;
@@ -32,22 +34,16 @@ public class PulsarIT {
   public PulsarIT() throws PulsarClientException {
     config = requireNonNull(parseYamlResource("pulsar.yaml").block());
     client = pulsarClient(config);
-    msgSender = new PulsarMsgSender(client);
-    msgReceiver = new PulsarMsgReceiver(client);
+    msgSender = new PulsarMsgSender(createProducer(client, mf));
+    msgReceiver = new PulsarMsgReceiver(createConsumer(client, mf));
     msgs = Flux.interval(Duration.ofMillis(10)).log().map(i -> new Message("Msg number" + i).withId(i));
   }
 
   @Test
   @DisplayName("Should produce messages and consume them correctly")
   public void produceAndConsume() {
-    StepVerifier.create(msgSender.send(TOPIC, PARTITION, msgs.take(MSG_COUNT)))
-                .expectNextCount(MSG_COUNT)
-                .expectComplete()
-                .verify();
-    StepVerifier.create(msgReceiver.receive(TOPIC, PARTITION, 0).take(MSG_COUNT))
-                .expectNextCount(MSG_COUNT)
-                .expectComplete()
-                .verify();
+    StepVerifier.create(msgSender.apply(msgs.take(MSG_COUNT))).expectNextCount(MSG_COUNT).expectComplete().verify();
+    StepVerifier.create(msgReceiver.get().take(MSG_COUNT)).expectNextCount(MSG_COUNT).expectComplete().verify();
   }
 }
 

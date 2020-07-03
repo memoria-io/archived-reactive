@@ -2,6 +2,7 @@ package io.memoria.jutils.messaging.adapter.pulsar;
 
 import io.memoria.jutils.core.utils.yaml.YamlConfigMap;
 import io.memoria.jutils.messaging.domain.Message;
+import io.memoria.jutils.messaging.domain.MessageFilter;
 import io.memoria.jutils.messaging.domain.Response;
 import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.MessageId;
@@ -16,15 +17,17 @@ public class PulsarUtils {
     return Mono.fromFuture(c.receiveAsync()).map(m -> new Message(m.getValue()).withId(m.getKey()));
   }
 
-  public static Consumer<String> createConsumer(PulsarClient client, String topic, long offset)
-          throws PulsarClientException {
-    var consumer = client.newConsumer(Schema.STRING).topic(topic).subscriptionName(topic + "subscription").subscribe();
-    consumer.seek(offset);
+  public static Consumer<String> createConsumer(PulsarClient client, MessageFilter mf) throws PulsarClientException {
+    var consumer = client.newConsumer(Schema.STRING)
+                         .topic(mf.topic())
+                         .subscriptionName(mf.topic() + "subscription")
+                         .subscribe();
+    consumer.seek(mf.offset());
     return consumer;
   }
 
-  public static Producer<String> createProducer(PulsarClient client, String topic) throws PulsarClientException {
-    return client.newProducer(Schema.STRING).topic(topic).create();
+  public static Producer<String> createProducer(PulsarClient client, MessageFilter mf) throws PulsarClientException {
+    return client.newProducer(Schema.STRING).topic(mf.topic()).create();
   }
 
   public static PulsarClient pulsarClient(YamlConfigMap map) throws PulsarClientException {
