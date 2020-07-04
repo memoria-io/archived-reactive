@@ -5,12 +5,11 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.memoria/jutils/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/io.memoria/jutils/)
 
 # JUtils
-`jutils` a reactive functional utilities' library, an opinionated and pragmatic learning effort.
-It was created because I found much reused code after combining multiple libraries;
-
-One example is the combination of [Project Reactor](https://projectreactor.io/) along with [VAVR](https://vavr.io), 
-it became clear, that there was a need for functional utility methods like the ones in
-[functional](core/src/main/java/io/memoria/jutils/core/utils/functional) package.
+`jutils` is a tool-box for reactive applications. 
+It relies heavily on reactive streams implementations e.g Project-Reactor,   
+Reactor Netty and functional paradigms and collections from Vavr, 
+in order to make it easier and faster to build reactive applications. 
+It's opinionated, yet very flexible to refactoring, it's an on edge pragmatic research and learning effort.
 
 ## Features
 * Vavr + Reactor Functional utilities
@@ -28,6 +27,7 @@ it became clear, that there was a need for functional utility methods like the o
     * Google guice adapter
 * Reactive CQRS and Eventsourcing utilities (alpha stage)
 * Reactive functional in-memory generic cruds (not for production)
+* `jutils` is up to date with the latest versions of JDK.
 
 
 ## Usage
