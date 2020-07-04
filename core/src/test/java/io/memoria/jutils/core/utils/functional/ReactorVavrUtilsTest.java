@@ -27,10 +27,7 @@ public class ReactorVavrUtilsTest {
       public String threadName;
     }
     final ThreadName n = new ThreadName();
-    var m = blockingToVoidMono(() -> {
-      Thread.sleep(1000);
-      n.threadName = Thread.currentThread().getName();
-    }, Schedulers.elastic());
+    var m = blockingToVoidMono(() -> n.threadName = Thread.currentThread().getName(), Schedulers.elastic());
     Assertions.assertNull(n.threadName);
     m.block();
     Assertions.assertNotNull(n.threadName);
@@ -41,7 +38,6 @@ public class ReactorVavrUtilsTest {
   public void checkedMonoTest() {
     AtomicBoolean b = new AtomicBoolean();
     var m = checkedMono(() -> {
-      Thread.sleep(1000);
       b.getAndSet(true);
     });
     // Making sure mono isn't executed
