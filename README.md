@@ -4,47 +4,30 @@
 [![Codecove](https://codecov.io/github/memoria-io/jutils/coverage.svg?precision=2)](https://codecov.io/gh/memoria-io/jutils)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.memoria/jutils/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/io.memoria/jutils/)
 
-# jutils
-`jutils` is a reactive functional utilities' library, an opinionated and pragmatic learning effort.
+# JUtils
+`jutils` a reactive functional utilities' library, an opinionated and pragmatic learning effort.
 It was created because I found much reused code after combining multiple libraries;
 
 One example is the combination of [Project Reactor](https://projectreactor.io/) along with [VAVR](https://vavr.io), 
 it became clear, that there was a need for functional utility methods like the ones in
 [functional](core/src/main/java/io/memoria/jutils/core/utils/functional) package.
 
-**Why I moved Jutils from my own github account to become under Memoria ?**
-> I believe in the power of community and ownership, so this step was taken encourage people to contribute and be part of something 
-> they feel they own, and that their contributions are not wasted to an individual but to a team they're part of.
-
-**About Jutils CI/CD:**
-
-Jutils refactoring and updates is very fast, thanks to Github actions and before that was Travis, 
-I worked hard to maintain a 5~minute full pipeline cycle - from code to Maven release to the public.
-A bar of >90% test coverage would hopefully become stable soon, to allow much safer refactoring efforts.
-
-
 ## Features
 * Vavr + Reactor Functional utilities
-* Yaml configuration loader utility (Currently is very tiny utility but hopefully soon to have features like Scala's HOCON )
-    * Currently, it's non-blocking wrapped in Reactor Mono/Flux
-    * It has nesting capability using  `include: file.yaml` 
-* Reactive CQRS and Eventsourcing utilities.
-* Simple Reactive Message bus implementation for:
-  * Apache Kafka
-  * Nats
-  * Apache Pulsar
-* Reactor Netty adapter with error handling escalation
-* Vavr + GSON Json implementation
-* Nonblocking Argon2 Hashing adapter
-* Reactive functional in-memory generic cruds.
-
-**Disclaimer:**
-
-> Jutils is never perfect and there might be critical mistakes/bugs there, use it with caution, and I'm very flexible 
-> when it comes to fixing wrong things even if the effort was big, I accept issues, and welcome PRs, 
-
-> There will be much better care for breaking changes, soon as the library gets more users (stars) and traffic, and before 
-> that when the library itself become more stable and ideas turn into solid implementations. 
+* Reactor Netty utility functions
+* Yaml configuration loader utility
+    * Nesting capability using `include: foo/bar.yaml`
+    * YamlConfigMap parsing utility
+* Reactive wrapper for messaging:
+    * Apache Kafka
+    * Nats
+    * Apache Pulsar
+* Reactive wrapper for a Keyvalue store 
+    * Etcd adapter  
+* Json 
+    * Google guice adapter
+* Reactive CQRS and Eventsourcing utilities (alpha stage)
+* Reactive functional in-memory generic cruds (not for production)
 
 
 ## Usage
@@ -54,6 +37,7 @@ All modules depend on Core. There are currently no other inter-dependencies betw
 <properties>
     <jutils.version>0.9.82</jutils.version>
 </properties>
+
 <dependencies>
     <dependency>
         <groupId>io.memoria.jutils</groupId>
@@ -69,6 +53,32 @@ All modules depend on Core. There are currently no other inter-dependencies betw
     </dependency>
 </dependencies>
 ```
+
+## Notes
+
+**Why I moved Jutils from my own github account to become under Memoria ?**
+> I believe in the power of community and ownership, so this step was taken encourage people to contribute and be part of something 
+> they feel they own, and that their contributions are not wasted to an individual but to a team they're part of.
+
+**On edge JDK**
+
+JUtils is using latest JDK with preview features, currently `14`, the reason for this is Java is now improving much faster
+than it used to, new features like `records` are saving a lot of code, make the language much more beautiful to use.  
+
+**About Jutils CI/CD:**
+
+Jutils refactoring and updates is very fast, thanks to Github actions and before that was Travis, 
+I worked hard to maintain a 5~minute full pipeline cycle - from code to Maven release to the public.
+A bar of >90% test coverage would hopefully become stable soon, to allow much safer refactoring efforts.
+
+**Disclaimer:**
+
+> Jutils is never perfect and there might be critical mistakes/bugs there, use it with caution, and I'm very flexible 
+> when it comes to fixing wrong things even if the effort was big, I accept issues, and welcome PRs, 
+
+> There will be much better care for breaking changes, soon as the library gets more users (stars) and traffic, and before 
+> that when the library itself become more stable and ideas turn into solid implementations. 
+
 
 ## Related Articles
 * [Error handling using Reactor and VAVR](https://marmoush.com/2019/11/12/Error-Handling.html)

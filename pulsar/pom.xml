@@ -10,7 +10,7 @@
 
     <groupId>io.memoria.jutils</groupId>
     <artifactId>pulsar</artifactId>
-    <version>0.9.84</version>
+    <version>0.9.85</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
