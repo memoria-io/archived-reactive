@@ -11,12 +11,15 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.time.Duration;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
-import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.blockingToVoidMono;
-import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.checkedMono;
-import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.tryToMono;
+import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
 import static io.vavr.control.Either.left;
 import static io.vavr.control.Either.right;
 
@@ -27,35 +30,46 @@ public class ReactorVavrUtilsTest {
       public String threadName;
     }
     final ThreadName n = new ThreadName();
-    var m = blockingToVoidMono(() -> n.threadName = Thread.currentThread().getName(), Schedulers.elastic());
+    var m = toMono(() -> n.threadName = Thread.currentThread().getName(), Schedulers.newElastic("MyElasticThread"));
     Assertions.assertNull(n.threadName);
     m.block();
     Assertions.assertNotNull(n.threadName);
-    Assertions.assertTrue(n.threadName.contains("elastic"));
-  }
-
-  @Test
-  public void checkedMonoTest() {
-    AtomicBoolean b = new AtomicBoolean();
-    var m = checkedMono(() -> {
-      b.getAndSet(true);
-    });
-    // Making sure mono isn't executed
-    Assertions.assertFalse(b.get());
-    // Now should be executed
-    m.block();
-    Assertions.assertTrue(b.get());
+    Assertions.assertTrue(n.threadName.contains("MyElasticThread"));
   }
 
   @Test
   public void eitherToMonoTest() {
     Either<Exception, Integer> k = right(23);
-    Mono<Integer> integerMono = ReactorVavrUtils.eitherToMono(k);
+    Mono<Integer> integerMono = ReactorVavrUtils.toMono(k);
     StepVerifier.create(integerMono).expectNext(23).expectComplete().verify();
 
     k = left(new Exception("exception example"));
-    integerMono = ReactorVavrUtils.eitherToMono(k);
+    integerMono = ReactorVavrUtils.toMono(k);
     StepVerifier.create(integerMono).expectError().verify();
+  }
+
+  @Test
+  public void futureToMono() {
+    var output = "Data is processed";
+    class DataProcessor implements Callable<String> {
+      @Override
+      public String call() throws Exception {
+        TimeUnit.MILLISECONDS.sleep(100);
+        return output;
+      }
+    }
+    ExecutorService executorService = Executors.newFixedThreadPool(2);
+    var dataReadFuture = executorService.submit(new DataProcessor());
+    var mSuccess = ReactorVavrUtils.toMono(dataReadFuture,
+                                           Duration.ofMillis(200),
+                                           Schedulers.fromExecutor(executorService));
+    StepVerifier.create(mSuccess).expectNext(output).expectComplete().verify();
+
+    var dataReadFutureFail = executorService.submit(new DataProcessor());
+    var mFail = ReactorVavrUtils.toMono(dataReadFutureFail,
+                                        Duration.ofMillis(1),
+                                        Schedulers.fromExecutor(executorService));
+    StepVerifier.create(mFail).expectError(TimeoutException.class).verify();
   }
 
   @Test
@@ -64,12 +78,12 @@ public class ReactorVavrUtilsTest {
     Function<String, Flux<Try<Integer>>> op1 = t -> Flux.just(Try.success((t + " world").length()));
     Function<Integer, Flux<Try<String>>> op2 = t -> Flux.just(Try.success("count is " + t));
     Flux<Try<String>> tryFlux = Flux.just(h)
-                                    .flatMap(ReactorVavrUtils.tryToFluxTry(op1))
-                                    .flatMap(ReactorVavrUtils.tryToFluxTry(op2));
+                                    .flatMap(ReactorVavrUtils.toTryFlux(op1))
+                                    .flatMap(ReactorVavrUtils.toTryFlux(op2));
     StepVerifier.create(tryFlux).expectNext(Try.success("count is 11")).expectComplete().verify();
     // Failure
     Function<String, Flux<Try<String>>> opError = t -> Flux.just(Try.failure(new Exception("should fail")));
-    tryFlux = tryFlux.flatMap(ReactorVavrUtils.tryToFluxTry(opError));
+    tryFlux = tryFlux.flatMap(ReactorVavrUtils.toTryFlux(opError));
     StepVerifier.create(tryFlux).expectNextMatches(Try::isFailure).expectComplete().verify();
   }
 
@@ -79,12 +93,12 @@ public class ReactorVavrUtilsTest {
     Function<String, Mono<Try<Integer>>> op1 = t -> Mono.just(Try.success((t + " world").length()));
     Function<Integer, Mono<Try<String>>> op2 = t -> Mono.just(Try.success("count is " + t));
     Mono<Try<String>> tryMono = Mono.just(h)
-                                    .flatMap(ReactorVavrUtils.tryToMonoTry(op1))
-                                    .flatMap(ReactorVavrUtils.tryToMonoTry(op2));
+                                    .flatMap(ReactorVavrUtils.toTryMono(op1))
+                                    .flatMap(ReactorVavrUtils.toTryMono(op2));
     StepVerifier.create(tryMono).expectNext(Try.success("count is 11")).expectComplete().verify();
     // Failure
     Function<String, Mono<Try<String>>> opError = t -> Mono.just(Try.failure(new Exception("should fail")));
-    tryMono = tryMono.flatMap(ReactorVavrUtils.tryToMonoTry(opError));
+    tryMono = tryMono.flatMap(ReactorVavrUtils.toTryMono(opError));
     StepVerifier.create(tryMono).expectNextMatches(Try::isFailure).expectComplete().verify();
   }
 
@@ -94,21 +108,21 @@ public class ReactorVavrUtilsTest {
     Function<String, Flux<Try<Integer>>> op1 = t -> Flux.just(Try.success((t + " world").length()));
     Function<Integer, Flux<Try<String>>> op2 = t -> Flux.just(Try.success("count is " + t));
     Flux<Try<String>> tryFlux = Flux.just(h)
-                                    .flatMap(k -> ReactorVavrUtils.tryToFluxTry(k, op1))
-                                    .flatMap(r -> ReactorVavrUtils.tryToFluxTry(r, op2));
+                                    .flatMap(k -> ReactorVavrUtils.toTryFlux(k, op1))
+                                    .flatMap(r -> ReactorVavrUtils.toTryFlux(r, op2));
     StepVerifier.create(tryFlux).expectNext(Try.success("count is 11")).expectComplete().verify();
     // Failure
     Function<String, Flux<Try<String>>> opError = t -> Flux.just(Try.failure(new Exception("should fail")));
-    tryFlux = tryFlux.flatMap(k -> ReactorVavrUtils.tryToFluxTry(k, opError));
+    tryFlux = tryFlux.flatMap(k -> ReactorVavrUtils.toTryFlux(k, opError));
     StepVerifier.create(tryFlux).expectNextMatches(Try::isFailure).expectComplete().verify();
   }
 
   @Test
   public void tryToMonoTest() {
     var tSuccess = Try.success("hello");
-    StepVerifier.create(tryToMono(tSuccess)).expectNext("hello").expectComplete().verify();
+    StepVerifier.create(ReactorVavrUtils.toMono(tSuccess)).expectNext("hello").expectComplete().verify();
     var tFailure = Try.failure(new Exception("Exception Happened"));
-    StepVerifier.create(tryToMono(tFailure)).expectError(Exception.class).verify();
+    StepVerifier.create(ReactorVavrUtils.toMono(tFailure)).expectError(Exception.class).verify();
   }
 
   @Test
@@ -117,12 +131,12 @@ public class ReactorVavrUtilsTest {
     Function<String, Mono<Try<Integer>>> op1 = t -> Mono.just(Try.success((t + " world").length()));
     Function<Integer, Mono<Try<String>>> op2 = t -> Mono.just(Try.success("count is " + t));
     Mono<Try<String>> tryMono = Mono.just(h)
-                                    .flatMap(k -> ReactorVavrUtils.tryToMonoTry(k, op1))
-                                    .flatMap(r -> ReactorVavrUtils.tryToMonoTry(r, op2));
+                                    .flatMap(k -> ReactorVavrUtils.toTryMono(k, op1))
+                                    .flatMap(r -> ReactorVavrUtils.toTryMono(r, op2));
     StepVerifier.create(tryMono).expectNext(Try.success("count is 11")).expectComplete().verify();
     // Failure
     Function<String, Mono<Try<String>>> opError = t -> Mono.just(Try.failure(new Exception("should fail")));
-    tryMono = tryMono.flatMap(k -> ReactorVavrUtils.tryToMonoTry(k, opError));
+    tryMono = tryMono.flatMap(k -> ReactorVavrUtils.toTryMono(k, opError));
     StepVerifier.create(tryMono).expectNextMatches(Try::isFailure).expectComplete().verify();
   }
 
@@ -134,7 +148,7 @@ public class ReactorVavrUtilsTest {
                                                                                       content,
                                                                                       Schedulers.elastic()).then();
     Function<Throwable, Mono<Void>> throwable = t -> Mono.just(Try.failure(new Exception("should not fail"))).then();
-    Mono<Void> voidMono = original.flatMap(ReactorVavrUtils.tryToMonoVoid(deferredOp, throwable));
+    Mono<Void> voidMono = original.flatMap(ReactorVavrUtils.toVoidMono(deferredOp, throwable));
     StepVerifier.create(voidMono).expectComplete().verify();
   }
 }

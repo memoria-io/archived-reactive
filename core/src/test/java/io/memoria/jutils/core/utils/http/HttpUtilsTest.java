@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
 
+import static io.vavr.control.Option.none;
+import static io.vavr.control.Option.some;
+
 public class HttpUtilsTest {
 
   @Test
@@ -51,7 +54,19 @@ public class HttpUtilsTest {
   public void bearerSuccess() {
     var token = "xyz.xyz.zyz";
     var header = "Bearer " + token;
-    var t = HttpUtils.tokenFrom(header);
-    Assertions.assertEquals(token, t.get());
+    Assertions.assertEquals(some(token), HttpUtils.tokenFrom(header));
+  }
+
+  @Test
+  public void noBasic() {
+    var header = "   Base " + Base64.getEncoder().encodeToString(("bob" + "" + "password").getBytes()) + "   ";
+    Assertions.assertEquals(none(), HttpUtils.basicFrom(header));
+  }
+
+  @Test
+  public void noBearer() {
+    var token = "xyz.xyz.zyz";
+    var header = "Bearr " + token;
+    Assertions.assertEquals(none(), HttpUtils.tokenFrom(header));
   }
 }

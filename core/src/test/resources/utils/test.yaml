@@ -12,6 +12,9 @@ stringList:
   - hello
   - bye
 
+failingStringList:
+  key: value
+
 booleanList:
   - true
   - false
@@ -35,3 +38,7 @@ doubleList:
 map:
   key1: "string value"
   key2: 2
+
+failingMap:
+  - hi
+  - bye

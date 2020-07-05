@@ -46,7 +46,7 @@ public class FileUtils {
   }
 
   public static Mono<Path> writeFile(String path, String content, Scheduler scheduler, StandardOpenOption... options) {
-    return ReactorVavrUtils.blockingToMono(() -> Files.writeString(Paths.get(path), content, options), scheduler);
+    return ReactorVavrUtils.toMono(() -> Files.writeString(Paths.get(path), content, options), scheduler);
   }
 
   private FileUtils() {}

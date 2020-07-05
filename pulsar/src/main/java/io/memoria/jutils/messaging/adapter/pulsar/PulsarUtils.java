@@ -35,9 +35,5 @@ public class PulsarUtils {
     return PulsarClient.builder().serviceUrl(config).build();
   }
 
-  public static Mono<Response> send(Producer<String> s, String message) {
-    return Mono.fromFuture(s.sendAsync(message)).map(MessageId::toByteArray).map(String::new).map(Response::new);
-  }
-
   private PulsarUtils() {}
 }

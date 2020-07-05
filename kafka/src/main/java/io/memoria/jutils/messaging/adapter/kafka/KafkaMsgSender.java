@@ -13,7 +13,7 @@ import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
 
-import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.futureToMono;
+import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
 
 public record KafkaMsgSender(KafkaProducer<String, String>kafkaProducer, MessageFilter mf, Scheduler scheduler,
                              Duration timeout) implements MsgSender {
@@ -27,6 +27,6 @@ public record KafkaMsgSender(KafkaProducer<String, String>kafkaProducer, Message
   }
 
   private Mono<RecordMetadata> sendRecord(ProducerRecord<String, String> prodRec) {
-    return futureToMono(kafkaProducer.send(prodRec), timeout, scheduler);
+    return toMono(kafkaProducer.send(prodRec), timeout, scheduler);
   }
 }

@@ -3,7 +3,10 @@ package io.memoria.jutils.etcd;
 import io.etcd.jetcd.Client;
 import io.memoria.jutils.core.utils.yaml.YamlConfigMap;
 import io.memoria.jutils.core.utils.yaml.YamlUtils;
+import io.vavr.Function1;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.util.Objects;
@@ -13,6 +16,9 @@ import static io.vavr.API.Some;
 import static io.vavr.control.Option.none;
 
 public class EtcdIT {
+  private static final Function1<String, Mono<YamlConfigMap>> YAML_RESOURCE_PARSER = YamlUtils.parseYamlResource(
+          Schedulers.elastic());
+
   private final YamlConfigMap config;
   private final Client clientBuilt;
   private final EtcdStoreClient client;
@@ -20,7 +26,7 @@ public class EtcdIT {
   private final String value = "myValue";
 
   public EtcdIT() {
-    config = Objects.requireNonNull(YamlUtils.parseYamlResource("etcd.yaml").block());
+    config = Objects.requireNonNull(YAML_RESOURCE_PARSER.apply("etcd.yaml").block());
     clientBuilt = Client.builder().endpoints(config.asString("etcd.url").get()).build();
     client = new EtcdStoreClient(clientBuilt);
   }

@@ -11,7 +11,7 @@ import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
 
-import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.blockingToMono;
+import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
 
 public record KafkaMsgReceiver(KafkaConsumer<String, String>consumer, MessageFilter mf, Scheduler scheduler,
                                Duration timeout) implements MsgReceiver {
@@ -27,8 +27,8 @@ public record KafkaMsgReceiver(KafkaConsumer<String, String>consumer, MessageFil
   }
 
   private Flux<Message> pollOnce(TopicPartition tp) {
-    return blockingToMono(() -> consumer.poll(timeout), scheduler).map(crs -> crs.records(tp))
-                                                                  .flatMapMany(Flux::fromIterable)
-                                                                  .map(m -> new Message(m.value()).withId(m.key()));
+    return toMono(() -> consumer.poll(timeout), scheduler).map(crs -> crs.records(tp))
+                                                          .flatMapMany(Flux::fromIterable)
+                                                          .map(m -> new Message(m.value()).withId(m.key()));
   }
 }
