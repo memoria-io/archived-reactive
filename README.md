@@ -5,11 +5,9 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.memoria/jutils/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/io.memoria/jutils/)
 
 # JUtils
-`jutils` is a tool-box for reactive applications. 
-It relies heavily on reactive streams implementations e.g Project-Reactor,
-Reactor Netty and functional paradigms and collections from Vavr, 
-in order to make it easier and faster to build reactive applications. 
-It's opinionated, yet very flexible to refactoring, it's an on edge pragmatic research and learning effort.
+`jutils` is a tool-box that makes it easier and faster to build reactive applications.
+It relies heavily on [Reactive Streams](https://www.reactive-streams.org/) and uses e.g [Project-Reactor](https://projectreactor.io/),
+[Reactor Netty](https://github.com/reactor/reactor-netty) and functional paradigms and collections from [Vavr](https://www.vavr.io/), 
 
 ## Features
 * Vavr + Reactor Functional utilities
@@ -56,28 +54,24 @@ All modules depend on Core. There are currently no other inter-dependencies betw
 
 ## Notes
 
-**Why I moved Jutils from my own github account to become under Memoria ?**
+**Why I moved jutils from my own github account to become under Memoria ?**
 > I believe in the power of community and ownership, so this step was taken encourage people to contribute and be part of something 
 > they feel they own, and that their contributions are not wasted to an individual but to a team they're part of.
 
-**On edge JDK**
+**Using latest JDKs**
 
-JUtils is using latest JDK with preview features, currently `14`, the reason for this is Java is now improving much faster
-than it used to, new features like `records` are saving a lot of code, make the language much more beautiful to use.  
+`jutils` is using latest JDK with preview features, currently `14`, the reason for this is that Java is now improving on a much faster rate
+than it used to, new features like `records` are saving a lot of code space.  
 
-**About Jutils CI/CD:**
+**About jutils CI/CD:**
 
-Jutils refactoring and updates is very fast, thanks to Github actions and before that was Travis, 
+`jutils` refactoring and updates is very fast, thanks to Github actions and before that was Travis, 
 I worked hard to maintain a 5~minute full pipeline cycle - from code to Maven release to the public.
 A bar of >90% test coverage would hopefully become stable soon, to allow much safer refactoring efforts.
 
 **Disclaimer:**
-
-> Jutils is never perfect and there might be critical mistakes/bugs there, use it with caution, and I'm very flexible 
-> when it comes to fixing wrong things even if the effort was big, I accept issues, and welcome PRs, 
-
-> There will be much better care for breaking changes, soon as the library gets more users (stars) and traffic, and before 
-> that when the library itself become more stable and ideas turn into solid implementations. 
+> `jutils` is on edge, it's a work in progress and a pragmatic learning effort, please be aware there might be some opinionated or even wrong decisions
+> so feel free to create issues or PRs. There will be much better care for breaking changes, soon as the library gets more users and traffic.
 
 
 ## Related Articles
