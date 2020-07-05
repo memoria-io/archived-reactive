@@ -1,6 +1,5 @@
 package io.memoria.jutils.core.adapter.crud.memory;
 
-import io.memoria.jutils.core.domain.port.crud.Storable;
 import io.memoria.jutils.core.domain.port.crud.WriteRepo;
 import reactor.core.publisher.Mono;
 
@@ -9,7 +8,7 @@ import java.util.Map;
 import static io.memoria.jutils.core.domain.Err.AlreadyExists.ALREADY_EXISTS;
 import static io.memoria.jutils.core.domain.Err.NotFound.NOT_FOUND;
 
-public class InMemoryWriteRepo<K, V extends Storable<K>> implements WriteRepo<K, V> {
+public class InMemoryWriteRepo<K, V> implements WriteRepo<K, V> {
   protected final Map<K, V> db;
 
   public InMemoryWriteRepo(Map<K, V> db) {
@@ -17,11 +16,11 @@ public class InMemoryWriteRepo<K, V extends Storable<K>> implements WriteRepo<K,
   }
 
   @Override
-  public Mono<V> create(V v) {
-    if (db.containsKey(v.id())) {
+  public Mono<V> create(K k, V v) {
+    if (db.containsKey(k)) {
       return Mono.error(ALREADY_EXISTS);
     }
-    db.put(v.id(), v);
+    db.put(k, v);
     return Mono.justOrEmpty(v);
   }
 
@@ -32,9 +31,9 @@ public class InMemoryWriteRepo<K, V extends Storable<K>> implements WriteRepo<K,
   }
 
   @Override
-  public Mono<Void> update(V v) {
-    if (db.containsKey(v.id())) {
-      db.put(v.id(), v);
+  public Mono<Void> update(K k, V v) {
+    if (db.containsKey(k)) {
+      db.put(k, v);
       return Mono.empty();
     } else {
       return Mono.error(NOT_FOUND);
