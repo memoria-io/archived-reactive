@@ -24,12 +24,15 @@ It relies heavily on [Reactive Streams](https://www.reactive-streams.org/) and u
 * Json 
     * Google guice adapter
 * Reactive CQRS and Eventsourcing utilities (alpha stage)
-* Reactive functional in-memory generic cruds (not for production)
-* `jutils` is up to date with the latest versions of JDK.
+* Reactive functional in-memory generic cruds (for tests, not for production)
+* jutils is up to date with the latest versions of JDK preview feature, currently `Java 14`.
 
 
 ## Usage
 All modules depend on Core. There are currently no other inter-dependencies between them.
+
+**Disclaimer:**
+> `jutils` is on edge, it's a work in progress and a pragmatic learning effort, so feel free to create issues or PRs. 
 
 ```xml
 <properties>
@@ -51,28 +54,6 @@ All modules depend on Core. There are currently no other inter-dependencies betw
     </dependency>
 </dependencies>
 ```
-
-## Notes
-
-**Why I moved jutils from my own github account to become under Memoria ?**
-> I believe in the power of community and ownership, so this step was taken encourage people to contribute and be part of something 
-> they feel they own, and that their contributions are not wasted to an individual but to a team they're part of.
-
-**Using latest JDKs**
-
-`jutils` is using latest JDK with preview features, currently `14`, the reason for this is that Java is now improving on a much faster rate
-than it used to, new features like `records` are saving a lot of code space.  
-
-**About jutils CI/CD:**
-
-`jutils` refactoring and updates is very fast, thanks to Github actions and before that was Travis, 
-I worked hard to maintain a 5~minute full pipeline cycle - from code to Maven release to the public.
-A bar of >90% test coverage would hopefully become stable soon, to allow much safer refactoring efforts.
-
-**Disclaimer:**
-> `jutils` is on edge, it's a work in progress and a pragmatic learning effort, please be aware there might be some opinionated or even wrong decisions
-> so feel free to create issues or PRs. There will be much better care for breaking changes, soon as the library gets more users and traffic.
-
 
 ## Related Articles
 * [Error handling using Reactor and VAVR](https://marmoush.com/2019/11/12/Error-Handling.html)
