@@ -13,7 +13,9 @@ import java.time.Duration;
 
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
 
-public record KafkaMsgReceiver(KafkaConsumer<String, String>consumer, MessageFilter mf, Scheduler scheduler,
+public record KafkaMsgReceiver(KafkaConsumer<String, String>consumer,
+                               MessageFilter mf,
+                               Scheduler scheduler,
                                Duration timeout) implements MsgReceiver {
 
   @Override

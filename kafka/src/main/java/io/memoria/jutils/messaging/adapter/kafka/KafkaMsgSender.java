@@ -15,7 +15,9 @@ import java.time.Duration;
 
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
 
-public record KafkaMsgSender(KafkaProducer<String, String>kafkaProducer, MessageFilter mf, Scheduler scheduler,
+public record KafkaMsgSender(KafkaProducer<String, String>kafkaProducer,
+                             MessageFilter mf,
+                             Scheduler scheduler,
                              Duration timeout) implements MsgSender {
 
   @Override

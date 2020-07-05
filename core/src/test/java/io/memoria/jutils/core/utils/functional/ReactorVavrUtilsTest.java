@@ -107,6 +107,21 @@ public class ReactorVavrUtilsTest {
   }
 
   @Test
+  public void toVoidMonoTest() {
+    AtomicBoolean b = new AtomicBoolean();
+    CheckedRunnable r = () -> b.set(true);
+    var v = toVoidMono(r, Schedulers.elastic());
+    StepVerifier.create(v).expectComplete().verify();
+    Assertions.assertTrue(b.get());
+  }
+
+  @Test
+  public void toVoidMonoTestFail() {
+    var v = toVoidMono(this::hi, Schedulers.elastic());
+    StepVerifier.create(v).expectError(IOException.class).verify();
+  }
+
+  @Test
   public void tryToFluxTryTest() {
     Try<String> h = Try.success("hello");
     Function<String, Flux<Try<Integer>>> op1 = t -> Flux.just(Try.success((t + " world").length()));
@@ -154,21 +169,6 @@ public class ReactorVavrUtilsTest {
     Function<Throwable, Mono<Void>> throwable = t -> Mono.just(Try.failure(new Exception("should not fail"))).then();
     Mono<Void> voidMono = original.flatMap(ReactorVavrUtils.toVoidMono(deferredOp, throwable));
     StepVerifier.create(voidMono).expectComplete().verify();
-  }
-
-  @Test
-  public void toVoidMonoTest() {
-    AtomicBoolean b = new AtomicBoolean();
-    CheckedRunnable r = () -> b.set(true);
-    var v = toVoidMono(r, Schedulers.elastic());
-    StepVerifier.create(v).expectComplete().verify();
-    Assertions.assertTrue(b.get());
-  }
-
-  @Test
-  public void toVoidMonoTestFail() {
-    var v = toVoidMono(this::hi, Schedulers.elastic());
-    StepVerifier.create(v).expectError(IOException.class).verify();
   }
 
   private void hi() throws IOException {

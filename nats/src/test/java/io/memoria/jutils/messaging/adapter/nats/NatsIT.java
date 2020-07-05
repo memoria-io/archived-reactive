@@ -26,7 +26,8 @@ import static java.util.Objects.requireNonNull;
 import static reactor.core.scheduler.Schedulers.elastic;
 
 public class NatsIT {
-  private static final Function1<String, Mono<YamlConfigMap>> YAML_RESOURCE_PARSER = YamlUtils.parseYamlResource(Schedulers.elastic());
+  private static final Function1<String, Mono<YamlConfigMap>> YAML_RESOURCE_PARSER = YamlUtils.parseYamlResource(
+          Schedulers.elastic());
   private static final MessageFilter mf = new MessageFilter("topic-" + new Random().nextInt(1000), 0, 0);
   private static final int MSG_COUNT = 10;
 

@@ -52,16 +52,16 @@ public class NatsUtils {
     return Nats.connect(config);
   }
 
-  private static void onConnectionEvent(Connection conn, Events type) {
-    log.info("Status change {}", type);
-  }
-
   public static Message toMessage(io.nats.client.Message message) {
     return new Message(new String(message.getData()));
   }
 
   public static String toSubject(String topic, int partition) {
     return topic + CHANNEL_SEPARATOR + partition;
+  }
+
+  private static void onConnectionEvent(Connection conn, Events type) {
+    log.info("Status change {}", type);
   }
 
   private NatsUtils() {}
