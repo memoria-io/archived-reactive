@@ -6,7 +6,7 @@
 
 # JUtils
 `jutils` is a tool-box for reactive applications. 
-It relies heavily on reactive streams implementations e.g Project-Reactor,   
+It relies heavily on reactive streams implementations e.g Project-Reactor,
 Reactor Netty and functional paradigms and collections from Vavr, 
 in order to make it easier and faster to build reactive applications. 
 It's opinionated, yet very flexible to refactoring, it's an on edge pragmatic research and learning effort.
