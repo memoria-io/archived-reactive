@@ -1,6 +1,7 @@
 package io.memoria.jutils.core.utils.functional;
 
 import io.memoria.jutils.core.utils.file.FileUtils;
+import io.vavr.CheckedRunnable;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.Assertions;
@@ -11,15 +12,18 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
+import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toVoidMono;
 import static io.vavr.control.Either.left;
 import static io.vavr.control.Either.right;
 
@@ -150,5 +154,24 @@ public class ReactorVavrUtilsTest {
     Function<Throwable, Mono<Void>> throwable = t -> Mono.just(Try.failure(new Exception("should not fail"))).then();
     Mono<Void> voidMono = original.flatMap(ReactorVavrUtils.toVoidMono(deferredOp, throwable));
     StepVerifier.create(voidMono).expectComplete().verify();
+  }
+
+  @Test
+  public void toVoidMonoTest() {
+    AtomicBoolean b = new AtomicBoolean();
+    CheckedRunnable r = () -> b.set(true);
+    var v = toVoidMono(r, Schedulers.elastic());
+    StepVerifier.create(v).expectComplete().verify();
+    Assertions.assertTrue(b.get());
+  }
+
+  @Test
+  public void toVoidMonoTestFail() {
+    var v = toVoidMono(this::hi, Schedulers.elastic());
+    StepVerifier.create(v).expectError(IOException.class).verify();
+  }
+
+  private void hi() throws IOException {
+    throw new IOException();
   }
 }
