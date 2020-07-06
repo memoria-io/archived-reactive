@@ -14,7 +14,7 @@ public record PulsarMsgSender(Producer<String>producer) implements MsgSender {
   public Flux<Response> apply(Flux<Message> msgFlux) {
     return msgFlux.map(Message::value)
                   .map(producer::sendAsync)
-                  .flatMap(Mono::fromFuture)
+                  .concatMap(Mono::fromFuture)
                   .map(MessageId::toByteArray)
                   .map(String::new)
                   .map(Response::new);

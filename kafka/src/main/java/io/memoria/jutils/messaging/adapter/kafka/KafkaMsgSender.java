@@ -24,7 +24,7 @@ public record KafkaMsgSender(KafkaProducer<String, String>kafkaProducer,
   public Flux<Response> apply(Flux<Message> msgFlux) {
     return msgFlux.publishOn(scheduler)
                   .map(msg -> new ProducerRecord<>(mf.topic(), mf.partition(), msg.id().getOrElse(""), msg.value()))
-                  .flatMap(this::sendRecord)
+                  .concatMap(this::sendRecord)
                   .map(s -> Response.empty());
   }
 
