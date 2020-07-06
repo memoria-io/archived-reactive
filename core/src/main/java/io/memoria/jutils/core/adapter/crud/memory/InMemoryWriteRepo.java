@@ -9,7 +9,7 @@ import static io.memoria.jutils.core.domain.Err.AlreadyExists.ALREADY_EXISTS;
 import static io.memoria.jutils.core.domain.Err.NotFound.NOT_FOUND;
 
 public class InMemoryWriteRepo<K, V> implements WriteRepo<K, V> {
-  protected final Map<K, V> db;
+  public final Map<K, V> db;
 
   public InMemoryWriteRepo(Map<K, V> db) {
     this.db = db;
