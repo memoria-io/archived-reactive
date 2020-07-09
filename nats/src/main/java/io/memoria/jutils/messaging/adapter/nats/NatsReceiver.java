@@ -13,9 +13,9 @@ import java.time.Duration;
 
 import static io.memoria.jutils.messaging.adapter.nats.NatsUtils.toMessage;
 
-public record NatsMsgReceiver(Connection nc, MessageFilter mf, Scheduler scheduler, Duration timeout)
+public record NatsReceiver(Connection nc, MessageFilter mf, Scheduler scheduler, Duration timeout)
         implements MsgReceiver {
-  private static final Logger log = LoggerFactory.getLogger(NatsMsgReceiver.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(NatsReceiver.class.getName());
 
   @Override
   public Flux<Message> get() {

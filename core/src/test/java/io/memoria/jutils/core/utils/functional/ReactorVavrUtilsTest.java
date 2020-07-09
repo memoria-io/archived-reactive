@@ -35,30 +35,6 @@ public class ReactorVavrUtilsTest {
   }
 
   @Test
-  public void futureToMono() {
-    var output = "Data is processed";
-    class DataProcessor implements Callable<String> {
-      @Override
-      public String call() throws Exception {
-        TimeUnit.MILLISECONDS.sleep(100);
-        return output;
-      }
-    }
-    ExecutorService executorService = Executors.newFixedThreadPool(2);
-    var dataReadFuture = executorService.submit(new DataProcessor());
-    var mSuccess = ReactorVavrUtils.toMono(dataReadFuture,
-                                           Duration.ofMillis(200),
-                                           Schedulers.fromExecutor(executorService));
-    StepVerifier.create(mSuccess).expectNext(output).expectComplete().verify();
-
-    var dataReadFutureFail = executorService.submit(new DataProcessor());
-    var mFail = ReactorVavrUtils.toMono(dataReadFutureFail,
-                                        Duration.ofMillis(1),
-                                        Schedulers.fromExecutor(executorService));
-    StepVerifier.create(mFail).expectError(TimeoutException.class).verify();
-  }
-
-  @Test
   public void shorterTryToFluxTryTest() {
     Try<String> h = Try.success("hello");
     Function<String, Flux<Try<Integer>>> op1 = t -> Flux.just(Try.success((t + " world").length()));

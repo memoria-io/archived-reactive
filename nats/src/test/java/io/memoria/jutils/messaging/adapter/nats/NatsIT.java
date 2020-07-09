@@ -38,8 +38,8 @@ public class NatsIT {
 
   public NatsIT() throws IOException, InterruptedException {
     nc = NatsUtils.createConnection(config);
-    msgSender = new NatsMsgSender(nc, mf, elastic(), ofSeconds(1));
-    msgReceiver = new NatsMsgReceiver(nc, mf, elastic(), ofSeconds(1));
+    msgSender = new NatsSender(nc, mf, elastic(), ofSeconds(1));
+    msgReceiver = new NatsReceiver(nc, mf, elastic(), ofSeconds(1));
     msgs = Flux.interval(ofMillis(10)).map(i -> new Message("Msg number" + i).withId(i));
   }
 

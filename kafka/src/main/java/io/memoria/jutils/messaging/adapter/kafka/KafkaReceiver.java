@@ -12,10 +12,10 @@ import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
 
-public record KafkaMsgReceiver(KafkaConsumer<String, String>consumer,
-                               MessageFilter mf,
-                               Scheduler scheduler,
-                               Duration timeout) implements MsgReceiver {
+public record KafkaReceiver(KafkaConsumer<String, String>consumer,
+                            MessageFilter mf,
+                            Scheduler scheduler,
+                            Duration timeout) implements MsgReceiver {
 
   @Override
   public Flux<Message> get() {
@@ -24,12 +24,11 @@ public record KafkaMsgReceiver(KafkaConsumer<String, String>consumer,
     // must call poll before seek
     consumer.poll(timeout);
     consumer.seek(tp, mf.offset());
-    return Flux.<Flux<Message>>generate(c -> c.next(pollOnce(tp))).flatMap(f -> f);
+    return Flux.<Flux<Message>>generate(c -> c.next(pollOnce(tp))).flatMap(f -> f).subscribeOn(scheduler);
   }
 
   private Flux<Message> pollOnce(TopicPartition tp) {
     return Mono.fromCallable(() -> consumer.poll(timeout))
-               .subscribeOn(scheduler)
                .map(crs -> crs.records(tp))
                .flatMapMany(Flux::fromIterable)
                .map(m -> new Message(m.value()).withId(m.key()));

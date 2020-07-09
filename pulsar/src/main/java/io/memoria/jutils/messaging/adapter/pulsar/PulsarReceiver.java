@@ -8,7 +8,7 @@ import reactor.core.publisher.Flux;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.consume;
 import static java.util.function.Function.identity;
 
-public record PulsarMsgReceiver(Consumer<String>consumer) implements MsgReceiver {
+public record PulsarReceiver(Consumer<String>consumer) implements MsgReceiver {
 
   @Override
   public Flux<Message> get() {

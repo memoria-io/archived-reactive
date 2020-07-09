@@ -37,8 +37,8 @@ public class PulsarIT {
 
   public PulsarIT() throws PulsarClientException {
     client = pulsarClient(config);
-    msgSender = new PulsarMsgSender(createProducer(client, mf));
-    msgReceiver = new PulsarMsgReceiver(createConsumer(client, mf));
+    msgSender = new PulsarSender(createProducer(client, mf));
+    msgReceiver = new PulsarReceiver(createConsumer(client, mf));
     msgs = Flux.interval(Duration.ofMillis(10)).log().map(i -> new Message("Msg number" + i).withId(i));
   }
 

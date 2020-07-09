@@ -25,16 +25,6 @@ public final class ReactorVavrUtils {
       return Mono.error(either.getLeft());
   }
 
-  public static <T> Mono<T> toMono(Future<T> f, Duration d, Scheduler scheduler) {
-    return Mono.<T>create(s -> {
-      try {
-        s.success(f.get(d.toMillis(), TimeUnit.MILLISECONDS));
-      } catch (Throwable throwable) {
-        s.error(throwable);
-      }
-    }).subscribeOn(scheduler);
-  }
-
   public static <T> Mono<T> toMono(Try<T> t) {
     if (t.isSuccess()) {
       return Mono.just(t.get());

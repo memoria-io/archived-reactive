@@ -8,7 +8,7 @@ import org.apache.pulsar.client.api.Producer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public record PulsarMsgSender(Producer<String>producer) implements MsgSender {
+public record PulsarSender(Producer<String>producer) implements MsgSender {
 
   @Override
   public Flux<Response> apply(Flux<Message> msgFlux) {

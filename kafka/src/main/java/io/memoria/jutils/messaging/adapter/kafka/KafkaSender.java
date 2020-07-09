@@ -13,22 +13,24 @@ import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
 
-import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
-
-public record KafkaMsgSender(KafkaProducer<String, String>kafkaProducer,
-                             MessageFilter mf,
-                             Scheduler scheduler,
-                             Duration timeout) implements MsgSender {
+public record KafkaSender(KafkaProducer<String, String>kafkaProducer,
+                          MessageFilter mf,
+                          Scheduler scheduler,
+                          Duration timeout) implements MsgSender {
 
   @Override
   public Flux<Response> apply(Flux<Message> msgFlux) {
-    return msgFlux.publishOn(scheduler)
-                  .map(msg -> new ProducerRecord<>(mf.topic(), mf.partition(), msg.id().getOrElse(""), msg.value()))
+    return msgFlux.map(msg -> new ProducerRecord<>(mf.topic(), mf.partition(), msg.id().getOrElse(""), msg.value()))
                   .concatMap(this::sendRecord)
-                  .map(s -> Response.empty());
+                  .map(r -> (r.hasOffset()) ? new Response(r.offset()) : Response.empty());
   }
 
   private Mono<RecordMetadata> sendRecord(ProducerRecord<String, String> prodRec) {
-    return toMono(kafkaProducer.send(prodRec), timeout, scheduler);
+    return Mono.<RecordMetadata>create(sink -> kafkaProducer.send(prodRec, (metadata, e) -> {
+      if (metadata != null)
+        sink.success(metadata);
+      else
+        sink.error(e);
+    })).subscribeOn(scheduler);
   }
 }
