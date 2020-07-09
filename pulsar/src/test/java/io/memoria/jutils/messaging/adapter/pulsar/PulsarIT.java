@@ -44,7 +44,7 @@ public class PulsarIT {
 
   @Test
   @DisplayName("Should produce messages and consume them correctly")
-  public void produceAndConsume() throws InterruptedException {
+  public void produceAndConsume() {
     StepVerifier.create(msgSender.apply(msgs)).expectNextCount(MSG_COUNT).expectComplete().verify();
     StepVerifier.create(msgReceiver.get().take(MSG_COUNT))
                 .expectNext(msgs.collectList().block().toArray(new Message[0]))

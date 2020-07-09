@@ -13,6 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
+import java.time.Duration;
 import java.util.Objects;
 import java.util.Random;
 
@@ -35,6 +36,7 @@ public class KafkaIT {
 
   public KafkaIT() {
     msgSender = new KafkaSender(producer(configs), messageFilter, Schedulers.boundedElastic(), ofSeconds(1));
+
     msgReceiver = new KafkaReceiver(consumer(configs), messageFilter, Schedulers.boundedElastic(), ofSeconds(1));
     msgs = Flux.interval(ofMillis(10)).map(i -> new Message("Msg number" + i).withId(i)).take(MSG_COUNT);
   }
@@ -44,9 +46,15 @@ public class KafkaIT {
   public void kafkaPubSub() {
     var publisher = msgSender.apply(msgs);
     var consumer = msgReceiver.get().take(MSG_COUNT);
-    StepVerifier.create(publisher).expectNextCount(MSG_COUNT).expectComplete().verify();
-    var expectedMsgs = Objects.requireNonNull(msgs.collectList().block()).toArray(new Message[0]);
-    StepVerifier.create(consumer).expectNext(expectedMsgs).expectComplete().verify();
+    StepVerifier.create(publisher)
+                .thenAwait(Duration.ofSeconds(4))
+                .expectNextCount(MSG_COUNT)
+                .expectComplete()
+                .verify();
+    StepVerifier.create(consumer)
+                .expectNext(msgs.collectList().block().toArray(new Message[0]))
+                .expectComplete()
+                .verify();
   }
 }
 
