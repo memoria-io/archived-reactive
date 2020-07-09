@@ -4,6 +4,7 @@ import io.memoria.jutils.messaging.domain.Message;
 import io.memoria.jutils.messaging.domain.MessageFilter;
 import io.memoria.jutils.messaging.domain.port.MsgReceiver;
 import io.vavr.collection.List;
+import io.vavr.control.Option;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import reactor.core.publisher.Flux;
@@ -31,6 +32,6 @@ public record KafkaReceiver(KafkaConsumer<String, String>consumer,
     return Mono.fromCallable(() -> consumer.poll(timeout))
                .map(crs -> crs.records(tp))
                .flatMapMany(Flux::fromIterable)
-               .map(m -> new Message(m.value()).withId(m.key()));
+               .map(m -> new Message(m.value(), Option.of(m.key()).map(Long::parseLong)));
   }
 }

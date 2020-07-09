@@ -40,13 +40,13 @@ public class NatsIT {
     nc = NatsUtils.createConnection(config);
     msgSender = new NatsSender(nc, mf, elastic(), ofSeconds(1));
     msgReceiver = new NatsReceiver(nc, mf, elastic(), ofSeconds(1));
-    msgs = Flux.interval(ofMillis(10)).map(i -> new Message("Msg number" + i).withId(i));
+    msgs = Flux.interval(ofMillis(10)).map(i -> new Message("Msg number" + i).withId(i)).take(MSG_COUNT);
   }
 
   @Test
   @DisplayName("Consumed messages should be same as published ones.")
   public void NatsPubSub() throws InterruptedException {
-    var sender = msgSender.apply(msgs.take(MSG_COUNT));
+    var sender = msgSender.apply(msgs);
     var receiver = msgReceiver.get().doOnNext(out::println).take(MSG_COUNT);
     var t = new Thread(() -> StepVerifier.create(sender).expectNextCount(MSG_COUNT).expectComplete().verify());
     t.start();

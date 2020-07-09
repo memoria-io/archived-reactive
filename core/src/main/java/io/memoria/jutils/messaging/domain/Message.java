@@ -2,26 +2,20 @@ package io.memoria.jutils.messaging.domain;
 
 import io.vavr.control.Option;
 
-import java.time.LocalDateTime;
-
 import static io.vavr.control.Option.none;
 import static io.vavr.control.Option.some;
 
-public record Message(String value, Option<String>id, Option<LocalDateTime>creationTime) {
+public record Message(String value, Option<Long>id) {
 
   public Message(String value) {
-    this(value, none(), none());
+    this(value, none());
   }
 
-  public Message withCreationTime(LocalDateTime time) {
-    return new Message(value, id, some(time));
+  public Message(String value, long id) {
+    this(value, some(id));
   }
 
   public Message withId(long id) {
-    return withId(String.valueOf(id));
-  }
-
-  public Message withId(String id) {
-    return new Message(value, some(id), creationTime);
+    return new Message(this.value, id);
   }
 }

@@ -13,14 +13,13 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import static io.vavr.API.Some;
 import static java.lang.String.valueOf;
 
 public class InMemoryMessageTest {
   private final MessageFilter mf = new MessageFilter("test_topic", 0, 0);
   private final int MSG_COUNT = 3;
   private final Flux<Message> msgs = Flux.interval(Duration.ofMillis(10))
-                                         .map(i -> new Message("hello_" + i).withId(i))
+                                         .map(i -> new Message("hello", i))
                                          .take(MSG_COUNT);
 
   @Test
@@ -32,10 +31,10 @@ public class InMemoryMessageTest {
     db.get(mf.topic()).get(mf.partition()).addAll(msgs.collectList().block());
     var msgConsumer = new InMemoryMsgReceiver(db, mf);
     var consumed = msgConsumer.get().take(MSG_COUNT);
-    StepVerifier.create(consumed.map(Message::id))
-                .expectNext(Some(valueOf(0L)))
-                .expectNext(Some(valueOf(1L)))
-                .expectNext(Some(valueOf(2L)))
+    StepVerifier.create(consumed.map(Message::id).map(Option::get))
+                .expectNext(0L)
+                .expectNext(1L)
+                .expectNext(2L)
                 .expectComplete()
                 .verify();
   }
@@ -47,10 +46,10 @@ public class InMemoryMessageTest {
     var msgProducer = new InMemoryMsgSender(db, mf);
     var published = msgProducer.apply(msgs).take(MSG_COUNT);
 
-    StepVerifier.create(published.map(Response::value).map(Option::get))
-                .expectNext(valueOf(0L))
-                .expectNext(valueOf(1L))
-                .expectNext(valueOf(2L))
+    StepVerifier.create(published.map(Response::id).map(Option::get))
+                .expectNext(0L)
+                .expectNext(1L)
+                .expectNext(2L)
                 .expectComplete()
                 .verify();
   }

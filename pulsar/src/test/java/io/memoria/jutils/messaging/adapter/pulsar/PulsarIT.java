@@ -28,7 +28,7 @@ public class PulsarIT {
   private static final YamlConfigMap config = reader.yaml(resourcePath("pulsar.yaml").get()).block();
 
   private static final MessageFilter mf = new MessageFilter("topic-" + new Random().nextInt(1000), 0, 0);
-  private static final int MSG_COUNT = 10;
+  private static final int MSG_COUNT = 5;
 
   private final PulsarClient client;
   private final MsgSender msgSender;
@@ -38,15 +38,18 @@ public class PulsarIT {
   public PulsarIT() throws PulsarClientException {
     client = pulsarClient(config);
     msgSender = new PulsarSender(createProducer(client, mf));
-    msgReceiver = new PulsarReceiver(createConsumer(client, mf));
-    msgs = Flux.interval(Duration.ofMillis(10)).log().map(i -> new Message("Msg number" + i).withId(i));
+    msgReceiver = new PulsarReceiver(createConsumer(client, mf), Duration.ofMillis(1000));
+    msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Message("Msg number" + i).withId(i)).take(MSG_COUNT);
   }
 
   @Test
   @DisplayName("Should produce messages and consume them correctly")
-  public void produceAndConsume() {
-    StepVerifier.create(msgSender.apply(msgs.take(MSG_COUNT))).expectNextCount(MSG_COUNT).expectComplete().verify();
-    StepVerifier.create(msgReceiver.get().take(MSG_COUNT)).expectNextCount(MSG_COUNT).expectComplete().verify();
+  public void produceAndConsume() throws InterruptedException {
+    StepVerifier.create(msgSender.apply(msgs)).expectNextCount(MSG_COUNT).expectComplete().verify();
+    StepVerifier.create(msgReceiver.get().take(MSG_COUNT))
+                .expectNext(msgs.collectList().block().toArray(new Message[0]))
+                .expectComplete()
+                .verify();
   }
 }
 

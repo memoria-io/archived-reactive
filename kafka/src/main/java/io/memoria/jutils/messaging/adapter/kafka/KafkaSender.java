@@ -20,7 +20,10 @@ public record KafkaSender(KafkaProducer<String, String>kafkaProducer,
 
   @Override
   public Flux<Response> apply(Flux<Message> msgFlux) {
-    return msgFlux.map(msg -> new ProducerRecord<>(mf.topic(), mf.partition(), msg.id().getOrElse(""), msg.value()))
+    return msgFlux.map(msg -> new ProducerRecord<>(mf.topic(),
+                                                   mf.partition(),
+                                                   msg.id().getOrElse(0L) + "",
+                                                   msg.value()))
                   .concatMap(this::sendRecord)
                   .map(r -> (r.hasOffset()) ? new Response(r.offset()) : Response.empty());
   }

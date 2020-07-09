@@ -12,11 +12,17 @@ public record PulsarSender(Producer<String>producer) implements MsgSender {
 
   @Override
   public Flux<Response> apply(Flux<Message> msgFlux) {
-    return msgFlux.map(Message::value)
-                  .map(producer::sendAsync)
-                  .concatMap(Mono::fromFuture)
+    return msgFlux.concatMap(this::send)
                   .map(MessageId::toByteArray)
                   .map(String::new)
-                  .map(Response::new);
+                  .map(id -> new Response().withReply(id));
+  }
+
+  private Mono<MessageId> send(Message message) {
+    var pm = producer.newMessage();
+    if (message.id().isDefined()) {
+      pm = pm.sequenceId(message.id().get());
+    }
+    return Mono.fromFuture(pm.value(message.value()).sendAsync());
   }
 }

@@ -9,24 +9,32 @@ import java.time.LocalDateTime;
 import static io.vavr.control.Option.none;
 import static io.vavr.control.Option.some;
 
-public record Response(Option<String>value, Option<LocalDateTime>creationTime, Map<String, String>meta) {
+public record Response(Option<Long>id, Option<String>reply, Map<String, String>meta) {
   public static Response empty() {
-    return new Response(none(), none(), HashMap.empty());
+    return new Response();
   }
 
-  public Response(long value) {
-    this(String.valueOf(value));
+  public Response() {
+    this(none(), none(), HashMap.empty());
   }
 
-  public Response(String value) {
-    this(some(value), none(), HashMap.empty());
+  public Response(long id) {
+    this(some(id), none(), HashMap.empty());
   }
 
   public boolean isEmpty() {
-    return !value.isDefined() && !creationTime.isDefined() && meta.isEmpty();
+    return !id.isDefined() && !reply.isDefined() && meta.isEmpty();
+  }
+
+  public Response withId(long id) {
+    return new Response(some(id), this.reply, this.meta);
+  }
+
+  public Response withReply(String message) {
+    return new Response(this.id, some(message), this.meta);
   }
 
   public Response withMeta(String k, String v) {
-    return new Response(value, creationTime, meta.put(k, v));
+    return new Response(this.id, this.reply, this.meta.put(k, v));
   }
 }
