@@ -46,7 +46,6 @@ public class KafkaIT {
     var publisher = msgSender.apply(msgs);
     var consumer = msgReceiver.get().take(MSG_COUNT);
     StepVerifier.create(publisher)
-                .thenAwait(Duration.ofSeconds(4))
                 .expectNextCount(MSG_COUNT)
                 .expectComplete()
                 .verify();
