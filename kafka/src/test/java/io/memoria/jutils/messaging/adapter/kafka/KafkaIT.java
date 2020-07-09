@@ -14,7 +14,6 @@ import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
-import java.util.Objects;
 import java.util.Random;
 
 import static io.memoria.jutils.core.utils.file.ReactiveFileReader.resourcePath;
@@ -22,11 +21,11 @@ import static io.memoria.jutils.messaging.adapter.kafka.KafkaUtils.consumer;
 import static io.memoria.jutils.messaging.adapter.kafka.KafkaUtils.producer;
 import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofSeconds;
+import static java.util.Objects.requireNonNull;
 
 public class KafkaIT {
   private static final ReactiveFileReader reader = new DefaultReactiveFileReader(Schedulers.boundedElastic());
-  private static final YamlConfigMap configs = Objects.requireNonNull(reader.yaml(resourcePath("kafka.yaml").get())
-                                                                            .block());
+  private static final YamlConfigMap configs = requireNonNull(reader.yaml(resourcePath("kafka.yaml").get()).block());
   private static final MessageFilter messageFilter = new MessageFilter("topic-" + new Random().nextInt(1000), 0, 0);
   private static final int MSG_COUNT = 3;
 
@@ -51,10 +50,8 @@ public class KafkaIT {
                 .expectNextCount(MSG_COUNT)
                 .expectComplete()
                 .verify();
-    StepVerifier.create(consumer)
-                .expectNext(msgs.collectList().block().toArray(new Message[0]))
-                .expectComplete()
-                .verify();
+    var msgsBlock = requireNonNull(msgs.collectList().block()).toArray(new Message[0]);
+    StepVerifier.create(consumer).expectNext(msgsBlock).expectComplete().verify();
   }
 }
 

@@ -13,8 +13,6 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import static java.lang.String.valueOf;
-
 public class InMemoryMessageTest {
   private final MessageFilter mf = new MessageFilter("test_topic", 0, 0);
   private final int MSG_COUNT = 3;

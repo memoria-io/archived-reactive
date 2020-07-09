@@ -13,8 +13,7 @@ import java.time.Duration;
 
 import static io.memoria.jutils.messaging.adapter.nats.NatsUtils.toSubject;
 
-public record NatsSender(Connection nc, MessageFilter mf, Scheduler scheduler, Duration timeout)
-        implements MsgSender {
+public record NatsSender(Connection nc, MessageFilter mf, Scheduler scheduler, Duration timeout) implements MsgSender {
 
   @Override
   public Flux<Response> apply(Flux<Message> msgFlux) {

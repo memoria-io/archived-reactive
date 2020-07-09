@@ -22,6 +22,7 @@ import static io.memoria.jutils.core.utils.file.ReactiveFileReader.resourcePath;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.createConsumer;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.createProducer;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.pulsarClient;
+import static java.util.Objects.requireNonNull;
 
 public class PulsarIT {
   private static final ReactiveFileReader reader = new DefaultReactiveFileReader(Schedulers.boundedElastic());
@@ -46,10 +47,8 @@ public class PulsarIT {
   @DisplayName("Should produce messages and consume them correctly")
   public void produceAndConsume() {
     StepVerifier.create(msgSender.apply(msgs)).expectNextCount(MSG_COUNT).expectComplete().verify();
-    StepVerifier.create(msgReceiver.get().take(MSG_COUNT))
-                .expectNext(msgs.collectList().block().toArray(new Message[0]))
-                .expectComplete()
-                .verify();
+    var msgsBlock = requireNonNull(msgs.collectList().block()).toArray(new Message[0]);
+    StepVerifier.create(msgReceiver.get().take(MSG_COUNT)).expectNext().expectComplete().verify();
   }
 }
 
