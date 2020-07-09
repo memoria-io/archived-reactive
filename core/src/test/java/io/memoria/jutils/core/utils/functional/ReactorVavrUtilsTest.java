@@ -1,10 +1,7 @@
 package io.memoria.jutils.core.utils.functional;
 
-import io.memoria.jutils.core.utils.file.FileUtils;
-import io.vavr.CheckedRunnable;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -19,27 +16,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
-import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
-import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toVoidMono;
 import static io.vavr.control.Either.left;
 import static io.vavr.control.Either.right;
 
 public class ReactorVavrUtilsTest {
-  @Test
-  public void blockingToMono() {
-    class ThreadName {
-      public String threadName;
-    }
-    final ThreadName n = new ThreadName();
-    var m = toMono(() -> n.threadName = Thread.currentThread().getName(), Schedulers.newElastic("MyElasticThread"));
-    Assertions.assertNull(n.threadName);
-    m.block();
-    Assertions.assertNotNull(n.threadName);
-    Assertions.assertTrue(n.threadName.contains("MyElasticThread"));
-  }
 
   @Test
   public void eitherToMonoTest() {
@@ -107,21 +89,6 @@ public class ReactorVavrUtilsTest {
   }
 
   @Test
-  public void toVoidMonoTest() {
-    AtomicBoolean b = new AtomicBoolean();
-    CheckedRunnable r = () -> b.set(true);
-    var v = toVoidMono(r, Schedulers.elastic());
-    StepVerifier.create(v).expectComplete().verify();
-    Assertions.assertTrue(b.get());
-  }
-
-  @Test
-  public void toVoidMonoTestFail() {
-    var v = toVoidMono(this::hi, Schedulers.elastic());
-    StepVerifier.create(v).expectError(IOException.class).verify();
-  }
-
-  @Test
   public void tryToFluxTryTest() {
     Try<String> h = Try.success("hello");
     Function<String, Flux<Try<Integer>>> op1 = t -> Flux.just(Try.success((t + " world").length()));
@@ -163,9 +130,7 @@ public class ReactorVavrUtilsTest {
   @DisplayName("tryToMonoVoid test")
   public void tryToMonoVoidsTest() {
     Mono<Try<String>> original = Mono.just(Try.success("one"));
-    Function<String, Mono<Void>> deferredOp = (String content) -> FileUtils.writeFile("target/one.txt",
-                                                                                      content,
-                                                                                      Schedulers.elastic()).then();
+    Function<String, Mono<Void>> deferredOp = (String content) -> Mono.empty();
     Function<Throwable, Mono<Void>> throwable = t -> Mono.just(Try.failure(new Exception("should not fail"))).then();
     Mono<Void> voidMono = original.flatMap(ReactorVavrUtils.toVoidMono(deferredOp, throwable));
     StepVerifier.create(voidMono).expectComplete().verify();

@@ -1,4 +1,4 @@
-package io.memoria.jutils.core.utils.yaml;
+package io.memoria.jutils.core.utils.file;
 
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
@@ -38,34 +38,12 @@ public record YamlConfigMap(Map<String, Object>map) {
     return asStringList(key).map(o -> o.map(Integer::parseInt));
   }
 
-  public java.util.Map<String, Object> asJavaMap() {
-    return asMap().toJavaMap();
-  }
-
-  public Option<java.util.Map<String, Object>> asJavaMap(String key) {
-    return asMap(key).map(Map::toJavaMap);
-  }
-
   public Option<Long> asLong(String key) {
     return asString(key).map(Long::parseLong);
   }
 
   public Option<List<Long>> asLongList(String key) {
     return asStringList(key).map(o -> o.map(Long::parseLong));
-  }
-
-  public Map<String, Object> asMap() {
-    return this.map;
-  }
-
-  @SuppressWarnings("unchecked")
-  public Option<Map<String, Object>> asMap(String key) {
-    return map.get(key).flatMap(m -> {
-      if (m instanceof java.util.Map)
-        return some(HashMap.ofAll((java.util.Map<String, Object>) m));
-      else
-        return none();
-    });
   }
 
   public Option<String> asString(String key) {

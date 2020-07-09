@@ -7,11 +7,10 @@ import io.vavr.collection.List;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
-
-import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
 
 public record KafkaMsgReceiver(KafkaConsumer<String, String>consumer,
                                MessageFilter mf,
@@ -29,8 +28,10 @@ public record KafkaMsgReceiver(KafkaConsumer<String, String>consumer,
   }
 
   private Flux<Message> pollOnce(TopicPartition tp) {
-    return toMono(() -> consumer.poll(timeout), scheduler).map(crs -> crs.records(tp))
-                                                          .flatMapMany(Flux::fromIterable)
-                                                          .map(m -> new Message(m.value()).withId(m.key()));
+    return Mono.fromCallable(() -> consumer.poll(timeout))
+               .subscribeOn(scheduler)
+               .map(crs -> crs.records(tp))
+               .flatMapMany(Flux::fromIterable)
+               .map(m -> new Message(m.value()).withId(m.key()));
   }
 }

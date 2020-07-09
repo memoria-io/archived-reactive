@@ -1,32 +1,29 @@
 package io.memoria.jutils.etcd;
 
 import io.etcd.jetcd.Client;
-import io.memoria.jutils.core.utils.yaml.YamlConfigMap;
-import io.memoria.jutils.core.utils.yaml.YamlUtils;
-import io.vavr.Function1;
+import io.memoria.jutils.core.utils.file.DefaultReactiveFileReader;
+import io.memoria.jutils.core.utils.file.ReactiveFileReader;
+import io.memoria.jutils.core.utils.file.YamlConfigMap;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
-import java.util.Objects;
 import java.util.Random;
 
+import static io.memoria.jutils.core.utils.file.ReactiveFileReader.resourcePath;
 import static io.vavr.API.Some;
 import static io.vavr.control.Option.none;
 
 public class EtcdIT {
-  private static final Function1<String, Mono<YamlConfigMap>> YAML_RESOURCE_PARSER = YamlUtils.parseYamlResource(
-          Schedulers.elastic());
+  private static final ReactiveFileReader reader = new DefaultReactiveFileReader(Schedulers.boundedElastic());
+  private static final YamlConfigMap config = reader.yaml(resourcePath("etcd.yaml").get()).block();
 
-  private final YamlConfigMap config;
   private final Client clientBuilt;
   private final EtcdStoreClient client;
   private final String keyPrefix = "myKey";
   private final String value = "myValue";
 
   public EtcdIT() {
-    config = Objects.requireNonNull(YAML_RESOURCE_PARSER.apply("etcd.yaml").block());
     clientBuilt = Client.builder().endpoints(config.asString("etcd.url").get()).build();
     client = new EtcdStoreClient(clientBuilt);
   }

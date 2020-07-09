@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>jutils</artifactId>
-    <version>0.9.93</version>
+    <version>0.91.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
@@ -44,7 +44,6 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-
 </project>
 
 
