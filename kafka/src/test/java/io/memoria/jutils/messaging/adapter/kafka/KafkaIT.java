@@ -13,7 +13,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
-import java.time.Duration;
 import java.util.Random;
 
 import static io.memoria.jutils.core.utils.file.ReactiveFileReader.resourcePath;
@@ -27,30 +26,33 @@ public class KafkaIT {
   private static final ReactiveFileReader reader = new DefaultReactiveFileReader(Schedulers.boundedElastic());
   private static final YamlConfigMap configs = requireNonNull(reader.yaml(resourcePath("kafka.yaml").get()).block());
   private static final MessageFilter messageFilter = new MessageFilter("topic-" + new Random().nextInt(1000), 0, 0);
-  private static final int MSG_COUNT = 3;
+  private static final int MSG_COUNT = 10;
 
   private final MsgSender msgSender;
   private final MsgReceiver msgReceiver;
-  private final Flux<Message> msgs;
+  private final Flux<Message> infiniteMsgsFlux;
+  private final Flux<Message> limitedMsgsFlux;
+  private final Message[] limitedMsgsArr;
 
   public KafkaIT() {
     msgSender = new KafkaSender(producer(configs), messageFilter, Schedulers.boundedElastic(), ofSeconds(1));
-
     msgReceiver = new KafkaReceiver(consumer(configs), messageFilter, Schedulers.boundedElastic(), ofSeconds(1));
-    msgs = Flux.interval(ofMillis(10)).map(i -> new Message("Msg number" + i).withId(i)).take(MSG_COUNT);
+    infiniteMsgsFlux = Flux.interval(ofMillis(100)).map(this::iToMessage);
+    limitedMsgsFlux = infiniteMsgsFlux.take(MSG_COUNT);
+    limitedMsgsArr = requireNonNull(limitedMsgsFlux.collectList().block()).toArray(new Message[0]);
   }
 
   @Test
-  @DisplayName("Consumed messages should be same as published ones.")
+  @DisplayName("Consumed messages should be same as published ones, and In same order")
   public void kafkaPubSub() {
-    var publisher = msgSender.apply(msgs);
+    var publisher = msgSender.apply(limitedMsgsFlux);
     var consumer = msgReceiver.get().take(MSG_COUNT);
-    StepVerifier.create(publisher)
-                .expectNextCount(MSG_COUNT)
-                .expectComplete()
-                .verify();
-    var msgsBlock = requireNonNull(msgs.collectList().block()).toArray(new Message[0]);
-    StepVerifier.create(consumer).expectNext(msgsBlock).expectComplete().verify();
+    StepVerifier.create(publisher).expectNextCount(MSG_COUNT).expectComplete().verify();
+    StepVerifier.create(consumer).expectNext(limitedMsgsArr).expectComplete().verify();
+  }
+
+  private Message iToMessage(long i) {
+    return new Message("Msg number" + i).withId(i);
   }
 }
 

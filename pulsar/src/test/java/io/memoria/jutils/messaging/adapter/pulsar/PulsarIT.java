@@ -15,13 +15,13 @@ import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
-import java.time.Duration;
 import java.util.Random;
 
 import static io.memoria.jutils.core.utils.file.ReactiveFileReader.resourcePath;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.createConsumer;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.createProducer;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.pulsarClient;
+import static java.time.Duration.ofMillis;
 import static java.util.Objects.requireNonNull;
 
 public class PulsarIT {
@@ -29,26 +29,36 @@ public class PulsarIT {
   private static final YamlConfigMap config = reader.yaml(resourcePath("pulsar.yaml").get()).block();
 
   private static final MessageFilter mf = new MessageFilter("topic-" + new Random().nextInt(1000), 0, 0);
-  private static final int MSG_COUNT = 5;
+  private static final int MSG_COUNT = 10;
 
   private final PulsarClient client;
   private final MsgSender msgSender;
   private final MsgReceiver msgReceiver;
-  private final Flux<Message> msgs;
+  private final Flux<Message> infiniteMsgsFlux;
+  private final Flux<Message> limitedMsgsFlux;
+  private final Message[] limitedMsgsArr;
 
   public PulsarIT() throws PulsarClientException {
     client = pulsarClient(config);
     msgSender = new PulsarSender(createProducer(client, mf));
-    msgReceiver = new PulsarReceiver(createConsumer(client, mf), Duration.ofMillis(1000));
-    msgs = Flux.interval(Duration.ofMillis(10)).map(i -> new Message("Msg number" + i).withId(i)).take(MSG_COUNT);
+    msgReceiver = new PulsarReceiver(createConsumer(client, mf), ofMillis(100));
+
+    infiniteMsgsFlux = Flux.interval(ofMillis(100)).map(this::iToMessage);
+    limitedMsgsFlux = infiniteMsgsFlux.take(MSG_COUNT);
+    limitedMsgsArr = requireNonNull(limitedMsgsFlux.collectList().block()).toArray(new Message[0]);
   }
 
   @Test
   @DisplayName("Should produce messages and consume them correctly")
   public void produceAndConsume() {
-    StepVerifier.create(msgSender.apply(msgs)).expectNextCount(MSG_COUNT).expectComplete().verify();
-    var msgsBlock = requireNonNull(msgs.collectList().block()).toArray(new Message[0]);
-    StepVerifier.create(msgReceiver.get().take(MSG_COUNT)).expectNext().expectComplete().verify();
+    var sender = msgSender.apply(limitedMsgsFlux);
+    var receiver = msgReceiver.get().take(MSG_COUNT);
+    StepVerifier.create(sender).expectNextCount(MSG_COUNT).expectComplete().verify();
+    StepVerifier.create(receiver).expectNext(limitedMsgsArr).expectComplete().verify();
+  }
+
+  private Message iToMessage(long i) {
+    return new Message("Msg number" + i).withId(i);
   }
 }
 

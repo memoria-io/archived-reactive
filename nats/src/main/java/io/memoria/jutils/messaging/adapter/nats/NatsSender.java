@@ -21,7 +21,9 @@ public record NatsSender(Connection nc, MessageFilter mf, Scheduler scheduler, D
   }
 
   private Response publish(Message msg) {
-    nc.publish(toSubject(mf.topic(), mf.partition()), msg.value().getBytes(StandardCharsets.UTF_8));
+    var subj = toSubject(mf.topic(), mf.partition());
+    var msgStr = msg.value().getBytes(StandardCharsets.UTF_8);
+    nc.publish(subj, msgStr);
     return Response.empty();
   }
 }

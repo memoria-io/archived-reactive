@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.util.Random;
 
 import static io.memoria.jutils.core.utils.file.ReactiveFileReader.resourcePath;
-import static java.lang.System.out;
 import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofSeconds;
+import static java.util.Objects.requireNonNull;
 import static reactor.core.scheduler.Schedulers.elastic;
 
 public class NatsIT {
@@ -34,28 +34,33 @@ public class NatsIT {
   private final Connection nc;
   private final MsgSender msgSender;
   private final MsgReceiver msgReceiver;
-  private final Flux<Message> msgs;
+  private final Flux<Message> infiniteMsgsFlux;
+  private final Flux<Message> limitedMsgsFlux;
+  private final Message[] limitedMsgsArr;
 
   public NatsIT() throws IOException, InterruptedException {
     nc = NatsUtils.createConnection(config);
     msgSender = new NatsSender(nc, mf, elastic(), ofSeconds(1));
     msgReceiver = new NatsReceiver(nc, mf, elastic(), ofSeconds(1));
-    msgs = Flux.interval(ofMillis(10)).map(i -> new Message("Msg number" + i).withId(i)).take(MSG_COUNT);
+    infiniteMsgsFlux = Flux.interval(ofMillis(100)).map(this::iToMessage);
+    limitedMsgsFlux = infiniteMsgsFlux.take(MSG_COUNT);
+    limitedMsgsArr = requireNonNull(limitedMsgsFlux.collectList().block()).toArray(new Message[0]);
   }
 
   @Test
   @DisplayName("Consumed messages should be same as published ones.")
   public void NatsPubSub() throws InterruptedException {
-    var sender = msgSender.apply(msgs);
-    var receiver = msgReceiver.get().doOnNext(out::println).take(MSG_COUNT);
-    var t = new Thread(() -> StepVerifier.create(sender).expectNextCount(MSG_COUNT).expectComplete().verify());
-    t.start();
-    StepVerifier.create(receiver).expectNextCount(MSG_COUNT / 2).thenCancel().verify();
-    t.join();
+    var sender = msgSender.apply(limitedMsgsFlux);
+    var receiver = msgReceiver.get().take(MSG_COUNT);
+    StepVerifier.create(sender.zipWith(receiver)).expectNextCount(MSG_COUNT).expectComplete().verify();
   }
 
   @AfterEach
   public void afterEach() throws InterruptedException {
     nc.close();
+  }
+
+  private Message iToMessage(long i) {
+    return new Message("Msg number" + i).withId(i);
   }
 }
