@@ -1,8 +1,8 @@
 package io.memoria.jutils.security.adapter.argon;
 
 import io.memoria.jutils.security.adapter.random.DefaultRandomGenerator;
-import io.memoria.jutils.security.domain.port.Hasher;
-import io.memoria.jutils.security.domain.port.Verifier;
+import io.memoria.jutils.security.Hasher;
+import io.memoria.jutils.security.Verifier;
 import io.vavr.collection.Stream;
 import org.junit.jupiter.api.Test;
 import reactor.core.scheduler.Schedulers;

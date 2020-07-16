@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public interface ReactiveFileReader {
+public interface FileReader {
   static Try<Path> resourcePath(String path) {
     var url = ClassLoader.getSystemClassLoader().getResource(path);
     return (url != null) ? Try.of(() -> Paths.get(url.getPath())) : Try.failure(new NullPointerException());

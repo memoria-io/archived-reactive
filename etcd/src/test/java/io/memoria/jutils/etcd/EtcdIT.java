@@ -1,8 +1,8 @@
 package io.memoria.jutils.etcd;
 
 import io.etcd.jetcd.Client;
-import io.memoria.jutils.core.utils.file.DefaultReactiveFileReader;
-import io.memoria.jutils.core.utils.file.ReactiveFileReader;
+import io.memoria.jutils.core.utils.file.local.LocalFileReader;
+import io.memoria.jutils.core.utils.file.FileReader;
 import io.memoria.jutils.core.utils.file.YamlConfigMap;
 import org.junit.jupiter.api.Test;
 import reactor.core.scheduler.Schedulers;
@@ -10,12 +10,12 @@ import reactor.test.StepVerifier;
 
 import java.util.Random;
 
-import static io.memoria.jutils.core.utils.file.ReactiveFileReader.resourcePath;
+import static io.memoria.jutils.core.utils.file.FileReader.resourcePath;
 import static io.vavr.API.Some;
 import static io.vavr.control.Option.none;
 
 public class EtcdIT {
-  private static final ReactiveFileReader reader = new DefaultReactiveFileReader(Schedulers.boundedElastic());
+  private static final FileReader reader = new LocalFileReader(Schedulers.boundedElastic());
   private static final YamlConfigMap config = reader.yaml(resourcePath("etcd.yaml").get()).block();
 
   private final Client clientBuilt;

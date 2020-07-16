@@ -1,7 +1,9 @@
-package io.memoria.jutils.core.utils.file;
+package io.memoria.jutils.core.utils.file.local;
 
 import com.esotericsoftware.yamlbeans.YamlConfig;
 import com.esotericsoftware.yamlbeans.YamlReader;
+import io.memoria.jutils.core.utils.file.FileReader;
+import io.memoria.jutils.core.utils.file.YamlConfigMap;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -10,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 
-public record DefaultReactiveFileReader(Scheduler scheduler) implements ReactiveFileReader {
+public record LocalFileReader(Scheduler scheduler) implements FileReader {
   private static final class MapInstance extends HashMap<String, Object> {}
 
   @Override

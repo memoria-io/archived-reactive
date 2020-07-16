@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Objects;
 
 import static io.memoria.jutils.Tests.reader;
-import static io.memoria.jutils.core.utils.file.ReactiveFileReader.resourcePath;
+import static io.memoria.jutils.core.utils.file.FileReader.resourcePath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;

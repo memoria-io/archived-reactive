@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import static io.memoria.jutils.Tests.reader;
 import static io.memoria.jutils.Tests.writer;
 
-public class ReactiveFileWriterTest {
+public class FileWriterTest {
 
   @Test
   public void appendOrCreateTest() {

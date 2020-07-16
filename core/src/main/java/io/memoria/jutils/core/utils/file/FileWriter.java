@@ -4,6 +4,6 @@ import reactor.core.publisher.Mono;
 
 import java.nio.file.Path;
 
-public interface ReactiveFileWriter {
+public interface FileWriter {
   Mono<Path> writeFile(Path path, String content);
 }

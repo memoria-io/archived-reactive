@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
 import static io.memoria.jutils.Tests.reader;
-import static io.memoria.jutils.core.utils.file.ReactiveFileReader.resourcePath;
+import static io.memoria.jutils.core.utils.file.FileReader.resourcePath;
 
-public class ReactiveFileReaderTest {
+public class FileReaderTest {
 
   @Test
   public void fileAsStringTest() {

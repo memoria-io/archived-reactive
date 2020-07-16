@@ -1,4 +1,4 @@
-package io.memoria.jutils.security.domain.port;
+package io.memoria.jutils.security;
 
 import reactor.core.publisher.Mono;
 

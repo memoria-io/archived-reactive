@@ -1,6 +1,6 @@
 package io.memoria.jutils.security.adapter.random;
 
-import io.memoria.jutils.security.domain.port.RandomGenerator;
+import io.memoria.jutils.security.RandomGenerator;
 
 import java.util.Random;
 

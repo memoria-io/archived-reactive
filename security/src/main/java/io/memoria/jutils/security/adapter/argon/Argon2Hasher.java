@@ -2,7 +2,7 @@ package io.memoria.jutils.security.adapter.argon;
 
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
-import io.memoria.jutils.security.domain.port.Hasher;
+import io.memoria.jutils.security.Hasher;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 

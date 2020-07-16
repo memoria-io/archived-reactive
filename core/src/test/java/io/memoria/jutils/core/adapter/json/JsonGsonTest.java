@@ -9,7 +9,7 @@ import reactor.test.StepVerifier;
 import java.util.List;
 
 import static io.memoria.jutils.Tests.reader;
-import static io.memoria.jutils.core.utils.file.ReactiveFileReader.resourcePath;
+import static io.memoria.jutils.core.utils.file.FileReader.resourcePath;
 
 public class JsonGsonTest {
   private final Json json = new JsonGson(new Gson());

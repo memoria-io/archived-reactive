@@ -1,7 +1,7 @@
 package io.memoria.jutils.messaging.adapter.pulsar;
 
-import io.memoria.jutils.core.utils.file.DefaultReactiveFileReader;
-import io.memoria.jutils.core.utils.file.ReactiveFileReader;
+import io.memoria.jutils.core.utils.file.local.LocalFileReader;
+import io.memoria.jutils.core.utils.file.FileReader;
 import io.memoria.jutils.core.utils.file.YamlConfigMap;
 import io.memoria.jutils.messaging.domain.Message;
 import io.memoria.jutils.messaging.domain.MessageFilter;
@@ -17,7 +17,7 @@ import reactor.test.StepVerifier;
 
 import java.util.Random;
 
-import static io.memoria.jutils.core.utils.file.ReactiveFileReader.resourcePath;
+import static io.memoria.jutils.core.utils.file.FileReader.resourcePath;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.createConsumer;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.createProducer;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.pulsarClient;
@@ -25,7 +25,7 @@ import static java.time.Duration.ofMillis;
 import static java.util.Objects.requireNonNull;
 
 public class PulsarIT {
-  private static final ReactiveFileReader reader = new DefaultReactiveFileReader(Schedulers.boundedElastic());
+  private static final FileReader reader = new LocalFileReader(Schedulers.boundedElastic());
   private static final YamlConfigMap config = reader.yaml(resourcePath("pulsar.yaml").get()).block();
 
   private static final MessageFilter mf = new MessageFilter("topic-" + new Random().nextInt(1000), 0, 0);
