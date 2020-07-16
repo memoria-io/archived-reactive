@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public record InMemoryMsgSender(Map<String, HashMap<Integer, LinkedList<Message>>>db, MessageFilter mf)
+public record MemoryMsgSender(Map<String, HashMap<Integer, LinkedList<Message>>>db, MessageFilter mf)
         implements MsgSender {
 
   @Override

@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public record InMemoryMsgReceiver(Map<String, HashMap<Integer, LinkedList<Message>>>db, MessageFilter mf)
+public record MemoryMsgReceiver(Map<String, HashMap<Integer, LinkedList<Message>>>db, MessageFilter mf)
         implements MsgReceiver {
 
   @Override

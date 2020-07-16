@@ -13,7 +13,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class InMemoryMessageTest {
+public class MemoryMessageTest {
   private final MessageFilter mf = new MessageFilter("test_topic", 0, 0);
   private final int MSG_COUNT = 3;
   private final Flux<Message> msgs = Flux.interval(Duration.ofMillis(10))
@@ -27,7 +27,7 @@ public class InMemoryMessageTest {
     db.put(mf.topic(), new HashMap<>());
     db.get(mf.topic()).put(mf.partition(), new LinkedList<>());
     db.get(mf.topic()).get(mf.partition()).addAll(msgs.collectList().block());
-    var msgConsumer = new InMemoryMsgReceiver(db, mf);
+    var msgConsumer = new MemoryMsgReceiver(db, mf);
     var consumed = msgConsumer.get().take(MSG_COUNT);
     StepVerifier.create(consumed.map(Message::id).map(Option::get))
                 .expectNext(0L)
@@ -41,7 +41,7 @@ public class InMemoryMessageTest {
   @DisplayName("Should publish messages correctly")
   public void publish() {
     var db = new HashMap<String, HashMap<Integer, LinkedList<Message>>>();
-    var msgProducer = new InMemoryMsgSender(db, mf);
+    var msgProducer = new MemoryMsgSender(db, mf);
     var published = msgProducer.apply(msgs).take(MSG_COUNT);
 
     StepVerifier.create(published.map(Response::id).map(Option::get))
