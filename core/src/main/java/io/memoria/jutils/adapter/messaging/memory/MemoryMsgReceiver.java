@@ -1,8 +1,8 @@
 package io.memoria.jutils.adapter.messaging.memory;
 
-import io.memoria.jutils.core.messaging.MsgReceiver;
 import io.memoria.jutils.core.messaging.Message;
 import io.memoria.jutils.core.messaging.MessageFilter;
+import io.memoria.jutils.core.messaging.MsgReceiver;
 import reactor.core.publisher.Flux;
 
 import java.util.HashMap;

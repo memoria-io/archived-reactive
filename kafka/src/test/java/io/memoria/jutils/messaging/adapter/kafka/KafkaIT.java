@@ -1,8 +1,8 @@
 package io.memoria.jutils.messaging.adapter.kafka;
 
 import io.memoria.jutils.adapter.file.local.LocalFileReader;
-import io.memoria.jutils.core.file.FileReader;
 import io.memoria.jutils.adapter.yaml.YamlConfigMap;
+import io.memoria.jutils.core.file.FileReader;
 import io.memoria.jutils.core.messaging.Message;
 import io.memoria.jutils.core.messaging.MessageFilter;
 import io.memoria.jutils.core.messaging.MsgReceiver;

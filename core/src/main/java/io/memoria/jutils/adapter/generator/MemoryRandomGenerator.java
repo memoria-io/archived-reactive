@@ -1,10 +1,10 @@
-package io.memoria.jutils.security.adapter.random;
+package io.memoria.jutils.adapter.generator;
 
-import io.memoria.jutils.security.RandomGenerator;
+import io.memoria.jutils.core.generator.RandomGenerator;
 
 import java.util.Random;
 
-public record DefaultRandomGenerator(Random random) implements RandomGenerator {
+public record MemoryRandomGenerator(Random random) implements RandomGenerator {
   public static final String ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
   public String randomAlphanumeric(int length) {

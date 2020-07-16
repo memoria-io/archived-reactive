@@ -1,8 +1,8 @@
 package io.memoria.jutils.core.eventsourcing.test;
 
+import io.memoria.jutils.core.eventsourcing.domain.user.User;
 import io.memoria.jutils.core.eventsourcing.domain.user.cmd.UserCommand.AddFriend;
 import io.memoria.jutils.core.eventsourcing.domain.user.cmd.UserCommand.SendMessage;
-import io.memoria.jutils.core.eventsourcing.domain.user.User;
 import io.memoria.jutils.core.eventsourcing.domain.user.cmd.UserCommandHandler;
 import io.memoria.jutils.core.eventsourcing.domain.user.event.UserEvent.FriendAdded;
 import io.memoria.jutils.core.eventsourcing.domain.user.event.UserEvent.MessageCreated;

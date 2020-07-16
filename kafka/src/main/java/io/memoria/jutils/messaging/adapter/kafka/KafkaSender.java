@@ -2,8 +2,8 @@ package io.memoria.jutils.messaging.adapter.kafka;
 
 import io.memoria.jutils.core.messaging.Message;
 import io.memoria.jutils.core.messaging.MessageFilter;
-import io.memoria.jutils.core.messaging.Response;
 import io.memoria.jutils.core.messaging.MsgSender;
+import io.memoria.jutils.core.messaging.Response;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;

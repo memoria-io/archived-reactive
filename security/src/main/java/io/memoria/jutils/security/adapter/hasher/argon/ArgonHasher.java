@@ -1,4 +1,4 @@
-package io.memoria.jutils.security.adapter.argon;
+package io.memoria.jutils.security.adapter.hasher.argon;
 
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
@@ -6,10 +6,10 @@ import io.memoria.jutils.security.Hasher;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
-public record Argon2Hasher(Argon2 argon2, int iterations, int memory, int parallelism, Scheduler scheduler)
+public record ArgonHasher(Argon2 argon2, int iterations, int memory, int parallelism, Scheduler scheduler)
         implements Hasher {
 
-  public Argon2Hasher(int iterations, int memory, int parallelism, Scheduler scheduler) {
+  public ArgonHasher(int iterations, int memory, int parallelism, Scheduler scheduler) {
     this(Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id), iterations, memory, parallelism, scheduler);
   }
 

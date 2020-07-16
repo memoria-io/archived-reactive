@@ -1,10 +1,10 @@
 package io.memoria.jutils.core.eventsourcing.domain.user.cmd;
 
-import io.memoria.jutils.core.eventsourcing.domain.user.User;
 import io.memoria.jutils.core.eventsourcing.cmd.CommandHandler;
-import io.memoria.jutils.core.eventsourcing.event.Event;
+import io.memoria.jutils.core.eventsourcing.domain.user.User;
 import io.memoria.jutils.core.eventsourcing.domain.user.event.UserEvent.FriendAdded;
 import io.memoria.jutils.core.eventsourcing.domain.user.event.UserEvent.MessageCreated;
+import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.vavr.API;
 import io.vavr.collection.List;
 import io.vavr.control.Try;

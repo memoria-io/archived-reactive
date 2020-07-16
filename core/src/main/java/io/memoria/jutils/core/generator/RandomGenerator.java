@@ -1,4 +1,4 @@
-package io.memoria.jutils.security;
+package io.memoria.jutils.core.generator;
 
 public interface RandomGenerator {
   String randomAlphanumeric(int length);

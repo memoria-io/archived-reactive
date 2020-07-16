@@ -2,8 +2,6 @@ package io.memoria.jutils.adapter.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.memoria.jutils.adapter.json.JsonGson;
-import io.memoria.jutils.adapter.json.LocalDateTimeGsonAdapter;
 import io.memoria.jutils.core.json.Json;
 import org.junit.jupiter.api.Test;
 

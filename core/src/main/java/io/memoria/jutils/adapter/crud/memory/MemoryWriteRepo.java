@@ -28,12 +28,6 @@ public class MemoryWriteRepo<K, V> implements WriteRepo<K, V> {
   }
 
   @Override
-  public Mono<Void> update(K k, V v) {
-    return Mono.fromCallable(() -> db.containsKey(k))
-               .flatMap(exists -> (exists) ? Mono.fromRunnable(() -> db.put(k, v)) : Mono.error(NOT_FOUND));
-  }
-
-  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;
@@ -46,5 +40,11 @@ public class MemoryWriteRepo<K, V> implements WriteRepo<K, V> {
   @Override
   public int hashCode() {
     return Objects.hash(db);
+  }
+
+  @Override
+  public Mono<Void> update(K k, V v) {
+    return Mono.fromCallable(() -> db.containsKey(k))
+               .flatMap(exists -> (exists) ? Mono.fromRunnable(() -> db.put(k, v)) : Mono.error(NOT_FOUND));
   }
 }

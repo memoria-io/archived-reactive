@@ -1,4 +1,4 @@
-package io.memoria.jutils.security.adapter.random;
+package io.memoria.jutils.adapter.generator;
 
 import io.vavr.collection.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import java.security.SecureRandom;
 
-public class DefaultRandomGeneratorTest {
+public class MemoryRandomGeneratorTest {
   @Test
   public void randomAlphanumericTest() {
     SecureRandom secRand = new SecureRandom();
-    DefaultRandomGenerator ru = new DefaultRandomGenerator(secRand);
+    MemoryRandomGenerator ru = new MemoryRandomGenerator(secRand);
     Stream.range(0, 100).forEach(t -> {
       int min = secRand.nextInt(10);
       int max = min + 200;
@@ -23,7 +23,7 @@ public class DefaultRandomGeneratorTest {
   @Test
   public void randomHexTest() {
     SecureRandom secRand = new SecureRandom();
-    DefaultRandomGenerator ru = new DefaultRandomGenerator(secRand);
+    MemoryRandomGenerator ru = new MemoryRandomGenerator(secRand);
     Stream.range(0, 100).forEach(t -> {
       int min = secRand.nextInt(10);
       int max = min + 200;

@@ -2,8 +2,8 @@ package io.memoria.jutils.etcd;
 
 import io.etcd.jetcd.Client;
 import io.memoria.jutils.adapter.file.local.LocalFileReader;
-import io.memoria.jutils.core.file.FileReader;
 import io.memoria.jutils.adapter.yaml.YamlConfigMap;
+import io.memoria.jutils.core.file.FileReader;
 import org.junit.jupiter.api.Test;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;

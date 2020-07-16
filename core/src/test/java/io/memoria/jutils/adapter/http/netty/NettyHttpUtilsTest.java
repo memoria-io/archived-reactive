@@ -15,7 +15,6 @@ import reactor.test.StepVerifier;
 import java.util.Base64;
 import java.util.function.Consumer;
 
-import static io.memoria.jutils.core.http.netty.NettyHttpUtils.send;
 import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.vavr.control.Option.some;
@@ -41,8 +40,12 @@ public class NettyHttpUtilsTest {
   private static Consumer<HttpServerRoutes> routes() {
     return r -> r.get(happyPath, (req, resp) -> NettyHttpUtils.send(resp, OK))
                  .get(sadPath, (req, resp) -> NettyHttpUtils.sendError(resp, new NettyHttpError(BAD_REQUEST)))
-                 .get(tokenPath, (req, resp) -> NettyHttpUtils.send(resp, OK, some(NettyHttpUtils.tokenFrom(req).get())))
-                 .get(basicPath, (req, resp) -> NettyHttpUtils.send(resp, OK, some(NettyHttpUtils.basicFrom(req).get().toString())));
+                 .get(tokenPath,
+                      (req, resp) -> NettyHttpUtils.send(resp, OK, some(NettyHttpUtils.tokenFrom(req).get())))
+                 .get(basicPath,
+                      (req, resp) -> NettyHttpUtils.send(resp,
+                                                         OK,
+                                                         some(NettyHttpUtils.basicFrom(req).get().toString())));
   }
 
   @Test

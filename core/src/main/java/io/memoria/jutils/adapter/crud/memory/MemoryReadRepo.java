@@ -15,16 +15,6 @@ public class MemoryReadRepo<K, V> implements ReadRepo<K, V> {
   }
 
   @Override
-  public Mono<Boolean> exists(K id) {
-    return Mono.fromCallable(() -> db.containsKey(id));
-  }
-
-  @Override
-  public Mono<Option<V>> get(K id) {
-    return Mono.fromCallable(() -> Option.of(db.get(id)));
-  }
-
-  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;
@@ -32,6 +22,16 @@ public class MemoryReadRepo<K, V> implements ReadRepo<K, V> {
       return false;
     MemoryReadRepo<?, ?> that = (MemoryReadRepo<?, ?>) o;
     return db.equals(that.db);
+  }
+
+  @Override
+  public Mono<Boolean> exists(K id) {
+    return Mono.fromCallable(() -> db.containsKey(id));
+  }
+
+  @Override
+  public Mono<Option<V>> get(K id) {
+    return Mono.fromCallable(() -> Option.of(db.get(id)));
   }
 
   @Override

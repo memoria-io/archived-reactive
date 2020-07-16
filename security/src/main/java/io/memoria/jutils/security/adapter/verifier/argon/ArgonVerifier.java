@@ -1,4 +1,4 @@
-package io.memoria.jutils.security.adapter.argon;
+package io.memoria.jutils.security.adapter.verifier.argon;
 
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
@@ -6,9 +6,9 @@ import io.memoria.jutils.security.Verifier;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
-public record Argon2Verifier(Argon2 argon2, Scheduler scheduler) implements Verifier {
+public record ArgonVerifier(Argon2 argon2, Scheduler scheduler) implements Verifier {
 
-  public Argon2Verifier(Scheduler scheduler) {
+  public ArgonVerifier(Scheduler scheduler) {
     this(Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id), scheduler);
   }
 
