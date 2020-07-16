@@ -1,7 +1,7 @@
 package io.memoria.jutils.messaging.adapter.pulsar;
 
-import io.memoria.jutils.messaging.domain.Message;
-import io.memoria.jutils.messaging.domain.port.MsgReceiver;
+import io.memoria.jutils.core.messaging.Message;
+import io.memoria.jutils.core.messaging.MsgReceiver;
 import io.vavr.control.Option;
 import org.apache.pulsar.client.api.Consumer;
 import reactor.core.publisher.Flux;

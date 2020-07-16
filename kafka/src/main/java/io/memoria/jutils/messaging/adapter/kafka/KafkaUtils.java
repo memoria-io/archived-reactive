@@ -1,6 +1,6 @@
 package io.memoria.jutils.messaging.adapter.kafka;
 
-import io.memoria.jutils.core.utils.file.YamlConfigMap;
+import io.memoria.jutils.adapter.yaml.YamlConfigMap;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 

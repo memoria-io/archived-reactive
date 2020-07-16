@@ -1,8 +1,8 @@
 package io.memoria.jutils.messaging.adapter.pulsar;
 
-import io.memoria.jutils.messaging.domain.Message;
-import io.memoria.jutils.messaging.domain.Response;
-import io.memoria.jutils.messaging.domain.port.MsgSender;
+import io.memoria.jutils.core.messaging.Message;
+import io.memoria.jutils.core.messaging.Response;
+import io.memoria.jutils.core.messaging.MsgSender;
 import io.vavr.collection.HashMap;
 import io.vavr.control.Option;
 import org.apache.pulsar.client.api.MessageId;

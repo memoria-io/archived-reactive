@@ -1,7 +1,7 @@
 package io.memoria.jutils.messaging.adapter.pulsar;
 
-import io.memoria.jutils.core.utils.file.YamlConfigMap;
-import io.memoria.jutils.messaging.domain.MessageFilter;
+import io.memoria.jutils.adapter.yaml.YamlConfigMap;
+import io.memoria.jutils.core.messaging.MessageFilter;
 import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClient;

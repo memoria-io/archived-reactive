@@ -6,7 +6,7 @@ import io.etcd.jetcd.KV;
 import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.options.GetOption;
-import io.memoria.jutils.keyvaluestore.KeyValueStoreClient;
+import io.memoria.jutils.core.keyvaluestore.KeyValueStoreClient;
 import io.vavr.Tuple;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.Map;

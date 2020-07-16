@@ -1,7 +1,7 @@
 package io.memoria.jutils.messaging.adapter.nats;
 
-import io.memoria.jutils.core.utils.file.YamlConfigMap;
-import io.memoria.jutils.messaging.domain.Message;
+import io.memoria.jutils.adapter.yaml.YamlConfigMap;
+import io.memoria.jutils.core.messaging.Message;
 import io.nats.client.Connection;
 import io.nats.client.ConnectionListener.Events;
 import io.nats.client.Consumer;

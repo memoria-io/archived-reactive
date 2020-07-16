@@ -1,16 +1,16 @@
 package io.memoria.jutils.etcd;
 
 import io.etcd.jetcd.Client;
-import io.memoria.jutils.core.utils.file.local.LocalFileReader;
-import io.memoria.jutils.core.utils.file.FileReader;
-import io.memoria.jutils.core.utils.file.YamlConfigMap;
+import io.memoria.jutils.adapter.file.local.LocalFileReader;
+import io.memoria.jutils.core.file.FileReader;
+import io.memoria.jutils.adapter.yaml.YamlConfigMap;
 import org.junit.jupiter.api.Test;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.util.Random;
 
-import static io.memoria.jutils.core.utils.file.FileReader.resourcePath;
+import static io.memoria.jutils.core.file.FileReader.resourcePath;
 import static io.vavr.API.Some;
 import static io.vavr.control.Option.none;
 

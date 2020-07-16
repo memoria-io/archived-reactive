@@ -1,8 +1,8 @@
 package io.memoria.jutils.messaging.adapter.kafka;
 
-import io.memoria.jutils.messaging.domain.Message;
-import io.memoria.jutils.messaging.domain.MessageFilter;
-import io.memoria.jutils.messaging.domain.port.MsgReceiver;
+import io.memoria.jutils.core.messaging.Message;
+import io.memoria.jutils.core.messaging.MessageFilter;
+import io.memoria.jutils.core.messaging.MsgReceiver;
 import io.vavr.collection.List;
 import io.vavr.control.Option;
 import org.apache.kafka.clients.consumer.KafkaConsumer;

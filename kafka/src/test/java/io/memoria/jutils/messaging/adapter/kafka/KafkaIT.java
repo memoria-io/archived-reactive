@@ -1,12 +1,12 @@
 package io.memoria.jutils.messaging.adapter.kafka;
 
-import io.memoria.jutils.core.utils.file.local.LocalFileReader;
-import io.memoria.jutils.core.utils.file.FileReader;
-import io.memoria.jutils.core.utils.file.YamlConfigMap;
-import io.memoria.jutils.messaging.domain.Message;
-import io.memoria.jutils.messaging.domain.MessageFilter;
-import io.memoria.jutils.messaging.domain.port.MsgReceiver;
-import io.memoria.jutils.messaging.domain.port.MsgSender;
+import io.memoria.jutils.adapter.file.local.LocalFileReader;
+import io.memoria.jutils.core.file.FileReader;
+import io.memoria.jutils.adapter.yaml.YamlConfigMap;
+import io.memoria.jutils.core.messaging.Message;
+import io.memoria.jutils.core.messaging.MessageFilter;
+import io.memoria.jutils.core.messaging.MsgReceiver;
+import io.memoria.jutils.core.messaging.MsgSender;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -15,7 +15,7 @@ import reactor.test.StepVerifier;
 
 import java.util.Random;
 
-import static io.memoria.jutils.core.utils.file.FileReader.resourcePath;
+import static io.memoria.jutils.core.file.FileReader.resourcePath;
 import static io.memoria.jutils.messaging.adapter.kafka.KafkaUtils.consumer;
 import static io.memoria.jutils.messaging.adapter.kafka.KafkaUtils.producer;
 import static java.time.Duration.ofMillis;

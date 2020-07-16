@@ -1,9 +1,9 @@
 package io.memoria.jutils.messaging.adapter.nats;
 
-import io.memoria.jutils.messaging.domain.Message;
-import io.memoria.jutils.messaging.domain.MessageFilter;
-import io.memoria.jutils.messaging.domain.Response;
-import io.memoria.jutils.messaging.domain.port.MsgSender;
+import io.memoria.jutils.core.messaging.Message;
+import io.memoria.jutils.core.messaging.MessageFilter;
+import io.memoria.jutils.core.messaging.Response;
+import io.memoria.jutils.core.messaging.MsgSender;
 import io.nats.client.Connection;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;
