@@ -15,12 +15,12 @@ import java.util.Map;
 
 import static io.vavr.control.Option.some;
 
-public class InMemoryRepoTest {
+public class MemoryRepoTest {
   private static record User(String id, int age) {}
 
   private final Map<String, User> db = new HashMap<>();
-  private final ReadRepo<String, User> readRepo = new InMemoryReadRepo<>(db);
-  private final WriteRepo<String, User> writeRepo = new InMemoryWriteRepo<>(db);
+  private final ReadRepo<String, User> readRepo = new MemoryReadRepo<>(db);
+  private final WriteRepo<String, User> writeRepo = new MemoryWriteRepo<>(db);
   private final User user = new User("bob", 20);
   private final User otherUser = new User("bob", 23);
 
@@ -39,7 +39,7 @@ public class InMemoryRepoTest {
   @Test
   @DisplayName("Should crud the entity")
   public void crudTest() {
-    StepVerifier.create(writeRepo.create(user.id, user)).expectNext(user).expectComplete().verify();
+    StepVerifier.create(writeRepo.create(user.id, user)).expectComplete().verify();
     Assertions.assertEquals(new User("bob", 20), db.get("bob"));
     StepVerifier.create(writeRepo.update(otherUser.id, otherUser)).expectComplete().verify();
     StepVerifier.create(writeRepo.delete(user.id)).expectComplete().verify();
