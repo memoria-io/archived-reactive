@@ -23,9 +23,7 @@ public interface YamlConfig {
 
   Option<String> asString(String key);
 
-  @SuppressWarnings("unchecked")
   Option<List<String>> asStringList(String key);
 
-  @SuppressWarnings("unchecked")
   Option<YamlConfigMap> asYamlConfigMap(String key);
 }
