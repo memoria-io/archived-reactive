@@ -7,8 +7,8 @@ import io.memoria.jutils.core.file.FileWriter;
 import reactor.core.scheduler.Schedulers;
 
 public class Tests {
-  public static final FileWriter writer = new LocalFileWriter(Schedulers.boundedElastic());
-  public static final FileReader reader = new LocalFileReader(Schedulers.boundedElastic());
+  public static final FileWriter FILE_WRITER = new LocalFileWriter(Schedulers.boundedElastic());
+  public static final FileReader FILE_READER = new LocalFileReader(Schedulers.boundedElastic());
 
   private Tests() {}
 }

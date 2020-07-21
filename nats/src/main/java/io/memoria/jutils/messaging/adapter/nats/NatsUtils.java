@@ -60,9 +60,9 @@ public class NatsUtils {
     return topic + CHANNEL_SEPARATOR + partition;
   }
 
+  private NatsUtils() {}
+
   private static void onConnectionEvent(Connection conn, Events type) {
     log.info("Status change {}", type);
   }
-
-  private NatsUtils() {}
 }

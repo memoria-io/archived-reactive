@@ -1,5 +1,6 @@
 package io.memoria.jutils.adapter.utils;
 
+import io.memoria.jutils.Tests;
 import io.memoria.jutils.adapter.yaml.YamlConfigMap;
 import io.vavr.collection.List;
 import io.vavr.control.Option;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
 
-import static io.memoria.jutils.Tests.reader;
 import static io.memoria.jutils.core.file.FileReader.resourcePath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class YamlUtilsTest {
 
-  private final YamlConfigMap configMap = Objects.requireNonNull(reader.yaml(resourcePath("utils/test.yaml").get())
-                                                                       .block());
+  private final YamlConfigMap configMap = Objects.requireNonNull(Tests.FILE_READER.yaml(resourcePath("utils/test.yaml").get())
+                                                                                  .block());
 
   @Test
   public void asNone() {
@@ -93,7 +93,7 @@ public class YamlUtilsTest {
   @Test
   @DisplayName("Sub values should be parsed correctly")
   public void subValues() {
-    YamlConfigMap map = reader.yaml(resourcePath("utils/main-config.yaml").get()).block();
+    YamlConfigMap map = Tests.FILE_READER.yaml(resourcePath("utils/main-config.yaml").get()).block();
     assertNotNull(map);
     assertEquals("hello world", map.asString("sub.config.name").get());
     assertEquals("byebye", map.asString("sub.other.value").get());

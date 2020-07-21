@@ -16,6 +16,12 @@ import static io.vavr.Predicates.instanceOf;
 
 public class UserCommandHandler implements CommandHandler<User, UserCommand, Event> {
 
+  @Override
+  public Try<List<Event>> apply(User user, UserCommand userCommand) {
+    return Match(userCommand).of(API.Case(API.$(instanceOf(UserCommand.SendMessage.class)), c -> sendMessage(user, c)),
+                                 API.Case(API.$(instanceOf(UserCommand.AddFriend.class)), c -> addFriend(user, c)));
+  }
+
   private static Try<List<Event>> addFriend(User user, UserCommand.AddFriend m) {
     return validateAddFriend(user, m).map(v -> List.of(new FriendAdded(m.userId(), m.friendId())));
   }
@@ -33,11 +39,5 @@ public class UserCommandHandler implements CommandHandler<User, UserCommand, Eve
 
   private static Try<Void> validateSendMessage(User user, UserCommand.SendMessage m) {
     return (user.friends().contains(m.toUserId())) ? Try.success(null) : Try.failure(NOT_FOUND);
-  }
-
-  @Override
-  public Try<List<Event>> apply(User user, UserCommand userCommand) {
-    return Match(userCommand).of(API.Case(API.$(instanceOf(UserCommand.SendMessage.class)), c -> sendMessage(user, c)),
-                                 API.Case(API.$(instanceOf(UserCommand.AddFriend.class)), c -> addFriend(user, c)));
   }
 }
