@@ -8,7 +8,6 @@ import io.vavr.control.Option;
 import org.apache.pulsar.client.api.MessageId;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.impl.MessageIdImpl;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static io.vavr.control.Option.some;
@@ -16,16 +15,12 @@ import static io.vavr.control.Option.some;
 public record PulsarSender(Producer<String>producer) implements MsgSender {
 
   @Override
-  public Flux<Response> apply(Flux<Message> msgFlux) {
-    return msgFlux.concatMap(this::send).map(this::toResponse);
-  }
-
-  private Mono<MessageId> send(Message message) {
+  public Mono<Response> apply(Message message) {
     var pm = producer.newMessage();
     if (message.id().isDefined()) {
       pm = pm.sequenceId(message.id().get());
     }
-    return Mono.fromFuture(pm.value(message.value()).sendAsync());
+    return Mono.fromFuture(pm.value(message.value()).sendAsync()).map(this::toResponse);
   }
 
   private Response toResponse(MessageId id) {

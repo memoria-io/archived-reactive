@@ -5,7 +5,7 @@ import io.memoria.jutils.core.messaging.MessageFilter;
 import io.memoria.jutils.core.messaging.MsgSender;
 import io.memoria.jutils.core.messaging.Response;
 import io.nats.client.Connection;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
 import java.nio.charset.StandardCharsets;
@@ -16,8 +16,8 @@ import static io.memoria.jutils.messaging.adapter.nats.NatsUtils.toSubject;
 public record NatsSender(Connection nc, MessageFilter mf, Scheduler scheduler, Duration timeout) implements MsgSender {
 
   @Override
-  public Flux<Response> apply(Flux<Message> msgFlux) {
-    return msgFlux.publishOn(scheduler).timeout(timeout).map(this::publish);
+  public Mono<Response> apply(Message message) {
+    return Mono.fromCallable(() -> publish(message)).subscribeOn(scheduler).timeout(timeout);
   }
 
   private Response publish(Message msg) {

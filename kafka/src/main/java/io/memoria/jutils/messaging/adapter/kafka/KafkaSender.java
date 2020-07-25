@@ -7,7 +7,6 @@ import io.memoria.jutils.core.messaging.Response;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
@@ -19,13 +18,10 @@ public record KafkaSender(KafkaProducer<String, String>kafkaProducer,
                           Duration timeout) implements MsgSender {
 
   @Override
-  public Flux<Response> apply(Flux<Message> msgFlux) {
-    return msgFlux.map(msg -> new ProducerRecord<>(mf.topic(),
-                                                   mf.partition(),
-                                                   msg.id().getOrElse(0L) + "",
-                                                   msg.value()))
-                  .concatMap(this::sendRecord)
-                  .map(r -> (r.hasOffset()) ? new Response(r.offset()) : Response.empty());
+  public Mono<Response> apply(Message msg) {
+    var key = msg.id().getOrElse(0L) + "";
+    var prodRec = new ProducerRecord<>(mf.topic(), mf.partition(), key, msg.value());
+    return sendRecord(prodRec).map(r -> (r.hasOffset()) ? new Response(r.offset()) : Response.empty());
   }
 
   private Mono<RecordMetadata> sendRecord(ProducerRecord<String, String> prodRec) {
