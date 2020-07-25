@@ -7,11 +7,14 @@ import reactor.core.publisher.Mono;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 public interface FileReader {
   static Try<Path> resourcePath(String path) {
-    var url = ClassLoader.getSystemClassLoader().getResource(path);
-    return (url != null) ? Try.of(() -> Paths.get(url.getPath())) : Try.failure(new NullPointerException());
+    return Try.of(() -> {
+      var url = ClassLoader.getSystemClassLoader().getResource(path);
+      return Paths.get(Objects.requireNonNull(url).getPath());
+    });
   }
 
   Mono<String> file(Path path);
