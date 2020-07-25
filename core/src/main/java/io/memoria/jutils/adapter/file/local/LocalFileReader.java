@@ -30,13 +30,17 @@ public record LocalFileReader(Scheduler scheduler) implements FileReader {
   }
 
   public Mono<YamlConfigMap> yaml(Path path) {
-    YamlConfig yc = new YamlConfig();
-    yc.readConfig.setIgnoreUnknownProperties(true);
     return lines(path).flatMap(l -> yamlInclude(l, path))
                       .reduce((a, b) -> a + "\n" + b)
-                      .map(s -> new YamlReader(s, yc))
+                      .map(LocalFileReader::yamlReader)
                       .flatMap(yamlReader -> Mono.fromCallable(() -> yamlReader.read(MapInstance.class)))
                       .map(YamlConfigMap::new);
+  }
+
+  private static YamlReader yamlReader(String s) {
+    YamlConfig yc = new YamlConfig();
+    yc.readConfig.setIgnoreUnknownProperties(true);
+    return new YamlReader(s, yc);
   }
 
   private Flux<String> yamlInclude(String line, Path relativePath) {
