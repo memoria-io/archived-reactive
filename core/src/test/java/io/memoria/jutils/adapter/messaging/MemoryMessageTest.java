@@ -14,6 +14,8 @@ import reactor.test.StepVerifier;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Queue;
 
 public class MemoryMessageTest {
   private final MessageFilter mf = new MessageFilter("test_topic", 0, 0);
@@ -25,10 +27,10 @@ public class MemoryMessageTest {
   @Test
   @DisplayName("Should consume messages correctly")
   public void consume() {
-    var db = new HashMap<String, HashMap<Integer, LinkedList<Message>>>();
+    var db = new HashMap<String, HashMap<Integer, Queue<Message>>>();
     db.put(mf.topic(), new HashMap<>());
     db.get(mf.topic()).put(mf.partition(), new LinkedList<>());
-    db.get(mf.topic()).get(mf.partition()).addAll(msgs.collectList().block());
+    db.get(mf.topic()).get(mf.partition()).addAll(Objects.requireNonNull(msgs.collectList().block()));
     var msgConsumer = new MemoryMsgReceiver(db, mf);
     var consumed = msgConsumer.get().take(MSG_COUNT);
     StepVerifier.create(consumed.map(Message::id).map(Option::get))
@@ -42,7 +44,7 @@ public class MemoryMessageTest {
   @Test
   @DisplayName("Should publish messages correctly")
   public void publish() {
-    var db = new HashMap<String, HashMap<Integer, LinkedList<Message>>>();
+    var db = new HashMap<String, HashMap<Integer, Queue<Message>>>();
     var msgProducer = new MemoryMsgSender(db, mf);
     var published = msgProducer.apply(msgs).take(MSG_COUNT);
 
