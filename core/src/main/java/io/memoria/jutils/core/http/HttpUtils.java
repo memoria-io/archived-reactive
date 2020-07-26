@@ -11,7 +11,7 @@ import static io.vavr.control.Option.some;
 
 public final class HttpUtils {
 
-  public static Option<Tuple2<String, String>> basicFrom(String header) {
+  public static Option<Tuple2<String, String>> basicCredentials(String header) {
     header = header.trim();
     if (header.contains("Basic")) {
       String content = header.split(" ")[1].trim();
@@ -22,7 +22,7 @@ public final class HttpUtils {
     }
   }
 
-  public static Option<String> tokenFrom(String header) {
+  public static Option<String> bearerToken(String header) {
     header = header.trim();
     if (header.contains("Bearer")) {
       return some(header.split(" ")[1].trim());

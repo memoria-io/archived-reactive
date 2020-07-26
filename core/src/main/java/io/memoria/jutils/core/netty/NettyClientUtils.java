@@ -1,4 +1,4 @@
-package io.memoria.jutils.core.http.netty;
+package io.memoria.jutils.core.netty;
 
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;

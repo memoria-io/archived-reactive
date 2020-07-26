@@ -8,9 +8,9 @@ import reactor.netty.http.server.HttpServer;
 import reactor.netty.http.server.HttpServerRoutes;
 import reactor.test.StepVerifier;
 
-import static io.memoria.jutils.core.http.netty.NettyClientUtils.get;
-import static io.memoria.jutils.core.http.netty.NettyServerUtils.statusReply;
-import static io.memoria.jutils.core.http.netty.NettyServerUtils.stringReply;
+import static io.memoria.jutils.core.netty.NettyClientUtils.get;
+import static io.memoria.jutils.core.netty.NettyServerUtils.statusReply;
+import static io.memoria.jutils.core.netty.NettyServerUtils.stringReply;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpResponseStatus.UNAUTHORIZED;
 

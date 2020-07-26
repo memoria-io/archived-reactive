@@ -37,12 +37,6 @@ public record LocalFileReader(Scheduler scheduler) implements FileReader {
                       .map(YamlConfigMap::new);
   }
 
-  private static YamlReader yamlReader(String s) {
-    YamlConfig yc = new YamlConfig();
-    yc.readConfig.setIgnoreUnknownProperties(true);
-    return new YamlReader(s, yc);
-  }
-
   private Flux<String> yamlInclude(String line, Path relativePath) {
     if (line.startsWith("include:")) {
       String path = line.split(":")[1].trim();
@@ -50,5 +44,11 @@ public record LocalFileReader(Scheduler scheduler) implements FileReader {
     } else {
       return Flux.just(line);
     }
+  }
+
+  private static YamlReader yamlReader(String s) {
+    YamlConfig yc = new YamlConfig();
+    yc.readConfig.setIgnoreUnknownProperties(true);
+    return new YamlReader(s, yc);
   }
 }

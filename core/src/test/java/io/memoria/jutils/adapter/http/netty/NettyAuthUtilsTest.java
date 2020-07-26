@@ -12,10 +12,10 @@ import reactor.test.StepVerifier;
 import java.util.Base64;
 import java.util.function.Consumer;
 
-import static io.memoria.jutils.core.http.netty.NettyAuthUtils.basicAuth;
-import static io.memoria.jutils.core.http.netty.NettyAuthUtils.bearerAuth;
-import static io.memoria.jutils.core.http.netty.NettyClientUtils.get;
-import static io.memoria.jutils.core.http.netty.NettyServerUtils.stringReply;
+import static io.memoria.jutils.core.netty.NettyAuthUtils.basicCredentials;
+import static io.memoria.jutils.core.netty.NettyAuthUtils.bearerToken;
+import static io.memoria.jutils.core.netty.NettyClientUtils.get;
+import static io.memoria.jutils.core.netty.NettyServerUtils.stringReply;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 
 public class NettyAuthUtilsTest {
@@ -51,7 +51,8 @@ public class NettyAuthUtilsTest {
   }
 
   private static Consumer<HttpServerRoutes> routes() {
-    return r -> r.get(tokenAuthPath, (req, resp) -> stringReply.apply(resp).apply(OK, bearerAuth(req).get()))
-                 .get(basicAuthPath, (req, resp) -> stringReply.apply(resp).apply(OK, basicAuth(req).get().toString()));
+    return r -> r.get(tokenAuthPath, (req, resp) -> stringReply.apply(resp).apply(OK, bearerToken(req).get()))
+                 .get(basicAuthPath,
+                      (req, resp) -> stringReply.apply(resp).apply(OK, basicCredentials(req).get().toString()));
   }
 }

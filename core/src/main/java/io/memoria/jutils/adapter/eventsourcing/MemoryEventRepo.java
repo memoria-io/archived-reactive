@@ -12,8 +12,13 @@ import java.util.Queue;
 public record MemoryEventRepo<K, E extends Event>(Map<K, Queue<E>>db) implements EventRepo<K, E> {
 
   @Override
-  public Flux<E> stream(K k) {
-    return Mono.fromCallable(() -> db.get(k)).flatMapMany(Flux::fromIterable);
+  public Mono<Void> add(K k, E e) {
+    return Mono.fromRunnable(() -> {
+      if (!db.containsKey(k)) {
+        db.put(k, new LinkedList<>());
+      }
+      db.get(k).add(e);
+    });
   }
 
   @Override
@@ -22,12 +27,7 @@ public record MemoryEventRepo<K, E extends Event>(Map<K, Queue<E>>db) implements
   }
 
   @Override
-  public Mono<Void> add(K k, E e) {
-    return Mono.fromRunnable(() -> {
-      if (!db.containsKey(k)) {
-        db.put(k, new LinkedList<>());
-      }
-      db.get(k).add(e);
-    });
+  public Flux<E> stream(K k) {
+    return Mono.fromCallable(() -> db.get(k)).flatMapMany(Flux::fromIterable);
   }
 }
