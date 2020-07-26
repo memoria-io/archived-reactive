@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>jutils</artifactId>
-    <version>0.98.3</version>
+    <version>0.99.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>

@@ -2,7 +2,6 @@ package io.memoria.jutils.adapter.functional;
 
 import io.memoria.jutils.core.Err.NotFound;
 import io.memoria.jutils.core.functional.VavrUtils;
-import io.memoria.jutils.core.http.netty.NettyHttpError;
 import io.vavr.API.Match.Case;
 import io.vavr.Function1;
 import io.vavr.collection.List;
@@ -45,13 +44,10 @@ public class VavrUtilsTest {
 
   @Test
   public void instanceOfCaseTest() {
-    Case<Throwable, NettyHttpError> case1 = instanceOfCase(IllegalArgumentException.class,
-                                                           new NettyHttpError(BAD_REQUEST, BAD_REQUEST.reasonPhrase()));
-    Case<Throwable, NettyHttpError> case2 = instanceOfCase(NotFound.class,
-                                                           new NettyHttpError(BAD_REQUEST, BAD_REQUEST.reasonPhrase()));
-    Function1<Throwable, NettyHttpError> f = t -> Match(t).of(case1, case2);
-    Assertions.assertEquals(f.apply(new IllegalArgumentException()),
-                            new NettyHttpError(BAD_REQUEST, BAD_REQUEST.reasonPhrase()));
+    Case<Throwable, String> case1 = instanceOfCase(IllegalArgumentException.class, BAD_REQUEST.reasonPhrase());
+    Case<Throwable, String> case2 = instanceOfCase(NotFound.class, BAD_REQUEST.reasonPhrase());
+    Function1<Throwable, String> f = t -> Match(t).of(case1, case2);
+    Assertions.assertEquals(f.apply(new IllegalArgumentException()), BAD_REQUEST.reasonPhrase());
   }
 
   @Test

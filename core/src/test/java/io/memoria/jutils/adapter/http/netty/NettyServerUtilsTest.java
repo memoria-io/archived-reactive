@@ -1,6 +1,5 @@
 package io.memoria.jutils.adapter.http.netty;
 
-import io.memoria.jutils.core.http.netty.NettyHttpError;
 import io.vavr.Tuple;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -10,7 +9,6 @@ import reactor.netty.http.server.HttpServerRoutes;
 import reactor.test.StepVerifier;
 
 import static io.memoria.jutils.core.http.netty.NettyClientUtils.get;
-import static io.memoria.jutils.core.http.netty.NettyServerUtils.errorReply;
 import static io.memoria.jutils.core.http.netty.NettyServerUtils.statusReply;
 import static io.memoria.jutils.core.http.netty.NettyServerUtils.stringReply;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
@@ -42,7 +40,10 @@ public class NettyServerUtilsTest {
   @Test
   public void statusReplyTest() {
     var monoResp = get(host, statusReplyPath);
-    StepVerifier.create(monoResp).expectNext(Tuple.of(OK, "OK")).expectComplete().verify();
+    StepVerifier.create(monoResp)
+                .expectNext(Tuple.of(UNAUTHORIZED, UNAUTHORIZED.reasonPhrase()))
+                .expectComplete()
+                .verify();
   }
 
   @Test
@@ -52,8 +53,8 @@ public class NettyServerUtilsTest {
   }
 
   private static void routes(HttpServerRoutes routes) {
-    routes.get(statusReplyPath, (req, resp) -> statusReply.apply(resp).apply(OK))
+    routes.get(statusReplyPath, (req, resp) -> statusReply.apply(resp).apply(UNAUTHORIZED))
           .get(stringReplyPath, (req, resp) -> stringReply.apply(resp).apply(OK, "Hello"))
-          .get(errorReplyPath, (req, resp) -> errorReply.apply(resp).apply(new NettyHttpError(UNAUTHORIZED)));
+          .get(errorReplyPath, (req, resp) -> stringReply.apply(resp).apply(UNAUTHORIZED, UNAUTHORIZED.reasonPhrase()));
   }
 }
