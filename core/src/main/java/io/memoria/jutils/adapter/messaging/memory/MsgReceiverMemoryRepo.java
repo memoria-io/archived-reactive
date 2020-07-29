@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-public record MemoryMsgReceiver(Map<String, HashMap<Integer, Queue<Message>>>db, MessageFilter mf)
+public record MsgReceiverMemoryRepo(Map<String, HashMap<Integer, Queue<Message>>>db, MessageFilter mf)
         implements MsgReceiver {
 
   @Override

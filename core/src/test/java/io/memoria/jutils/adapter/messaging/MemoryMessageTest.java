@@ -1,7 +1,7 @@
 package io.memoria.jutils.adapter.messaging;
 
-import io.memoria.jutils.adapter.messaging.memory.MemoryMsgReceiver;
-import io.memoria.jutils.adapter.messaging.memory.MemoryMsgSender;
+import io.memoria.jutils.adapter.messaging.memory.MsgReceiverMemoryRepo;
+import io.memoria.jutils.adapter.messaging.memory.MsgSenderMemoryRepo;
 import io.memoria.jutils.core.messaging.Message;
 import io.memoria.jutils.core.messaging.MessageFilter;
 import io.memoria.jutils.core.messaging.Response;
@@ -31,7 +31,7 @@ public class MemoryMessageTest {
     db.put(mf.topic(), new HashMap<>());
     db.get(mf.topic()).put(mf.partition(), new LinkedList<>());
     db.get(mf.topic()).get(mf.partition()).addAll(Objects.requireNonNull(msgs.collectList().block()));
-    var msgConsumer = new MemoryMsgReceiver(db, mf);
+    var msgConsumer = new MsgReceiverMemoryRepo(db, mf);
     var consumed = msgConsumer.get().take(MSG_COUNT);
     StepVerifier.create(consumed.map(Message::id).map(Option::get))
                 .expectNext(0L)
@@ -45,7 +45,7 @@ public class MemoryMessageTest {
   @DisplayName("Should publish messages correctly")
   public void publish() {
     var db = new HashMap<String, HashMap<Integer, Queue<Message>>>();
-    var msgProducer = new MemoryMsgSender(db, mf);
+    var msgProducer = new MsgSenderMemoryRepo(db, mf);
     var published = msgProducer.apply(msgs).take(MSG_COUNT);
 
     StepVerifier.create(published.map(Response::id).map(Option::get))

@@ -1,7 +1,7 @@
 package io.memoria.jutils.adapter.memory;
 
-import io.memoria.jutils.adapter.crud.memory.MemoryReadRepo;
-import io.memoria.jutils.adapter.crud.memory.MemoryWriteRepo;
+import io.memoria.jutils.adapter.crud.memory.InMemoryReadRepo;
+import io.memoria.jutils.adapter.crud.memory.InMemoryWriteRepo;
 import io.memoria.jutils.core.Err.AlreadyExists;
 import io.memoria.jutils.core.Err.NotFound;
 import io.memoria.jutils.core.crud.ReadRepo;
@@ -21,8 +21,8 @@ public class MemoryRepoTest {
   private static record User(String id, int age) {}
 
   private final Map<String, User> db = new HashMap<>();
-  private final ReadRepo<String, User> readRepo = new MemoryReadRepo<>(db);
-  private final WriteRepo<String, User> writeRepo = new MemoryWriteRepo<>(db);
+  private final ReadRepo<String, User> readRepo = new InMemoryReadRepo<>(db);
+  private final WriteRepo<String, User> writeRepo = new InMemoryWriteRepo<>(db);
   private final User user = new User("bob", 20);
   private final User otherUser = new User("bob", 23);
 

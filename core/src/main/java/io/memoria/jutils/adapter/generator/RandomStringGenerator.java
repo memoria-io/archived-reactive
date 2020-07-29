@@ -1,20 +1,20 @@
 package io.memoria.jutils.adapter.generator;
 
-import io.memoria.jutils.core.generator.RandomGenerator;
+import io.memoria.jutils.core.generator.StringGenerator;
 
 import java.util.Random;
 
-public record MemoryRandomGenerator(Random random) implements RandomGenerator {
+public record RandomStringGenerator(Random random) implements StringGenerator {
   public static final String ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-  public String randomAlphanumeric(int length) {
+  public String alphanumeric(int length) {
     StringBuilder sb = new StringBuilder(length);
     while (sb.length() < length)
       sb.append(ALPHANUMERIC.charAt(random.nextInt(ALPHANUMERIC.length())));
     return sb.toString();
   }
 
-  public String randomHex(int length) {
+  public String hex(int length) {
     StringBuilder sb = new StringBuilder();
     while (sb.length() < length) {
       sb.append(Integer.toHexString(random.nextInt()));
@@ -22,11 +22,11 @@ public record MemoryRandomGenerator(Random random) implements RandomGenerator {
     return sb.substring(0, length);
   }
 
-  public String randomMinMaxAlphanumeric(int min, int max) {
-    return randomAlphanumeric(random.nextInt(max - min) + min);
+  public String minMaxAlphanumeric(int min, int max) {
+    return alphanumeric(random.nextInt(max - min) + min);
   }
 
-  public String randomMinMaxHex(int min, int max) {
-    return randomHex(random.nextInt(max - min) + min);
+  public String minMaxHex(int min, int max) {
+    return hex(random.nextInt(max - min) + min);
   }
 }

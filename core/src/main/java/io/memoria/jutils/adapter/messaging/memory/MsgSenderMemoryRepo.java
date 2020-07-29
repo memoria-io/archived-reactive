@@ -11,7 +11,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-public record MemoryMsgSender(Map<String, HashMap<Integer, Queue<Message>>>db, MessageFilter mf) implements MsgSender {
+public record MsgSenderMemoryRepo(Map<String, HashMap<Integer, Queue<Message>>>db, MessageFilter mf)
+        implements MsgSender {
 
   @Override
   public Mono<Response> apply(Message msg) {

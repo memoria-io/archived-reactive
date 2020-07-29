@@ -9,10 +9,10 @@ import java.util.Objects;
 import static io.memoria.jutils.core.Err.AlreadyExists.ALREADY_EXISTS;
 import static io.memoria.jutils.core.Err.NotFound.NOT_FOUND;
 
-public class MemoryWriteRepo<K, V> implements WriteRepo<K, V> {
+public class InMemoryWriteRepo<K, V> implements WriteRepo<K, V> {
   public final Map<K, V> db;
 
-  public MemoryWriteRepo(Map<K, V> db) {
+  public InMemoryWriteRepo(Map<K, V> db) {
     this.db = db;
   }
 
@@ -33,7 +33,7 @@ public class MemoryWriteRepo<K, V> implements WriteRepo<K, V> {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    MemoryWriteRepo<?, ?> that = (MemoryWriteRepo<?, ?>) o;
+    InMemoryWriteRepo<?, ?> that = (InMemoryWriteRepo<?, ?>) o;
     return db.equals(that.db);
   }
 
