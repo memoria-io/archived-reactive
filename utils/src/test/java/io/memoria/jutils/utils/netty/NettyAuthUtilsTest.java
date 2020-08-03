@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 import static io.memoria.jutils.utils.netty.NettyAuthUtils.basicCredentials;
 import static io.memoria.jutils.utils.netty.NettyAuthUtils.bearerToken;
 import static io.memoria.jutils.utils.netty.NettyClientUtils.get;
+import static io.memoria.jutils.utils.netty.NettyClientUtils.post;
 import static io.memoria.jutils.utils.netty.NettyServerUtils.stringReply;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 
@@ -38,7 +39,7 @@ public class NettyAuthUtilsTest {
   @DisplayName("Should deserialize Basic authorization header correctly")
   public void basicFromTest() {
     var basic = Base64.getEncoder().encodeToString(("bob:password").getBytes());
-    var monoResp = get(host, basicAuthPath, b -> b.add("Authorization", "Basic " + basic));
+    var monoResp = post(host, basicAuthPath, b -> b.add("Authorization", "Basic " + basic), "payload hello");
     StepVerifier.create(monoResp).expectNext(Tuple.of(OK, "(bob, password)")).expectComplete().verify();
   }
 
@@ -52,7 +53,7 @@ public class NettyAuthUtilsTest {
 
   private static Consumer<HttpServerRoutes> routes() {
     return r -> r.get(tokenAuthPath, (req, resp) -> stringReply.apply(resp).apply(OK, bearerToken(req).get()))
-                 .get(basicAuthPath,
-                      (req, resp) -> stringReply.apply(resp).apply(OK, basicCredentials(req).get().toString()));
+                 .post(basicAuthPath,
+                       (req, resp) -> stringReply.apply(resp).apply(OK, basicCredentials(req).get().toString()));
   }
 }

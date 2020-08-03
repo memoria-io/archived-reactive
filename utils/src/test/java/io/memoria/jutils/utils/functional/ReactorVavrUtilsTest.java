@@ -2,28 +2,42 @@ package io.memoria.jutils.utils.functional;
 
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.io.IOException;
 import java.util.function.Function;
 
+import static io.memoria.jutils.utils.functional.ReactorVavrUtils.toMono;
+import static io.memoria.jutils.utils.functional.ReactorVavrUtils.toVoidMono;
 import static io.vavr.control.Either.left;
 import static io.vavr.control.Either.right;
 
 public class ReactorVavrUtilsTest {
 
   @Test
+  public void booleanToMono() {
+    var v = toMono(() -> "hello world", new Exception("isFalse"));
+    StepVerifier.create(v.apply(true)).expectNext("hello world").expectComplete().verify();
+    StepVerifier.create(v.apply(false)).expectErrorMessage("isFalse").verify();
+  }
+
+  @Test
+  public void booleanToVoidMono() {
+    var v = toVoidMono(() -> {}, new Exception("isFalse"));
+    StepVerifier.create(v.apply(true)).expectComplete().verify();
+    StepVerifier.create(v.apply(false)).expectErrorMessage("isFalse").verify();
+  }
+
+  @Test
   public void eitherToMonoTest() {
     Either<Exception, Integer> k = right(23);
-    Mono<Integer> integerMono = ReactorVavrUtils.toMono(k);
+    Mono<Integer> integerMono = toMono(k);
     StepVerifier.create(integerMono).expectNext(23).expectComplete().verify();
 
     k = left(new Exception("exception example"));
-    integerMono = ReactorVavrUtils.toMono(k);
+    integerMono = toMono(k);
     StepVerifier.create(integerMono).expectError().verify();
   }
 
@@ -75,9 +89,9 @@ public class ReactorVavrUtilsTest {
   @Test
   public void tryToMonoTest() {
     var tSuccess = Try.success("hello");
-    StepVerifier.create(ReactorVavrUtils.toMono(tSuccess)).expectNext("hello").expectComplete().verify();
+    StepVerifier.create(toMono(tSuccess)).expectNext("hello").expectComplete().verify();
     var tFailure = Try.failure(new Exception("Exception Happened"));
-    StepVerifier.create(ReactorVavrUtils.toMono(tFailure)).expectError(Exception.class).verify();
+    StepVerifier.create(toMono(tFailure)).expectError(Exception.class).verify();
   }
 
   @Test
@@ -96,16 +110,11 @@ public class ReactorVavrUtilsTest {
   }
 
   @Test
-  @DisplayName("tryToMonoVoid test")
-  public void tryToMonoVoidsTest() {
+  public void tryToMonoVoidTest() {
     Mono<Try<String>> original = Mono.just(Try.success("one"));
     Function<String, Mono<Void>> deferredOp = (String content) -> Mono.empty();
     Function<Throwable, Mono<Void>> throwable = t -> Mono.just(Try.failure(new Exception("should not fail"))).then();
-    Mono<Void> voidMono = original.flatMap(ReactorVavrUtils.toVoidMono(deferredOp, throwable));
+    Mono<Void> voidMono = original.flatMap(toVoidMono(deferredOp, throwable));
     StepVerifier.create(voidMono).expectComplete().verify();
-  }
-
-  private void hi() throws IOException {
-    throw new IOException();
   }
 }
