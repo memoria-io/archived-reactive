@@ -3,6 +3,7 @@ package io.memoria.jutils.adapter.eventsourcing;
 import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.event.EventReadRepo;
 import io.memoria.jutils.core.eventsourcing.event.EventWriteRepo;
+import io.memoria.jutils.core.eventsourcing.state.State;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
@@ -14,14 +15,16 @@ import java.util.Queue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MemoryEventReadRepoTest {
-  private static record GreetingEvent(String value) implements Event {}
+  private static record Greeting() implements State {}
 
-  private final Map<Integer, Queue<Event>> db = new HashMap<>();
-  private final EventReadRepo<Integer, Event> readRepo = new InMemoryEventReadRepo<>(db);
-  private final EventWriteRepo<Integer, Event> writeRepo = new InMemoryEventWriteRepo<>(db);
-  private final Event e1 = new GreetingEvent("hello");
-  private final Event e2 = new GreetingEvent("Bye");
-  private final Event e3 = new GreetingEvent("Ciao");
+  private static record GreetingEvent(String value) implements Event<Greeting> {}
+
+  private final Map<Integer, Queue<GreetingEvent>> db = new HashMap<>();
+  private final EventReadRepo<Integer, GreetingEvent> readRepo = new InMemoryEventReadRepo<>(db);
+  private final EventWriteRepo<Integer, GreetingEvent> writeRepo = new InMemoryEventWriteRepo<>(db);
+  private final GreetingEvent e1 = new GreetingEvent("hello");
+  private final GreetingEvent e2 = new GreetingEvent("Bye");
+  private final GreetingEvent e3 = new GreetingEvent("Ciao");
 
   @Test
   public void add() {
@@ -50,5 +53,4 @@ public class MemoryEventReadRepoTest {
     writeRepo.add(0, e3).block();
     StepVerifier.create(readRepo.stream(0)).expectNext(e1, e2, e3).expectComplete().verify();
   }
-
 }

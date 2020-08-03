@@ -1,3 +1,5 @@
 package io.memoria.jutils.core.eventsourcing.event;
 
-public interface Event {}
+import io.memoria.jutils.core.eventsourcing.state.State;
+
+public interface Event<T extends State> {}

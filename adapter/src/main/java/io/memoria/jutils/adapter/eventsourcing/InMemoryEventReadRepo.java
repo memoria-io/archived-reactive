@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-public record InMemoryEventReadRepo<K, E extends Event>(Map<K, Queue<E>> db) implements EventReadRepo<K, E> {
+public record InMemoryEventReadRepo<K, E extends Event<?>>(Map<K, Queue<E>> db) implements EventReadRepo<K, E> {
 
   @Override
   public Mono<Boolean> exists(K k) {

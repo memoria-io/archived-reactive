@@ -8,7 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @FunctionalInterface
-public interface EventHandler<T1 extends State, T2 extends Event> extends Function2<T1, T2, T1> {
+public interface EventHandler<T1 extends State, T2 extends Event<T1>> extends Function2<T1, T2, T1> {
   default T1 apply(T1 state, Traversable<T2> events) {
     return events.foldLeft(state, this);
   }

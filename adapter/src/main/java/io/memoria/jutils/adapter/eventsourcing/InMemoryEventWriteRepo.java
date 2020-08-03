@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-public record InMemoryEventWriteRepo<K, E extends Event>(Map<K, Queue<E>> db) implements EventWriteRepo<K, E> {
+public record InMemoryEventWriteRepo<K, E extends Event<?>>(Map<K, Queue<E>> db) implements EventWriteRepo<K, E> {
   @Override
   public Mono<Void> add(K k, E e) {
     return Mono.fromRunnable(() -> {

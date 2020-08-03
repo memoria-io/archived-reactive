@@ -1,3 +1,5 @@
 package io.memoria.jutils.core.eventsourcing.cmd;
 
-public interface Command {}
+import io.memoria.jutils.core.eventsourcing.state.State;
+
+public interface Command<T extends State> {}
