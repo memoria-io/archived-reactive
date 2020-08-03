@@ -15,16 +15,21 @@ import java.util.Queue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MemoryEventReadRepoTest {
-  private static record Greeting() implements State {}
+  private static record Greeting(String value) implements State {}
 
-  private static record GreetingEvent(String value) implements Event<Greeting> {}
+  private static record GreetingCreated(String value) implements Event<Greeting> {
+    @Override
+    public Greeting apply(Greeting greeting) {
+      return new Greeting(value);
+    }
+  }
 
-  private final Map<Integer, Queue<GreetingEvent>> db = new HashMap<>();
-  private final EventReadRepo<Integer, GreetingEvent> readRepo = new InMemoryEventReadRepo<>(db);
-  private final EventWriteRepo<Integer, GreetingEvent> writeRepo = new InMemoryEventWriteRepo<>(db);
-  private final GreetingEvent e1 = new GreetingEvent("hello");
-  private final GreetingEvent e2 = new GreetingEvent("Bye");
-  private final GreetingEvent e3 = new GreetingEvent("Ciao");
+  private final Map<Integer, Queue<GreetingCreated>> db = new HashMap<>();
+  private final EventReadRepo<Integer, GreetingCreated> readRepo = new InMemoryEventReadRepo<>(db);
+  private final EventWriteRepo<Integer, GreetingCreated> writeRepo = new InMemoryEventWriteRepo<>(db);
+  private final GreetingCreated e1 = new GreetingCreated("hello");
+  private final GreetingCreated e2 = new GreetingCreated("Bye");
+  private final GreetingCreated e3 = new GreetingCreated("Ciao");
 
   @Test
   public void add() {
