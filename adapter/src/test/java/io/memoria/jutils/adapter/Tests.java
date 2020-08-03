@@ -1,4 +1,4 @@
-package io.memoria.jutils;
+package io.memoria.jutils.adapter;
 
 import io.memoria.jutils.adapter.file.LocalFileReader;
 import io.memoria.jutils.adapter.file.LocalFileWriter;

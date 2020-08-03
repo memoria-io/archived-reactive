@@ -1,6 +1,6 @@
 package io.memoria.jutils.adapter.file;
 
-import io.memoria.jutils.Tests;
+import io.memoria.jutils.adapter.Tests;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 

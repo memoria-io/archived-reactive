@@ -1,7 +1,7 @@
 package io.memoria.jutils.adapter.json;
 
 import com.google.gson.Gson;
-import io.memoria.jutils.Tests;
+import io.memoria.jutils.adapter.Tests;
 import io.memoria.jutils.core.json.Json;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

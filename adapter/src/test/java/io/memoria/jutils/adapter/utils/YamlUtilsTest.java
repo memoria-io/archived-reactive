@@ -1,6 +1,6 @@
 package io.memoria.jutils.adapter.utils;
 
-import io.memoria.jutils.Tests;
+import io.memoria.jutils.adapter.Tests;
 import io.memoria.jutils.core.yaml.Yaml;
 import io.vavr.collection.List;
 import io.vavr.control.Option;
