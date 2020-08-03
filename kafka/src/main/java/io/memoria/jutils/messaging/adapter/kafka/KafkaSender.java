@@ -12,7 +12,7 @@ import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
 
-public record KafkaSender(KafkaProducer<String, String>kafkaProducer,
+public record KafkaSender(KafkaProducer<String, String> kafkaProducer,
                           MessageFilter mf,
                           Scheduler scheduler,
                           Duration timeout) implements MsgSender {

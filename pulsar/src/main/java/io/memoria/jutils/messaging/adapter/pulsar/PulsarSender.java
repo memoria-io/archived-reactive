@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 import static io.vavr.control.Option.some;
 
-public record PulsarSender(Producer<String>producer) implements MsgSender {
+public record PulsarSender(Producer<String> producer) implements MsgSender {
 
   @Override
   public Mono<Response> apply(Message message) {

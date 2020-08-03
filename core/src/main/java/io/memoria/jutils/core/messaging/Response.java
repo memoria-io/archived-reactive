@@ -7,7 +7,7 @@ import io.vavr.control.Option;
 import static io.vavr.control.Option.none;
 import static io.vavr.control.Option.some;
 
-public record Response(Option<Long>id, Option<String>reply, Map<String, String>meta) {
+public record Response(Option<Long> id, Option<String> reply, Map<String, String> meta) {
   public static Response empty() {
     return new Response();
   }

@@ -5,7 +5,7 @@ import io.vavr.control.Option;
 import static io.vavr.control.Option.none;
 import static io.vavr.control.Option.some;
 
-public record Message(String value, Option<Long>id) {
+public record Message(String value, Option<Long> id) {
 
   public Message(String value) {
     this(value, none());

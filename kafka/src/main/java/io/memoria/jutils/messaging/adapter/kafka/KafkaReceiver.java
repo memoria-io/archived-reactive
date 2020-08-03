@@ -13,7 +13,7 @@ import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
 
-public record KafkaReceiver(KafkaConsumer<String, String>consumer,
+public record KafkaReceiver(KafkaConsumer<String, String> consumer,
                             MessageFilter mf,
                             Scheduler scheduler,
                             Duration timeout) implements MsgReceiver {

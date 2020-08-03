@@ -12,7 +12,7 @@ import java.time.Duration;
 import static io.vavr.control.Option.none;
 import static io.vavr.control.Option.some;
 
-public record PulsarReceiver(Consumer<String>consumer, Duration frequency) implements MsgReceiver {
+public record PulsarReceiver(Consumer<String> consumer, Duration frequency) implements MsgReceiver {
 
   @Override
   public Flux<Message> get() {

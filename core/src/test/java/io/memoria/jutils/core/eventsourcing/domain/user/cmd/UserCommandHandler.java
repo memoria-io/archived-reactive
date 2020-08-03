@@ -2,42 +2,41 @@ package io.memoria.jutils.core.eventsourcing.domain.user.cmd;
 
 import io.memoria.jutils.core.eventsourcing.cmd.CommandHandler;
 import io.memoria.jutils.core.eventsourcing.domain.user.User;
+import io.memoria.jutils.core.eventsourcing.domain.user.cmd.UserCommand.AddFriend;
+import io.memoria.jutils.core.eventsourcing.domain.user.cmd.UserCommand.SendMessage;
 import io.memoria.jutils.core.eventsourcing.domain.user.event.UserEvent.FriendAdded;
 import io.memoria.jutils.core.eventsourcing.domain.user.event.UserEvent.MessageCreated;
 import io.memoria.jutils.core.eventsourcing.event.Event;
-import io.vavr.API;
-import io.vavr.collection.List;
-import io.vavr.control.Try;
+import reactor.core.publisher.Flux;
 
-import static io.memoria.jutils.core.Err.AlreadyExists.ALREADY_EXISTS;
-import static io.memoria.jutils.core.Err.NotFound.NOT_FOUND;
-import static io.vavr.API.Match;
-import static io.vavr.Predicates.instanceOf;
+import static io.memoria.jutils.core.JutilsException.AlreadyExists.ALREADY_EXISTS;
+import static io.memoria.jutils.core.JutilsException.NotFound.NOT_FOUND;
 
-public class UserCommandHandler implements CommandHandler<User, UserCommand, Event> {
+public record UserCommandHandler() implements CommandHandler<User, UserCommand, Event> {
 
   @Override
-  public Try<List<Event>> apply(User user, UserCommand userCommand) {
-    return Match(userCommand).of(API.Case(API.$(instanceOf(UserCommand.SendMessage.class)), c -> sendMessage(user, c)),
-                                 API.Case(API.$(instanceOf(UserCommand.AddFriend.class)), c -> addFriend(user, c)));
+  public Flux<Event> apply(User user, UserCommand userCommand) {
+    if (userCommand instanceof SendMessage cmd)
+      return sendMessage(user, cmd);
+    if (userCommand instanceof AddFriend cmd)
+      return addFriend(user, cmd);
+    return Flux.error(new Exception("Unknown command"));
   }
 
-  private static Try<List<Event>> addFriend(User user, UserCommand.AddFriend m) {
-    return validateAddFriend(user, m).map(v -> List.of(new FriendAdded(m.userId(), m.friendId())));
+  private Flux<Event> addFriend(User user, AddFriend m) {
+    if (user.canAddFriend(m.friendId())) {
+      return Flux.just(new FriendAdded(m.userId(), m.friendId()));
+    } else {
+      return Flux.error(ALREADY_EXISTS);
+    }
   }
 
-  private static Try<List<Event>> sendMessage(User user, UserCommand.SendMessage m) {
-    return validateSendMessage(user, m).map(v -> {
+  private Flux<Event> sendMessage(User user, SendMessage m) {
+    if (user.canSendMessageTo(m.toUserId())) {
       var created = new MessageCreated("messageId", m.fromUserId(), m.toUserId(), m.message());
-      return List.of(created);
-    });
-  }
-
-  private static Try<Void> validateAddFriend(User user, UserCommand.AddFriend m) {
-    return (user.friends().contains(m.friendId())) ? Try.failure(ALREADY_EXISTS) : Try.success(null);
-  }
-
-  private static Try<Void> validateSendMessage(User user, UserCommand.SendMessage m) {
-    return (user.friends().contains(m.toUserId())) ? Try.success(null) : Try.failure(NOT_FOUND);
+      return Flux.just(created);
+    } else {
+      return Flux.error(NOT_FOUND);
+    }
   }
 }
