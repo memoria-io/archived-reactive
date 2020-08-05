@@ -1,6 +1,5 @@
 package io.memoria.jutils.core.eventsourcing.domain.user;
 
-import io.memoria.jutils.core.eventsourcing.User;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.Set;
 

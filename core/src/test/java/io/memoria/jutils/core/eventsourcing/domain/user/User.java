@@ -1,4 +1,4 @@
-package io.memoria.jutils.core.eventsourcing;
+package io.memoria.jutils.core.eventsourcing.domain.user;
 
 import io.memoria.jutils.core.eventsourcing.state.State;
 

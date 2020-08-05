@@ -17,8 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MemoryEventReadRepoTest {
   private static record Greeting(String value) implements State {}
 
-  private static record GreetingCreated(String value) implements Event<Greeting> {
-    @Override
+  private static record GreetingCreated(String value) implements Event {
     public Greeting apply(Greeting greeting) {
       return new Greeting(value);
     }
