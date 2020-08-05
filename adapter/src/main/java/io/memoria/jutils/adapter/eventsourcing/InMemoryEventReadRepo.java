@@ -2,6 +2,7 @@ package io.memoria.jutils.adapter.eventsourcing;
 
 import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.event.EventReadRepo;
+import io.memoria.jutils.core.eventsourcing.state.State;
 import io.vavr.control.Option;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -10,7 +11,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-public record InMemoryEventReadRepo<K, E extends Event<?>>(Map<K, Queue<E>> db) implements EventReadRepo<K, E> {
+public record InMemoryEventReadRepo<K, E extends Event<? extends State>>(Map<K, Queue<E>> db)
+        implements EventReadRepo<K, E> {
 
   @Override
   public Mono<Boolean> exists(K k) {
