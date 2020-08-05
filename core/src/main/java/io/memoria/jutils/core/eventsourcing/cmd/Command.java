@@ -6,6 +6,5 @@ import io.vavr.Function1;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 
-public interface Command<T extends State, R extends Event<T>> extends Function1<T, Try<List<R>>> {
-  Try<List<R>> apply(T t);
-}
+@FunctionalInterface
+public interface Command<T extends State, R extends Event<T>> extends Function1<T, Try<List<R>>> {}
