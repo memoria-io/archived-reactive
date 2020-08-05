@@ -3,9 +3,9 @@ package io.memoria.jutils.core.eventsourcing.domain.user;
 import io.memoria.jutils.core.eventsourcing.event.Event;
 
 public interface UserEvent extends Event {
-  record OnlineUserCreated(String id, int age) implements UserEvent {
+  record OnlineUserCreated(String userId, int age) implements UserEvent {
     public User apply() {
-      return new OnlineUser(id, age);
+      return new OnlineUser(userId, age);
     }
   }
 
@@ -15,9 +15,16 @@ public interface UserEvent extends Event {
     }
   }
 
-  record MessageCreated(String messageId, String from, String to, String body) implements UserEvent {
+  record MessageReceived(String userId, String messageId, String from, String body) implements UserEvent {
     public User apply(OnlineUser onlineUser) {
-      return onlineUser.withNewMessage(new Message(messageId, from, to, body));
+      return onlineUser.withNewMessage(new Message(messageId, from, userId, body));
     }
+  }
+
+  String userId();
+
+  @Override
+  default String aggId() {
+    return userId();
   }
 }

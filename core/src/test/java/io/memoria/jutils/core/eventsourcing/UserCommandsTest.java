@@ -4,7 +4,7 @@ import io.memoria.jutils.core.eventsourcing.domain.user.OnlineUser;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserCommand.AddFriend;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserCommand.SendMessage;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.FriendAdded;
-import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.MessageCreated;
+import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.MessageReceived;
 import io.vavr.collection.HashSet;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
@@ -16,7 +16,7 @@ public class UserCommandsTest {
   private static final String BOB_NAME = "bob";
   private static final int ALEX_AGE = 19;
   private static final OnlineUser ALEX = new OnlineUser(ALEX_NAME, ALEX_AGE);
-  private static final MessageCreated MESSAGE_CREATED = new MessageCreated("messageId", ALEX_NAME, BOB_NAME, "Hello");
+  private static final MessageReceived MESSAGE_CREATED = new MessageReceived(ALEX_NAME, "messageId", BOB_NAME, "Hello");
   private static final AddFriend ADD_FRIEND = new AddFriend(ALEX_NAME, BOB_NAME);
 
   @Test

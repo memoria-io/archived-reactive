@@ -1,3 +1,5 @@
 package io.memoria.jutils.core.eventsourcing.event;
 
-public interface Event {}
+public interface Event {
+  String aggId();
+}

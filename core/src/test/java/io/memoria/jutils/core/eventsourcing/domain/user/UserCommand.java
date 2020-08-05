@@ -2,7 +2,7 @@ package io.memoria.jutils.core.eventsourcing.domain.user;
 
 import io.memoria.jutils.core.eventsourcing.cmd.Command;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.FriendAdded;
-import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.MessageCreated;
+import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.MessageReceived;
 import reactor.core.publisher.Flux;
 
 import static io.memoria.jutils.core.JutilsException.AlreadyExists.ALREADY_EXISTS;
@@ -21,7 +21,7 @@ public interface UserCommand extends Command {
   record SendMessage(String userId, String friendId, String message) implements UserCommand {
     public Flux<UserEvent> apply(OnlineUser onlineUser, String messageId) {
       if (onlineUser.canSendMessageTo(friendId()))
-        return Flux.just(new MessageCreated(messageId, userId(), friendId(), message()));
+        return Flux.just(new MessageReceived(messageId, userId(), friendId(), message()));
       else
         return Flux.error(NOT_FOUND);
     }

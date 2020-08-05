@@ -5,11 +5,10 @@ import io.memoria.jutils.core.eventsourcing.domain.user.OnlineUser;
 import io.memoria.jutils.core.eventsourcing.domain.user.User;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.FriendAdded;
-import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.MessageCreated;
+import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.MessageReceived;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.OnlineUserCreated;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserEventHandler;
 import io.vavr.collection.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
@@ -24,14 +23,17 @@ public class UserEventsTest {
   private static final int ALEX_AGE = 19;
   private static final OnlineUser ALEX = new OnlineUser(ALEX_NAME, ALEX_AGE);
   private static final OnlineUserCreated ONLINE_USER_CREATED = new OnlineUserCreated(ALEX_NAME, ALEX_AGE);
-  private static final MessageCreated MESSAGE_CREATED = new MessageCreated("messageId", ALEX_NAME, BOB_NAME, "Hello");
+  private static final MessageReceived MESSAGE_RECEIVED = new MessageReceived(ALEX_NAME,
+                                                                              "messageId",
+                                                                              BOB_NAME,
+                                                                              "Hello");
   private static final FriendAdded FRIEND_ADDED = new FriendAdded(ALEX_NAME, BOB_NAME);
-  private static final Message MESSAGE = new Message("messageId", ALEX_NAME, BOB_NAME, "Hello");
+  private static final Message MESSAGE = new Message("messageId", BOB_NAME, ALEX_NAME, "Hello");
 
   @Test
   public void eventsFlux() {
     // Given
-    Flux<UserEvent> events = Flux.just(FRIEND_ADDED, MESSAGE_CREATED);
+    Flux<UserEvent> events = Flux.just(FRIEND_ADDED, MESSAGE_RECEIVED);
     // When
     var newAlexState = events.reduce(ALEX, eventHandler);
     // Then
@@ -42,7 +44,7 @@ public class UserEventsTest {
   @Test
   public void eventsList() {
     // Given
-    var events = List.of(ONLINE_USER_CREATED, FRIEND_ADDED, MESSAGE_CREATED);
+    var events = List.of(ONLINE_USER_CREATED, FRIEND_ADDED, MESSAGE_RECEIVED);
     // When
     var newAlexState = events.foldLeft(new User() {}, eventHandler);
     // Then
@@ -63,9 +65,9 @@ public class UserEventsTest {
     // Given
     var alex = ALEX.withNewFriend(BOB_NAME);
     // When
-    var newAlexState = MESSAGE_CREATED.apply(alex);
+    var newAlexState = MESSAGE_RECEIVED.apply(alex);
     // Then
-    var expectedAlex = alex.withNewMessage(new Message("messageId", ALEX_NAME, BOB_NAME, "Hello"));
+    var expectedAlex = alex.withNewMessage(MESSAGE);
     assertThat(newAlexState).isEqualTo(expectedAlex);
   }
 }
