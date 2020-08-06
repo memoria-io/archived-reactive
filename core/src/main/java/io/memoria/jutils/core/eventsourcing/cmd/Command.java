@@ -1,3 +1,5 @@
 package io.memoria.jutils.core.eventsourcing.cmd;
 
-public interface Command {}
+public interface Command {
+  String aggId();
+}

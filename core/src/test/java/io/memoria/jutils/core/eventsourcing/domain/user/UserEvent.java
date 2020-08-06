@@ -3,28 +3,21 @@ package io.memoria.jutils.core.eventsourcing.domain.user;
 import io.memoria.jutils.core.eventsourcing.event.Event;
 
 public interface UserEvent extends Event {
-  record OnlineUserCreated(String userId, int age) implements UserEvent {
+  record OnlineUserCreated(String aggId, int age) implements UserEvent {
     public User apply() {
-      return new OnlineUser(userId, age);
+      return new OnlineUser(aggId, age);
     }
   }
 
-  record FriendAdded(String userId, String friendId) implements UserEvent {
+  record FriendAdded(String aggId, String friendId) implements UserEvent {
     public User apply(OnlineUser onlineUser) {
       return onlineUser.withNewFriend(friendId);
     }
   }
 
-  record MessageReceived(String userId, String messageId, String from, String body) implements UserEvent {
+  record MessageSent(String aggId, String messageId, String to, String body) implements UserEvent {
     public User apply(OnlineUser onlineUser) {
-      return onlineUser.withNewMessage(new Message(messageId, from, userId, body));
+      return onlineUser.withNewMessage(new Message(messageId, aggId, to, body));
     }
-  }
-
-  String userId();
-
-  @Override
-  default String aggId() {
-    return userId();
   }
 }

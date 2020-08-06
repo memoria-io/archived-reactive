@@ -3,36 +3,55 @@ package io.memoria.jutils.core.eventsourcing;
 import io.memoria.jutils.core.eventsourcing.domain.user.OnlineUser;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserCommand.AddFriend;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserCommand.SendMessage;
-import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.FriendAdded;
-import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.MessageReceived;
-import io.vavr.collection.HashSet;
+import io.memoria.jutils.core.eventsourcing.domain.user.UserCommandHandler;
+import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.MessageSent;
+import io.memoria.jutils.core.eventsourcing.domain.user.UserEventHandler;
+import io.memoria.jutils.core.generator.IdGenerator;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.memoria.jutils.core.JutilsException.AlreadyExists.ALREADY_EXISTS;
 
 public class UserCommandsTest {
+  // CommandHandler
+  private static final AtomicInteger atomicInteger = new AtomicInteger();
+  private static final IdGenerator idGen = () -> "1";
+  private static final UserCommandHandler handler = new UserCommandHandler(idGen);
+  // Data
   private static final String ALEX_NAME = "alex";
   private static final String BOB_NAME = "bob";
   private static final int ALEX_AGE = 19;
   private static final OnlineUser ALEX = new OnlineUser(ALEX_NAME, ALEX_AGE);
-  private static final MessageReceived MESSAGE_CREATED = new MessageReceived(ALEX_NAME, "messageId", BOB_NAME, "Hello");
+  // Commands
   private static final AddFriend ADD_FRIEND = new AddFriend(ALEX_NAME, BOB_NAME);
+  private static final SendMessage SEND_MESSAGE = new SendMessage(ALEX_NAME, BOB_NAME, "hello");
+  private static final MessageSent MESSAGE_SENT = new MessageSent(ALEX_NAME, idGen.get(), BOB_NAME, "hello");
 
   @Test
-  public void addFriendTest() {
-    var events = ADD_FRIEND.apply(ALEX);
-    StepVerifier.create(events).expectNext(new FriendAdded(ALEX_NAME, BOB_NAME));
+  public void shouldAddFriend() {
+    // When
+    var events = handler.apply(ALEX, ADD_FRIEND);
+    var userMono = new UserEventHandler().apply(ALEX, events);
+    // Then
+    StepVerifier.create(userMono).expectNext(ALEX.withNewFriend(BOB_NAME)).expectComplete().verify();
+  }
 
-    var otherUser = new OnlineUser(ALEX_NAME, ALEX_AGE, HashSet.of(BOB_NAME), HashSet.empty());
-    var otherEvents = ADD_FRIEND.apply(otherUser);
-    StepVerifier.create(otherEvents).expectError(ALREADY_EXISTS.getClass());
+  @Test
+  public void shouldNotAddFriend() {
+    var events = handler.apply(ALEX.withNewFriend(BOB_NAME), ADD_FRIEND);
+    var userMono = new UserEventHandler().apply(ALEX, events);
+    StepVerifier.create(userMono).expectError(ALREADY_EXISTS.getClass()).verify();
   }
 
   @Test
   public void sendMessage() {
-    var user = new OnlineUser(ALEX_NAME, ALEX_AGE, HashSet.of(BOB_NAME), HashSet.empty());
-    var events = new SendMessage(ALEX_NAME, BOB_NAME, "hello").apply(user, "messageId");
-    StepVerifier.create(events).expectNext(MESSAGE_CREATED);
+    // Given
+    var alexWithFriend = ALEX.withNewFriend(BOB_NAME);
+    // When
+    var events = handler.apply(alexWithFriend, SEND_MESSAGE);
+    // Then
+    StepVerifier.create(events).expectNext(MESSAGE_SENT).expectComplete().verify();
   }
 }
