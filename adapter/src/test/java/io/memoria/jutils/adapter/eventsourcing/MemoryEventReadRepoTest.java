@@ -15,16 +15,16 @@ import java.util.Queue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MemoryEventReadRepoTest {
-  private static record Greeting(String value) implements State {}
+  private static record Greeting(String id, String value) implements State {}
 
-  private static record GreetingCreated(String aggId, String value) implements Event {}
+  private static record GreetingCreated(String id, String aggId, String value) implements Event {}
 
   private final Map<Integer, Queue<GreetingCreated>> db = new HashMap<>();
   private final EventReadRepo<Integer, GreetingCreated> readRepo = new InMemoryEventReadRepo<>(db);
   private final EventWriteRepo<Integer, GreetingCreated> writeRepo = new InMemoryEventWriteRepo<>(db);
-  private final GreetingCreated e1 = new GreetingCreated("0", "hello");
-  private final GreetingCreated e2 = new GreetingCreated("1", "Bye");
-  private final GreetingCreated e3 = new GreetingCreated("1", "Ciao");
+  private final GreetingCreated e1 = new GreetingCreated("0", "0", "hello");
+  private final GreetingCreated e2 = new GreetingCreated("1", "1", "Bye");
+  private final GreetingCreated e3 = new GreetingCreated("2", "1", "Ciao");
 
   @Test
   public void add() {
@@ -52,23 +52,5 @@ public class MemoryEventReadRepoTest {
     writeRepo.add(0, e2).block();
     writeRepo.add(0, e3).block();
     StepVerifier.create(readRepo.stream(0)).expectNext(e1, e2, e3).expectComplete().verify();
-  }
-
-  @Test
-  public void filterByAggregateId() {
-    writeRepo.add(0, e1).block();
-    writeRepo.add(0, e2).block();
-    writeRepo.add(0, e3).block();
-    StepVerifier.create(readRepo.filter(0, "0")).expectNext(e1).expectComplete().verify();
-    StepVerifier.create(readRepo.filter(0, "1")).expectNext(e2, e3).expectComplete().verify();
-  }
-
-  @Test
-  public void findFirstByAggregateId() {
-    writeRepo.add(0, e1).block();
-    writeRepo.add(0, e2).block();
-    writeRepo.add(0, e3).block();
-    StepVerifier.create(readRepo.first(0, "0")).expectNext(e1).expectComplete().verify();
-    StepVerifier.create(readRepo.first(0, "1")).expectNext(e2).expectComplete().verify();
   }
 }

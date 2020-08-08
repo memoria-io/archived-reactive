@@ -18,16 +18,6 @@ public record InMemoryEventReadRepo<K, E extends Event>(Map<K, Queue<E>> db) imp
   }
 
   @Override
-  public Flux<E> filter(K k, String aggregateId) {
-    return stream(k).filter(e -> e.aggId().equals(aggregateId));
-  }
-
-  @Override
-  public Mono<E> first(K k, String aggregateId) {
-    return filter(k, aggregateId).next();
-  }
-
-  @Override
   public Flux<E> stream(K k) {
     return Mono.fromCallable(() -> Option.of(db.get(k)))
                .map(o -> o.getOrElse(new LinkedList<>()))

@@ -1,7 +1,6 @@
 package io.memoria.jutils.core.eventsourcing;
 
 import io.memoria.jutils.core.eventsourcing.domain.user.Message;
-import io.memoria.jutils.core.eventsourcing.domain.user.OnlineUser;
 import io.memoria.jutils.core.eventsourcing.domain.user.User;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.FriendAdded;
@@ -20,13 +19,10 @@ public class UserEventsTest {
   private static final String ALEX_NAME = "alex";
   private static final String BOB_NAME = "bob";
   private static final int ALEX_AGE = 19;
-  private static final OnlineUser ALEX = new OnlineUser(ALEX_NAME, ALEX_AGE);
-  private static final MessageSent MESSAGE_SENT = new MessageSent(ALEX_NAME,
-                                                                  "messageId",
-                                                                  BOB_NAME,
-                                                                  "Hello");
-  private static final FriendAdded FRIEND_ADDED = new FriendAdded(ALEX_NAME, BOB_NAME);
-  private static final Message MESSAGE = new Message("messageId", ALEX_NAME,BOB_NAME, "Hello");
+  private static final User ALEX = new User(ALEX_NAME, ALEX_AGE);
+  private static final Message MESSAGE = new Message("messageId", ALEX_NAME, BOB_NAME, "Hello");
+  private static final MessageSent MESSAGE_SENT = new MessageSent("0", MESSAGE);
+  private static final FriendAdded FRIEND_ADDED = new FriendAdded("0", BOB_NAME);
 
   @Test
   public void eventsFlux() {
@@ -35,7 +31,7 @@ public class UserEventsTest {
     // When
     var newAlexState = events.reduce(ALEX, eventHandler);
     // Then
-    var expectedAlex = ALEX.withNewFriend(BOB_NAME).withNewMessage(MESSAGE);
+    var expectedAlex = ALEX.withNewFriend(BOB_NAME).withNewMessage(MESSAGE.id());
     StepVerifier.create(newAlexState).expectNext(expectedAlex).expectComplete().verify();
   }
 
@@ -46,14 +42,14 @@ public class UserEventsTest {
     // When
     var newAlexState = events.foldLeft(ALEX, eventHandler);
     // Then
-    var expectedAlex = ALEX.withNewFriend(BOB_NAME).withNewMessage(MESSAGE);
+    var expectedAlex = ALEX.withNewFriend(BOB_NAME).withNewMessage(MESSAGE.id());
     assertThat(newAlexState).isEqualTo(expectedAlex);
   }
 
   @Test
   public void friendAddedTest() {
     // When
-    var alex = new FriendAdded(ALEX_NAME, BOB_NAME).apply(ALEX);
+    var alex = FRIEND_ADDED.apply(ALEX);
     // Then
     assertThat(alex).isEqualTo(ALEX.withNewFriend(BOB_NAME));
   }
@@ -65,7 +61,7 @@ public class UserEventsTest {
     // When
     var newAlexState = MESSAGE_SENT.apply(alex);
     // Then
-    var expectedAlex = alex.withNewMessage(MESSAGE);
+    var expectedAlex = alex.withNewMessage(MESSAGE.id());
     assertThat(newAlexState).isEqualTo(expectedAlex);
   }
 }

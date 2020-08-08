@@ -1,6 +1,7 @@
 package io.memoria.jutils.core.eventsourcing;
 
-import io.memoria.jutils.core.eventsourcing.domain.user.OnlineUser;
+import io.memoria.jutils.core.eventsourcing.domain.user.Message;
+import io.memoria.jutils.core.eventsourcing.domain.user.User;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserCommand.AddFriend;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserCommand.SendMessage;
 import io.memoria.jutils.core.eventsourcing.domain.user.UserCommandHandler;
@@ -17,17 +18,18 @@ import static io.memoria.jutils.core.JutilsException.AlreadyExists.ALREADY_EXIST
 public class UserCommandsTest {
   // CommandHandler
   private static final AtomicInteger atomicInteger = new AtomicInteger();
-  private static final IdGenerator idGen = () -> "1";
+  private static final IdGenerator idGen = () -> "0";
   private static final UserCommandHandler handler = new UserCommandHandler(idGen);
   // Data
   private static final String ALEX_NAME = "alex";
   private static final String BOB_NAME = "bob";
   private static final int ALEX_AGE = 19;
-  private static final OnlineUser ALEX = new OnlineUser(ALEX_NAME, ALEX_AGE);
+  private static final User ALEX = new User(ALEX_NAME, ALEX_AGE);
   // Commands
-  private static final AddFriend ADD_FRIEND = new AddFriend(ALEX_NAME, BOB_NAME);
-  private static final SendMessage SEND_MESSAGE = new SendMessage(ALEX_NAME, BOB_NAME, "hello");
-  private static final MessageSent MESSAGE_SENT = new MessageSent(ALEX_NAME, idGen.get(), BOB_NAME, "hello");
+  private static final AddFriend ADD_FRIEND = new AddFriend(BOB_NAME);
+  private static final SendMessage SEND_MESSAGE = new SendMessage(BOB_NAME, "hello");
+  private static final Message MESSAGE = new Message("0", ALEX_NAME, BOB_NAME, "hello");
+  private static final MessageSent MESSAGE_SENT = new MessageSent("0", MESSAGE);
 
   @Test
   public void shouldAddFriend() {
