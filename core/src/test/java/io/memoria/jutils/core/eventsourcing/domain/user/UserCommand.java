@@ -13,7 +13,7 @@ public interface UserCommand extends Command {
   record AddFriend(String friendId) implements UserCommand {
     Flux<UserEvent> apply(User user, IdGenerator idGenerator) {
       if (user.canAddFriend(friendId))
-        return Flux.just(new FriendAdded(idGenerator.get(), friendId()));
+        return Flux.just(new FriendAdded(idGenerator.get(), user.id(), friendId()));
       else
         return Flux.error(ALREADY_EXISTS);
     }
@@ -23,6 +23,7 @@ public interface UserCommand extends Command {
     Flux<UserEvent> apply(User user, IdGenerator idGenerator) {
       if (user.canSendMessageTo(toFriendId))
         return Flux.just(new MessageSent(idGenerator.get(),
+                                         user.id(),
                                          new Message(idGenerator.get(), user.id(), toFriendId, messageBody)));
       else
         return Flux.error(NOT_FOUND);

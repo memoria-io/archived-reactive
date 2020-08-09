@@ -29,7 +29,17 @@ public class UserCommandsTest {
   private static final AddFriend ADD_FRIEND = new AddFriend(BOB_NAME);
   private static final SendMessage SEND_MESSAGE = new SendMessage(BOB_NAME, "hello");
   private static final Message MESSAGE = new Message("0", ALEX_NAME, BOB_NAME, "hello");
-  private static final MessageSent MESSAGE_SENT = new MessageSent("0", MESSAGE);
+  private static final MessageSent MESSAGE_SENT = new MessageSent("0", ALEX.id(), MESSAGE);
+
+  @Test
+  public void sendMessage() {
+    // Given
+    var alexWithFriend = ALEX.withNewFriend(BOB_NAME);
+    // When
+    var events = handler.apply(alexWithFriend, SEND_MESSAGE);
+    // Then
+    StepVerifier.create(events).expectNext(MESSAGE_SENT).expectComplete().verify();
+  }
 
   @Test
   public void shouldAddFriend() {
@@ -45,15 +55,5 @@ public class UserCommandsTest {
     var events = handler.apply(ALEX.withNewFriend(BOB_NAME), ADD_FRIEND);
     var userMono = new UserEventHandler().apply(ALEX, events);
     StepVerifier.create(userMono).expectError(ALREADY_EXISTS.getClass()).verify();
-  }
-
-  @Test
-  public void sendMessage() {
-    // Given
-    var alexWithFriend = ALEX.withNewFriend(BOB_NAME);
-    // When
-    var events = handler.apply(alexWithFriend, SEND_MESSAGE);
-    // Then
-    StepVerifier.create(events).expectNext(MESSAGE_SENT).expectComplete().verify();
   }
 }

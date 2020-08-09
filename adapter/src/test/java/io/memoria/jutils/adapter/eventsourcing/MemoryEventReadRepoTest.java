@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MemoryEventReadRepoTest {
   private static record Greeting(String id, String value) implements State {}
 
-  private static record GreetingCreated(String id, String aggId, String value) implements Event {}
+  private static record GreetingCreated(String eventId, String aggId, String value) implements Event {}
 
   private final Map<Integer, Queue<GreetingCreated>> db = new HashMap<>();
   private final EventReadRepo<Integer, GreetingCreated> readRepo = new InMemoryEventReadRepo<>(db);
@@ -33,6 +33,24 @@ public class MemoryEventReadRepoTest {
     assertThat(db.get(0)).isNull();
     assertThat(db.get(1).peek()).isEqualTo(e1);
     assertThat(db.get(2).peek()).isEqualTo(e2);
+  }
+
+  @Test
+  public void aggExists() {
+    writeRepo.add(0, e1).block();
+    writeRepo.add(0, e2).block();
+    writeRepo.add(0, e3).block();
+    StepVerifier.create(readRepo.aggExists(0, "1")).expectNext(true).expectComplete().verify();
+    StepVerifier.create(readRepo.aggExists(0, "100")).expectNext(false).expectComplete().verify();
+  }
+
+  @Test
+  public void aggStream() {
+    writeRepo.add(0, e1).block();
+    writeRepo.add(0, e2).block();
+    writeRepo.add(0, e3).block();
+    StepVerifier.create(readRepo.aggStream(0, "0")).expectNext(e1).expectComplete().verify();
+    StepVerifier.create(readRepo.aggStream(0, "1")).expectNext(e2, e3).expectComplete().verify();
   }
 
   @BeforeEach
