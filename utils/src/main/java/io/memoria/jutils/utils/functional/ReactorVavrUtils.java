@@ -1,6 +1,7 @@
 package io.memoria.jutils.utils.functional;
 
 import io.vavr.control.Either;
+import io.vavr.control.Option;
 import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -29,6 +30,10 @@ public final class ReactorVavrUtils {
     } else {
       return Mono.error(t.getCause());
     }
+  }
+
+  public static <T> Mono<T> toMono(Option<T> option, Throwable throwable) {
+    return (option.isDefined()) ? Mono.just(option.get()) : Mono.error(throwable);
   }
 
   public static <T> Function<Boolean, Mono<T>> toMono(Callable<T> t, Throwable throwable) {

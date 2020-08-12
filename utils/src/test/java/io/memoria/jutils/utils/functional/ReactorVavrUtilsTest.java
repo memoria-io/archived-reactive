@@ -1,5 +1,6 @@
 package io.memoria.jutils.utils.functional;
 
+import io.memoria.jutils.core.JutilsException.NotFound;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,8 @@ import static io.memoria.jutils.utils.functional.ReactorVavrUtils.toMono;
 import static io.memoria.jutils.utils.functional.ReactorVavrUtils.toVoidMono;
 import static io.vavr.control.Either.left;
 import static io.vavr.control.Either.right;
+import static io.vavr.control.Option.none;
+import static io.vavr.control.Option.some;
 
 public class ReactorVavrUtilsTest {
 
@@ -69,6 +72,19 @@ public class ReactorVavrUtilsTest {
     Function<String, Mono<Try<String>>> opError = t -> Mono.just(Try.failure(new Exception("should fail")));
     tryMono = tryMono.flatMap(ReactorVavrUtils.toTryMono(opError));
     StepVerifier.create(tryMono).expectNextMatches(Try::isFailure).expectComplete().verify();
+  }
+
+  @Test
+  public void toMonoFromOption() {
+    // Given
+    var som = some(20);
+    var non = none();
+    // When
+    var somMono = toMono(som, NotFound.NOT_FOUND);
+    var nonMono = toMono(non, NotFound.NOT_FOUND);
+    // Then
+    StepVerifier.create(somMono).expectNext(20).expectComplete().verify();
+    StepVerifier.create(nonMono).expectError(NotFound.class).verify();
   }
 
   @Test

@@ -1,4 +1,4 @@
-package io.memoria.jutils.adapter.memory;
+package io.memoria.jutils.adapter.crud;
 
 import io.memoria.jutils.core.crud.ReadRepo;
 import io.vavr.control.Option;

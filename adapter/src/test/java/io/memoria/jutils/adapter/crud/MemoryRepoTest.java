@@ -1,4 +1,4 @@
-package io.memoria.jutils.adapter.memory;
+package io.memoria.jutils.adapter.crud;
 
 import io.memoria.jutils.core.JutilsException.AlreadyExists;
 import io.memoria.jutils.core.JutilsException.NotFound;

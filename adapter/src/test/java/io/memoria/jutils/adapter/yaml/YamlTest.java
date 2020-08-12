@@ -1,4 +1,4 @@
-package io.memoria.jutils.adapter.utils;
+package io.memoria.jutils.adapter.yaml;
 
 import io.memoria.jutils.adapter.Tests;
 import io.memoria.jutils.core.yaml.Yaml;
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class YamlUtilsTest {
+public class YamlTest {
 
   private final Yaml configMap = Objects.requireNonNull(Tests.FILE_READER.yaml(resourcePath("utils/test.yaml").get())
                                                                          .block());
