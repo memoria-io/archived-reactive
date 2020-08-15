@@ -10,16 +10,16 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-public record InMemoryEventReadRepo<K, E extends Event>(Map<K, Queue<E>> db) implements EventReadRepo<K, E> {
+public record InMemoryEventReadRepo<E extends Event>(Map<String, Queue<E>> db) implements EventReadRepo<E> {
 
   @Override
-  public Mono<Boolean> exists(K k) {
-    return Mono.fromCallable(() -> db.containsKey(k));
+  public Mono<Boolean> exists(String streamId) {
+    return Mono.fromCallable(() -> db.containsKey(streamId));
   }
 
   @Override
-  public Flux<E> stream(K k) {
-    return Mono.fromCallable(() -> Option.of(db.get(k)))
+  public Flux<E> stream(String streamId) {
+    return Mono.fromCallable(() -> Option.of(db.get(streamId)))
                .map(o -> o.getOrElse(new LinkedList<>()))
                .flatMapMany(Flux::fromIterable);
   }

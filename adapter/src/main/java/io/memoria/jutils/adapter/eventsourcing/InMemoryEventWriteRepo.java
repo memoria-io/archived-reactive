@@ -8,14 +8,14 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-public record InMemoryEventWriteRepo<K, E extends Event>(Map<K, Queue<E>> db) implements EventWriteRepo<K, E> {
+public record InMemoryEventWriteRepo<E extends Event>(Map<String, Queue<E>> db) implements EventWriteRepo<E> {
   @Override
-  public Mono<Void> add(K k, E e) {
+  public Mono<Void> add(String streamId, E e) {
     return Mono.fromRunnable(() -> {
-      if (!db.containsKey(k)) {
-        db.put(k, new LinkedList<>());
+      if (!db.containsKey(streamId)) {
+        db.put(streamId, new LinkedList<>());
       }
-      db.get(k).add(e);
+      db.get(streamId).add(e);
     });
   }
 }
