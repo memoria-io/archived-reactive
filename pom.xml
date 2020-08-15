@@ -5,11 +5,11 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jbom</artifactId>
-        <version>0.7.4</version>
+        <version>0.7.5</version>
     </parent>
 
     <artifactId>jutils</artifactId>
-    <version>0.113.0</version>
+    <version>0.114.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
