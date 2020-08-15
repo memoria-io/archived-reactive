@@ -5,10 +5,10 @@ import io.memoria.jutils.core.eventsourcing.event.EventWriteRepo;
 import reactor.core.publisher.Mono;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
-public record InMemoryEventWriteRepo<E extends Event>(Map<String, Queue<E>> db) implements EventWriteRepo<E> {
+public record InMemoryEventWriteRepo<E extends Event>(Map<String, List<E>> db) implements EventWriteRepo<E> {
   @Override
   public Mono<Void> add(String streamId, E e) {
     return Mono.fromRunnable(() -> {

@@ -7,10 +7,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
-public record InMemoryEventReadRepo<E extends Event>(Map<String, Queue<E>> db) implements EventReadRepo<E> {
+public record InMemoryEventReadRepo<E extends Event>(Map<String, List<E>> db) implements EventReadRepo<E> {
 
   @Override
   public Mono<Boolean> exists(String streamId) {
