@@ -13,16 +13,6 @@ import java.util.Queue;
 public record InMemoryEventReadRepo<K, E extends Event>(Map<K, Queue<E>> db) implements EventReadRepo<K, E> {
 
   @Override
-  public Mono<Boolean> aggExists(K k, String aggId) {
-    return stream(k).any(e -> e.aggId().equals(aggId));
-  }
-
-  @Override
-  public Flux<E> aggStream(K k, String aggId) {
-    return stream(k).filter(e -> e.aggId().equals(aggId));
-  }
-
-  @Override
   public Mono<Boolean> exists(K k) {
     return Mono.fromCallable(() -> db.containsKey(k));
   }
