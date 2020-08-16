@@ -1,4 +1,4 @@
-package io.memoria.jutils.core.eventsourcing.domain.user;
+package io.memoria.jutils.core.eventsourcing.domain;
 
 import io.memoria.jutils.core.eventsourcing.state.State;
 import io.vavr.collection.HashSet;

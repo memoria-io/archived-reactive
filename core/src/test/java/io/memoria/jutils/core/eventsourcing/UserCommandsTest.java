@@ -1,15 +1,15 @@
 package io.memoria.jutils.core.eventsourcing;
 
-import io.memoria.jutils.core.eventsourcing.domain.user.Message;
-import io.memoria.jutils.core.eventsourcing.domain.user.User;
-import io.memoria.jutils.core.eventsourcing.domain.user.UserCommand.AddFriend;
-import io.memoria.jutils.core.eventsourcing.domain.user.UserCommand.SendMessage;
-import io.memoria.jutils.core.eventsourcing.domain.user.UserCommandHandler;
-import io.memoria.jutils.core.eventsourcing.domain.user.UserEvent.MessageSent;
-import io.memoria.jutils.core.eventsourcing.domain.user.UserEventHandler;
+import io.memoria.jutils.core.eventsourcing.domain.Message;
+import io.memoria.jutils.core.eventsourcing.domain.User;
+import io.memoria.jutils.core.eventsourcing.domain.UserCommand.AddFriend;
+import io.memoria.jutils.core.eventsourcing.domain.UserCommand.SendMessage;
+import io.memoria.jutils.core.eventsourcing.domain.UserEvent.MessageSent;
+import io.memoria.jutils.core.eventsourcing.domain.UserEvolver;
+import io.memoria.jutils.core.eventsourcing.domain.UserResolver;
 import io.memoria.jutils.core.generator.IdGenerator;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import reactor.test.StepVerifier;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,7 +19,7 @@ public class UserCommandsTest {
   // CommandHandler
   private static final AtomicInteger atomicInteger = new AtomicInteger();
   private static final IdGenerator idGen = () -> "0";
-  private static final UserCommandHandler handler = new UserCommandHandler(idGen);
+  private static final UserResolver decide = new UserResolver(idGen);
   // Data
   private static final String ALEX_NAME = "alex";
   private static final String BOB_NAME = "bob";
@@ -36,24 +36,23 @@ public class UserCommandsTest {
     // Given
     var alexWithFriend = ALEX.withNewFriend(BOB_NAME);
     // When
-    var events = handler.apply(alexWithFriend, SEND_MESSAGE);
+    var events = decide.apply(alexWithFriend, SEND_MESSAGE).get();
     // Then
-    StepVerifier.create(events).expectNext(MESSAGE_SENT).expectComplete().verify();
+    Assertions.assertThat(events.head()).isEqualTo(MESSAGE_SENT);
   }
 
   @Test
   public void shouldAddFriend() {
     // When
-    var events = handler.apply(ALEX, ADD_FRIEND);
-    var userMono = new UserEventHandler().apply(ALEX, events);
+    var events = decide.apply(ALEX, ADD_FRIEND).get();
+    var user = new UserEvolver().apply(ALEX, events);
     // Then
-    StepVerifier.create(userMono).expectNext(ALEX.withNewFriend(BOB_NAME)).expectComplete().verify();
+    Assertions.assertThat(user).isEqualTo(ALEX.withNewFriend(BOB_NAME));
   }
 
   @Test
   public void shouldNotAddFriend() {
-    var events = handler.apply(ALEX.withNewFriend(BOB_NAME), ADD_FRIEND);
-    var userMono = new UserEventHandler().apply(ALEX, events);
-    StepVerifier.create(userMono).expectError(ALREADY_EXISTS.getClass()).verify();
+    var events = decide.apply(ALEX.withNewFriend(BOB_NAME), ADD_FRIEND);
+    Assertions.assertThat(events.getCause()).isEqualTo(ALREADY_EXISTS);
   }
 }

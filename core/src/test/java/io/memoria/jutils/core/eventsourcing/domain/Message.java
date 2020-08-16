@@ -1,4 +1,4 @@
-package io.memoria.jutils.core.eventsourcing.domain.user;
+package io.memoria.jutils.core.eventsourcing.domain;
 
 public record Message(String id, String from, String to, String body, boolean seen) {
   public Message(String id, String from, String to, String body) {

@@ -3,7 +3,8 @@ package io.memoria.jutils.core.eventsourcing.cmd;
 import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.state.State;
 import io.vavr.Function2;
-import reactor.core.publisher.Flux;
+import io.vavr.collection.List;
+import io.vavr.control.Try;
 
 @FunctionalInterface
-public interface CommandHandler<S extends State, C extends Command, E extends Event> extends Function2<S, C, Flux<E>> {}
+public interface Resolver<S extends State, C extends Command, E extends Event> extends Function2<S, C, Try<List<E>>> {}

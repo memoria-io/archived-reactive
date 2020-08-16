@@ -1,6 +1,7 @@
 package io.memoria.jutils.utils.functional;
 
 import io.memoria.jutils.core.JutilsException.NotFound;
+import io.vavr.collection.List;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import org.junit.jupiter.api.Test;
@@ -8,8 +9,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.io.IOException;
 import java.util.function.Function;
 
+import static io.memoria.jutils.utils.functional.ReactorVavrUtils.toFlux;
 import static io.memoria.jutils.utils.functional.ReactorVavrUtils.toMono;
 import static io.memoria.jutils.utils.functional.ReactorVavrUtils.toVoidMono;
 import static io.vavr.control.Either.left;
@@ -85,6 +88,16 @@ public class ReactorVavrUtilsTest {
     // Then
     StepVerifier.create(somMono).expectNext(20).expectComplete().verify();
     StepVerifier.create(nonMono).expectError(NotFound.class).verify();
+  }
+
+  @Test
+  public void tryListToFlux() {
+    var t = Try.success(List.of(1, 2, 3));
+    var f = toFlux(t);
+    StepVerifier.create(f).expectNext(1, 2, 3).expectComplete().verify();
+    var te = Try.<List<Integer>>failure(new IOException());
+    var fe = toFlux(te);
+    StepVerifier.create(fe).expectError(IOException.class);
   }
 
   @Test

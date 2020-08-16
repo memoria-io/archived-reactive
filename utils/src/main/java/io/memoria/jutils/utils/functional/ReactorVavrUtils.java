@@ -1,5 +1,6 @@
 package io.memoria.jutils.utils.functional;
 
+import io.vavr.collection.List;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -17,19 +18,16 @@ import static io.vavr.Patterns.$Success;
 import static java.lang.Boolean.TRUE;
 
 public final class ReactorVavrUtils {
+  public static <T> Flux<T> toFlux(Try<List<T>> t) {
+    return t.isSuccess() ? Flux.fromIterable(t.get()) : Flux.error(t.getCause());
+  }
+
   public static <L extends Throwable, R> Mono<R> toMono(Either<L, R> either) {
-    if (either.isRight())
-      return Mono.just(either.get());
-    else
-      return Mono.error(either.getLeft());
+    return either.isRight() ? Mono.just(either.get()) : Mono.error(either.getLeft());
   }
 
   public static <T> Mono<T> toMono(Try<T> t) {
-    if (t.isSuccess()) {
-      return Mono.just(t.get());
-    } else {
-      return Mono.error(t.getCause());
-    }
+    return t.isSuccess() ? Mono.just(t.get()) : Mono.error(t.getCause());
   }
 
   public static <T> Mono<T> toMono(Option<T> option, Throwable throwable) {
