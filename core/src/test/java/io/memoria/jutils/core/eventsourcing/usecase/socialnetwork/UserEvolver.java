@@ -1,7 +1,7 @@
-package io.memoria.jutils.core.eventsourcing.domain;
+package io.memoria.jutils.core.eventsourcing.usecase.socialnetwork;
 
-import io.memoria.jutils.core.eventsourcing.domain.UserEvent.FriendAdded;
-import io.memoria.jutils.core.eventsourcing.domain.UserEvent.MessageSent;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserEvent.FriendAdded;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserEvent.MessageSent;
 import io.memoria.jutils.core.eventsourcing.event.Evolver;
 
 public record UserEvolver() implements Evolver<User, UserEvent> {

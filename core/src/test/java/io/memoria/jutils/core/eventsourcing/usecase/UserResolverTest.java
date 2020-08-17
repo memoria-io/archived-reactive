@@ -1,12 +1,12 @@
-package io.memoria.jutils.core.eventsourcing;
+package io.memoria.jutils.core.eventsourcing.usecase;
 
-import io.memoria.jutils.core.eventsourcing.domain.Message;
-import io.memoria.jutils.core.eventsourcing.domain.User;
-import io.memoria.jutils.core.eventsourcing.domain.UserCommand.AddFriend;
-import io.memoria.jutils.core.eventsourcing.domain.UserCommand.SendMessage;
-import io.memoria.jutils.core.eventsourcing.domain.UserEvent.MessageSent;
-import io.memoria.jutils.core.eventsourcing.domain.UserEvolver;
-import io.memoria.jutils.core.eventsourcing.domain.UserResolver;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.Message;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.User;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserCommand.AddFriend;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserCommand.SendMessage;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserEvent.MessageSent;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserEvolver;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserResolver;
 import io.memoria.jutils.core.generator.IdGenerator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.memoria.jutils.core.JutilsException.AlreadyExists.ALREADY_EXISTS;
 
-public class UserCommandsTest {
+public class UserResolverTest {
   // CommandHandler
   private static final AtomicInteger atomicInteger = new AtomicInteger();
   private static final IdGenerator idGen = () -> "0";

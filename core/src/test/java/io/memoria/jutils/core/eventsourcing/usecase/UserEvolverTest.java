@@ -1,11 +1,11 @@
-package io.memoria.jutils.core.eventsourcing;
+package io.memoria.jutils.core.eventsourcing.usecase;
 
-import io.memoria.jutils.core.eventsourcing.domain.Message;
-import io.memoria.jutils.core.eventsourcing.domain.User;
-import io.memoria.jutils.core.eventsourcing.domain.UserEvent;
-import io.memoria.jutils.core.eventsourcing.domain.UserEvent.FriendAdded;
-import io.memoria.jutils.core.eventsourcing.domain.UserEvent.MessageSent;
-import io.memoria.jutils.core.eventsourcing.domain.UserEvolver;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.Message;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.User;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserEvent;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserEvent.FriendAdded;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserEvent.MessageSent;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserEvolver;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -13,7 +13,7 @@ import reactor.test.StepVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserEventsTest {
+public class UserEvolverTest {
   private static final UserEvolver evolver = new UserEvolver();
   // Scenarios Data
   private static final String ALEX_NAME = "alex";

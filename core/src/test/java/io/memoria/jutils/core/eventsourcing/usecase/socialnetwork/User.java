@@ -1,4 +1,4 @@
-package io.memoria.jutils.core.eventsourcing.domain;
+package io.memoria.jutils.core.eventsourcing.usecase.socialnetwork;
 
 import io.memoria.jutils.core.eventsourcing.state.State;
 import io.vavr.collection.HashSet;
