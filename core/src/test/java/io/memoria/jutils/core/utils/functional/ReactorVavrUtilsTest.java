@@ -1,4 +1,4 @@
-package io.memoria.jutils.utils.functional;
+package io.memoria.jutils.core.utils.functional;
 
 import io.memoria.jutils.core.JutilsException.NotFound;
 import io.vavr.collection.List;
@@ -12,9 +12,9 @@ import reactor.test.StepVerifier;
 import java.io.IOException;
 import java.util.function.Function;
 
-import static io.memoria.jutils.utils.functional.ReactorVavrUtils.toFlux;
-import static io.memoria.jutils.utils.functional.ReactorVavrUtils.toMono;
-import static io.memoria.jutils.utils.functional.ReactorVavrUtils.toVoidMono;
+import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toFlux;
+import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
+import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toVoidMono;
 import static io.vavr.control.Either.left;
 import static io.vavr.control.Either.right;
 import static io.vavr.control.Option.none;

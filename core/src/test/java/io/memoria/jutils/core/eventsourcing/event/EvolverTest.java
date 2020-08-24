@@ -1,8 +1,8 @@
 package io.memoria.jutils.core.eventsourcing.event;
 
+import io.memoria.jutils.core.eventsourcing.state.State;
 import io.memoria.jutils.core.eventsourcing.event.EvolverTest.AccountEvent.BalanceAdded;
 import io.memoria.jutils.core.eventsourcing.event.EvolverTest.AccountEvent.BalanceWithdrawn;
-import io.memoria.jutils.core.eventsourcing.state.State;
 import io.vavr.collection.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

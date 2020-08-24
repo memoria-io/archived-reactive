@@ -6,6 +6,8 @@ import reactor.core.publisher.Mono;
 public interface EventStore<E extends Event> {
   Mono<Void> add(String streamId, E event);
 
+  Mono<Void> add(String streamId, Iterable<E> events);
+
   Mono<Boolean> exists(String streamId);
 
   Flux<E> stream(String streamId);

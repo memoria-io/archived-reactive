@@ -1,4 +1,4 @@
-package io.memoria.jutils.adapter.eventsourcing;
+package io.memoria.jutils.adapter.eventsourcing.event;
 
 import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.event.EventStore;
@@ -18,6 +18,16 @@ public record InMemoryEventStore<E extends Event>(Map<String, List<E>> db) imple
         db.put(streamId, new LinkedList<>());
       }
       db.get(streamId).add(e);
+    });
+  }
+
+  @Override
+  public Mono<Void> add(String streamId, Iterable<E> iterable) {
+    return Mono.fromRunnable(() -> {
+      if (!db.containsKey(streamId)) {
+        db.put(streamId, new LinkedList<>());
+      }
+      iterable.forEach(e -> db.get(streamId).add(e));
     });
   }
 

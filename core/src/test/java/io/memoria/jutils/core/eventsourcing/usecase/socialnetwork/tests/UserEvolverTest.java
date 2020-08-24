@@ -1,11 +1,11 @@
-package io.memoria.jutils.core.eventsourcing.usecase;
+package io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.tests;
 
-import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.Message;
-import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.User;
-import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserEvent;
-import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserEvent.FriendAdded;
-import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserEvent.MessageSent;
-import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.UserEvolver;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent.FriendAdded;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent.MessageSent;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.Message;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.User.Account;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvolver;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -19,7 +19,7 @@ public class UserEvolverTest {
   private static final String ALEX_NAME = "alex";
   private static final String BOB_NAME = "bob";
   private static final int ALEX_AGE = 19;
-  private static final User ALEX = new User(ALEX_NAME, ALEX_AGE);
+  private static final Account ALEX = new Account(ALEX_NAME, ALEX_AGE);
   private static final Message MESSAGE = new Message("messageId", ALEX_NAME, BOB_NAME, "Hello");
   private static final MessageSent MESSAGE_SENT = new MessageSent("0", ALEX.id(), MESSAGE);
   private static final FriendAdded FRIEND_ADDED = new FriendAdded("0", ALEX.id(), BOB_NAME);

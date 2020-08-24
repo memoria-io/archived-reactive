@@ -1,4 +1,4 @@
-package io.memoria.jutils.adapter.eventsourcing;
+package io.memoria.jutils.adapter.eventsourcing.event;
 
 import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.event.EventStore;
@@ -28,6 +28,13 @@ public class InMemoryEventStoreTest {
     assertThat(db.get("0")).isNull();
     assertThat(db.get("1").get(0)).isEqualTo(e1);
     assertThat(db.get("2").get(0)).isEqualTo(e2);
+  }
+
+  @Test
+  public void addMany() {
+    var f = List.of(e1, e2, e3);
+    store.add("0", f).block();
+    StepVerifier.create(store.stream("0")).expectNext(e1, e2, e3).expectComplete().verify();
   }
 
   @BeforeEach

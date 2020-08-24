@@ -8,7 +8,7 @@ import java.util.Objects;
 
 import static io.memoria.jutils.core.JutilsException.AlreadyExists.ALREADY_EXISTS;
 import static io.memoria.jutils.core.JutilsException.NotFound.NOT_FOUND;
-import static io.memoria.jutils.utils.functional.ReactorVavrUtils.toVoidMono;
+import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toVoidMono;
 
 public class InMemoryWriteRepo<K, V> implements WriteRepo<K, V> {
   public final Map<K, V> db;
