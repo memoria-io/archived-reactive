@@ -1,4 +1,4 @@
-package io.memoria.jutils.utils.http;
+package io.memoria.jutils.core.utils.http;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;

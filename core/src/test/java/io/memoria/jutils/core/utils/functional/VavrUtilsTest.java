@@ -1,4 +1,4 @@
-package io.memoria.jutils.utils.functional;
+package io.memoria.jutils.core.utils.functional;
 
 import io.memoria.jutils.core.JutilsException.NotFound;
 import io.vavr.API.Match.Case;
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static io.memoria.jutils.utils.functional.VavrUtils.instanceOfCase;
+import static io.memoria.jutils.core.utils.functional.VavrUtils.instanceOfCase;
 import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.vavr.API.Match;
 import static org.junit.jupiter.api.Assertions.assertEquals;

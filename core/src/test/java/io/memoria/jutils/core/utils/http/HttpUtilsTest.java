@@ -1,4 +1,4 @@
-package io.memoria.jutils.utils.http;
+package io.memoria.jutils.core.utils.http;
 
 import io.vavr.Tuple;
 import org.junit.jupiter.api.Assertions;
@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
 
-import static io.memoria.jutils.utils.http.HttpUtils.basicCredentials;
-import static io.memoria.jutils.utils.http.HttpUtils.bearerToken;
+import static io.memoria.jutils.core.utils.http.HttpUtils.basicCredentials;
+import static io.memoria.jutils.core.utils.http.HttpUtils.bearerToken;
 import static io.vavr.control.Option.none;
 import static io.vavr.control.Option.some;
 

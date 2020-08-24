@@ -1,4 +1,4 @@
-package io.memoria.jutils.utils.netty;
+package io.memoria.jutils.core.utils.netty;
 
 import io.vavr.Tuple;
 import org.junit.jupiter.api.AfterAll;
@@ -12,11 +12,11 @@ import reactor.test.StepVerifier;
 import java.util.Base64;
 import java.util.function.Consumer;
 
-import static io.memoria.jutils.utils.netty.NettyAuthUtils.basicCredentials;
-import static io.memoria.jutils.utils.netty.NettyAuthUtils.bearerToken;
-import static io.memoria.jutils.utils.netty.NettyClientUtils.get;
-import static io.memoria.jutils.utils.netty.NettyClientUtils.post;
-import static io.memoria.jutils.utils.netty.NettyServerUtils.stringReply;
+import static io.memoria.jutils.core.utils.netty.NettyAuthUtils.basicCredentials;
+import static io.memoria.jutils.core.utils.netty.NettyAuthUtils.bearerToken;
+import static io.memoria.jutils.core.utils.netty.NettyClientUtils.get;
+import static io.memoria.jutils.core.utils.netty.NettyClientUtils.post;
+import static io.memoria.jutils.core.utils.netty.NettyServerUtils.stringReply;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 
 public class NettyAuthUtilsTest {

@@ -1,4 +1,4 @@
-package io.memoria.jutils.utils.functional;
+package io.memoria.jutils.core.utils.functional;
 
 import io.vavr.API;
 import io.vavr.collection.List;

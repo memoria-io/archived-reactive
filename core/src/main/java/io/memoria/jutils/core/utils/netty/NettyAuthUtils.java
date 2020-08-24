@@ -1,6 +1,6 @@
-package io.memoria.jutils.utils.netty;
+package io.memoria.jutils.core.utils.netty;
 
-import io.memoria.jutils.utils.http.HttpUtils;
+import io.memoria.jutils.core.utils.http.HttpUtils;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.vavr.Tuple2;

@@ -1,4 +1,4 @@
-package io.memoria.jutils.utils.netty;
+package io.memoria.jutils.core.utils.netty;
 
 import io.vavr.Tuple;
 import org.junit.jupiter.api.AfterAll;
@@ -12,8 +12,8 @@ import reactor.netty.http.server.HttpServerResponse;
 import reactor.netty.http.server.HttpServerRoutes;
 import reactor.test.StepVerifier;
 
-import static io.memoria.jutils.utils.netty.NettyClientUtils.post;
-import static io.memoria.jutils.utils.netty.NettyServerUtils.stringReply;
+import static io.memoria.jutils.core.utils.netty.NettyClientUtils.post;
+import static io.memoria.jutils.core.utils.netty.NettyServerUtils.stringReply;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpResponseStatus.UNAUTHORIZED;
 
