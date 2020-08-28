@@ -1,8 +1,8 @@
 package io.memoria.jutils.core.eventsourcing.event;
 
-import io.memoria.jutils.core.eventsourcing.state.State;
 import io.memoria.jutils.core.eventsourcing.event.EvolverTest.AccountEvent.BalanceAdded;
 import io.memoria.jutils.core.eventsourcing.event.EvolverTest.AccountEvent.BalanceWithdrawn;
+import io.memoria.jutils.core.eventsourcing.state.State;
 import io.vavr.collection.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,9 +11,9 @@ import reactor.test.StepVerifier;
 
 public class EvolverTest {
   interface AccountEvent extends Event {
-    record BalanceAdded(String eventId, String aggId, int value) implements AccountEvent {}
+    record BalanceAdded(String id, String aggId, int value) implements AccountEvent {}
 
-    record BalanceWithdrawn(String eventId, String aggId, int value) implements AccountEvent {}
+    record BalanceWithdrawn(String id, String aggId, int value) implements AccountEvent {}
   }
 
   private static record Account(String id, int balance) implements State {}

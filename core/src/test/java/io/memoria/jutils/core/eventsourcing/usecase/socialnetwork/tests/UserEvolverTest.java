@@ -1,10 +1,10 @@
 package io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.tests;
 
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.Message;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.User.Account;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent.FriendAdded;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent.MessageSent;
-import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.Message;
-import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.User.Account;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvolver;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;

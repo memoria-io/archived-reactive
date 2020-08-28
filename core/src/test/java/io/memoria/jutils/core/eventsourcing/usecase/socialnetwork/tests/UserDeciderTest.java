@@ -1,11 +1,11 @@
 package io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.tests;
 
-import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserCommand.AddFriend;
-import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserCommand.SendMessage;
-import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent.MessageSent;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.Message;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.User.Account;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserCommand.AddFriend;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserCommand.SendMessage;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserDecider;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent.MessageSent;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvolver;
 import io.memoria.jutils.core.generator.IdGenerator;
 import org.assertj.core.api.Assertions;

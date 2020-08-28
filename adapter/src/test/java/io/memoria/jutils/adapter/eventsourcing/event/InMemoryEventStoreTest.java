@@ -13,7 +13,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class InMemoryEventStoreTest {
-  private static record GreetingCreated(String eventId, String aggId, String value) implements Event {}
+  private static record GreetingCreated(String id, String aggId, String value) implements Event {}
 
   private final Map<String, List<GreetingCreated>> db = new HashMap<>();
   private final EventStore<GreetingCreated> store = new InMemoryEventStore<>(db);
