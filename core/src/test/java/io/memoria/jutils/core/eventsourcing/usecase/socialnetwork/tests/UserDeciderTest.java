@@ -29,7 +29,7 @@ public class UserDeciderTest {
   private static final AddFriend ADD_FRIEND = new AddFriend(ALEX_Id, BOB_Id);
   private static final SendMessage SEND_MESSAGE = new SendMessage(ALEX_Id, BOB_Id, "hello");
   private static final Message MESSAGE = new Message("0", ALEX_Id, BOB_Id, "hello");
-  private static final MessageSent MESSAGE_SENT = new MessageSent("0", ALEX.id(), MESSAGE);
+  private static final MessageSent MESSAGE_SENT = new MessageSent("0", MESSAGE);
 
   @Test
   public void sendMessage() {

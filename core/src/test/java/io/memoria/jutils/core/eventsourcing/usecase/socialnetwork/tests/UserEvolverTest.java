@@ -21,8 +21,8 @@ public class UserEvolverTest {
   private static final int ALEX_AGE = 19;
   private static final Account ALEX = new Account(ALEX_NAME, ALEX_AGE);
   private static final Message MESSAGE = new Message("messageId", ALEX_NAME, BOB_NAME, "Hello");
-  private static final MessageSent MESSAGE_SENT = new MessageSent("0", ALEX.id(), MESSAGE);
-  private static final FriendAdded FRIEND_ADDED = new FriendAdded("0", ALEX.id(), BOB_NAME);
+  private static final MessageSent MESSAGE_SENT = new MessageSent("0", MESSAGE);
+  private static final FriendAdded FRIEND_ADDED = new FriendAdded("0", BOB_NAME);
 
   @Test
   public void eventsFlux() {
