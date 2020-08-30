@@ -46,3 +46,7 @@ app/content/*/*.*
 __MACOSX
 *.DS_Store
 
+################
+# Maven
+################
+pom.xml.versionBackup

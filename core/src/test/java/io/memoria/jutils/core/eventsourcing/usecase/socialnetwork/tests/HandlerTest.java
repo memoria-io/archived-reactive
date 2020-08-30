@@ -1,5 +1,6 @@
 package io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.tests;
 
+import io.memoria.jutils.core.eventsourcing.ESException.ESInvalidOperation;
 import io.memoria.jutils.core.eventsourcing.TestingInMemoryEventStore;
 import io.memoria.jutils.core.eventsourcing.cmd.CommandHandler;
 import io.memoria.jutils.core.eventsourcing.event.EventStore;
@@ -13,6 +14,7 @@ import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEve
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvolver;
 import io.memoria.jutils.core.generator.IdGenerator;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
@@ -30,10 +32,30 @@ public class HandlerTest {
                                                                                                    new UserDecider(idGen),
                                                                                                    new Visitor());
 
+  @BeforeEach
+  public void beforeEach() {
+    db.clear();
+  }
+
   @Test
   public void handle() {
-    var handleMono = handler.handle(workSpaceAggId, new CreateAccount(idGen.get(), 18));
+    // Given
+    var cmd = new CreateAccount(idGen.get(), 18);
+    // When
+    var handleMono = handler.apply(workSpaceAggId, cmd);
+    // Then
     StepVerifier.create(handleMono).expectComplete().verify();
     Assertions.assertThat(db.get(workSpaceAggId)).contains(new AccountCreated("0", "0", 18));
+  }
+
+  @Test
+  public void shouldProduceInvalidOperation() {
+    // Given
+    var cmd = new CreateAccount(idGen.get(), 18);
+    var list = io.vavr.collection.List.<UserCommand>of(cmd, cmd);
+    // When
+    var handleMono = handler.apply(workSpaceAggId, list);
+    // Then
+    StepVerifier.create(handleMono).expectError(ESInvalidOperation.class).verify();
   }
 }

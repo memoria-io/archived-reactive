@@ -3,6 +3,7 @@ package io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.tests;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.Message;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.User.Account;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserCommand.AddFriend;
+import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserCommand.CreateAccount;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserCommand.SendMessage;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserDecider;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent.MessageSent;

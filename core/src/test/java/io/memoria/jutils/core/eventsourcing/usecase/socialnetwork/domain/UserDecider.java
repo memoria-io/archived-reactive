@@ -14,18 +14,19 @@ import io.vavr.control.Try;
 
 import static io.memoria.jutils.core.JutilsException.AlreadyExists.ALREADY_EXISTS;
 import static io.memoria.jutils.core.JutilsException.NotFound.NOT_FOUND;
+import static io.memoria.jutils.core.eventsourcing.ESException.invalidOperation;
 
 public record UserDecider(IdGenerator idGenerator) implements Decider<User, UserCommand, UserEvent> {
 
   @Override
   public Try<List<UserEvent>> apply(User user, UserCommand userCommand) {
-    if (userCommand instanceof CreateAccount cmd)
+    if (user instanceof User.Visitor && userCommand instanceof CreateAccount cmd)
       return apply(cmd);
     if (user instanceof Account account && userCommand instanceof AddFriend cmd)
       return apply(account, cmd);
     if (user instanceof Account account && userCommand instanceof SendMessage cmd)
       return apply(account, cmd);
-    return Try.failure(new Exception("Unknown event"));
+    return Try.failure(invalidOperation(user, userCommand));
   }
 
   private Try<List<UserEvent>> apply(CreateAccount cmd) {
