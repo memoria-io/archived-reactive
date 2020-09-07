@@ -20,13 +20,13 @@ public class LocalDateGsonAdapterTest {
   private final String dateString = "2018-11-24";
 
   @Test
-  public void dateDeserializer() {
+  public void deserializer() {
     LocalDate result = j.toObject(jsonDate, LocalDate.class).get();
     assertEquals(dateObj, result);
   }
 
   @Test
-  public void dateSerializer() {
+  public void serializer() {
     String result = j.toString(dateObj);
     assertEquals(dateString, result);
   }
