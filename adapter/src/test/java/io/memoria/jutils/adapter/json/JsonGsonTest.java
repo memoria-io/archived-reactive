@@ -16,7 +16,7 @@ public class JsonGsonTest {
 
   @Test
   public void toMap() {
-    var map = Tests.FILE_READER.file(resourcePath("json/gson-test.json").get()).map(s -> json.toMap(s).get());
+    var map = Tests.FILE_READER.file(resourcePath("json/gson-test.json").get()).map(s -> json.fromJsonToMap(s).get());
     StepVerifier.create(map).assertNext(m -> {
       Assertions.assertEquals("Bob", m.get("name"));
       Assertions.assertEquals(23.0, m.get("age"));

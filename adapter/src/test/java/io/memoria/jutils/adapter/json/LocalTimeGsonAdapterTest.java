@@ -15,22 +15,27 @@ public class LocalTimeGsonAdapterTest {
   private final Gson gson = LocalTimeGsonAdapter.register(new GsonBuilder(),
                                                           DateTimeFormatter.ISO_LOCAL_TIME,
                                                           ZoneOffset.UTC).create();
-  private final Json j = new JsonGson(gson);
-  private final String json = "\"18:04:04.2022\"";
-  private final String str = "18:04:04.2022";
-  private final LocalTime timeObj = LocalTime.parse(str, DateTimeFormatter.ISO_LOCAL_TIME)
+  private final Json parser = new JsonGson(gson);
+  // Given
+  private final String timeString = "18:04:04.2022";
+  private final String timeJson = "\"18:04:04.2022\"";
+  private final LocalTime timeObj = LocalTime.parse(timeString, DateTimeFormatter.ISO_LOCAL_TIME)
                                              .atOffset(ZoneOffset.UTC)
                                              .toLocalTime();
 
   @Test
   public void deserializer() {
-    LocalTime actual = j.toObject(json, LocalTime.class).get();
-    assertEquals(timeObj, actual);
+    // When
+    LocalTime deserializedTime = parser.fromJson(timeJson, LocalTime.class).get();
+    // Then
+    assertEquals(timeObj, deserializedTime);
   }
 
   @Test
   public void serializer() {
-    String actual = j.toString(timeObj);
-    assertEquals(str, actual);
+    // When
+    String serializedJson = parser.toJson(timeObj);
+    // Then
+    assertEquals(timeString, serializedJson);
   }
 }

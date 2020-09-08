@@ -14,20 +14,24 @@ public class LocalDateGsonAdapterTest {
   private final Gson gson = LocalDateGsonAdapter.register(new GsonBuilder(), ofPattern("yyyy-MM-dd")).create();
   private final Json j = new JsonGson(gson);
 
-  // Date data
+  // Given
   private final LocalDate dateObj = LocalDate.of(2018, 11, 24);
   private final String jsonDate = "\"2018-11-24\"";
   private final String dateString = "2018-11-24";
 
   @Test
   public void deserializer() {
-    LocalDate result = j.toObject(jsonDate, LocalDate.class).get();
+    // When
+    LocalDate result = j.fromJson(jsonDate, LocalDate.class).get();
+    // Then
     assertEquals(dateObj, result);
   }
 
   @Test
   public void serializer() {
-    String result = j.toString(dateObj);
+    // When
+    String result = j.toJson(dateObj);
+    // Then
     assertEquals(dateString, result);
   }
 }

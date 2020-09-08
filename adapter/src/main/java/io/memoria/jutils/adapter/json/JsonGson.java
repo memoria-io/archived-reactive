@@ -10,17 +10,17 @@ import java.util.Map;
 public record JsonGson(Gson gson) implements Json {
 
   @Override
-  public Try<Map<String, Object>> toMap(String str) {
-    return Try.of(() -> gson.fromJson(str, new TypeToken<Map<String, Object>>() {}.getType()));
-  }
-
-  @Override
-  public <T> Try<T> toObject(String str, Class<T> tClass) {
+  public <T> Try<T> fromJson(String str, Class<T> tClass) {
     return Try.of(() -> gson.fromJson(str, tClass));
   }
 
   @Override
-  public <T> String toString(T t) {
+  public Try<Map<String, Object>> fromJsonToMap(String str) {
+    return Try.of(() -> gson.fromJson(str, new TypeToken<Map<String, Object>>() {}.getType()));
+  }
+
+  @Override
+  public <T> String toJson(T t) {
     return gson.toJson(t);
   }
 }

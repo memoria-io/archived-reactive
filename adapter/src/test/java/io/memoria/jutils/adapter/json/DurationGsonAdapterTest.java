@@ -12,19 +12,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DurationGsonAdapterTest {
   private final Gson gson = DurationGsonAdapter.register(new GsonBuilder()).create();
   private final Json j = new JsonGson(gson);
+  // Given
   private final String json = "\"PT51H4M\"";
   private final String str = "PT51H4M";
   private final Duration duration = Duration.parse(str);
 
   @Test
   public void deserializer() {
-    Duration actual = j.toObject(json, Duration.class).get();
+    // When
+    Duration actual = j.fromJson(json, Duration.class).get();
+    // Then
     assertEquals(duration, actual);
   }
 
   @Test
   public void serializer() {
-    String actual = j.toString(duration);
+    // When
+    String actual = j.toJson(duration);
+    // Then
     assertEquals(str, actual);
   }
 }
