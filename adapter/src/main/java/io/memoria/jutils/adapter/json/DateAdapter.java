@@ -21,7 +21,7 @@ public class DateAdapter extends TypeAdapter<LocalDate> {
   }
 
   @Override
-  public void write(JsonWriter out, LocalDate d) throws IOException {
-    out.jsonValue(d.format(dateFormat));
+  public void write(JsonWriter out, LocalDate localDate) throws IOException {
+    out.jsonValue(localDate.format(dateFormat));
   }
 }

@@ -25,7 +25,7 @@ public class DateTimeAdapter extends TypeAdapter<LocalDateTime> {
   }
 
   @Override
-  public void write(JsonWriter out, LocalDateTime d) throws IOException {
-    out.jsonValue(d.atOffset(zoneOffset).format(dateTimeFormat));
+  public void write(JsonWriter out, LocalDateTime localDateTime) throws IOException {
+    out.jsonValue(localDateTime.atOffset(zoneOffset).format(dateTimeFormat));
   }
 }
