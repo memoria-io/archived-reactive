@@ -20,7 +20,7 @@ public class DurationAdapterTest {
   @Test
   public void deserializer() {
     // When
-    Duration actual = j.fromJson(durationJson, Duration.class).get();
+    Duration actual = j.deserialize(durationJson, Duration.class).get();
     // Then
     assertEquals(duration, actual);
   }
@@ -28,7 +28,7 @@ public class DurationAdapterTest {
   @Test
   public void serializer() {
     // When
-    String actual = j.toJson(duration);
+    String actual = j.serialize(duration);
     // Then
     assertEquals(durationJson, actual);
   }

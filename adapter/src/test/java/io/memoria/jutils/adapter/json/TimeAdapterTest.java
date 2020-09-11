@@ -23,7 +23,7 @@ public class TimeAdapterTest {
   @Test
   public void deserializer() {
     // When
-    LocalTime deserializedTime = parser.fromJson(timeJson, LocalTime.class).get();
+    LocalTime deserializedTime = parser.deserialize(timeJson, LocalTime.class).get();
     // Then
     assertEquals(timeObj, deserializedTime);
   }
@@ -31,7 +31,7 @@ public class TimeAdapterTest {
   @Test
   public void serializer() {
     // When
-    String serializedJson = parser.toJson(timeObj);
+    String serializedJson = parser.serialize(timeObj);
     // Then
     assertEquals(timeJson, serializedJson);
   }

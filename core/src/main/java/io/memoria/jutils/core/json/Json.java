@@ -2,12 +2,10 @@ package io.memoria.jutils.core.json;
 
 import io.vavr.control.Try;
 
-import java.util.Map;
-
 public interface Json {
-  <T> Try<T> fromJson(String str, Class<T> tClass);
+  <T> Try<T> deserialize(String str);
 
-  Try<Map<String, Object>> fromJsonToMap(String str);
+  <T> Try<T> deserialize(String str, Class<T> tClass);
 
-  <T> String toJson(T t);
+  <T> String serialize(T t);
 }

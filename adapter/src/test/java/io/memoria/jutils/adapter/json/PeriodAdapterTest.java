@@ -20,7 +20,7 @@ public class PeriodAdapterTest {
   @Test
   public void deserializer() {
     // When
-    Period deserializedPeriod = parser.fromJson(periodJson, Period.class).get();
+    Period deserializedPeriod = parser.deserialize(periodJson, Period.class).get();
     // Then
     assertEquals(period, deserializedPeriod);
   }
@@ -28,7 +28,7 @@ public class PeriodAdapterTest {
   @Test
   public void serializer() {
     // When
-    String serializedPeriod = parser.toJson(period);
+    String serializedPeriod = parser.serialize(period);
     // Then
     assertEquals(periodJson, serializedPeriod);
   }

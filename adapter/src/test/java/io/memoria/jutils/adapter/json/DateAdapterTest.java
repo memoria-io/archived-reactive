@@ -22,7 +22,7 @@ public class DateAdapterTest {
   @Test
   public void deserializer() {
     // When
-    LocalDate result = j.fromJson(jsonDate, LocalDate.class).get();
+    LocalDate result = j.deserialize(jsonDate, LocalDate.class).get();
     // Then
     assertEquals(dateObj, result);
   }
@@ -30,7 +30,7 @@ public class DateAdapterTest {
   @Test
   public void serializer() {
     // When
-    String result = j.toJson(dateObj);
+    String result = j.serialize(dateObj);
     // Then
     System.out.println(result);
     System.out.println(jsonDate);

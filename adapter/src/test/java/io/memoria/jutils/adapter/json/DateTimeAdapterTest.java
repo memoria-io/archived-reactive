@@ -13,8 +13,9 @@ import java.time.format.DateTimeFormatter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DateTimeAdapterTest {
-  private final Gson gson = Tests.registerDateTime(new GsonBuilder(), DateTimeFormatter.ISO_LOCAL_DATE_TIME, ZoneOffset.UTC)
-                                 .create();
+  private final Gson gson = Tests.registerDateTime(new GsonBuilder(),
+                                                   DateTimeFormatter.ISO_LOCAL_DATE_TIME,
+                                                   ZoneOffset.UTC).create();
   private final Json j = new JsonGson(gson);
   // Given
   private final String dateTimeJson = "\"2018-11-24T04:04:00\"";
@@ -23,7 +24,7 @@ public class DateTimeAdapterTest {
   @Test
   public void deserializer() {
     // When
-    LocalDateTime deserializedDateTime = j.fromJson(dateTimeJson, LocalDateTime.class).get();
+    LocalDateTime deserializedDateTime = j.deserialize(dateTimeJson, LocalDateTime.class).get();
     // Then
     assertEquals(dateTimeObj, deserializedDateTime);
   }
@@ -31,7 +32,7 @@ public class DateTimeAdapterTest {
   @Test
   public void serializer() {
     // When
-    String serializedDateTime = j.toJson(dateTimeObj);
+    String serializedDateTime = j.serialize(dateTimeObj);
     // Then
     assertEquals(dateTimeJson, serializedDateTime);
   }
