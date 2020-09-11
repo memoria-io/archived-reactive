@@ -17,11 +17,8 @@ public class TimeAdapterTest {
                                  .create();
   private final Json parser = new JsonGson(gson);
   // Given
-  private final String timeString = "18:04:04.2022";
-  private final String timeJson = "\"18:04:04.2022\"";
-  private final LocalTime timeObj = LocalTime.parse(timeString, DateTimeFormatter.ISO_LOCAL_TIME)
-                                             .atOffset(ZoneOffset.UTC)
-                                             .toLocalTime();
+  private final String timeJson = "\"18:04:04\"";
+  private final LocalTime timeObj = LocalTime.of(18, 4, 4);
 
   @Test
   public void deserializer() {
@@ -36,6 +33,6 @@ public class TimeAdapterTest {
     // When
     String serializedJson = parser.toJson(timeObj);
     // Then
-    assertEquals(timeString, serializedJson);
+    assertEquals(timeJson, serializedJson);
   }
 }

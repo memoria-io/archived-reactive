@@ -14,14 +14,13 @@ public class DurationAdapterTest {
   private final Gson gson = Tests.registerDurationAdapter(new GsonBuilder()).create();
   private final Json j = new JsonGson(gson);
   // Given
-  private final String json = "\"PT51H4M\"";
-  private final String str = "PT51H4M";
-  private final Duration duration = Duration.parse(str);
+  private final String durationJson = "\"PT51H4M\"";
+  private final Duration duration = Duration.ofHours(51).plusMinutes(4);
 
   @Test
   public void deserializer() {
     // When
-    Duration actual = j.fromJson(json, Duration.class).get();
+    Duration actual = j.fromJson(durationJson, Duration.class).get();
     // Then
     assertEquals(duration, actual);
   }
@@ -31,6 +30,6 @@ public class DurationAdapterTest {
     // When
     String actual = j.toJson(duration);
     // Then
-    assertEquals(str, actual);
+    assertEquals(durationJson, actual);
   }
 }

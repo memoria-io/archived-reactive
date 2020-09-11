@@ -14,9 +14,8 @@ public class PeriodAdapterTest {
   private final Gson gson = Tests.registerPeriodAdapter(new GsonBuilder()).create();
   private final Json parser = new JsonGson(gson);
   // Given
-  private final String periodString = "P1Y2M25D";
   private final String periodJson = "\"P1Y2M25D\"";
-  private final Period period = Period.parse(periodString);
+  private final Period period = Period.of(1, 2, 25);
 
   @Test
   public void deserializer() {
@@ -31,6 +30,6 @@ public class PeriodAdapterTest {
     // When
     String serializedPeriod = parser.toJson(period);
     // Then
-    assertEquals(periodString, serializedPeriod);
+    assertEquals(periodJson, serializedPeriod);
   }
 }

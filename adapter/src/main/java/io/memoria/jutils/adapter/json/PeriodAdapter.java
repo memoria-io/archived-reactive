@@ -16,6 +16,6 @@ public class PeriodAdapter extends TypeAdapter<Period> {
 
   @Override
   public void write(JsonWriter out, Period period) throws IOException {
-    out.jsonValue(period.toString());
+    out.value(period.toString());
   }
 }

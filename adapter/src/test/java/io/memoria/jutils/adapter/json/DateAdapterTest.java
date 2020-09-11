@@ -18,7 +18,6 @@ public class DateAdapterTest {
   // Given
   private final LocalDate dateObj = LocalDate.of(2018, 11, 24);
   private final String jsonDate = "\"2018-11-24\"";
-  private final String dateString = "2018-11-24";
 
   @Test
   public void deserializer() {
@@ -33,6 +32,8 @@ public class DateAdapterTest {
     // When
     String result = j.toJson(dateObj);
     // Then
-    assertEquals(dateString, result);
+    System.out.println(result);
+    System.out.println(jsonDate);
+    assertEquals(jsonDate, result);
   }
 }

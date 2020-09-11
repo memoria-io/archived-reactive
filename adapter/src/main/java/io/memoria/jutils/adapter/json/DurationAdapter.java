@@ -16,6 +16,6 @@ public class DurationAdapter extends TypeAdapter<Duration> {
 
   @Override
   public void write(JsonWriter out, Duration duration) throws IOException {
-    out.jsonValue(duration.toString());
+    out.value(duration.toString());
   }
 }
