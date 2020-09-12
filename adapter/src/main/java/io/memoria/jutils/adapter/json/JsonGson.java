@@ -36,8 +36,9 @@ public record JsonGson(Gson gson) implements Json {
 
   private static Gson create(GsonBuilder gsonBuilder, TypeAdapter<?>... typeAdapters) {
     for (TypeAdapter<?> t : typeAdapters) {
-      var tClass = ((ParameterizedType) t.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-      gsonBuilder.registerTypeAdapter(tClass, t);
+      var paramType = (ParameterizedType) t.getClass().getGenericSuperclass();
+      var tClass = paramType.getActualTypeArguments()[0];
+      gsonBuilder.registerTypeHierarchyAdapter((Class<?>) tClass, t);
     }
     return gsonBuilder.create();
   }
