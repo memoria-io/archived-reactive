@@ -1,8 +1,5 @@
 package io.memoria.jutils.adapter.json;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.memoria.jutils.adapter.Tests;
 import io.memoria.jutils.core.json.Json;
 import org.junit.jupiter.api.Test;
 
@@ -11,8 +8,7 @@ import java.time.Period;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PeriodAdapterTest {
-  private final Gson gson = Tests.registerPeriodAdapter(new GsonBuilder()).create();
-  private final Json parser = new JsonGson(gson);
+  private final Json parser = new JsonGson(new PeriodAdapter());
   // Given
   private final String periodJson = "\"P1Y2M25D\"";
   private final Period period = Period.of(1, 2, 25);

@@ -1,8 +1,5 @@
 package io.memoria.jutils.adapter.json;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.memoria.jutils.adapter.Tests;
 import io.memoria.jutils.core.json.Json;
 import org.junit.jupiter.api.Test;
 
@@ -13,10 +10,7 @@ import java.time.format.DateTimeFormatter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DateTimeAdapterTest {
-  private final Gson gson = Tests.registerDateTime(new GsonBuilder(),
-                                                   DateTimeFormatter.ISO_LOCAL_DATE_TIME,
-                                                   ZoneOffset.UTC).create();
-  private final Json j = new JsonGson(gson);
+  private final Json j = new JsonGson(new DateTimeAdapter(DateTimeFormatter.ISO_LOCAL_DATE_TIME, ZoneOffset.UTC));
   // Given
   private final String dateTimeJson = "\"2018-11-24T04:04:00\"";
   private final LocalDateTime dateTimeObj = LocalDateTime.of(2018, 11, 24, 4, 4);

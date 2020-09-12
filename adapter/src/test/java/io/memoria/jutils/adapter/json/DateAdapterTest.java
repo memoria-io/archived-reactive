@@ -1,8 +1,5 @@
 package io.memoria.jutils.adapter.json;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.memoria.jutils.adapter.Tests;
 import io.memoria.jutils.core.json.Json;
 import org.junit.jupiter.api.Test;
 
@@ -12,8 +9,7 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DateAdapterTest {
-  private final Gson gson = Tests.registerDate(new GsonBuilder(), ofPattern("yyyy-MM-dd")).create();
-  private final Json j = new JsonGson(gson);
+  private final Json j = new JsonGson(new DateAdapter(ofPattern("yyyy-MM-dd")));
 
   // Given
   private final LocalDate dateObj = LocalDate.of(2018, 11, 24);
