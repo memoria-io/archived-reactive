@@ -4,8 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.memoria.jutils.core.json.Json;
 import io.vavr.collection.List;
+import io.vavr.collection.Traversable;
 import io.vavr.control.Try;
 
 import java.io.IOException;
@@ -21,6 +23,17 @@ public record JsonGson(Gson gson) implements Json {
       typeList.add(typeAdapter.read(in));
     }
     in.endArray();
+    return List.ofAll(typeList);
+  }
+
+  public static <T> List<T> serializeArray(JsonWriter out, TypeAdapter<T> typeAdapter, Traversable<T> traversable)
+          throws IOException {
+    var typeList = new ArrayList<T>();
+    out.beginArray();
+    for (T t : traversable) {
+      typeAdapter.write(out, t);
+    }
+    out.endArray();
     return List.ofAll(typeList);
   }
 
