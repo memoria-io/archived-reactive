@@ -25,7 +25,7 @@ It relies heavily on [Reactive Streams](https://www.reactive-streams.org/) and u
     * Google guice adapter
 * Reactive CQRS and Eventsourcing utilities (alpha stage)
 * Reactive functional in-memory generic cruds (for tests, not for production)
-* jutils is up to date with the latest versions of JDK preview feature, currently `Java 14`.
+* jutils is up to date with the latest versions of JDK preview feature, currently `Java 15`.
 
 
 ## Usage
