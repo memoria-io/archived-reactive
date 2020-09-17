@@ -1,5 +1,6 @@
 package io.memoria.jutils.core.eventsourcing.cmd;
 
+import io.memoria.jutils.core.eventsourcing.ESException;
 import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.event.EventStore;
 import io.memoria.jutils.core.eventsourcing.event.Evolver;
@@ -28,6 +29,8 @@ public final class CommandHandler<S extends State, E extends Event, C extends Co
 
   @Override
   public Mono<Void> apply(String aggId, C cmd) {
+    if (aggId == null || aggId.isEmpty())
+      return Mono.error(ESException.INVALID_AGGREGATE_ID);
     var eventFlux = store.stream(aggId);
     var stateMono = evolver.apply(initialState, eventFlux);
     return stateMono.flatMap(state -> toMono(decider.apply(state, cmd))).flatMap(list -> store.add(aggId, list));

@@ -15,6 +15,8 @@ public class ESException extends Exception {
     return new ESInvalidOperation(state, command);
   }
 
+  public static ESException INVALID_AGGREGATE_ID = new ESException("Aggregate Id is null or empty");
+
   private ESException(String message) {
     super(message);
   }
