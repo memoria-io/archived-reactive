@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class InMemoryEventStoreTest {
   private static record GreetingCreated(String id, String aggId, String value) implements Event {}
 
-  private final Map<String, List<GreetingCreated>> db = new HashMap<>();
+  private final Map<String, ArrayList<GreetingCreated>> db = new HashMap<>();
   private final EventStore<GreetingCreated> store = new InMemoryEventStore<>(db);
   private final GreetingCreated e1 = new GreetingCreated("0", "0", "hello");
   private final GreetingCreated e2 = new GreetingCreated("1", "1", "Bye");
