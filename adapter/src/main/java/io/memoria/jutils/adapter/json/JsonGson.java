@@ -6,6 +6,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.memoria.jutils.core.json.Json;
+import io.vavr.CheckedFunction1;
 import io.vavr.collection.List;
 import io.vavr.collection.Traversable;
 import io.vavr.control.Try;
@@ -13,28 +14,51 @@ import io.vavr.control.Try;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 
 public record JsonGson(Gson gson) implements Json {
+  public static <T> Try<List<T>> deserializeArray(JsonReader in, CheckedFunction1<JsonReader, T> reader)
+          throws IOException {
+    in.beginArray();
+    var tryList = Try.of(() -> {
+      var list = List.<T>empty();
+      while (in.hasNext()) {
+        list = list.append(reader.apply(in));
+      }
+      return list;
+    });
+    in.endArray();
+    return tryList;
+  }
+
   public static <T> List<T> deserializeArray(JsonReader in, TypeAdapter<T> typeAdapter) throws IOException {
-    var typeList = new ArrayList<T>();
+    var list = List.<T>empty();
     in.beginArray();
     while (in.hasNext()) {
-      typeList.add(typeAdapter.read(in));
+      list = list.append(typeAdapter.read(in));
     }
     in.endArray();
-    return List.ofAll(typeList);
+    return list;
+  }
+
+  public static <T> List<T> serializeArray(JsonWriter out, Traversable<T> traversable) throws IOException {
+    var list = List.<T>empty();
+    out.beginArray();
+    for (T t : traversable) {
+      out.value(t.toString());
+    }
+    out.endArray();
+    return List.ofAll(list);
   }
 
   public static <T> List<T> serializeArray(JsonWriter out, TypeAdapter<T> typeAdapter, Traversable<T> traversable)
           throws IOException {
-    var typeList = new ArrayList<T>();
+    var list = List.<T>empty();
     out.beginArray();
     for (T t : traversable) {
       typeAdapter.write(out, t);
     }
     out.endArray();
-    return List.ofAll(typeList);
+    return List.ofAll(list);
   }
 
   public JsonGson(TypeAdapter<?>... typeAdapters) {
