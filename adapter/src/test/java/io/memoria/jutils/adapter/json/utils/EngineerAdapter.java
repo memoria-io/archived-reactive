@@ -10,22 +10,20 @@ import io.vavr.control.Try;
 
 import java.io.IOException;
 
-import static io.memoria.jutils.adapter.json.JsonException.propertyNotFound;
-import static io.memoria.jutils.adapter.json.JsonException.unknownProperty;
-import static io.memoria.jutils.adapter.json.JsonGsonUtils.deserializeArray;
+import static io.memoria.jutils.adapter.json.JsonException.notFound;
+import static io.memoria.jutils.adapter.json.JsonGsonUtils.deserialize;
 
 public class EngineerAdapter extends TypeAdapter<Engineer> {
   @Override
   public Engineer read(JsonReader in) throws IOException {
     in.beginObject();
-    Try<String> name = Try.failure(propertyNotFound("name"));
+    Try<String> name = Try.failure(notFound("name"));
     List<String> tasks = List.empty();
     while (in.hasNext()) {
       var nextName = in.nextName();
       switch (nextName) {
         case "name" -> name = Try.success(in.nextString());
-        case "tasks" -> tasks = deserializeArray(in, JsonReader::nextString).get();
-        default -> throw unknownProperty(nextName);
+        case "tasks" -> tasks = JsonGsonUtils.deserialize(in, JsonReader::nextString).get();
       }
     }
     in.endObject();
@@ -38,7 +36,7 @@ public class EngineerAdapter extends TypeAdapter<Engineer> {
     out.name("name");
     out.value(eng.name());
     out.name("tasks");
-    JsonGsonUtils.serializeStringArray(out, eng.tasks());
+    JsonGsonUtils.serialize(out, eng.tasks());
     out.endObject();
   }
 }

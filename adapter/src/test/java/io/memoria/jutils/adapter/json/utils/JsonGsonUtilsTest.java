@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import static io.memoria.jutils.core.file.FileReader.resourcePath;
 
-class JsonUtilTest {
+class JsonGsonUtilsTest {
 
   private static final Json j;
   private static final Engineer engineerObj;

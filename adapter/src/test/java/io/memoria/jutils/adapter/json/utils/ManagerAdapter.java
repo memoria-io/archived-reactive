@@ -11,9 +11,9 @@ import io.vavr.control.Try;
 
 import java.io.IOException;
 
-import static io.memoria.jutils.adapter.json.JsonException.propertyNotFound;
-import static io.memoria.jutils.adapter.json.JsonException.unknownProperty;
-import static io.memoria.jutils.adapter.json.JsonGsonUtils.deserializeArray;
+import static io.memoria.jutils.adapter.json.JsonException.notFound;
+import static io.memoria.jutils.adapter.json.JsonException.unknown;
+import static io.memoria.jutils.adapter.json.JsonGsonUtils.deserialize;
 
 public class ManagerAdapter extends TypeAdapter<Manager> {
   private final TypeAdapter<Engineer> engineerAdapter;
@@ -25,14 +25,14 @@ public class ManagerAdapter extends TypeAdapter<Manager> {
   @Override
   public Manager read(JsonReader in) throws IOException {
     in.beginObject();
-    Try<String> name = Try.failure(propertyNotFound("name"));
+    Try<String> name = Try.failure(notFound("name"));
     List<Engineer> tasks = List.empty();
     while (in.hasNext()) {
       var nextName = in.nextName();
       switch (nextName) {
         case "name" -> name = Try.success(in.nextString());
-        case "team" -> tasks = deserializeArray(in, engineerAdapter).get();
-        default -> throw unknownProperty(nextName);
+        case "team" -> tasks = deserialize(in, engineerAdapter).get();
+        default -> throw unknown(nextName);
       }
     }
     in.endObject();
@@ -45,7 +45,7 @@ public class ManagerAdapter extends TypeAdapter<Manager> {
     out.name("name");
     out.value(eng.name());
     out.name("team");
-    JsonGsonUtils.serializeArray(out, engineerAdapter, eng.team());
+    JsonGsonUtils.serialize(out, engineerAdapter, eng.team());
     out.endObject();
   }
 }

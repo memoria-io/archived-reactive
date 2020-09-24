@@ -3,20 +3,16 @@ package io.memoria.jutils.adapter.json;
 import java.io.IOException;
 
 public class JsonException extends IOException {
-  public static JsonException noAdapterFound() {
-    return new JsonException("No matching type adapter found");
+  public static JsonException noMatchingAdapter(String jsonProperty) {
+    return new JsonException("Json property [" + jsonProperty + "] has no matching adapter");
   }
 
-  public static JsonException propertyNotFound(String propertyName) {
-    return new JsonException("Property [" + propertyName + "] was not found");
+  public static JsonException notFound(String jsonProperty) {
+    return new JsonException("Json property [" + jsonProperty + "] was not found in the Json string");
   }
 
-  public static JsonException undefinedProperty() {
-    return new JsonException("No property found");
-  }
-
-  public static JsonException unknownProperty(String fieldName) {
-    return new JsonException("The field [" + fieldName + "] is unknown");
+  public static JsonException unknown(String jsonProperty) {
+    return new JsonException("Json property [" + jsonProperty + "] is unknown");
   }
 
   public static <T> JsonException unsupportedRead(Class<T> type) {
