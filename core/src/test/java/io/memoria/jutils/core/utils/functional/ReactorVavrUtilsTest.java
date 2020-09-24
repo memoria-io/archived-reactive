@@ -20,24 +20,24 @@ import static io.vavr.control.Either.right;
 import static io.vavr.control.Option.none;
 import static io.vavr.control.Option.some;
 
-public class ReactorVavrUtilsTest {
+class ReactorVavrUtilsTest {
 
   @Test
-  public void booleanToMono() {
+  void booleanToMono() {
     var v = toMono(() -> "hello world", new Exception("isFalse"));
     StepVerifier.create(v.apply(true)).expectNext("hello world").expectComplete().verify();
     StepVerifier.create(v.apply(false)).expectErrorMessage("isFalse").verify();
   }
 
   @Test
-  public void booleanToVoidMono() {
+  void booleanToVoidMono() {
     var v = toVoidMono(() -> {}, new Exception("isFalse"));
     StepVerifier.create(v.apply(true)).expectComplete().verify();
     StepVerifier.create(v.apply(false)).expectErrorMessage("isFalse").verify();
   }
 
   @Test
-  public void eitherToMonoTest() {
+  void eitherToMonoTest() {
     Either<Exception, Integer> k = right(23);
     Mono<Integer> integerMono = toMono(k);
     StepVerifier.create(integerMono).expectNext(23).expectComplete().verify();
@@ -48,7 +48,7 @@ public class ReactorVavrUtilsTest {
   }
 
   @Test
-  public void shorterTryToFluxTryTest() {
+  void shorterTryToFluxTryTest() {
     Try<String> h = Try.success("hello");
     Function<String, Flux<Try<Integer>>> op1 = t -> Flux.just(Try.success((t + " world").length()));
     Function<Integer, Flux<Try<String>>> op2 = t -> Flux.just(Try.success("count is " + t));
@@ -63,7 +63,7 @@ public class ReactorVavrUtilsTest {
   }
 
   @Test
-  public void shorterTryToMonoTryTest() {
+  void shorterTryToMonoTryTest() {
     Try<String> h = Try.success("hello");
     Function<String, Mono<Try<Integer>>> op1 = t -> Mono.just(Try.success((t + " world").length()));
     Function<Integer, Mono<Try<String>>> op2 = t -> Mono.just(Try.success("count is " + t));
@@ -78,7 +78,7 @@ public class ReactorVavrUtilsTest {
   }
 
   @Test
-  public void toMonoFromOption() {
+  void toMonoFromOption() {
     // Given
     var som = some(20);
     var non = none();
@@ -91,7 +91,7 @@ public class ReactorVavrUtilsTest {
   }
 
   @Test
-  public void tryListToFlux() {
+  void tryListToFlux() {
     var t = Try.success(List.of(1, 2, 3));
     var f = toFlux(t);
     StepVerifier.create(f).expectNext(1, 2, 3).expectComplete().verify();
@@ -101,7 +101,7 @@ public class ReactorVavrUtilsTest {
   }
 
   @Test
-  public void tryToFluxTryTest() {
+  void tryToFluxTryTest() {
     Try<String> h = Try.success("hello");
     Function<String, Flux<Try<Integer>>> op1 = t -> Flux.just(Try.success((t + " world").length()));
     Function<Integer, Flux<Try<String>>> op2 = t -> Flux.just(Try.success("count is " + t));
@@ -116,7 +116,7 @@ public class ReactorVavrUtilsTest {
   }
 
   @Test
-  public void tryToMonoTest() {
+  void tryToMonoTest() {
     var tSuccess = Try.success("hello");
     StepVerifier.create(toMono(tSuccess)).expectNext("hello").expectComplete().verify();
     var tFailure = Try.failure(new Exception("Exception Happened"));
@@ -124,7 +124,7 @@ public class ReactorVavrUtilsTest {
   }
 
   @Test
-  public void tryToMonoTryTest() {
+  void tryToMonoTryTest() {
     Try<String> h = Try.success("hello");
     Function<String, Mono<Try<Integer>>> op1 = t -> Mono.just(Try.success((t + " world").length()));
     Function<Integer, Mono<Try<String>>> op2 = t -> Mono.just(Try.success("count is " + t));
@@ -139,7 +139,7 @@ public class ReactorVavrUtilsTest {
   }
 
   @Test
-  public void tryToMonoVoidTest() {
+  void tryToMonoVoidTest() {
     Mono<Try<String>> original = Mono.just(Try.success("one"));
     Function<String, Mono<Void>> deferredOp = (String content) -> Mono.empty();
     Function<Throwable, Mono<Void>> throwable = t -> Mono.just(Try.failure(new Exception("should not fail"))).then();

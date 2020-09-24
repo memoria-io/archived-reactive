@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DateAdapterTest {
+class DateAdapterTest {
   private final Json j = new JsonGson(new DateAdapter(ofPattern("yyyy-MM-dd")));
 
   // Given
@@ -16,7 +16,7 @@ public class DateAdapterTest {
   private final String jsonDate = "\"2018-11-24\"";
 
   @Test
-  public void deserializer() {
+  void deserializer() {
     // When
     LocalDate result = j.deserialize(jsonDate, LocalDate.class).get();
     // Then
@@ -24,7 +24,7 @@ public class DateAdapterTest {
   }
 
   @Test
-  public void serializer() {
+  void serializer() {
     // When
     String result = j.serialize(dateObj);
     // Then

@@ -7,14 +7,14 @@ import java.time.Period;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PeriodAdapterTest {
+class PeriodAdapterTest {
   private final Json parser = new JsonGson(new PeriodAdapter());
   // Given
   private final String periodJson = "\"P1Y2M25D\"";
   private final Period period = Period.of(1, 2, 25);
 
   @Test
-  public void deserializer() {
+  void deserializer() {
     // When
     Period deserializedPeriod = parser.deserialize(periodJson, Period.class).get();
     // Then
@@ -22,7 +22,7 @@ public class PeriodAdapterTest {
   }
 
   @Test
-  public void serializer() {
+  void serializer() {
     // When
     String serializedPeriod = parser.serialize(period);
     // Then

@@ -24,7 +24,7 @@ import static java.time.Duration.ofSeconds;
 import static java.util.Objects.requireNonNull;
 import static reactor.core.scheduler.Schedulers.elastic;
 
-public class NatsIT {
+class NatsIT {
   private static final FileReader reader = new LocalFileReader(Schedulers.boundedElastic());
   private static final Yaml config = reader.yaml(resourcePath("nats.yaml").get()).block();
 
@@ -38,7 +38,7 @@ public class NatsIT {
   private final Flux<Message> limitedMsgsFlux;
   private final Message[] limitedMsgsArr;
 
-  public NatsIT() throws IOException, InterruptedException {
+  NatsIT() throws IOException, InterruptedException {
     nc = NatsUtils.createConnection(config);
     msgSender = new NatsSender(nc, mf, elastic(), ofSeconds(1));
     msgReceiver = new NatsReceiver(nc, mf, elastic(), ofSeconds(1));
@@ -49,14 +49,14 @@ public class NatsIT {
 
   @Test
   @DisplayName("Consumed messages should be same as published ones.")
-  public void NatsPubSub() throws InterruptedException {
+  void NatsPubSub() throws InterruptedException {
     var sender = msgSender.apply(limitedMsgsFlux);
     var receiver = msgReceiver.get().take(MSG_COUNT);
     StepVerifier.create(sender.zipWith(receiver)).expectNextCount(MSG_COUNT).expectComplete().verify();
   }
 
   @AfterEach
-  public void afterEach() throws InterruptedException {
+  void afterEach() throws InterruptedException {
     nc.close();
   }
 

@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.memoria.jutils.core.JutilsException.AlreadyExists.ALREADY_EXISTS;
 
-public class UserDeciderTest {
+class UserDeciderTest {
   // CommandHandler
   private static final AtomicInteger atomicInteger = new AtomicInteger();
   private static final IdGenerator idGen = () -> "0";
@@ -32,7 +32,7 @@ public class UserDeciderTest {
   private static final MessageSent MESSAGE_SENT = new MessageSent("0", MESSAGE);
 
   @Test
-  public void sendMessage() {
+  void sendMessage() {
     // Given
     var alexWithFriend = ALEX.withNewFriend(BOB_Id);
     // When
@@ -42,7 +42,7 @@ public class UserDeciderTest {
   }
 
   @Test
-  public void shouldAddFriend() {
+  void shouldAddFriend() {
     // When
     var events = decide.apply(ALEX, ADD_FRIEND).get();
     var user = new UserEvolver().apply(ALEX, events);
@@ -51,7 +51,7 @@ public class UserDeciderTest {
   }
 
   @Test
-  public void shouldNotAddFriend() {
+  void shouldNotAddFriend() {
     var events = decide.apply(ALEX.withNewFriend(BOB_Id), ADD_FRIEND);
     Assertions.assertThat(events.getCause()).isEqualTo(ALREADY_EXISTS);
   }

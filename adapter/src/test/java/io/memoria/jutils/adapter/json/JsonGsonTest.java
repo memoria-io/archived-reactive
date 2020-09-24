@@ -14,12 +14,12 @@ import reactor.test.StepVerifier;
 
 import static io.memoria.jutils.core.file.FileReader.resourcePath;
 
-public class JsonGsonTest {
+class JsonGsonTest {
   private final Gson gson = VavrGson.registerAll(new GsonBuilder()).create();
   private final Json json = new JsonGson(gson);
 
   @Test
-  public void toList() {
+  void toList() {
     var stringListType = new TypeToken<List<String>>() {}.getType();
     var list = Tests.FILE_READER.file(resourcePath("json/gsonList.json").get())
                                 .map(s -> json.<List<String>>deserialize(s, stringListType).get());
@@ -29,7 +29,7 @@ public class JsonGsonTest {
   }
 
   @Test
-  public void toMap() {
+  void toMap() {
     var mapType = new TypeToken<Map<String, Object>>() {}.getType();
     var map = Tests.FILE_READER.file(resourcePath("json/gsonMap.json").get())
                                .map(s -> json.<Map<String, Object>>deserialize(s, mapType).get());

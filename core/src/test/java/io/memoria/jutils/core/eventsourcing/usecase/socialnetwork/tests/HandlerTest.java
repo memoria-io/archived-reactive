@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HandlerTest {
+class HandlerTest {
   private static final Map<String, List<UserEvent>> db = new HashMap<>();
   private static final EventStore<UserEvent> eventStore = new TestingInMemoryEventStore<>(db);
   private static final IdGenerator idGen = () -> "0";
@@ -33,12 +33,12 @@ public class HandlerTest {
                                                                                                    new Visitor());
 
   @BeforeEach
-  public void beforeEach() {
+  void beforeEach() {
     db.clear();
   }
 
   @Test
-  public void handle() {
+  void handle() {
     // Given
     var cmd = new CreateAccount(idGen.get(), 18);
     // When
@@ -49,7 +49,7 @@ public class HandlerTest {
   }
 
   @Test
-  public void shouldProduceInvalidOperation() {
+  void shouldProduceInvalidOperation() {
     // Given
     var cmd = new CreateAccount(idGen.get(), 18);
     var list = io.vavr.collection.List.<UserCommand>of(cmd, cmd);

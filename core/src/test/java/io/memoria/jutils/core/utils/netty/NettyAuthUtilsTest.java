@@ -19,7 +19,7 @@ import static io.memoria.jutils.core.utils.netty.NettyClientUtils.post;
 import static io.memoria.jutils.core.utils.netty.NettyServerUtils.stringReply;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 
-public class NettyAuthUtilsTest {
+class NettyAuthUtilsTest {
   // basic and token only separated for simplicity, in production it should be one path
   private static final String basicAuthPath = "/authenticate_basic";
   private static final String tokenAuthPath = "/authenticate_token";
@@ -31,13 +31,13 @@ public class NettyAuthUtilsTest {
                                                            .bindNow();
 
   @AfterAll
-  public static void afterAll() {
+  static void afterAll() {
     server.dispose();
   }
 
   @Test
   @DisplayName("Should deserialize Basic authorization header correctly")
-  public void basicFromTest() {
+  void basicFromTest() {
     var basic = Base64.getEncoder().encodeToString(("bob:password").getBytes());
     var monoResp = post(host, basicAuthPath, b -> b.add("Authorization", "Basic " + basic), "payload hello");
     StepVerifier.create(monoResp).expectNext(Tuple.of(OK, "(bob, password)")).expectComplete().verify();
@@ -45,7 +45,7 @@ public class NettyAuthUtilsTest {
 
   @Test
   @DisplayName("Should deserialize bearer authorization header correctly")
-  public void tokenFromTest() {
+  void tokenFromTest() {
     var token = "xyz.xyz.xyz";
     var monoResp = get(host, tokenAuthPath, b -> b.add("Authorization", "Bearer " + token));
     StepVerifier.create(monoResp).expectNext(Tuple.of(OK, token)).expectComplete().verify();

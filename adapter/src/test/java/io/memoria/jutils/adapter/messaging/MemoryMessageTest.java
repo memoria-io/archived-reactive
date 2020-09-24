@@ -15,7 +15,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
 
-public class MemoryMessageTest {
+class MemoryMessageTest {
   private final MessageFilter mf = new MessageFilter("test_topic", 0, 0);
   private final int MSG_COUNT = 3;
   private final Flux<Message> msgs = Flux.interval(Duration.ofMillis(10))
@@ -24,7 +24,7 @@ public class MemoryMessageTest {
 
   @Test
   @DisplayName("Should consume messages correctly")
-  public void consume() {
+  void consume() {
     var db = new HashMap<String, HashMap<Integer, Queue<Message>>>();
     db.put(mf.topic(), new HashMap<>());
     db.get(mf.topic()).put(mf.partition(), new LinkedList<>());
@@ -41,7 +41,7 @@ public class MemoryMessageTest {
 
   @Test
   @DisplayName("Should publish messages correctly")
-  public void publish() {
+  void publish() {
     var db = new HashMap<String, HashMap<Integer, Queue<Message>>>();
     var msgProducer = new InMemoryMsgSenderRepo(db, mf);
     var published = msgProducer.apply(msgs).take(MSG_COUNT);

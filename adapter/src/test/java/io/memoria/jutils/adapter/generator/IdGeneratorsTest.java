@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class IdGeneratorsTest {
+class IdGeneratorsTest {
   @Test
-  public void SerialIdTest() {
+  void SerialIdTest() {
     IdGenerator idGen = new SerialIdGenerator(new AtomicLong());
     Assertions.assertEquals("0", idGen.get());
     Assertions.assertEquals("1", idGen.get());
@@ -18,7 +18,7 @@ public class IdGeneratorsTest {
   }
 
   @Test
-  public void UUIDTest() {
+  void UUIDTest() {
     IdGenerator idGen = new UUIDGenerator();
     Assertions.assertEquals(36, idGen.get().length());
     Assertions.assertEquals(5, idGen.get().split("-").length);

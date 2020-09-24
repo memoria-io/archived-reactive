@@ -8,10 +8,10 @@ import reactor.test.StepVerifier;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class FileWriterTest {
+class FileWriterTest {
 
   @Test
-  public void appendOrCreateTest() {
+  void appendOrCreateTest() {
     Mono<Path> helloWorld = Tests.FILE_WRITER.writeFile(Paths.get("target/temp.txt"), "hello world");
     StepVerifier.create(helloWorld).expectNextCount(1).expectComplete().verify();
 

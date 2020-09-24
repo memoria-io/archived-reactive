@@ -24,7 +24,7 @@ import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.pulsarClien
 import static java.time.Duration.ofMillis;
 import static java.util.Objects.requireNonNull;
 
-public class PulsarIT {
+class PulsarIT {
   private static final FileReader reader = new LocalFileReader(Schedulers.boundedElastic());
   private static final Yaml config = reader.yaml(resourcePath("pulsar.yaml").get()).block();
 
@@ -38,7 +38,7 @@ public class PulsarIT {
   private final Flux<Message> limitedMsgsFlux;
   private final Message[] limitedMsgsArr;
 
-  public PulsarIT() throws PulsarClientException {
+  PulsarIT() throws PulsarClientException {
     client = pulsarClient(config);
     msgSender = new PulsarSender(createProducer(client, mf));
     msgReceiver = new PulsarReceiver(createConsumer(client, mf), ofMillis(100));
@@ -50,7 +50,7 @@ public class PulsarIT {
 
   @Test
   @DisplayName("Should produce messages and consume them correctly")
-  public void produceAndConsume() {
+  void produceAndConsume() {
     var sender = msgSender.apply(limitedMsgsFlux);
     var receiver = msgReceiver.get().take(MSG_COUNT);
     StepVerifier.create(sender).expectNextCount(MSG_COUNT).expectComplete().verify();

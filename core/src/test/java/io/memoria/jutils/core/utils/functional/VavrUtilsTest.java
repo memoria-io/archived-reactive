@@ -16,13 +16,13 @@ import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.vavr.API.Match;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class VavrUtilsTest {
+class VavrUtilsTest {
   private final Try<List<Integer>> success = Try.of(() -> List.of(1, 2, 3));
   private final Exception e = new Exception();
   private final Try<List<Integer>> failure = Try.failure(e);
 
   @Test
-  public void handleTest() throws ExecutionException, InterruptedException {
+  void handleTest() throws ExecutionException, InterruptedException {
     var success = CompletableFuture.completedFuture("success");
     assertEquals(Try.success("success"), success.handle(VavrUtils.handle()).get());
 
@@ -32,7 +32,7 @@ public class VavrUtilsTest {
   }
 
   @Test
-  public void handleToVoidTest() throws ExecutionException, InterruptedException {
+  void handleToVoidTest() throws ExecutionException, InterruptedException {
     var success = CompletableFuture.completedFuture("success");
     assertEquals(Try.success(null), success.handle(VavrUtils.handleToVoid()).get());
 
@@ -42,7 +42,7 @@ public class VavrUtilsTest {
   }
 
   @Test
-  public void instanceOfCaseTest() {
+  void instanceOfCaseTest() {
     Case<Throwable, String> case1 = instanceOfCase(IllegalArgumentException.class, BAD_REQUEST.reasonPhrase());
     Case<Throwable, String> case2 = instanceOfCase(NotFound.class, BAD_REQUEST.reasonPhrase());
     Function1<Throwable, String> f = t -> Match(t).of(case1, case2);
@@ -50,7 +50,7 @@ public class VavrUtilsTest {
   }
 
   @Test
-  public void listOfTryTest() {
+  void listOfTryTest() {
     List<Try<Integer>> su = List.ofAll(VavrUtils.listOfTry(success));
     List<Try<Integer>> fa = List.ofAll(VavrUtils.listOfTry(failure));
     assertEquals(List.of(Try.success(1), Try.success(2), Try.success(3)), su);
@@ -58,7 +58,7 @@ public class VavrUtilsTest {
   }
 
   @Test
-  public void traverseOfTryTest() {
+  void traverseOfTryTest() {
     List<Try<Integer>> su = List.ofAll(VavrUtils.traverseOfTry(success));
     List<Try<Integer>> fa = List.ofAll(VavrUtils.traverseOfTry(failure));
     assertEquals(List.of(Try.success(1), Try.success(2), Try.success(3)), su);

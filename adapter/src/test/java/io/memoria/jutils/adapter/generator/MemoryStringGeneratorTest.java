@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import java.security.SecureRandom;
 
-public class MemoryStringGeneratorTest {
+class MemoryStringGeneratorTest {
   @Test
-  public void randomAlphanumericTest() {
+  void randomAlphanumericTest() {
     SecureRandom secRand = new SecureRandom();
     RandomStringGenerator ru = new RandomStringGenerator(secRand);
     Stream.range(0, 100).forEach(t -> {
@@ -21,7 +21,7 @@ public class MemoryStringGeneratorTest {
   }
 
   @Test
-  public void randomHexTest() {
+  void randomHexTest() {
     SecureRandom secRand = new SecureRandom();
     RandomStringGenerator ru = new RandomStringGenerator(secRand);
     Stream.range(0, 100).forEach(t -> {

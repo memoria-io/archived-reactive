@@ -14,7 +14,7 @@ import static io.memoria.jutils.core.utils.netty.NettyServerUtils.stringReply;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpResponseStatus.UNAUTHORIZED;
 
-public class NettyServerUtilsTest {
+class NettyServerUtilsTest {
   private static final String stringReplyPath = "/string";
   private static final String statusReplyPath = "/status";
   private static final String errorReplyPath = "/error";
@@ -27,18 +27,18 @@ public class NettyServerUtilsTest {
                                                            .bindNow();
 
   @AfterAll
-  public static void afterAll() {
+  static void afterAll() {
     server.dispose();
   }
 
   @Test
-  public void errorReplyTest() {
+  void errorReplyTest() {
     var monoResp = get(host, errorReplyPath);
     StepVerifier.create(monoResp).expectNext(Tuple.of(UNAUTHORIZED, "Unauthorized")).expectComplete().verify();
   }
 
   @Test
-  public void statusReplyTest() {
+  void statusReplyTest() {
     var monoResp = get(host, statusReplyPath);
     StepVerifier.create(monoResp)
                 .expectNext(Tuple.of(UNAUTHORIZED, UNAUTHORIZED.reasonPhrase()))
@@ -47,7 +47,7 @@ public class NettyServerUtilsTest {
   }
 
   @Test
-  public void stringReplyTest() {
+  void stringReplyTest() {
     var monoResp = get(host, stringReplyPath);
     StepVerifier.create(monoResp).expectNext(Tuple.of(OK, "Hello")).expectComplete().verify();
   }

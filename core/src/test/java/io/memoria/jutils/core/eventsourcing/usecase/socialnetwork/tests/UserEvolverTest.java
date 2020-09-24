@@ -13,7 +13,7 @@ import reactor.test.StepVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserEvolverTest {
+class UserEvolverTest {
   private static final UserEvolver evolver = new UserEvolver();
   // Scenarios Data
   private static final String ALEX_NAME = "alex";
@@ -25,7 +25,7 @@ public class UserEvolverTest {
   private static final FriendAdded FRIEND_ADDED = new FriendAdded("0", BOB_NAME);
 
   @Test
-  public void eventsFlux() {
+  void eventsFlux() {
     // Given
     Flux<UserEvent> events = Flux.just(FRIEND_ADDED, MESSAGE_SENT);
     // When
@@ -36,7 +36,7 @@ public class UserEvolverTest {
   }
 
   @Test
-  public void eventsList() {
+  void eventsList() {
     // Given
     var events = List.of(FRIEND_ADDED, MESSAGE_SENT);
     // When
@@ -47,7 +47,7 @@ public class UserEvolverTest {
   }
 
   @Test
-  public void friendAddedTest() {
+  void friendAddedTest() {
     // When
     var user = evolver.apply(ALEX, FRIEND_ADDED);
     // Then
@@ -55,7 +55,7 @@ public class UserEvolverTest {
   }
 
   @Test
-  public void messageCreatedTest() {
+  void messageCreatedTest() {
     // Given
     var alex = ALEX.withNewFriend(BOB_NAME);
     // When

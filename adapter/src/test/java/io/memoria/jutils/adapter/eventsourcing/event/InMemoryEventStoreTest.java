@@ -13,7 +13,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InMemoryEventStoreTest {
+class InMemoryEventStoreTest {
   private static record GreetingCreated(String id, String aggId, String value) implements Event {}
 
   private final Map<String, ArrayList<GreetingCreated>> db = new HashMap<>();
@@ -23,7 +23,7 @@ public class InMemoryEventStoreTest {
   private final GreetingCreated e3 = new GreetingCreated("2", "1", "Ciao");
 
   @Test
-  public void add() {
+  void add() {
     store.add("1", e1).block();
     store.add("2", e2).block();
     assertThat(db.get("0")).isNull();
@@ -32,25 +32,25 @@ public class InMemoryEventStoreTest {
   }
 
   @Test
-  public void addMany() {
+  void addMany() {
     var f = List.of(e1, e2, e3);
     store.add("0", f).block();
     StepVerifier.create(store.stream("0")).expectNext(e1, e2, e3).expectComplete().verify();
   }
 
   @BeforeEach
-  public void beforeEach() {
+  void beforeEach() {
     db.clear();
   }
 
   @Test
-  public void exists() {
+  void exists() {
     store.add("1", e1).block();
     assertThat(store.exists("1").block()).isTrue();
   }
 
   @Test
-  public void stream() {
+  void stream() {
     store.add("0", e1).block();
     store.add("0", e2).block();
     store.add("0", e3).block();

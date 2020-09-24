@@ -1,0 +1,21 @@
+{
+  "Manager": {
+    "name": "Annika",
+    "team": [
+      {
+        "name": "bob",
+        "tasks": [
+          "fix issue 1",
+          "Fix issue 2"
+        ]
+      },
+      {
+        "name": "alex",
+        "tasks": [
+          "fix issue 3",
+          "Fix issue 4"
+        ]
+      }
+    ]
+  }
+}

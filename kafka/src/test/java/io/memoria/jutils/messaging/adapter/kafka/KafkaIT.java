@@ -22,7 +22,7 @@ import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofSeconds;
 import static java.util.Objects.requireNonNull;
 
-public class KafkaIT {
+class KafkaIT {
   private static final FileReader reader = new LocalFileReader(Schedulers.boundedElastic());
   private static final Yaml configs = requireNonNull(reader.yaml(resourcePath("kafka.yaml").get()).block());
   private static final MessageFilter messageFilter = new MessageFilter("topic-" + new Random().nextInt(1000), 0, 0);
@@ -34,7 +34,7 @@ public class KafkaIT {
   private final Flux<Message> limitedMsgsFlux;
   private final Message[] limitedMsgsArr;
 
-  public KafkaIT() {
+  KafkaIT() {
     msgSender = new KafkaSender(producer(configs), messageFilter, Schedulers.boundedElastic(), ofSeconds(1));
     msgReceiver = new KafkaReceiver(consumer(configs), messageFilter, Schedulers.boundedElastic(), ofSeconds(1));
     infiniteMsgsFlux = Flux.interval(ofMillis(100)).map(this::iToMessage);
@@ -44,7 +44,7 @@ public class KafkaIT {
 
   @Test
   @DisplayName("Consumed messages should be same as published ones, and In same order")
-  public void kafkaPubSub() {
+  void kafkaPubSub() {
     var publisher = msgSender.apply(limitedMsgsFlux);
     var consumer = msgReceiver.get().take(MSG_COUNT);
     StepVerifier.create(publisher).expectNextCount(MSG_COUNT).expectComplete().verify();

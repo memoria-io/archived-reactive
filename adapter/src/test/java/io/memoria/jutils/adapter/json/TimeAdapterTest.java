@@ -9,14 +9,14 @@ import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TimeAdapterTest {
+class TimeAdapterTest {
   private final Json parser = new JsonGson(new TimeAdapter(DateTimeFormatter.ISO_LOCAL_TIME, ZoneOffset.UTC));
   // Given
   private final String timeJson = "\"18:04:04\"";
   private final LocalTime timeObj = LocalTime.of(18, 4, 4);
 
   @Test
-  public void deserializer() {
+  void deserializer() {
     // When
     LocalTime deserializedTime = parser.deserialize(timeJson, LocalTime.class).get();
     // Then
@@ -24,7 +24,7 @@ public class TimeAdapterTest {
   }
 
   @Test
-  public void serializer() {
+  void serializer() {
     // When
     String serializedJson = parser.serialize(timeObj);
     // Then

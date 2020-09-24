@@ -14,7 +14,7 @@ import static io.memoria.jutils.core.file.FileReader.resourcePath;
 import static io.vavr.API.Some;
 import static io.vavr.control.Option.none;
 
-public class EtcdIT {
+class EtcdIT {
   private static final FileReader reader = new LocalFileReader(Schedulers.boundedElastic());
   private static final Yaml config = reader.yaml(resourcePath("etcd.yaml").get()).block();
 
@@ -23,13 +23,13 @@ public class EtcdIT {
   private final String keyPrefix = "myKey";
   private final String value = "myValue";
 
-  public EtcdIT() {
+  EtcdIT() {
     clientBuilt = Client.builder().endpoints(config.asString("etcd.url").get()).build();
     client = new EtcdStoreClient(clientBuilt);
   }
 
   @Test
-  public void deletionTest() {
+  void deletionTest() {
     String key = keyPrefix + new Random().nextInt(1000);
     StepVerifier.create(client.put(key, value)).expectComplete().verify();
     StepVerifier.create(client.delete(key)).expectComplete().verify();
@@ -37,7 +37,7 @@ public class EtcdIT {
   }
 
   @Test
-  public void getMapTest() {
+  void getMapTest() {
     String key = keyPrefix + new Random().nextInt(1000);
     StepVerifier.create(client.put(key + "0", value)).expectComplete().verify();
     StepVerifier.create(client.put(key + "1", value)).expectComplete().verify();
@@ -49,14 +49,14 @@ public class EtcdIT {
   }
 
   @Test
-  public void getTest() {
+  void getTest() {
     String key = keyPrefix + new Random().nextInt(1000);
     StepVerifier.create(client.put(key, value)).expectComplete().verify();
     StepVerifier.create(client.get(key)).expectNext(Some(value)).expectComplete().verify();
   }
 
   @Test
-  public void putTest() {
+  void putTest() {
     String key = keyPrefix + new Random().nextInt(1000);
     StepVerifier.create(client.put(key, value)).expectComplete().verify();
     StepVerifier.create(client.put(key, "new_value")).expectComplete().verify();

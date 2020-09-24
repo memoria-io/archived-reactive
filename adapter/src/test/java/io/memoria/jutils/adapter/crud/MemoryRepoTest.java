@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static io.vavr.control.Option.some;
 
-public class MemoryRepoTest {
+class MemoryRepoTest {
   private static record User(String id, int age) {}
 
   private final Map<String, User> db = new HashMap<>();
@@ -25,20 +25,20 @@ public class MemoryRepoTest {
   private final User otherUser = new User("bob", 23);
 
   @AfterEach
-  public void afterEach() {
+  void afterEach() {
     db.clear();
   }
 
   @Test
   @DisplayName("Already exists")
-  public void alreadyExists() {
+  void alreadyExists() {
     db.put(this.user.id, this.user);
     StepVerifier.create(writeRepo.create(user.id, user)).expectError(AlreadyExists.class).verify();
   }
 
   @Test
   @DisplayName("Should crud the entity")
-  public void crudTest() {
+  void crudTest() {
     StepVerifier.create(writeRepo.create(user.id, user)).expectComplete().verify();
     Assertions.assertEquals(new User("bob", 20), db.get("bob"));
     StepVerifier.create(writeRepo.update(otherUser.id, otherUser)).expectComplete().verify();
@@ -47,7 +47,7 @@ public class MemoryRepoTest {
 
   @Test
   @DisplayName("Should delete successfully")
-  public void delete() {
+  void delete() {
     db.put(this.user.id, this.user);
     StepVerifier.create(writeRepo.delete(user.id)).expectComplete().verify();
     Assertions.assertNull(db.get(user.id));
@@ -55,7 +55,7 @@ public class MemoryRepoTest {
 
   @Test
   @DisplayName("Should exists")
-  public void exists() {
+  void exists() {
     db.put(this.user.id, this.user);
     StepVerifier.create(readRepo.get(user.id)).expectNext(some(user)).expectComplete().verify();
     StepVerifier.create(readRepo.exists(user.id)).expectNext(true).expectComplete().verify();
@@ -65,7 +65,7 @@ public class MemoryRepoTest {
 
   @Test
   @DisplayName("Should be not found")
-  public void notFoundTest() {
+  void notFoundTest() {
     StepVerifier.create(writeRepo.update(user.id, user)).expectError(NotFound.class).verify();
   }
 }

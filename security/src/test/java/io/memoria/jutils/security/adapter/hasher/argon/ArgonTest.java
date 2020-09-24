@@ -12,12 +12,12 @@ import reactor.test.StepVerifier;
 
 import java.security.SecureRandom;
 
-public class ArgonTest {
+class ArgonTest {
   private final Hasher hasher = new ArgonHasher(100, 1024, 4, Schedulers.elastic());
   private final Verifier verifier = new ArgonVerifier(Schedulers.elastic());
 
   @Test
-  public void hashAndVerifyTest() {
+  void hashAndVerifyTest() {
     SecureRandom secRand = new SecureRandom();
     StringGenerator ru = new RandomStringGenerator(secRand);
     Stream.range(0, 10).forEach(t -> {

@@ -6,10 +6,10 @@ import reactor.test.StepVerifier;
 
 import static io.memoria.jutils.core.file.FileReader.resourcePath;
 
-public class FileReaderTest {
+class FileReaderTest {
 
   @Test
-  public void fileAsStringTest() {
+  void fileAsStringTest() {
     var f = Tests.FILE_READER.file(resourcePath("file.txt").get());
     StepVerifier.create(f).expectNext("hello\nworld").expectComplete().verify();
   }

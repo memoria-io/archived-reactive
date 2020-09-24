@@ -7,14 +7,14 @@ import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DurationAdapterTest {
+class DurationAdapterTest {
   private final Json j = new JsonGson(new DurationAdapter());
   // Given
   private final String durationJson = "\"PT51H4M\"";
   private final Duration duration = Duration.ofHours(51).plusMinutes(4);
 
   @Test
-  public void deserializer() {
+  void deserializer() {
     // When
     Duration actual = j.deserialize(durationJson, Duration.class).get();
     // Then
@@ -22,7 +22,7 @@ public class DurationAdapterTest {
   }
 
   @Test
-  public void serializer() {
+  void serializer() {
     // When
     String actual = j.serialize(duration);
     // Then

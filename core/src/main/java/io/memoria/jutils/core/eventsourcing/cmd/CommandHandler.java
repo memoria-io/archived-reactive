@@ -15,10 +15,10 @@ import static java.util.function.Function.identity;
 
 public final class CommandHandler<S extends State, E extends Event, C extends Command>
         implements Function2<String, C, Mono<Void>> {
-  private final EventStore<E> store;
+  private final transient EventStore<E> store;
   private final Evolver<S, E> evolver;
   private final Decider<S, C, E> decider;
-  private final S initialState;
+  private final transient S initialState;
 
   public CommandHandler(EventStore<E> store, Evolver<S, E> evolver, Decider<S, C, E> decider, S initialState) {
     this.store = store;

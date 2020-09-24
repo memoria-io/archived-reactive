@@ -14,85 +14,85 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class YamlTest {
+class YamlTest {
 
   private final Yaml configMap = Objects.requireNonNull(Tests.FILE_READER.yaml(resourcePath("utils/test.yaml").get())
                                                                          .block());
 
   @Test
-  public void asNone() {
+  void asNone() {
     assertEquals(Option.none(), configMap.asYaml("failingMap"));
   }
 
   @Test
-  public void asYamlConfigMap() {
+  void asYamlConfigMap() {
     assertEquals("string value", configMap.asYaml("map").get().asString("key1").get());
   }
 
   @Test
-  public void fromBoolean() {
+  void fromBoolean() {
     assertTrue(configMap.asBoolean("booleanValue").get());
   }
 
   @Test
-  public void fromBooleanList() {
+  void fromBooleanList() {
     assertEquals(List.of(true, false, true), configMap.asBooleanList("booleanList").get());
   }
 
   @Test
-  public void fromDoubleList() {
+  void fromDoubleList() {
     assertEquals(List.of(1000000000001.23, 1000000000002.23, 1000000000003.23),
                  configMap.asDoubleList("doubleList").get());
   }
 
   @Test
-  public void fromIntegerList() {
+  void fromIntegerList() {
     assertEquals(List.of(1, 2, 3), configMap.asIntegerList("integerList").get());
   }
 
   @Test
-  public void fromLongList() {
+  void fromLongList() {
     assertEquals(List.of(1000000000001L, 1000000000002L, 1000000000003L), configMap.asLongList("longList").get());
   }
 
   @Test
-  public void fromString() {
+  void fromString() {
     assertEquals("hello world", configMap.asString("stringValue").get());
   }
 
   @Test
-  public void fromStringList() {
+  void fromStringList() {
     assertEquals(Option.none(), configMap.asStringList("failingStringList"));
   }
 
   @Test
-  public void fromdouble() {
+  void fromdouble() {
     assertEquals(1000000.000001, configMap.asDouble("doubleValue").get());
   }
 
   @Test
-  public void frominteger() {
+  void frominteger() {
     assertEquals(10, configMap.asInteger("integerValue").get());
   }
 
   @Test
-  public void fromlong() {
+  void fromlong() {
     assertEquals(100000000001L, configMap.asLong("longValue").get());
   }
 
   @Test
-  public void fromstringList() {
+  void fromstringList() {
     assertEquals(List.of("hi", "hello", "bye"), configMap.asStringList("stringList").get());
   }
 
   @Test
-  public void notNull() {
+  void notNull() {
     assertNotNull(configMap);
   }
 
   @Test
   @DisplayName("Sub values should be parsed correctly")
-  public void subValues() {
+  void subValues() {
     Yaml map = Tests.FILE_READER.yaml(resourcePath("utils/main-config.yaml").get()).block();
     assertNotNull(map);
     assertEquals("hello world", map.asString("sub.config.name").get());
