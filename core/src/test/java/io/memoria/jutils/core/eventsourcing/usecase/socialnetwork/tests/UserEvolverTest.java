@@ -7,11 +7,10 @@ import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEve
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent.MessageSent;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvolver;
 import io.vavr.collection.List;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class UserEvolverTest {
   private static final UserEvolver evolver = new UserEvolver();
@@ -43,7 +42,7 @@ class UserEvolverTest {
     var newAlexState = events.foldLeft(ALEX, evolver);
     // Then
     var expectedAlex = ALEX.withNewFriend(BOB_NAME).withNewMessage(MESSAGE.id());
-    assertThat(newAlexState).isEqualTo(expectedAlex);
+    Assertions.assertEquals(expectedAlex, newAlexState);
   }
 
   @Test
@@ -51,7 +50,7 @@ class UserEvolverTest {
     // When
     var user = evolver.apply(ALEX, FRIEND_ADDED);
     // Then
-    assertThat(user).isEqualTo(ALEX.withNewFriend(BOB_NAME));
+    Assertions.assertEquals(ALEX.withNewFriend(BOB_NAME), user);
   }
 
   @Test
@@ -62,6 +61,6 @@ class UserEvolverTest {
     var user = evolver.apply(alex, MESSAGE_SENT);
     // Then
     var expectedAlex = alex.withNewMessage(MESSAGE.id());
-    assertThat(user).isEqualTo(expectedAlex);
+    Assertions.assertEquals(expectedAlex, user);
   }
 }

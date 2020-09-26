@@ -7,7 +7,7 @@ import io.memoria.jutils.adapter.json.utils.Employee.Engineer;
 import io.memoria.jutils.adapter.json.utils.Employee.Manager;
 import io.memoria.jutils.core.json.Json;
 import io.vavr.collection.List;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static io.memoria.jutils.core.file.FileReader.resourcePath;
@@ -35,23 +35,23 @@ class JsonGsonUtilsTest {
   @Test
   void deserializeEngineer() {
     var manager = j.deserialize(engineerJson, Engineer.class).get();
-    Assertions.assertThat(manager).isEqualTo(engineerObj);
+    Assertions.assertEquals(engineerObj, manager);
   }
 
   @Test
   void deserializeManager() {
     var manager = j.deserialize(managerJson, Manager.class).get();
-    Assertions.assertThat(manager).isEqualTo(managerObj);
+    Assertions.assertEquals(managerObj, manager);
   }
 
   @Test
   void serializeEngineer() {
     var bob = new Engineer("bob", List.of("fix issue 1", "Fix issue 2"));
-    Assertions.assertThat(j.serialize(bob)).isEqualTo(engineerJson);
+    Assertions.assertEquals(engineerJson, j.serialize(bob));
   }
 
   @Test
   void serializeManager() {
-    Assertions.assertThat(j.serialize(managerObj)).isEqualTo(managerJson);
+    Assertions.assertEquals(managerJson, j.serialize(managerObj));
   }
 }

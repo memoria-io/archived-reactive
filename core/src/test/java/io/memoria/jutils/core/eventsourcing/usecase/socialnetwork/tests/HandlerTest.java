@@ -13,7 +13,7 @@ import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEve
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent.AccountCreated;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvolver;
 import io.memoria.jutils.core.generator.IdGenerator;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
@@ -45,7 +45,7 @@ class HandlerTest {
     var handleMono = handler.apply(workSpaceAggId, cmd);
     // Then
     StepVerifier.create(handleMono).expectComplete().verify();
-    Assertions.assertThat(db.get(workSpaceAggId)).contains(new AccountCreated("0", "0", 18));
+    Assertions.assertTrue(db.get(workSpaceAggId).contains(new AccountCreated("0", "0", 18)));
   }
 
   @Test

@@ -4,7 +4,7 @@ import io.memoria.jutils.core.eventsourcing.event.EvolverTest.AccountEvent.Balan
 import io.memoria.jutils.core.eventsourcing.event.EvolverTest.AccountEvent.BalanceWithdrawn;
 import io.memoria.jutils.core.eventsourcing.state.State;
 import io.vavr.collection.List;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
@@ -38,7 +38,7 @@ public class EvolverTest {
   public void apply() {
     var acc = new Account("0", 10);
     var newAcc = e.apply(acc, new BalanceAdded("0", "0", 10));
-    Assertions.assertThat(newAcc.balance).isEqualTo(20);
+    Assertions.assertEquals(20, newAcc.balance);
   }
 
   @Test
@@ -53,7 +53,7 @@ public class EvolverTest {
     var acc = new Account("0", 10);
     var newAcc = e.curriedTraversable(acc)
                   .apply(List.of(new BalanceAdded("0", "0", 10), new BalanceAdded("0", "0", 10)));
-    Assertions.assertThat(newAcc.balance).isEqualTo(30);
+    Assertions.assertEquals(30, newAcc.balance);
   }
 
   @Test
@@ -67,6 +67,6 @@ public class EvolverTest {
   public void applyTraversal() {
     var acc = new Account("0", 10);
     var newAcc = e.apply(acc, List.of(new BalanceAdded("0", "0", 10), new BalanceAdded("0", "0", 10)));
-    Assertions.assertThat(newAcc.balance).isEqualTo(30);
+    Assertions.assertEquals(30, newAcc.balance);
   }
 }

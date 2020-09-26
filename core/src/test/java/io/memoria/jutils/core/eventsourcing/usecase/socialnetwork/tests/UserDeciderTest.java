@@ -8,7 +8,7 @@ import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserDec
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent.MessageSent;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvolver;
 import io.memoria.jutils.core.generator.IdGenerator;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -38,7 +38,7 @@ class UserDeciderTest {
     // When
     var events = decide.apply(alexWithFriend, SEND_MESSAGE).get();
     // Then
-    Assertions.assertThat(events.head()).isEqualTo(MESSAGE_SENT);
+    Assertions.assertEquals(MESSAGE_SENT, events.head());
   }
 
   @Test
@@ -47,12 +47,12 @@ class UserDeciderTest {
     var events = decide.apply(ALEX, ADD_FRIEND).get();
     var user = new UserEvolver().apply(ALEX, events);
     // Then
-    Assertions.assertThat(user).isEqualTo(ALEX.withNewFriend(BOB_Id));
+    Assertions.assertEquals(ALEX.withNewFriend(BOB_Id), user);
   }
 
   @Test
   void shouldNotAddFriend() {
     var events = decide.apply(ALEX.withNewFriend(BOB_Id), ADD_FRIEND);
-    Assertions.assertThat(events.getCause()).isEqualTo(ALREADY_EXISTS);
+    Assertions.assertEquals(ALREADY_EXISTS, events.getCause());
   }
 }

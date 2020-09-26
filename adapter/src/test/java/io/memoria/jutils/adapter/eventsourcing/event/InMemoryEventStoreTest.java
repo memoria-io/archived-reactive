@@ -11,7 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InMemoryEventStoreTest {
   private static record GreetingCreated(String id, String aggId, String value) implements Event {}
@@ -26,9 +28,9 @@ class InMemoryEventStoreTest {
   void add() {
     store.add("1", e1).block();
     store.add("2", e2).block();
-    assertThat(db.get("0")).isNull();
-    assertThat(db.get("1").get(0)).isEqualTo(e1);
-    assertThat(db.get("2").get(0)).isEqualTo(e2);
+    assertNull(db.get("0"));
+    assertEquals(e1, db.get("1").get(0));
+    assertEquals(e2, db.get("2").get(0));
   }
 
   @Test
@@ -46,7 +48,7 @@ class InMemoryEventStoreTest {
   @Test
   void exists() {
     store.add("1", e1).block();
-    assertThat(store.exists("1").block()).isTrue();
+    assertEquals(true, store.exists("1").block());
   }
 
   @Test
