@@ -6,9 +6,6 @@ import io.memoria.jutils.core.dto.DTO;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 
-import static io.memoria.jutils.core.dto.DTO.nullProperties;
-import static java.util.function.Function.identity;
-
 public final class EmployeeDTO implements DTO<Employee> {
 
   public static class EngineerDTO implements DTO<Engineer> {
@@ -41,8 +38,8 @@ public final class EmployeeDTO implements DTO<Employee> {
     }
   }
 
-  private EngineerDTO Engineer = null;
-  private ManagerDTO Manager = null;
+  private EngineerDTO Engineer;
+  private ManagerDTO Manager;
 
   public EmployeeDTO(EngineerDTO engineer) {
     this.Engineer = engineer;
@@ -54,10 +51,6 @@ public final class EmployeeDTO implements DTO<Employee> {
 
   @Override
   public Try<Employee> get() {
-    if (Engineer != null)
-      return Engineer.get().map(identity());
-    if (Manager != null)
-      return Manager.get().map(identity());
-    return Try.failure(nullProperties(Engineer.class.getSimpleName(), Manager.class.getSimpleName()));
+    return DTO.getNonNull(this.Engineer, this.Manager);
   }
 }
