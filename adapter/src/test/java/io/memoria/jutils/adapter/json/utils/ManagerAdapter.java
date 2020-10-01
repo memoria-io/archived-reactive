@@ -11,9 +11,9 @@ import io.vavr.control.Try;
 
 import java.io.IOException;
 
-import static io.memoria.jutils.adapter.json.JsonException.notFound;
-import static io.memoria.jutils.adapter.json.JsonException.unknown;
-import static io.memoria.jutils.adapter.json.JsonGsonUtils.deserialize;
+import static io.memoria.jutils.adapter.json.JsonGsonUtils.deserializeAsList;
+import static io.memoria.jutils.core.json.JsonException.notFound;
+import static io.memoria.jutils.core.json.JsonException.unknown;
 
 public class ManagerAdapter extends TypeAdapter<Manager> {
   private final TypeAdapter<Engineer> engineerAdapter;
@@ -31,7 +31,7 @@ public class ManagerAdapter extends TypeAdapter<Manager> {
       var nextName = in.nextName();
       switch (nextName) {
         case "name" -> name = Try.success(in.nextString());
-        case "team" -> tasks = deserialize(in, engineerAdapter).get();
+        case "team" -> tasks = deserializeAsList(in, engineerAdapter).get();
         default -> throw unknown(nextName);
       }
     }

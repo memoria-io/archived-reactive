@@ -3,11 +3,14 @@ package io.memoria.jutils.adapter.json;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
+import io.memoria.jutils.core.dto.DTO;
 import io.memoria.jutils.core.json.Json;
 import io.vavr.control.Try;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+
+import static java.util.function.Function.identity;
 
 public record JsonGson(Gson gson) implements Json {
 
@@ -27,6 +30,11 @@ public record JsonGson(Gson gson) implements Json {
   @Override
   public <T> Try<T> deserialize(String str, Class<T> tClass) {
     return Try.of(() -> gson.fromJson(str, tClass));
+  }
+
+  @Override
+  public <T> Try<T> deserializeByDTO(String str, Class<? extends DTO<T>> tClass) {
+    return Try.of(() -> gson.fromJson(str, tClass).get()).flatMap(identity());
   }
 
   @Override

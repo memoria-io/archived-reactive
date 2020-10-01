@@ -1,6 +1,7 @@
-package io.memoria.jutils.adapter.json;
+package io.memoria.jutils.core.json;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class JsonException extends IOException {
 
@@ -10,6 +11,11 @@ public class JsonException extends IOException {
 
   public static JsonException notFound(String jsonProperty) {
     return new JsonException("Json property [%s] was not found in the Json string".formatted(jsonProperty));
+  }
+
+  public static JsonException notFound(String... jsonProperties) {
+    return new JsonException(
+            "Non of the Json properties " + Arrays.asList(jsonProperties) + " was found in the Json string");
   }
 
   public static JsonException unknown(String jsonProperty) {

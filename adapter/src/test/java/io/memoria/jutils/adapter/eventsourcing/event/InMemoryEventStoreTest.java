@@ -13,7 +13,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InMemoryEventStoreTest {
   private static record GreetingCreated(String id, String aggId, String value) implements Event {}

@@ -11,7 +11,7 @@ import io.vavr.control.Try;
 
 import java.io.IOException;
 
-import static io.memoria.jutils.adapter.json.JsonException.noMatchingAdapter;
+import static io.memoria.jutils.core.json.JsonException.noMatchingAdapter;
 
 public class JsonGsonUtils {
   public static <T> Try<T> deserialize(JsonReader in, Map<String, TypeAdapter<? extends T>> mappers) {
@@ -27,7 +27,7 @@ public class JsonGsonUtils {
     });
   }
 
-  public static <T> Try<List<T>> deserialize(JsonReader in, TypeAdapter<T> typeAdapter) {
+  public static <T> Try<List<T>> deserializeAsList(JsonReader in, TypeAdapter<T> typeAdapter) {
     return Try.of(() -> {
       var list = List.<T>empty();
       in.beginArray();
@@ -39,7 +39,7 @@ public class JsonGsonUtils {
     });
   }
 
-  public static <T> Try<List<T>> deserialize(JsonReader in, CheckedFunction1<JsonReader, T> reader) {
+  public static <T> Try<List<T>> deserializeAsList(JsonReader in, CheckedFunction1<JsonReader, T> reader) {
     return Try.of(() -> {
       in.beginArray();
       var list = List.<T>empty();

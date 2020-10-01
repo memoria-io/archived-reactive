@@ -10,8 +10,7 @@ import io.vavr.control.Try;
 
 import java.io.IOException;
 
-import static io.memoria.jutils.adapter.json.JsonException.notFound;
-import static io.memoria.jutils.adapter.json.JsonGsonUtils.deserialize;
+import static io.memoria.jutils.core.json.JsonException.notFound;
 
 public class EngineerAdapter extends TypeAdapter<Engineer> {
   @Override
@@ -23,7 +22,7 @@ public class EngineerAdapter extends TypeAdapter<Engineer> {
       var nextName = in.nextName();
       switch (nextName) {
         case "name" -> name = Try.success(in.nextString());
-        case "tasks" -> tasks = JsonGsonUtils.deserialize(in, JsonReader::nextString).get();
+        case "tasks" -> tasks = JsonGsonUtils.deserializeAsList(in, JsonReader::nextString).get();
       }
     }
     in.endObject();
