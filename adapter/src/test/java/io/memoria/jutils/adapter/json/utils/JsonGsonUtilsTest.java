@@ -73,7 +73,7 @@ class JsonGsonUtilsTest {
 
   @Test
   void serializeEngineerDTO() {
-    var dto = new EmployeeDTO(new EngineerDTO(engineerObj));
+    var dto = new EmployeeDTO(engineerObj);
     Assertions.assertEquals(engineerJson, j.serialize(dto));
   }
 
@@ -84,7 +84,7 @@ class JsonGsonUtilsTest {
 
   @Test
   void serializeManagerDTO() {
-    var dto = new EmployeeDTO(new ManagerDTO(managerObj));
+    var dto = new EmployeeDTO(managerObj);
     Assertions.assertEquals(managerJson, j.serialize(dto));
   }
 }

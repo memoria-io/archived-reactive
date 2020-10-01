@@ -16,4 +16,13 @@ public interface DTO<T> extends Supplier<Try<T>> {
     }
     return Try.failure(new NullPointerException("No property was found"));
   }
+
+  @SafeVarargs
+  static <T> Try<T> getNonNull(T... ts) {
+    for (T t : ts) {
+      if (t != null)
+        return Try.success(t);
+    }
+    return Try.failure(new NullPointerException("No property was found"));
+  }
 }

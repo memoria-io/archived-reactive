@@ -41,12 +41,11 @@ public final class EmployeeDTO implements DTO<Employee> {
   private EngineerDTO Engineer;
   private ManagerDTO Manager;
 
-  public EmployeeDTO(EngineerDTO engineer) {
-    this.Engineer = engineer;
-  }
-
-  public EmployeeDTO(ManagerDTO manager) {
-    this.Manager = manager;
+  public EmployeeDTO(Employee employee) {
+    if (employee instanceof Engineer engineer)
+      this.Engineer = new EngineerDTO(engineer);
+    if (employee instanceof Manager manager)
+      this.Manager = new ManagerDTO(manager);
   }
 
   @Override
