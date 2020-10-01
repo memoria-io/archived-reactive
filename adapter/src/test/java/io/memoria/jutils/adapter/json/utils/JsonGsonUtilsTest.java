@@ -5,9 +5,8 @@ import io.memoria.jutils.adapter.Tests;
 import io.memoria.jutils.adapter.json.JsonGson;
 import io.memoria.jutils.adapter.json.utils.Employee.Engineer;
 import io.memoria.jutils.adapter.json.utils.Employee.Manager;
-import io.memoria.jutils.adapter.json.utils.EmployeeDTO.EngineerDTO;
-import io.memoria.jutils.adapter.json.utils.EmployeeDTO.ManagerDTO;
 import io.memoria.jutils.core.json.Json;
+import io.memoria.jutils.core.json.JsonException;
 import io.vavr.collection.List;
 import io.vavr.gson.VavrGson;
 import org.junit.jupiter.api.Assertions;
@@ -18,9 +17,9 @@ import static io.memoria.jutils.core.file.FileReader.resourcePath;
 class JsonGsonUtilsTest {
 
   private static final Json j;
-  private static final Engineer engineerObj;
+  private static final Engineer engineer;
   private static final Engineer otherEngineerObj;
-  private static final Manager managerObj;
+  private static final Manager manager;
   private static final String managerJson;
   private static final String engineerJson;
 
@@ -29,8 +28,8 @@ class JsonGsonUtilsTest {
     var employeeAdapter = new EmployeeAdapter(engAdapter, new ManagerAdapter(engAdapter));
     j = new JsonGson(VavrGson.registerAll(new GsonBuilder().setPrettyPrinting()), employeeAdapter);
     otherEngineerObj = new Engineer("alex", List.of("fix issue 3", "Fix issue 4"));
-    engineerObj = new Engineer("bob", List.of("fix issue 1", "Fix issue 2"));
-    managerObj = new Manager("Annika", List.of(engineerObj, otherEngineerObj));
+    engineer = new Engineer("bob", List.of("fix issue 1", "Fix issue 2"));
+    manager = new Manager("Annika", List.of(engineer, otherEngineerObj));
     managerJson = Tests.FILE_READER.file(resourcePath("json/Manager.json").get()).block();
     engineerJson = Tests.FILE_READER.file(resourcePath("json/Engineer.json").get()).block();
   }
@@ -39,52 +38,42 @@ class JsonGsonUtilsTest {
   void deserializeBadManagerDTO() {
     var managerTry = j.deserializeByDTO("{}", EmployeeDTO.class);
     Assertions.assertTrue(managerTry.isFailure());
-    System.out.println(managerTry.getCause().toString());
+    Assertions.assertTrue(managerTry.getCause() instanceof JsonException);
+  }
+
+  @Test
+  void deserializeEmployeeDTO() {
+    var engineer = j.deserializeByDTO(engineerJson, EmployeeDTO.class).get();
+    var manager = j.deserializeByDTO(managerJson, EmployeeDTO.class).get();
+    Assertions.assertEquals(JsonGsonUtilsTest.engineer, engineer);
+    Assertions.assertEquals(JsonGsonUtilsTest.manager, manager);
   }
 
   @Test
   void deserializeEngineer() {
     var engineer = j.deserialize(engineerJson, Engineer.class).get();
-    Assertions.assertEquals(engineerObj, engineer);
-  }
-
-  @Test
-  void deserializeEngineerDTO() {
-    var engineer = j.deserializeByDTO(engineerJson, EmployeeDTO.class).get();
-    Assertions.assertEquals(engineerObj, engineer);
+    Assertions.assertEquals(JsonGsonUtilsTest.engineer, engineer);
   }
 
   @Test
   void deserializeManager() {
     var manager = j.deserialize(managerJson, Manager.class).get();
-    Assertions.assertEquals(managerObj, manager);
+    Assertions.assertEquals(JsonGsonUtilsTest.manager, manager);
   }
 
   @Test
-  void deserializeManagerDTO() {
-    var manager = j.deserializeByDTO(managerJson, EmployeeDTO.class).get();
-    Assertions.assertEquals(managerObj, manager);
+  void serializeEmployeeDTO() {
+    Assertions.assertEquals(engineerJson, j.serialize(new EmployeeDTO(engineer)));
+    Assertions.assertEquals(managerJson, j.serialize(new EmployeeDTO(manager)));
   }
 
   @Test
   void serializeEngineer() {
-    Assertions.assertEquals(engineerJson, j.serialize(engineerObj));
-  }
-
-  @Test
-  void serializeEngineerDTO() {
-    var dto = new EmployeeDTO(engineerObj);
-    Assertions.assertEquals(engineerJson, j.serialize(dto));
+    Assertions.assertEquals(engineerJson, j.serialize(engineer));
   }
 
   @Test
   void serializeManager() {
-    Assertions.assertEquals(managerJson, j.serialize(managerObj));
-  }
-
-  @Test
-  void serializeManagerDTO() {
-    var dto = new EmployeeDTO(managerObj);
-    Assertions.assertEquals(managerJson, j.serialize(dto));
+    Assertions.assertEquals(managerJson, j.serialize(manager));
   }
 }

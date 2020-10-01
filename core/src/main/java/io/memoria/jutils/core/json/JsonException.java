@@ -1,10 +1,10 @@
 package io.memoria.jutils.core.json;
 
+import io.vavr.collection.List;
+
 import java.io.IOException;
-import java.util.Arrays;
 
 public class JsonException extends IOException {
-
   public static JsonException noMatchingAdapter(String jsonProperty) {
     return new JsonException("Json property [%s] has no matching adapter".formatted(jsonProperty));
   }
@@ -14,8 +14,14 @@ public class JsonException extends IOException {
   }
 
   public static JsonException notFound(String... jsonProperties) {
+    var props = List.of(jsonProperties).reduce((a, b) -> a + ", " + b);
+    return new JsonException("Non of the [" + props + "] properties were found in the Json string");
+  }
+
+  public static JsonException notFoundType(Class<?>... types) {
+    var classes = List.of(types).map(Class::getSimpleName).reduce((a, b) -> a + ", " + b);
     return new JsonException(
-            "Non of the Json properties " + Arrays.asList(jsonProperties) + " was found in the Json string");
+            "No Json property implementing any type of [" + classes + "] was found in the Json string");
   }
 
   public static JsonException unknown(String jsonProperty) {
@@ -33,4 +39,5 @@ public class JsonException extends IOException {
   public JsonException(String message) {
     super(message);
   }
+
 }

@@ -6,6 +6,8 @@ import io.memoria.jutils.core.dto.DTO;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 
+import static io.memoria.jutils.core.json.JsonException.notFoundType;
+
 public final class EmployeeDTO implements DTO<Employee> {
 
   public static class EngineerDTO implements DTO<Engineer> {
@@ -50,6 +52,6 @@ public final class EmployeeDTO implements DTO<Employee> {
 
   @Override
   public Try<Employee> get() {
-    return DTO.getNonNull(this.Engineer, this.Manager);
+    return DTO.find(List.of(this.Engineer, this.Manager), notFoundType(Manager.class, Engineer.class));
   }
 }
