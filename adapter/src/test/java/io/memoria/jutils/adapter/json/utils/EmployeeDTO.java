@@ -52,6 +52,6 @@ public final class EmployeeDTO implements DTO<Employee> {
 
   @Override
   public Try<Employee> get() {
-    return DTO.find(List.of(this.Engineer, this.Manager), notFoundType(Manager.class, Engineer.class));
+    return DTO.firstNonNull(List.of(this.Engineer, this.Manager), notFoundType(Manager.class, Engineer.class));
   }
 }
