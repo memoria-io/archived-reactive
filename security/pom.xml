@@ -5,18 +5,19 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jutils</artifactId>
-        <version>0.148.0</version>
+        <version>0.149.0</version>
     </parent>
 
     <groupId>io.memoria.jutils</groupId>
     <artifactId>security</artifactId>
-    <version>0.148.0</version>
+    <version>0.149.0</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
     <description>Security Module</description>
 
     <properties>
+        <argon2.version>2.7</argon2.version>
         <jsonwebtoken.version>0.10.7</jsonwebtoken.version>
     </properties>
 
@@ -37,6 +38,11 @@
         <!--======================================================================================== -->
         <!-- Security Dependencies -->
         <!--======================================================================================== -->
+        <dependency>
+            <groupId>de.mkammerer</groupId>
+            <artifactId>argon2-jvm</artifactId>
+            <version>${argon2.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>

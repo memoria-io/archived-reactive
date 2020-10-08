@@ -5,19 +5,20 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jutils</artifactId>
-        <version>0.148.0</version>
+        <version>0.149.0</version>
     </parent>
 
     <groupId>io.memoria.jutils</groupId>
     <artifactId>adapter</artifactId>
-    <version>0.148.0</version>
+    <version>0.149.0</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
     <description>adapter Module</description>
 
     <properties>
-        <kafka.version>2.4.0</kafka.version>
+        <gson.version>2.8.6</gson.version>
+        <yamlbeans.version>1.15</yamlbeans.version>
     </properties>
 
     <dependencies>
@@ -28,6 +29,27 @@
             <groupId>io.memoria.jutils</groupId>
             <artifactId>core</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        <!--======================================================================================== -->
+        <!-- Json Dependencies -->
+        <!--======================================================================================== -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr-gson</artifactId>
+            <version>0.10.2</version>
+        </dependency>
+        <!--======================================================================================== -->
+        <!-- Yaml Dependencies -->
+        <!--======================================================================================== -->
+        <dependency>
+            <groupId>com.esotericsoftware.yamlbeans</groupId>
+            <artifactId>yamlbeans</artifactId>
+            <version>${yamlbeans.version}</version>
         </dependency>
     </dependencies>
 </project>
