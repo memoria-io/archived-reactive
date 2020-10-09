@@ -21,8 +21,8 @@ import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 
 class NettyAuthUtilsTest {
   // basic and token only separated for simplicity, in production it should be one path
-  private static final String basicAuthPath = "/authenticate_basic";
-  private static final String tokenAuthPath = "/authenticate_token";
+  private static final String basicAuthPath = "authenticate_basic";
+  private static final String tokenAuthPath = "authenticate_token";
   private static final String host = "127.0.0.1:8081";
   private static final DisposableServer server = HttpServer.create()
                                                            .host("127.0.0.1")
@@ -39,7 +39,7 @@ class NettyAuthUtilsTest {
   @DisplayName("Should deserialize Basic authorization header correctly")
   void basicFromTest() {
     var basic = Base64.getEncoder().encodeToString(("bob:password").getBytes());
-    var monoResp = post(host, basicAuthPath, b -> b.add("Authorization", "Basic " + basic), "payload hello");
+    var monoResp = post("payload hello", b -> b.add("Authorization", "Basic " + basic), host, basicAuthPath);
     StepVerifier.create(monoResp).expectNext(Tuple.of(OK, "(bob, password)")).expectComplete().verify();
   }
 
@@ -47,13 +47,13 @@ class NettyAuthUtilsTest {
   @DisplayName("Should deserialize bearer authorization header correctly")
   void tokenFromTest() {
     var token = "xyz.xyz.xyz";
-    var monoResp = get(host, tokenAuthPath, b -> b.add("Authorization", "Bearer " + token));
+    var monoResp = get(b -> b.add("Authorization", "Bearer " + token), host, tokenAuthPath);
     StepVerifier.create(monoResp).expectNext(Tuple.of(OK, token)).expectComplete().verify();
   }
 
   private static Consumer<HttpServerRoutes> routes() {
-    return r -> r.get(tokenAuthPath, (req, resp) -> stringReply.apply(resp).apply(OK, bearerToken(req).get()))
-                 .post(basicAuthPath,
+    return r -> r.get("/" + tokenAuthPath, (req, resp) -> stringReply.apply(resp).apply(OK, bearerToken(req).get()))
+                 .post("/" + basicAuthPath,
                        (req, resp) -> stringReply.apply(resp).apply(OK, basicCredentials(req).get().toString()));
   }
 }

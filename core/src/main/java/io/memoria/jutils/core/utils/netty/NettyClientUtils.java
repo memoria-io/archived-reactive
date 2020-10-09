@@ -9,46 +9,51 @@ import reactor.core.publisher.Mono;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class NettyClientUtils {
-  public static Mono<Tuple2<HttpResponseStatus, String>> get(String host, String path) {
+  private static String joinPath(String... path) {
+    return Arrays.stream(path).reduce("", (a, b) -> a + "/" + b);
+  }
+
+  public static Mono<Tuple2<HttpResponseStatus, String>> get(String host, String... path) {
     return HttpClient.create()
                      .baseUrl(host)
                      .get()
-                     .uri(path)
+                     .uri(joinPath(path))
                      .responseSingle((res, body) -> body.asString().map(s -> Tuple.of(res.status(), s)));
   }
 
-  public static Mono<Tuple2<HttpResponseStatus, String>> get(String host,
-                                                             String path,
-                                                             Consumer<HttpHeaders> httpHeaders) {
+  public static Mono<Tuple2<HttpResponseStatus, String>> get(Consumer<HttpHeaders> httpHeaders,
+                                                             String host,
+                                                             String... path) {
     return HttpClient.create()
                      .baseUrl(host)
                      .headers(httpHeaders)
                      .get()
-                     .uri(path)
+                     .uri(joinPath(path))
                      .responseSingle((res, body) -> body.asString().map(s -> Tuple.of(res.status(), s)));
   }
 
-  public static Mono<Tuple2<HttpResponseStatus, String>> post(String host, String path, String payload) {
+  public static Mono<Tuple2<HttpResponseStatus, String>> post(String payload, String host, String... path) {
     return HttpClient.create()
                      .baseUrl(host)
                      .post()
-                     .uri(path)
+                     .uri(joinPath(path))
                      .send(ByteBufFlux.fromString(Flux.just(payload)))
                      .responseSingle((res, body) -> body.asString().map(s -> Tuple.of(res.status(), s)));
   }
 
-  public static Mono<Tuple2<HttpResponseStatus, String>> post(String host,
-                                                              String path,
+  public static Mono<Tuple2<HttpResponseStatus, String>> post(String payload,
                                                               Consumer<HttpHeaders> httpHeaders,
-                                                              String payload) {
+                                                              String host,
+                                                              String... path) {
     return HttpClient.create()
                      .baseUrl(host)
                      .headers(httpHeaders)
                      .post()
-                     .uri(path)
+                     .uri(joinPath(path))
                      .send(ByteBufFlux.fromString(Flux.just(payload)))
                      .responseSingle((res, body) -> body.asString().map(s -> Tuple.of(res.status(), s)));
   }
