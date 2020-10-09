@@ -13,13 +13,13 @@ public class JsonException extends IOException {
     return new JsonException("Json property [%s] was not found in the Json string".formatted(jsonProperty));
   }
 
-  public static JsonException notFound(String... jsonProperties) {
-    var props = List.of(jsonProperties).reduce((a, b) -> a + ", " + b);
+  public static JsonException notFound(List<String> jsonProperties) {
+    var props = jsonProperties.reduce((a, b) -> a + ", " + b);
     return new JsonException("Non of the [" + props + "] properties were found in the Json string");
   }
 
-  public static JsonException notFoundType(Class<?>... types) {
-    var classes = List.of(types).map(Class::getSimpleName).reduce((a, b) -> a + ", " + b);
+  public static JsonException notFoundType(List<Class<?>> types) {
+    var classes = types.map(Class::getSimpleName).reduce((a, b) -> a + ", " + b);
     return new JsonException(
             "No Json property implementing any type of [" + classes + "] was found in the Json string");
   }
