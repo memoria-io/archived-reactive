@@ -3,15 +3,20 @@ package io.memoria.jutils.core.eventsourcing;
 import io.memoria.jutils.core.eventsourcing.cmd.Command;
 import io.memoria.jutils.core.eventsourcing.state.State;
 
+/**
+ * Eventsourcing Exception
+ */
 public class ESException extends Exception {
   public static class ESInvalidOperation extends ESException {
     private ESInvalidOperation(State state, Command command) {
-      super("Invalid operation: %s on current state: %s".formatted(state.getClass().getName(),
-                                                                   command.getClass().getName()));
+      super("Invalid operation: %s on current state: %s".formatted(state.getClass().getSimpleName(),
+                                                                   command.getClass().getSimpleName()));
     }
   }
 
-  public static final ESException INVALID_AGGREGATE_ID = new ESException("Aggregate Id is null or empty");
+  public static ESException create(String message) {
+    return new ESException(message);
+  }
 
   public static ESInvalidOperation invalidOperation(State state, Command command) {
     return new ESInvalidOperation(state, command);

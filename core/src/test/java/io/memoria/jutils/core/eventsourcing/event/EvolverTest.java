@@ -18,9 +18,9 @@ public class EvolverTest {
 
   private static record Account(String id, int balance) implements State {}
 
-  private static record AccountEvolver() implements Evolver<Account, AccountEvent> {
+  private static record AccountEvolver() implements Evolver<Account> {
     @Override
-    public Account apply(Account account, AccountEvent accountEvent) {
+    public Account apply(Account account, Event accountEvent) {
       if (accountEvent instanceof BalanceAdded balanceAdded) {
         return new Account(account.id, account.balance + balanceAdded.value);
       }
@@ -32,7 +32,7 @@ public class EvolverTest {
     }
   }
 
-  private final Evolver<Account, AccountEvent> e = new AccountEvolver();
+  private final Evolver<Account> e = new AccountEvolver();
 
   @Test
   public void apply() {

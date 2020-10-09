@@ -6,26 +6,25 @@ import io.vavr.control.Option;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
-public record TestingInMemoryEventStore<E extends Event>(Map<String, List<E>> db) implements EventStore<E> {
+public record InMemoryEventStore(Map<String, ArrayList<Event>> db) implements EventStore {
   @Override
-  public Mono<Void> add(String streamId, E e) {
+  public Mono<Void> add(String streamId, Event e) {
     return Mono.fromRunnable(() -> {
       if (!db.containsKey(streamId)) {
-        db.put(streamId, new LinkedList<>());
+        db.put(streamId, new ArrayList<>());
       }
       db.get(streamId).add(e);
     });
   }
 
   @Override
-  public Mono<Void> add(String streamId, Iterable<E> iterable) {
+  public Mono<Void> add(String streamId, Iterable<Event> iterable) {
     return Mono.fromRunnable(() -> {
       if (!db.containsKey(streamId)) {
-        db.put(streamId, new LinkedList<>());
+        db.put(streamId, new ArrayList<>());
       }
       iterable.forEach(e -> db.get(streamId).add(e));
     });
@@ -37,9 +36,9 @@ public record TestingInMemoryEventStore<E extends Event>(Map<String, List<E>> db
   }
 
   @Override
-  public Flux<E> stream(String streamId) {
+  public Flux<Event> stream(String streamId) {
     return Mono.fromCallable(() -> Option.of(db.get(streamId)))
-               .map(o -> o.getOrElse(new LinkedList<>()))
+               .map(o -> o.getOrElse(new ArrayList<>()))
                .flatMapMany(Flux::fromIterable);
   }
 }

@@ -1,9 +1,7 @@
-package io.memoria.jutils.adapter.crud;
+package io.memoria.jutils.core.crud;
 
 import io.memoria.jutils.core.JutilsException.AlreadyExists;
 import io.memoria.jutils.core.JutilsException.NotFound;
-import io.memoria.jutils.core.crud.ReadRepo;
-import io.memoria.jutils.core.crud.WriteRepo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

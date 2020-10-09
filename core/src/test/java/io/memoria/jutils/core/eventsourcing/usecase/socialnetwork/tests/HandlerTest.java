@@ -1,15 +1,15 @@
 package io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.tests;
 
 import io.memoria.jutils.core.eventsourcing.ESException.ESInvalidOperation;
-import io.memoria.jutils.core.eventsourcing.TestingInMemoryEventStore;
+import io.memoria.jutils.core.eventsourcing.InMemoryEventStore;
 import io.memoria.jutils.core.eventsourcing.cmd.CommandHandler;
+import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.event.EventStore;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.User;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.User.Visitor;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserCommand;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserCommand.CreateAccount;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserDecider;
-import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent.AccountCreated;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvolver;
 import io.memoria.jutils.core.generator.IdGenerator;
@@ -18,19 +18,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 class HandlerTest {
-  private static final Map<String, List<UserEvent>> db = new HashMap<>();
-  private static final EventStore<UserEvent> eventStore = new TestingInMemoryEventStore<>(db);
+  private static final Map<String, ArrayList<Event>> db = new HashMap<>();
+  private static final EventStore eventStore = new InMemoryEventStore(db);
   private static final IdGenerator idGen = () -> "0";
   private static final String workSpaceAggId = "02";
-  private static final CommandHandler<User, UserEvent, UserCommand> handler = new CommandHandler<>(eventStore,
-                                                                                                   new UserEvolver(),
-                                                                                                   new UserDecider(idGen),
-                                                                                                   new Visitor());
+  private static final CommandHandler<User, UserCommand> handler = new CommandHandler<>(eventStore,
+                                                                                        new UserEvolver(),
+                                                                                        new UserDecider(idGen),
+                                                                                        new Visitor());
 
   @BeforeEach
   void beforeEach() {

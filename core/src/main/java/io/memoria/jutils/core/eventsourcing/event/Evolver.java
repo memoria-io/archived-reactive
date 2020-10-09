@@ -8,20 +8,20 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @FunctionalInterface
-public interface Evolver<S extends State, E extends Event> extends Function2<S, E, S> {
-  default S apply(S s, Traversable<E> e) {
+public interface Evolver<S extends State> extends Function2<S, Event, S> {
+  default S apply(S s, Traversable<Event> e) {
     return e.foldLeft(s, this);
   }
 
-  default Mono<S> apply(S s, Flux<E> e) {
+  default Mono<S> apply(S s, Flux<Event> e) {
     return e.reduce(s, this);
   }
 
-  default Function1<Flux<E>, Mono<S>> curriedFlux(S s) {
-    return (Flux<E> e) -> apply(s, e);
+  default Function1<Flux<Event>, Mono<S>> curriedFlux(S s) {
+    return (Flux<Event> e) -> apply(s, e);
   }
 
-  default Function1<Traversable<E>, S> curriedTraversable(S s) {
-    return (Traversable<E> e) -> apply(s, e);
+  default Function1<Traversable<Event>, S> curriedTraversable(S s) {
+    return (Traversable<Event> e) -> apply(s, e);
   }
 }

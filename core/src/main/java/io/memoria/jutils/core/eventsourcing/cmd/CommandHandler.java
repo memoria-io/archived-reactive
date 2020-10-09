@@ -1,7 +1,6 @@
 package io.memoria.jutils.core.eventsourcing.cmd;
 
 import io.memoria.jutils.core.eventsourcing.ESException;
-import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.event.EventStore;
 import io.memoria.jutils.core.eventsourcing.event.Evolver;
 import io.memoria.jutils.core.eventsourcing.state.State;
@@ -13,14 +12,13 @@ import reactor.core.publisher.Mono;
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
 import static java.util.function.Function.identity;
 
-public final class CommandHandler<S extends State, E extends Event, C extends Command>
-        implements Function2<String, C, Mono<Void>> {
-  private final transient EventStore<E> store;
-  private final Evolver<S, E> evolver;
-  private final Decider<S, C, E> decider;
+public final class CommandHandler<S extends State, C extends Command> implements Function2<String, C, Mono<Void>> {
+  private final transient EventStore store;
+  private final Evolver<S> evolver;
+  private final Decider<S, C> decider;
   private final transient S initialState;
 
-  public CommandHandler(EventStore<E> store, Evolver<S, E> evolver, Decider<S, C, E> decider, S initialState) {
+  public CommandHandler(EventStore store, Evolver<S> evolver, Decider<S, C> decider, S initialState) {
     this.store = store;
     this.evolver = evolver;
     this.decider = decider;
@@ -30,7 +28,7 @@ public final class CommandHandler<S extends State, E extends Event, C extends Co
   @Override
   public Mono<Void> apply(String aggId, C cmd) {
     if (aggId == null || aggId.isEmpty())
-      return Mono.error(ESException.INVALID_AGGREGATE_ID);
+      return Mono.error(ESException.create("Aggregate Id is null or empty"));
     var eventFlux = store.stream(aggId);
     var stateMono = evolver.apply(initialState, eventFlux);
     return stateMono.flatMap(state -> toMono(decider.apply(state, cmd))).flatMap(list -> store.add(aggId, list));

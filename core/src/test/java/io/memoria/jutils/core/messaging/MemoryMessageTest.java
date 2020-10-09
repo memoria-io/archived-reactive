@@ -1,8 +1,5 @@
-package io.memoria.jutils.adapter.messaging;
+package io.memoria.jutils.core.messaging;
 
-import io.memoria.jutils.core.messaging.Message;
-import io.memoria.jutils.core.messaging.MessageFilter;
-import io.memoria.jutils.core.messaging.Response;
 import io.vavr.control.Option;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

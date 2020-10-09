@@ -1,6 +1,5 @@
-package io.memoria.jutils.adapter.crud;
+package io.memoria.jutils.core.crud;
 
-import io.memoria.jutils.core.crud.ReadRepo;
 import io.vavr.control.Option;
 import reactor.core.publisher.Mono;
 

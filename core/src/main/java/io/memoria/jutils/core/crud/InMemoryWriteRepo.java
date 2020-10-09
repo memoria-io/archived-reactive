@@ -1,6 +1,5 @@
-package io.memoria.jutils.adapter.crud;
+package io.memoria.jutils.core.crud;
 
-import io.memoria.jutils.core.crud.WriteRepo;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
