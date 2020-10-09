@@ -18,8 +18,8 @@ import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpResponseStatus.UNAUTHORIZED;
 
 class NettyClientUtilsTest {
-  private static final String stringReplyPath = "string";
-  private static final String errorReplyPath = "error";
+  private static final String stringReplyPath = "/string";
+  private static final String errorReplyPath = "/error";
 
   private static final String host = "127.0.0.1:8082";
   private static final DisposableServer server = HttpServer.create()
@@ -55,7 +55,7 @@ class NettyClientUtilsTest {
   }
 
   private static void routes(HttpServerRoutes routes) {
-    routes.post("/" + stringReplyPath, NettyClientUtilsTest::handlePost)
-          .post("/" + errorReplyPath, NettyClientUtilsTest::handlePostWithError);
+    routes.post(stringReplyPath, NettyClientUtilsTest::handlePost)
+          .post(errorReplyPath, NettyClientUtilsTest::handlePostWithError);
   }
 }

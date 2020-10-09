@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 
 public class NettyClientUtils {
   private static String joinPath(String... path) {
-    return Arrays.stream(path).reduce("", (a, b) -> a + "/" + b);
+    return Arrays.stream(path).reduce("", (a, b) -> a + "/" + b).replace("//", "/");
   }
 
   public static Mono<Tuple2<HttpResponseStatus, String>> get(String host, String... path) {

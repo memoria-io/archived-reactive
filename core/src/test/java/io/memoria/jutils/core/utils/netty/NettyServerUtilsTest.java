@@ -15,9 +15,9 @@ import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpResponseStatus.UNAUTHORIZED;
 
 class NettyServerUtilsTest {
-  private static final String stringReplyPath = "string";
-  private static final String statusReplyPath = "status";
-  private static final String errorReplyPath = "error";
+  private static final String stringReplyPath = "/string";
+  private static final String statusReplyPath = "/status";
+  private static final String errorReplyPath = "/error";
 
   private static final String host = "127.0.0.1:8082";
   private static final DisposableServer server = HttpServer.create()
@@ -53,9 +53,8 @@ class NettyServerUtilsTest {
   }
 
   private static void routes(HttpServerRoutes routes) {
-    routes.get("/" + statusReplyPath, (req, resp) -> statusReply.apply(resp).apply(UNAUTHORIZED))
-          .get("/" + stringReplyPath, (req, resp) -> stringReply.apply(resp).apply(OK, "Hello"))
-          .get("/" + errorReplyPath,
-               (req, resp) -> stringReply.apply(resp).apply(UNAUTHORIZED, UNAUTHORIZED.reasonPhrase()));
+    routes.get(statusReplyPath, (req, resp) -> statusReply.apply(resp).apply(UNAUTHORIZED))
+          .get(stringReplyPath, (req, resp) -> stringReply.apply(resp).apply(OK, "Hello"))
+          .get(errorReplyPath, (req, resp) -> stringReply.apply(resp).apply(UNAUTHORIZED, UNAUTHORIZED.reasonPhrase()));
   }
 }
