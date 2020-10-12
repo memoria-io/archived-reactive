@@ -3,7 +3,7 @@ package io.memoria.jutils.etcd;
 import io.etcd.jetcd.Client;
 import io.memoria.jutils.adapter.file.LocalFileReader;
 import io.memoria.jutils.core.file.FileReader;
-import io.memoria.jutils.core.yaml.Yaml;
+import io.memoria.jutils.core.Properties;
 import org.junit.jupiter.api.Test;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
@@ -16,7 +16,7 @@ import static io.vavr.control.Option.none;
 
 class EtcdIT {
   private static final FileReader reader = new LocalFileReader(Schedulers.boundedElastic());
-  private static final Yaml config = reader.yaml(resourcePath("etcd.yaml").get()).block();
+  private static final Properties config = reader.yaml(resourcePath("etcd.yaml").get()).block();
 
   private final Client clientBuilt;
   private final EtcdStoreClient client;

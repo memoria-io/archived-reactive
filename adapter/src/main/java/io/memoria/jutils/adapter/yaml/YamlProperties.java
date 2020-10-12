@@ -1,6 +1,6 @@
 package io.memoria.jutils.adapter.yaml;
 
-import io.memoria.jutils.core.yaml.Yaml;
+import io.memoria.jutils.core.Properties;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
@@ -9,9 +9,9 @@ import io.vavr.control.Option;
 import static io.vavr.control.Option.none;
 import static io.vavr.control.Option.some;
 
-public record YamlMap(Map<String, Object> map) implements Yaml {
+public record YamlProperties(Map<String, Object> map) implements Properties {
 
-  public YamlMap(java.util.Map<String, Object> conf) {
+  public YamlProperties(java.util.Map<String, Object> conf) {
     this(HashMap.ofAll(conf));
   }
 
@@ -73,10 +73,10 @@ public record YamlMap(Map<String, Object> map) implements Yaml {
 
   @Override
   @SuppressWarnings("unchecked")
-  public Option<Yaml> asYaml(String key) {
+  public Option<Properties> sub(String key) {
     return map.get(key).flatMap(m -> {
       if (m instanceof java.util.Map)
-        return some(new YamlMap((java.util.Map<String, Object>) m));
+        return some(new YamlProperties((java.util.Map<String, Object>) m));
       else
         return none();
     });

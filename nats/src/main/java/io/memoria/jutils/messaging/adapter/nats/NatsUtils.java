@@ -1,7 +1,7 @@
 package io.memoria.jutils.messaging.adapter.nats;
 
 import io.memoria.jutils.core.messaging.Message;
-import io.memoria.jutils.core.yaml.Yaml;
+import io.memoria.jutils.core.Properties;
 import io.nats.client.Connection;
 import io.nats.client.ConnectionListener.Events;
 import io.nats.client.Consumer;
@@ -33,8 +33,8 @@ public class NatsUtils {
     }
   };
 
-  public static Connection createConnection(Yaml c) throws IOException, InterruptedException {
-    var nats = c.asYaml("nats").get();
+  public static Connection createConnection(Properties c) throws IOException, InterruptedException {
+    var nats = c.sub("nats").get();
     var server = nats.asString("server").get();
     var conTimeout = Duration.ofMillis(nats.asLong("connectionTimeout").get());
     var reconTimeout = Duration.ofMillis(nats.asLong("reconnectionTimeout").get());

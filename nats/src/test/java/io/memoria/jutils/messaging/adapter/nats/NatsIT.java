@@ -6,7 +6,7 @@ import io.memoria.jutils.core.messaging.Message;
 import io.memoria.jutils.core.messaging.MessageFilter;
 import io.memoria.jutils.core.messaging.MsgReceiver;
 import io.memoria.jutils.core.messaging.MsgSender;
-import io.memoria.jutils.core.yaml.Yaml;
+import io.memoria.jutils.core.Properties;
 import io.nats.client.Connection;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +26,7 @@ import static reactor.core.scheduler.Schedulers.elastic;
 
 class NatsIT {
   private static final FileReader reader = new LocalFileReader(Schedulers.boundedElastic());
-  private static final Yaml config = reader.yaml(resourcePath("nats.yaml").get()).block();
+  private static final Properties config = reader.yaml(resourcePath("nats.yaml").get()).block();
 
   private static final MessageFilter mf = new MessageFilter("topic-" + new Random().nextInt(1000), 0, 0);
   private static final int MSG_COUNT = 10;

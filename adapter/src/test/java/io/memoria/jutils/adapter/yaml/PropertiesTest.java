@@ -1,7 +1,7 @@
 package io.memoria.jutils.adapter.yaml;
 
 import io.memoria.jutils.adapter.Tests;
-import io.memoria.jutils.core.yaml.Yaml;
+import io.memoria.jutils.core.Properties;
 import io.vavr.collection.List;
 import io.vavr.control.Option;
 import org.junit.jupiter.api.DisplayName;
@@ -14,19 +14,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class YamlTest {
+class PropertiesTest {
 
-  private final Yaml configMap = Objects.requireNonNull(Tests.FILE_READER.yaml(resourcePath("utils/test.yaml").get())
-                                                                         .block());
+  private final Properties configMap = Objects.requireNonNull(Tests.FILE_READER.yaml(resourcePath("utils/test.yaml").get())
+                                                                               .block());
 
   @Test
   void asNone() {
-    assertEquals(Option.none(), configMap.asYaml("failingMap"));
+    assertEquals(Option.none(), configMap.sub("failingMap"));
   }
 
   @Test
   void asYamlConfigMap() {
-    assertEquals("string value", configMap.asYaml("map").get().asString("key1").get());
+    assertEquals("string value", configMap.sub("map").get().asString("key1").get());
   }
 
   @Test
@@ -93,7 +93,7 @@ class YamlTest {
   @Test
   @DisplayName("Sub values should be parsed correctly")
   void subValues() {
-    Yaml map = Tests.FILE_READER.yaml(resourcePath("utils/main-config.yaml").get()).block();
+    Properties map = Tests.FILE_READER.yaml(resourcePath("utils/main-config.yaml").get()).block();
     assertNotNull(map);
     assertEquals("hello world", map.asString("sub.config.name").get());
     assertEquals("byebye", map.asString("sub.other.value").get());

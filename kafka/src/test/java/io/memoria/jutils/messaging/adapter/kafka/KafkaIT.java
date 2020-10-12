@@ -6,7 +6,7 @@ import io.memoria.jutils.core.messaging.Message;
 import io.memoria.jutils.core.messaging.MessageFilter;
 import io.memoria.jutils.core.messaging.MsgReceiver;
 import io.memoria.jutils.core.messaging.MsgSender;
-import io.memoria.jutils.core.yaml.Yaml;
+import io.memoria.jutils.core.Properties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -24,7 +24,7 @@ import static java.util.Objects.requireNonNull;
 
 class KafkaIT {
   private static final FileReader reader = new LocalFileReader(Schedulers.boundedElastic());
-  private static final Yaml configs = requireNonNull(reader.yaml(resourcePath("kafka.yaml").get()).block());
+  private static final Properties configs = requireNonNull(reader.yaml(resourcePath("kafka.yaml").get()).block());
   private static final MessageFilter messageFilter = new MessageFilter("topic-" + new Random().nextInt(1000), 0, 0);
   private static final int MSG_COUNT = 10;
 

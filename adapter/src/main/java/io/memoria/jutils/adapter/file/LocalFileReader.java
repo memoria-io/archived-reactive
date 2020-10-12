@@ -1,8 +1,8 @@
 package io.memoria.jutils.adapter.file;
 
-import com.esotericsoftware.yamlbeans.YamlConfig;
-import com.esotericsoftware.yamlbeans.YamlReader;
-import io.memoria.jutils.adapter.yaml.YamlMap;
+import io.memoria.jutils.adapter.yaml.YamlBeans;
+import io.memoria.jutils.adapter.yaml.YamlProperties;
+import io.memoria.jutils.core.Properties;
 import io.memoria.jutils.core.file.FileReader;
 import io.memoria.jutils.core.yaml.Yaml;
 import reactor.core.publisher.Flux;
@@ -13,8 +13,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 
+import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
+
 public record LocalFileReader(Scheduler scheduler) implements FileReader {
-  private static final class MapInstance extends HashMap<String, Object> {}
 
   @Override
   public Mono<String> file(Path path) {
@@ -30,12 +31,13 @@ public record LocalFileReader(Scheduler scheduler) implements FileReader {
     }
   }
 
-  public Mono<Yaml> yaml(Path path) {
+  public Mono<Properties> yaml(Path path) {
+    final class MapInstance extends HashMap<String, Object> {}
+    Yaml yaml = new YamlBeans(true);
     return lines(path).flatMap(l -> yamlInclude(l, path))
                       .reduce((a, b) -> a + "\n" + b)
-                      .map(LocalFileReader::yamlReader)
-                      .flatMap(yamlReader -> Mono.fromCallable(() -> yamlReader.read(MapInstance.class)))
-                      .map(YamlMap::new);
+                      .flatMap(str -> toMono(yaml.deserialize(str, MapInstance.class)))
+                      .map(YamlProperties::new);
   }
 
   private Flux<String> yamlInclude(String line, Path relativePath) {
@@ -45,11 +47,5 @@ public record LocalFileReader(Scheduler scheduler) implements FileReader {
     } else {
       return Flux.just(line);
     }
-  }
-
-  private static YamlReader yamlReader(String s) {
-    YamlConfig yc = new YamlConfig();
-    yc.readConfig.setIgnoreUnknownProperties(true);
-    return new YamlReader(s, yc);
   }
 }

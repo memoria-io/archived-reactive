@@ -6,7 +6,7 @@ import io.memoria.jutils.core.messaging.Message;
 import io.memoria.jutils.core.messaging.MessageFilter;
 import io.memoria.jutils.core.messaging.MsgReceiver;
 import io.memoria.jutils.core.messaging.MsgSender;
-import io.memoria.jutils.core.yaml.Yaml;
+import io.memoria.jutils.core.Properties;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +26,7 @@ import static java.util.Objects.requireNonNull;
 
 class PulsarIT {
   private static final FileReader reader = new LocalFileReader(Schedulers.boundedElastic());
-  private static final Yaml config = reader.yaml(resourcePath("pulsar.yaml").get()).block();
+  private static final Properties config = reader.yaml(resourcePath("pulsar.yaml").get()).block();
 
   private static final MessageFilter mf = new MessageFilter("topic-" + new Random().nextInt(1000), 0, 0);
   private static final int MSG_COUNT = 10;

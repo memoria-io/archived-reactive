@@ -38,8 +38,8 @@ public record JsonGson(Gson gson) implements Json {
   }
 
   @Override
-  public <T> String serialize(T t) {
-    return gson.toJson(t);
+  public <T> Try<String> serialize(T t) {
+    return Try.success(gson.toJson(t));
   }
 
   private static Gson create(GsonBuilder gsonBuilder, TypeAdapter<?>... typeAdapters) {

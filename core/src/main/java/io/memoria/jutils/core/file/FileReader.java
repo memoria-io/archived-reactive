@@ -1,6 +1,6 @@
 package io.memoria.jutils.core.file;
 
-import io.memoria.jutils.core.yaml.Yaml;
+import io.memoria.jutils.core.Properties;
 import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,5 +21,5 @@ public interface FileReader {
 
   Flux<String> lines(Path path);
 
-  Mono<Yaml> yaml(Path path);
+  Mono<Properties> yaml(Path path);
 }
