@@ -2,17 +2,17 @@ package io.memoria.jutils.adapter.json.utils;
 
 import com.google.gson.GsonBuilder;
 import io.memoria.jutils.adapter.Tests;
-import io.memoria.jutils.adapter.json.JsonGson;
+import io.memoria.jutils.adapter.transformer.json.JsonGson;
 import io.memoria.jutils.adapter.json.utils.Employee.Engineer;
 import io.memoria.jutils.adapter.json.utils.Employee.Manager;
-import io.memoria.jutils.core.json.Json;
-import io.memoria.jutils.core.json.JsonException;
+import io.memoria.jutils.core.transformer.json.Json;
+import io.memoria.jutils.core.transformer.json.JsonException;
 import io.vavr.collection.List;
 import io.vavr.gson.VavrGson;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static io.memoria.jutils.core.file.FileReader.resourcePath;
+import static io.memoria.jutils.core.transformer.file.FileReader.resourcePath;
 
 class JsonGsonUtilsTest {
 

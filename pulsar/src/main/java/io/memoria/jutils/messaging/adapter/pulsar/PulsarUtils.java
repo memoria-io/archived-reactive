@@ -1,7 +1,7 @@
 package io.memoria.jutils.messaging.adapter.pulsar;
 
 import io.memoria.jutils.core.messaging.MessageFilter;
-import io.memoria.jutils.core.Properties;
+import io.memoria.jutils.core.transformer.Properties;
 import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClient;

@@ -1,12 +1,12 @@
 package io.memoria.jutils.messaging.adapter.nats;
 
-import io.memoria.jutils.adapter.file.LocalFileReader;
-import io.memoria.jutils.core.file.FileReader;
+import io.memoria.jutils.core.utils.file.FileUtils;
+import io.memoria.jutils.core.transformer.file.FileReader;
 import io.memoria.jutils.core.messaging.Message;
 import io.memoria.jutils.core.messaging.MessageFilter;
 import io.memoria.jutils.core.messaging.MsgReceiver;
 import io.memoria.jutils.core.messaging.MsgSender;
-import io.memoria.jutils.core.Properties;
+import io.memoria.jutils.core.transformer.Properties;
 import io.nats.client.Connection;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,14 +18,14 @@ import reactor.test.StepVerifier;
 import java.io.IOException;
 import java.util.Random;
 
-import static io.memoria.jutils.core.file.FileReader.resourcePath;
+import static io.memoria.jutils.core.transformer.file.FileReader.resourcePath;
 import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofSeconds;
 import static java.util.Objects.requireNonNull;
 import static reactor.core.scheduler.Schedulers.elastic;
 
 class NatsIT {
-  private static final FileReader reader = new LocalFileReader(Schedulers.boundedElastic());
+  private static final FileReader reader = new FileUtils(Schedulers.boundedElastic());
   private static final Properties config = reader.yaml(resourcePath("nats.yaml").get()).block();
 
   private static final MessageFilter mf = new MessageFilter("topic-" + new Random().nextInt(1000), 0, 0);

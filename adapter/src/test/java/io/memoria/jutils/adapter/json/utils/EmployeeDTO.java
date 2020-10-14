@@ -6,7 +6,7 @@ import io.memoria.jutils.core.dto.DTO;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 
-import static io.memoria.jutils.core.json.JsonException.notFoundType;
+import static io.memoria.jutils.core.transformer.json.JsonException.notFoundType;
 
 public final class EmployeeDTO implements DTO<Employee> {
 

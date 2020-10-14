@@ -1,6 +1,8 @@
 package io.memoria.jutils.adapter.json;
 
-import io.memoria.jutils.core.json.Json;
+import io.memoria.jutils.adapter.transformer.json.DateAdapter;
+import io.memoria.jutils.adapter.transformer.json.JsonGson;
+import io.memoria.jutils.core.transformer.json.Json;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -26,7 +28,7 @@ class DateAdapterTest {
   @Test
   void serializer() {
     // When
-    String result = j.serialize(dateObj);
+    String result = j.serialize(dateObj).get();
     // Then
     System.out.println(result);
     System.out.println(jsonDate);

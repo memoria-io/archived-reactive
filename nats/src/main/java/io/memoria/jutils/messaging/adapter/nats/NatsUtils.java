@@ -1,7 +1,7 @@
 package io.memoria.jutils.messaging.adapter.nats;
 
 import io.memoria.jutils.core.messaging.Message;
-import io.memoria.jutils.core.Properties;
+import io.memoria.jutils.core.transformer.Properties;
 import io.nats.client.Connection;
 import io.nats.client.ConnectionListener.Events;
 import io.nats.client.Consumer;

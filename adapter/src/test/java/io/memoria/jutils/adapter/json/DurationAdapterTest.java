@@ -1,6 +1,8 @@
 package io.memoria.jutils.adapter.json;
 
-import io.memoria.jutils.core.json.Json;
+import io.memoria.jutils.adapter.transformer.json.DurationAdapter;
+import io.memoria.jutils.adapter.transformer.json.JsonGson;
+import io.memoria.jutils.core.transformer.json.Json;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -24,7 +26,7 @@ class DurationAdapterTest {
   @Test
   void serializer() {
     // When
-    String actual = j.serialize(duration);
+    String actual = j.serialize(duration).get();
     // Then
     assertEquals(durationJson, actual);
   }

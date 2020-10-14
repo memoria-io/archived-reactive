@@ -1,6 +1,6 @@
 package io.memoria.jutils.messaging.adapter.kafka;
 
-import io.memoria.jutils.core.Properties;
+import io.memoria.jutils.core.transformer.Properties;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 

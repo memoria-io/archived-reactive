@@ -1,6 +1,8 @@
 package io.memoria.jutils.adapter.json;
 
-import io.memoria.jutils.core.json.Json;
+import io.memoria.jutils.adapter.transformer.json.JsonGson;
+import io.memoria.jutils.adapter.transformer.json.TimeAdapter;
+import io.memoria.jutils.core.transformer.json.Json;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalTime;
@@ -26,7 +28,7 @@ class TimeAdapterTest {
   @Test
   void serializer() {
     // When
-    String serializedJson = parser.serialize(timeObj);
+    String serializedJson = parser.serialize(timeObj).get();
     // Then
     assertEquals(timeJson, serializedJson);
   }

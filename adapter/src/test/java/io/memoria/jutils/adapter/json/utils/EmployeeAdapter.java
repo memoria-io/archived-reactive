@@ -3,7 +3,7 @@ package io.memoria.jutils.adapter.json.utils;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.memoria.jutils.adapter.json.JsonGsonUtils;
+import io.memoria.jutils.adapter.transformer.json.JsonGsonUtils;
 import io.memoria.jutils.adapter.json.utils.Employee.Engineer;
 import io.memoria.jutils.adapter.json.utils.Employee.Manager;
 import io.vavr.collection.HashMap;

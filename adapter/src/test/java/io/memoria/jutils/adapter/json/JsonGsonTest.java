@@ -4,7 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import io.memoria.jutils.adapter.Tests;
-import io.memoria.jutils.core.json.Json;
+import io.memoria.jutils.adapter.transformer.json.JsonGson;
+import io.memoria.jutils.core.transformer.json.Json;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
 import io.vavr.gson.VavrGson;
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
-import static io.memoria.jutils.core.file.FileReader.resourcePath;
+import static io.memoria.jutils.core.transformer.file.FileReader.resourcePath;
 
 class JsonGsonTest {
   private final Gson gson = VavrGson.registerAll(new GsonBuilder()).create();

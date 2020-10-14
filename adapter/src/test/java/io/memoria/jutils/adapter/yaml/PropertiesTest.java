@@ -1,7 +1,7 @@
 package io.memoria.jutils.adapter.yaml;
 
 import io.memoria.jutils.adapter.Tests;
-import io.memoria.jutils.core.Properties;
+import io.memoria.jutils.core.transformer.Properties;
 import io.vavr.collection.List;
 import io.vavr.control.Option;
 import org.junit.jupiter.api.DisplayName;
@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
 
-import static io.memoria.jutils.core.file.FileReader.resourcePath;
+import static io.memoria.jutils.core.transformer.file.FileReader.resourcePath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PropertiesTest {
 
-  private final Properties configMap = Objects.requireNonNull(Tests.FILE_READER.yaml(resourcePath("utils/test.yaml").get())
+  private final Properties configMap = Objects.requireNonNull(Tests.FILE_READER.yaml(resourcePath("yaml/test.yaml").get())
                                                                                .block());
 
   @Test
@@ -93,7 +93,7 @@ class PropertiesTest {
   @Test
   @DisplayName("Sub values should be parsed correctly")
   void subValues() {
-    Properties map = Tests.FILE_READER.yaml(resourcePath("utils/main-config.yaml").get()).block();
+    Properties map = Tests.FILE_READER.yaml(resourcePath("yaml/main-config.yaml").get()).block();
     assertNotNull(map);
     assertEquals("hello world", map.asString("sub.config.name").get());
     assertEquals("byebye", map.asString("sub.other.value").get());

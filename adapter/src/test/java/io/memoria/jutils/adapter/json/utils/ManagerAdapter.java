@@ -3,7 +3,7 @@ package io.memoria.jutils.adapter.json.utils;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.memoria.jutils.adapter.json.JsonGsonUtils;
+import io.memoria.jutils.adapter.transformer.json.JsonGsonUtils;
 import io.memoria.jutils.adapter.json.utils.Employee.Engineer;
 import io.memoria.jutils.adapter.json.utils.Employee.Manager;
 import io.vavr.collection.List;
@@ -11,9 +11,9 @@ import io.vavr.control.Try;
 
 import java.io.IOException;
 
-import static io.memoria.jutils.adapter.json.JsonGsonUtils.deserializeAsList;
-import static io.memoria.jutils.core.json.JsonException.notFound;
-import static io.memoria.jutils.core.json.JsonException.unknown;
+import static io.memoria.jutils.adapter.transformer.json.JsonGsonUtils.deserializeAsList;
+import static io.memoria.jutils.core.transformer.json.JsonException.notFound;
+import static io.memoria.jutils.core.transformer.json.JsonException.unknown;
 
 public class ManagerAdapter extends TypeAdapter<Manager> {
   private final TypeAdapter<Engineer> engineerAdapter;

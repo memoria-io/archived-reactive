@@ -1,12 +1,12 @@
 package io.memoria.jutils.messaging.adapter.pulsar;
 
-import io.memoria.jutils.adapter.file.LocalFileReader;
-import io.memoria.jutils.core.file.FileReader;
+import io.memoria.jutils.core.utils.file.FileUtils;
+import io.memoria.jutils.core.transformer.file.FileReader;
 import io.memoria.jutils.core.messaging.Message;
 import io.memoria.jutils.core.messaging.MessageFilter;
 import io.memoria.jutils.core.messaging.MsgReceiver;
 import io.memoria.jutils.core.messaging.MsgSender;
-import io.memoria.jutils.core.Properties;
+import io.memoria.jutils.core.transformer.Properties;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +17,7 @@ import reactor.test.StepVerifier;
 
 import java.util.Random;
 
-import static io.memoria.jutils.core.file.FileReader.resourcePath;
+import static io.memoria.jutils.core.transformer.file.FileReader.resourcePath;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.createConsumer;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.createProducer;
 import static io.memoria.jutils.messaging.adapter.pulsar.PulsarUtils.pulsarClient;
@@ -25,7 +25,7 @@ import static java.time.Duration.ofMillis;
 import static java.util.Objects.requireNonNull;
 
 class PulsarIT {
-  private static final FileReader reader = new LocalFileReader(Schedulers.boundedElastic());
+  private static final FileReader reader = new FileUtils(Schedulers.boundedElastic());
   private static final Properties config = reader.yaml(resourcePath("pulsar.yaml").get()).block();
 
   private static final MessageFilter mf = new MessageFilter("topic-" + new Random().nextInt(1000), 0, 0);
