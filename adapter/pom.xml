@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jutils</artifactId>
-        <version>0.153.0</version>
+        <version>0.154.0</version>
     </parent>
 
     <groupId>io.memoria.jutils</groupId>
     <artifactId>adapter</artifactId>
-    <version>0.153.0</version>
+    <version>0.154.0</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -19,6 +19,7 @@
     <properties>
         <gson.version>2.8.6</gson.version>
         <yamlbeans.version>1.15</yamlbeans.version>
+        <jackson.version>2.12.0-rc1</jackson.version>
     </properties>
 
     <dependencies>
@@ -31,25 +32,22 @@
             <version>${project.parent.version}</version>
         </dependency>
         <!--======================================================================================== -->
-        <!-- Json Dependencies -->
+        <!-- Json/Yaml Dependencies -->
         <!--======================================================================================== -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
-        </dependency>
         <dependency>
             <groupId>io.vavr</groupId>
-            <artifactId>vavr-gson</artifactId>
+            <artifactId>vavr-jackson</artifactId>
             <version>0.10.2</version>
         </dependency>
-        <!--======================================================================================== -->
-        <!-- Yaml Dependencies -->
-        <!--======================================================================================== -->
         <dependency>
-            <groupId>com.esotericsoftware.yamlbeans</groupId>
-            <artifactId>yamlbeans</artifactId>
-            <version>${yamlbeans.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
 </project>

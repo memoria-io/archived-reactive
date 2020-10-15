@@ -1,7 +1,6 @@
 package io.memoria.jutils.messaging.adapter.pulsar;
 
 import io.memoria.jutils.core.messaging.MessageFilter;
-import io.memoria.jutils.core.yaml.Yaml;
 import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClient;
@@ -23,9 +22,8 @@ public class PulsarUtils {
     return client.newProducer(Schema.STRING).topic(mf.topic()).create();
   }
 
-  public static PulsarClient pulsarClient(Yaml map) throws PulsarClientException {
-    var config = map.asYaml("pulsar").get().asString("serviceUrl").get();
-    return PulsarClient.builder().serviceUrl(config).build();
+  public static PulsarClient pulsarClient(String serviceUrl) throws PulsarClientException {
+    return PulsarClient.builder().serviceUrl(serviceUrl).build();
   }
 
   private PulsarUtils() {}
