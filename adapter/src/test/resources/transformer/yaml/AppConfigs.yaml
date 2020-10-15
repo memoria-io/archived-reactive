@@ -1,8 +1,8 @@
 projectName: bank
 nodeControllerPath: /nodes
+include: SubConfigs.yaml
 
 stringValue: hello world
-booleanValue: true
 integerValue: 10
 longValue: 100000000001
 doubleValue: 1000000.000001
@@ -11,14 +11,6 @@ stringList:
   - hi
   - hello
   - bye
-
-failingStringList:
-  key: value
-
-booleanList:
-  - true
-  - false
-  - true
 
 integerList:
   - 1
@@ -34,11 +26,3 @@ doubleList:
   - 1000000000001.23
   - 1000000000002.23
   - 1000000000003.23
-
-map:
-  key1: "string value"
-  key2: 2
-
-failingMap:
-  - hi
-  - bye

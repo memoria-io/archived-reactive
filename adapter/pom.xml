@@ -32,16 +32,11 @@
             <version>${project.parent.version}</version>
         </dependency>
         <!--======================================================================================== -->
-        <!-- Json Dependencies -->
+        <!-- Json/Yaml Dependencies -->
         <!--======================================================================================== -->
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
-        </dependency>
-        <dependency>
             <groupId>io.vavr</groupId>
-            <artifactId>vavr-gson</artifactId>
+            <artifactId>vavr-jackson</artifactId>
             <version>0.10.2</version>
         </dependency>
         <dependency>
@@ -53,14 +48,6 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
             <version>${jackson.version}</version>
-        </dependency>
-        <!--======================================================================================== -->
-        <!-- Yaml Dependencies -->
-        <!--======================================================================================== -->
-        <dependency>
-            <groupId>com.esotericsoftware.yamlbeans</groupId>
-            <artifactId>yamlbeans</artifactId>
-            <version>${yamlbeans.version}</version>
         </dependency>
     </dependencies>
 </project>

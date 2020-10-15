@@ -1,4 +1,4 @@
-package io.memoria.jutils.adapter.json.utils;
+package io.memoria.jutils.adapter.transformer;
 
 import io.vavr.collection.List;
 

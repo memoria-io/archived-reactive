@@ -1,4 +1,4 @@
-package io.memoria.jutils.adapter.json;
+package io.memoria.jutils.adapter.transformer.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,9 +32,11 @@ class JacksonRecordTest {
 
   private static JsonMapper jsonMapper;
 
-  @BeforeAll
-  static void setUp() {
-    jsonMapper = new JsonMapper();
+  public String asYaml(String jsonString) throws JsonProcessingException, IOException {
+    // parse JSON
+    JsonNode jsonNodeTree = new ObjectMapper().readTree(jsonString);
+    // save it as YAML
+    return new YAMLMapper().writeValueAsString(jsonNodeTree);
   }
 
   @Test
@@ -42,28 +44,9 @@ class JacksonRecordTest {
 
   }
 
-  public String asYaml(String jsonString) throws JsonProcessingException, IOException {
-    // parse JSON
-    JsonNode jsonNodeTree = new ObjectMapper().readTree(jsonString);
-    // save it as YAML
-    String jsonAsYaml = new YAMLMapper().writeValueAsString(jsonNodeTree);
-    return jsonAsYaml;
-  }
-
-  @Test
-  void testDeserializeSimpleRecord() throws IOException {
-    SimpleRecord value = jsonMapper.readValue("{\"id\":123,\"name\":\"Bob\"}", SimpleRecord.class);
-
-    assertEquals(new SimpleRecord(123, "Bob"), value);
-  }
-
-  @Test
-  void testSerializeSimpleRecord() throws JsonProcessingException {
-    SimpleRecord record = new SimpleRecord(123, "Bob");
-
-    String json = jsonMapper.writeValueAsString(record);
-
-    assertEquals("{\"id\":123,\"name\":\"Bob\"}", json);
+  @BeforeAll
+  static void setUp() {
+    jsonMapper = new JsonMapper();
   }
 
   @Test
@@ -71,6 +54,13 @@ class JacksonRecordTest {
     RecordWithConstructor value = jsonMapper.readValue("{\"id\":123,\"name\":\"Bob\"}", RecordWithConstructor.class);
 
     assertEquals(new RecordWithConstructor(123, "Bob"), value);
+  }
+
+  @Test
+  void testDeserializeSimpleRecord() throws IOException {
+    SimpleRecord value = jsonMapper.readValue("{\"id\":123,\"name\":\"Bob\"}", SimpleRecord.class);
+
+    assertEquals(new SimpleRecord(123, "Bob"), value);
   }
 
   @Test
@@ -89,5 +79,14 @@ class JacksonRecordTest {
     String json = jsonMapper.writeValueAsString(record);
 
     assertEquals("{\"record\":{\"id\":123,\"name\":\"Bob\"}}", json);
+  }
+
+  @Test
+  void testSerializeSimpleRecord() throws JsonProcessingException {
+    SimpleRecord record = new SimpleRecord(123, "Bob");
+
+    String json = jsonMapper.writeValueAsString(record);
+
+    assertEquals("{\"id\":123,\"name\":\"Bob\"}", json);
   }
 }
