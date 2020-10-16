@@ -27,7 +27,7 @@ class EtcdIT {
   static {
     // File
     var files = new FileUtils(Schedulers.boundedElastic());
-    var etcdString = files.readAllResource("etcd.yaml").block();
+    var etcdString = files.readResource("etcd.yaml").block();
     // Yaml
     ObjectMapper jacksonMapper = new ObjectMapper(new YAMLFactory());
     jacksonMapper.registerModule(new VavrModule());

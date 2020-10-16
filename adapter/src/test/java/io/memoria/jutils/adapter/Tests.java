@@ -37,13 +37,13 @@ public class Tests {
     jacksonMapper.registerModule(new VavrModule());
     yaml = new YamlJackson(jacksonMapper);
     // Json Resources
-    JSON_LIST = files.readAllResource("transformer/json/List.json").block();
-    JSON_ENGINEER = files.readAllResource("transformer/json/Engineer.json").block();
-    JSON_MANAGER = files.readAllResource("transformer/json/Manager.json").block();
+    JSON_LIST = files.readResource("transformer/json/List.json").block();
+    JSON_ENGINEER = files.readResource("transformer/json/Engineer.json").block();
+    JSON_MANAGER = files.readResource("transformer/json/Manager.json").block();
     // Yaml Resources
-    YAML_APP_CONFIG = files.readAllResource("transformer/yaml/AppConfigs.yaml", "include:").block();
-    YAML_ENGINEER = files.readAllResource("transformer/yaml/Engineer.yaml").block();
-    YAML_MANAGER = files.readAllResource("transformer/yaml/Manager.yaml").block();
+    YAML_APP_CONFIG = files.readResource("transformer/yaml/AppConfigs.yaml", "include:").block();
+    YAML_ENGINEER = files.readResource("transformer/yaml/Engineer.yaml").block();
+    YAML_MANAGER = files.readResource("transformer/yaml/Manager.yaml").block();
   }
 
   private Tests() {}

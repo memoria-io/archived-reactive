@@ -18,13 +18,13 @@ class FileUtilsTest {
     var fileExists = helloWorld.map(h -> h.toFile().exists());
     StepVerifier.create(fileExists).expectNext(true).expectComplete().verify();
 
-    var tempFile = fileUtils.read(Paths.get("target/temp.txt"));
+    var tempFile = fileUtils.readLines(Paths.get("target/temp.txt"));
     StepVerifier.create(tempFile).expectNext("hello world").expectComplete().verify();
   }
 
   @Test
   void fileAsStringTest() {
-    var f = fileUtils.readAllResource("file.txt");
+    var f = fileUtils.readResource("file.txt");
     StepVerifier.create(f).expectNext("hello\nworld").expectComplete().verify();
   }
 }

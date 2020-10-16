@@ -33,11 +33,10 @@ class KafkaIT {
     jacksonMapper.registerModule(new VavrModule());
     var yaml = new YamlJackson(jacksonMapper);
     //
-    var kafkaConfig = yaml.deserialize(files.readAllResource("kafka.yaml").block(), KafkaConfig.class).get();
+    var kafkaConfig = yaml.deserialize(files.readResource("kafka.yaml").block(), KafkaConfig.class).get();
     // Kafka
     msgSender = kafkaConfig.createSender(messageFilter, Schedulers.boundedElastic());
     msgReceiver = kafkaConfig.createReceiver(messageFilter, Schedulers.boundedElastic());
-    System.out.println("welcome");
   }
 
   @Test
@@ -51,8 +50,6 @@ class KafkaIT {
                                                     .take(MSG_COUNT)
                                                     .collectList()
                                                     .block()).toArray(Message[]::new);
-
-    System.out.println("welcome");
     var publisher = msgSender.apply(limitedMsgsFlux);
     var consumer = msgReceiver.get().take(MSG_COUNT);
     StepVerifier.create(publisher).expectNextCount(MSG_COUNT).expectComplete().verify();

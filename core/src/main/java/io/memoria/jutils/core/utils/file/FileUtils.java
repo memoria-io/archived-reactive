@@ -15,11 +15,26 @@ import java.util.function.BiFunction;
 public record FileUtils(Scheduler scheduler) {
   private static final BiFunction<String, String, String> joinLines = (a, b) -> a + "\n" + b;
 
-  public Flux<String> read(Path path) {
+  public static Try<Path> resourcePath(String path) {
+    return Try.of(() -> {
+      var url = ClassLoader.getSystemClassLoader().getResource(path);
+      return Paths.get(Objects.requireNonNull(url).getPath());
+    });
+  }
+
+  public Mono<String> read(Path path) {
+    return readLines(path).reduce(joinLines);
+  }
+
+  public Mono<String> read(Path path, String nestingPrefix) {
+    return readLines(path, nestingPrefix).reduce(joinLines);
+  }
+
+  public Flux<String> readLines(Path path) {
     return Mono.fromCallable(() -> Files.lines(path)).flatMapMany(Flux::fromStream).subscribeOn(scheduler);
   }
 
-  public Flux<String> read(Path path, String nestingPrefix) {
+  public Flux<String> readLines(Path path, String nestingPrefix) {
     return Mono.fromCallable(() -> Files.lines(path)).flatMapMany(Flux::fromStream).flatMap(line -> {
       if (line.startsWith(nestingPrefix)) {
         var inclusionPathStr = line.split(nestingPrefix)[1].trim();
@@ -32,38 +47,23 @@ public record FileUtils(Scheduler scheduler) {
     }).subscribeOn(scheduler);
   }
 
-  public Mono<String> readAll(Path path) {
-    return read(path).reduce(joinLines);
+  public Mono<String> readResource(String path) {
+    return readResourceLines(path).reduce(joinLines);
   }
 
-  public Mono<String> readAll(Path path, String nestingPrefix) {
-    return read(path, nestingPrefix).reduce(joinLines);
+  public Mono<String> readResource(String path, String nestingPrefix) {
+    return readResourceLines(path, nestingPrefix).reduce(joinLines);
   }
 
-  public Mono<String> readAllResource(String path) {
-    return readResource(path).reduce(joinLines);
+  public Flux<String> readResourceLines(String path, String nestingPrefix) {
+    return resourcePath(path).map(p -> readLines(p, nestingPrefix)).getOrElseGet(Flux::error);
   }
 
-  public Mono<String> readAllResource(String path, String nestingPrefix) {
-    return readResource(path, nestingPrefix).reduce(joinLines);
-  }
-
-  public Flux<String> readResource(String path, String nestingPrefix) {
-    return resourcePath(path).map(p -> read(p, nestingPrefix)).getOrElseGet(Flux::error);
-  }
-
-  public Flux<String> readResource(String path) {
-    return resourcePath(path).map(this::read).getOrElseGet(Flux::error);
+  public Flux<String> readResourceLines(String path) {
+    return resourcePath(path).map(this::readLines).getOrElseGet(Flux::error);
   }
 
   public Mono<Path> write(Path path, String content) {
     return Mono.fromCallable(() -> Files.writeString(path, content, StandardOpenOption.CREATE)).subscribeOn(scheduler);
-  }
-
-  private Try<Path> resourcePath(String path) {
-    return Try.of(() -> {
-      var url = ClassLoader.getSystemClassLoader().getResource(path);
-      return Paths.get(Objects.requireNonNull(url).getPath());
-    });
   }
 }
