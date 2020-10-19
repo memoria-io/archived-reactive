@@ -1,8 +1,9 @@
-package io.memoria.jutils.adapter.transformer.yaml;
+package io.memoria.jutils.jackson.transformer.yaml;
 
-import io.memoria.jutils.adapter.Tests;
-import io.memoria.jutils.adapter.transformer.Employee.Engineer;
-import io.memoria.jutils.adapter.transformer.Employee.Manager;
+import io.memoria.jutils.jackson.Tests;
+import io.memoria.jutils.jackson.transformer.Employee.Engineer;
+import io.memoria.jutils.jackson.transformer.Employee.Manager;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -29,8 +30,8 @@ class YamlJacksonTest {
     // When
     var engineer = Tests.yaml.deserialize(Tests.YAML_ENGINEER, Engineer.class).get();
     // Then
-    assertEquals("bob", engineer.name());
-    assertEquals(io.vavr.collection.List.of("fix issue 1", "Fix issue 2"), engineer.tasks());
+    Assertions.assertEquals("bob", engineer.name());
+    Assertions.assertEquals(io.vavr.collection.List.of("fix issue 1", "Fix issue 2"), engineer.tasks());
   }
 
   @Test
@@ -38,7 +39,7 @@ class YamlJacksonTest {
     // When
     var manager = Tests.yaml.deserialize(Tests.YAML_MANAGER, Manager.class).get();
     // Then
-    assertEquals("Annika", manager.name());
-    assertEquals(new Engineer("bob", io.vavr.collection.List.of("fix issue 1", "Fix issue 2")), manager.team().get(0));
+    Assertions.assertEquals("Annika", manager.name());
+    Assertions.assertEquals(new Engineer("bob", io.vavr.collection.List.of("fix issue 1", "Fix issue 2")), manager.team().get(0));
   }
 }

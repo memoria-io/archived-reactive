@@ -2,12 +2,12 @@ package io.memoria.jutils.messaging.adapter.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.memoria.jutils.adapter.transformer.yaml.YamlJackson;
 import io.memoria.jutils.core.messaging.Message;
 import io.memoria.jutils.core.messaging.MessageFilter;
 import io.memoria.jutils.core.messaging.MsgReceiver;
 import io.memoria.jutils.core.messaging.MsgSender;
 import io.memoria.jutils.core.utils.file.FileUtils;
+import io.memoria.jutils.jackson.transformer.yaml.YamlJackson;
 import io.vavr.jackson.datatype.VavrModule;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

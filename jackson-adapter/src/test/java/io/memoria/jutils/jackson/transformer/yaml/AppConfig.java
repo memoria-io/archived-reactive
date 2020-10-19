@@ -1,4 +1,4 @@
-package io.memoria.jutils.adapter.transformer.yaml;
+package io.memoria.jutils.jackson.transformer.yaml;
 
 import java.util.List;
 

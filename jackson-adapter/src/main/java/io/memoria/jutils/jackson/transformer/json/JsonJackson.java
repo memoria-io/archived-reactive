@@ -1,4 +1,4 @@
-package io.memoria.jutils.adapter.transformer.json;
+package io.memoria.jutils.jackson.transformer.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.memoria.jutils.core.transformer.json.Json;

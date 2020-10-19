@@ -5,20 +5,16 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jutils</artifactId>
-        <version>0.156.0</version>
+        <version>0.157.0</version>
     </parent>
 
     <groupId>io.memoria.jutils</groupId>
     <artifactId>etcd</artifactId>
-    <version>0.156.0</version>
+    <version>0.157.0</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
     <description>Etcd Module</description>
-
-    <properties>
-        <kafka.version>2.4.0</kafka.version>
-    </properties>
 
     <dependencies>
         <!--======================================================================================== -->
@@ -33,6 +29,12 @@
             <groupId>io.memoria.jutils</groupId>
             <artifactId>adapter</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.memoria.jutils</groupId>
+            <artifactId>jackson-adapter</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
         </dependency>
         <!--======================================================================================== -->
         <!-- Messaging Dependencies -->
