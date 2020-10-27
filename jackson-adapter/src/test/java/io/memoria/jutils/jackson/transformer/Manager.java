@@ -2,4 +2,4 @@ package io.memoria.jutils.jackson.transformer;
 
 import io.vavr.collection.List;
 
-public record Department(List<Employee> employees) {}
+public record Manager(String name, List<Engineer> team) implements Employee {}

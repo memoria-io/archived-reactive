@@ -1,15 +1,18 @@
 package io.memoria.jutils.jackson;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.memoria.jutils.core.transformer.json.Json;
 import io.memoria.jutils.core.transformer.yaml.Yaml;
 import io.memoria.jutils.core.utils.file.FileUtils;
+import io.memoria.jutils.jackson.transformer.Employee;
+import io.memoria.jutils.jackson.transformer.Engineer;
+import io.memoria.jutils.jackson.transformer.Manager;
+import io.memoria.jutils.jackson.transformer.JacksonUtils;
 import io.memoria.jutils.jackson.transformer.json.JsonJackson;
 import io.memoria.jutils.jackson.transformer.yaml.YamlJackson;
-import io.vavr.jackson.datatype.VavrModule;
+import io.vavr.collection.List;
 import reactor.core.scheduler.Schedulers;
+
+import java.time.LocalDate;
 
 public class Tests {
   public static final FileUtils files;
@@ -18,32 +21,39 @@ public class Tests {
 
   // Json Resources
   public static final String JSON_LIST;
-  public static final String JSON_ENGINEER;
-  public static final String JSON_MANAGER;
+  public static final String BOB_ENGINEER_JSON;
+  public static final String ANNIKA_MANAGER_JSON;
+  public static final String DEPARTMENT_JSON;
   // Yaml Resources
-  public static final String YAML_APP_CONFIG;
-  public static final String YAML_ENGINEER;
-  public static final String YAML_MANAGER;
+  public static final String APP_CONFIG_YAML;
+  public static final String BOB_ENGINEER_YAML;
+  public static final String ANNIKA_MANAGER_YAML;
+  public static final Engineer BOB_ENGINEER;
+  public static final Engineer ALEX_ENGINEER;
+  public static final Manager ANNIKA_MANAGER;
 
   static {
     // File utils
     files = new FileUtils(Schedulers.elastic());
     // Json
-    ObjectMapper jsonMapper = new ObjectMapper(new JsonFactory());
-    jsonMapper.registerModule(new VavrModule());
+    var jsonMapper = JacksonUtils.defaultJson(Employee.class);
+    jsonMapper.registerSubtypes(Manager.class, Engineer.class);
     json = new JsonJackson(jsonMapper);
     // Yaml
-    ObjectMapper jacksonMapper = new ObjectMapper(new YAMLFactory());
-    jacksonMapper.registerModule(new VavrModule());
-    yaml = new YamlJackson(jacksonMapper);
+    yaml = new YamlJackson(JacksonUtils.defaultYaml());
     // Json Resources
     JSON_LIST = files.readResource("transformer/json/List.json").block();
-    JSON_ENGINEER = files.readResource("transformer/json/Engineer.json").block();
-    JSON_MANAGER = files.readResource("transformer/json/Manager.json").block();
+    BOB_ENGINEER_JSON = files.readResource("transformer/json/Engineer.json").block();
+    ANNIKA_MANAGER_JSON = files.readResource("transformer/json/Manager.json").block();
+    DEPARTMENT_JSON = files.readResource("transformer/json/Department.json").block();
     // Yaml Resources
-    YAML_APP_CONFIG = files.readResource("transformer/yaml/AppConfigs.yaml", "include:").block();
-    YAML_ENGINEER = files.readResource("transformer/yaml/Engineer.yaml").block();
-    YAML_MANAGER = files.readResource("transformer/yaml/Manager.yaml").block();
+    APP_CONFIG_YAML = files.readResource("transformer/yaml/AppConfigs.yaml", "include:").block();
+    BOB_ENGINEER_YAML = files.readResource("transformer/yaml/Engineer.yaml").block();
+    ANNIKA_MANAGER_YAML = files.readResource("transformer/yaml/Manager.yaml").block();
+    // Objects
+    BOB_ENGINEER = new Engineer("bob", LocalDate.of(2000, 1, 1), List.of("fix issue 1", "Fix issue 2"));
+    ALEX_ENGINEER = new Engineer("alex", LocalDate.of(2000, 1, 1), List.of("fix issue 3", "Fix issue 4"));
+    ANNIKA_MANAGER = new Manager("Annika", List.of(BOB_ENGINEER, ALEX_ENGINEER));
   }
 
   private Tests() {}

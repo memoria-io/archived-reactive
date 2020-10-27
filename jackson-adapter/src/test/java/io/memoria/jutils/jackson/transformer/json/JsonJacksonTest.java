@@ -1,39 +1,41 @@
 package io.memoria.jutils.jackson.transformer.json;
 
 import io.memoria.jutils.jackson.Tests;
-import io.memoria.jutils.jackson.transformer.Employee.Engineer;
-import io.memoria.jutils.jackson.transformer.Employee.Manager;
+import io.memoria.jutils.jackson.transformer.Department;
+import io.memoria.jutils.jackson.transformer.Engineer;
+import io.memoria.jutils.jackson.transformer.Manager;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 class JsonJacksonTest {
 
   @Test
-  void toEmployee() {
+  void toDepartment() {
+    // Given
+    var expectedDepartment = new Department(List.of(Tests.ANNIKA_MANAGER, Tests.BOB_ENGINEER, Tests.ALEX_ENGINEER));
     // When
-    var engineer = Tests.json.deserialize(Tests.JSON_ENGINEER, Engineer.class).get();
+    var actualDepartment = Tests.json.deserialize(Tests.DEPARTMENT_JSON, Department.class).get();
     // Then
-    Assertions.assertEquals("bob", engineer.name());
-    Assertions.assertEquals(List.of("fix issue 1", "Fix issue 2"), engineer.tasks());
+    Assertions.assertEquals(expectedDepartment, actualDepartment);
   }
 
   @Test
-  void toList() {
+  void toEngineer() {
     // When
-    var list = Tests.json.deserialize(Tests.JSON_LIST, String[].class).get();
+    var engineer = Tests.json.deserialize(Tests.BOB_ENGINEER_JSON, Engineer.class).get();
     // Then
-    assertEquals(List.of("mercedes", "chevy", "porsche"), List.of(list));
+    Assertions.assertEquals(Tests.BOB_ENGINEER.name(), engineer.name());
+    Assertions.assertTrue(engineer.birthday().isEqual(Tests.BOB_ENGINEER.birthday()));
+    Assertions.assertEquals(Tests.BOB_ENGINEER.tasks(), engineer.tasks());
   }
 
   @Test
   void toManager() {
     // When
-    var manager = Tests.json.deserialize(Tests.JSON_MANAGER, Manager.class).get();
+    var manager = Tests.json.deserialize(Tests.ANNIKA_MANAGER_JSON, Manager.class).get();
     // Then
-    Assertions.assertEquals("Annika", manager.name());
-    Assertions.assertEquals(new Engineer("bob", List.of("fix issue 1", "Fix issue 2")), manager.team().get(0));
+    Assertions.assertEquals(Tests.ANNIKA_MANAGER.name(), manager.name());
+    Assertions.assertEquals(Tests.BOB_ENGINEER, manager.team().get(0));
   }
 }

@@ -11,9 +11,10 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.stream.BaseStream;
 
 public record FileUtils(Scheduler scheduler) {
-  private static final BiFunction<String, String, String> joinLines = (a, b) -> a + "\n" + b;
+  private static final BiFunction<String, String, String> joinLines = (a, b) -> a + System.lineSeparator() + b;
 
   public static Try<Path> resourcePath(String path) {
     return Try.of(() -> {
@@ -23,7 +24,7 @@ public record FileUtils(Scheduler scheduler) {
   }
 
   public Mono<String> read(Path path) {
-    return readLines(path).reduce(joinLines);
+    return Mono.fromCallable(() -> Files.readString(path)).subscribeOn(scheduler);
   }
 
   public Mono<String> read(Path path, String nestingPrefix) {
@@ -31,15 +32,14 @@ public record FileUtils(Scheduler scheduler) {
   }
 
   public Flux<String> readLines(Path path) {
-    return Mono.fromCallable(() -> Files.lines(path)).flatMapMany(Flux::fromStream).subscribeOn(scheduler);
+    return Flux.using(() -> Files.lines(path), Flux::fromStream, BaseStream::close).subscribeOn(scheduler);
   }
 
   public Flux<String> readLines(Path path, String nestingPrefix) {
-    return Mono.fromCallable(() -> Files.lines(path)).flatMapMany(Flux::fromStream).flatMap(line -> {
+    return Flux.using(() -> Files.lines(path), Flux::fromStream, BaseStream::close).flatMap(line -> {
       if (line.startsWith(nestingPrefix)) {
         var inclusionPathStr = line.split(nestingPrefix)[1].trim();
         var inclusionPath = path.getParent().resolve(inclusionPathStr);
-        System.out.println(inclusionPath);
         return Mono.fromCallable(() -> Files.lines(inclusionPath)).flatMapMany(Flux::fromStream);
       } else {
         return Flux.just(line);
@@ -48,11 +48,11 @@ public record FileUtils(Scheduler scheduler) {
   }
 
   public Mono<String> readResource(String path) {
-    return readResourceLines(path).reduce(joinLines);
+    return resourcePath(path).map(this::read).getOrElseGet(Mono::error);
   }
 
   public Mono<String> readResource(String path, String nestingPrefix) {
-    return readResourceLines(path, nestingPrefix).reduce(joinLines);
+    return resourcePath(path).map(p -> read(p, nestingPrefix)).getOrElseGet(Mono::error);
   }
 
   public Flux<String> readResourceLines(String path, String nestingPrefix) {
