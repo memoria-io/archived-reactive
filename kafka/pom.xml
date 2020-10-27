@@ -5,19 +5,19 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jutils</artifactId>
-        <version>0.158.0</version>
+        <version>0.159.0</version>
     </parent>
 
     <groupId>io.memoria.jutils</groupId>
     <artifactId>kafka</artifactId>
-    <version>0.158.0</version>
+    <version>0.159.0</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
     <description>Kafka Module</description>
 
     <properties>
-        <kafka.version>2.4.0</kafka.version>
+        <kafka.version>2.6.0</kafka.version>
     </properties>
 
     <dependencies>

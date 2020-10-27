@@ -5,19 +5,19 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jutils</artifactId>
-        <version>0.158.0</version>
+        <version>0.159.0</version>
     </parent>
 
     <groupId>io.memoria.jutils</groupId>
     <artifactId>nats</artifactId>
-    <version>0.158.0</version>
+    <version>0.159.0</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
     <description>Nats Module</description>
 
     <properties>
-        <nats.version>2.6.6</nats.version>
+        <nats.version>2.8.0</nats.version>
     </properties>
 
     <dependencies>

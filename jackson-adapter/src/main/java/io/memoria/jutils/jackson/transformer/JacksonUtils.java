@@ -2,18 +2,19 @@ package io.memoria.jutils.jackson.transformer;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactoryBuilder;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import io.memoria.jutils.core.value.Id;
 import io.vavr.jackson.datatype.VavrModule;
 
 import java.text.SimpleDateFormat;
@@ -35,6 +36,8 @@ public class JacksonUtils {
     om = addJ8Modules(om);
     om = addVavrModule(om);
     om = jsonPrettyPrinting(om);
+    om.registerModule(jutilsModule());
+    om.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
     return mixinWrapperObjectFormat(om, baseClass);
   }
 
@@ -45,6 +48,8 @@ public class JacksonUtils {
     om = setDateFormat(om);
     om = addJ8Modules(om);
     om = addVavrModule(om);
+    om.registerModule(jutilsModule());
+    om.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
     return mixinWrapperObjectFormat(om, baseClass);
   }
 
@@ -58,7 +63,7 @@ public class JacksonUtils {
    * @return a new {@link JacksonUtils}
    */
   public static ObjectMapper mixinWrapperObjectFormat(ObjectMapper om, Class<?>... baseClass) {
-    @JsonTypeInfo(include = As.WRAPPER_OBJECT, use = Id.NAME)
+    @JsonTypeInfo(include = As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
     class WrapperObjectByClassName {}
     for (Class<?> cls : baseClass) {
       om.addMixIn(cls, WrapperObjectByClassName.class);
@@ -77,6 +82,13 @@ public class JacksonUtils {
     resultMapper.setDefaultPrettyPrinter(printer);
 
     return resultMapper;
+  }
+
+  public static SimpleModule jutilsModule() {
+    SimpleModule jutils = new SimpleModule();
+    jutils.addDeserializer(Id.class, new IdDeserializer());
+    jutils.addSerializer(Id.class, new IdSerializer());
+    return jutils;
   }
 
   private JacksonUtils() {}

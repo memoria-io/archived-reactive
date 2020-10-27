@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jutils</artifactId>
-        <version>0.158.0</version>
+        <version>0.159.0</version>
     </parent>
 
     <groupId>io.memoria.jutils</groupId>
     <artifactId>etcd</artifactId>
-    <version>0.158.0</version>
+    <version>0.159.0</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -42,7 +42,7 @@
         <dependency>
             <groupId>io.etcd</groupId>
             <artifactId>jetcd-core</artifactId>
-            <version>0.5.3</version>
+            <version>0.5.4</version>
         </dependency>
     </dependencies>
 </project>

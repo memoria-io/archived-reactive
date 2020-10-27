@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jutils</artifactId>
-        <version>0.158.0</version>
+        <version>0.159.0</version>
     </parent>
 
     <groupId>io.memoria.jutils</groupId>
     <artifactId>security</artifactId>
-    <version>0.158.0</version>
+    <version>0.159.0</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -18,7 +18,7 @@
 
     <properties>
         <argon2.version>2.7</argon2.version>
-        <jsonwebtoken.version>0.10.7</jsonwebtoken.version>
+        <jsonwebtoken.version>0.11.2</jsonwebtoken.version>
     </properties>
 
     <dependencies>
