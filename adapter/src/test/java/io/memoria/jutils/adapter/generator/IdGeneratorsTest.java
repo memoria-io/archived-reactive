@@ -10,17 +10,17 @@ class IdGeneratorsTest {
   @Test
   void SerialIdTest() {
     IdGenerator idGen = new SerialIdGenerator(new AtomicLong());
-    Assertions.assertEquals("0", idGen.get());
-    Assertions.assertEquals("1", idGen.get());
-    Assertions.assertEquals("2", idGen.get());
+    Assertions.assertEquals("0", idGen.get().id());
+    Assertions.assertEquals("1", idGen.get().id());
+    Assertions.assertEquals("2", idGen.get().id());
     idGen = new SerialIdGenerator(new AtomicLong());
-    Assertions.assertEquals("0", idGen.get());
+    Assertions.assertEquals("0", idGen.get().id());
   }
 
   @Test
   void UUIDTest() {
     IdGenerator idGen = new UUIDGenerator();
-    Assertions.assertEquals(36, idGen.get().length());
-    Assertions.assertEquals(5, idGen.get().split("-").length);
+    Assertions.assertEquals(36, idGen.get().id().length());
+    Assertions.assertEquals(5, idGen.get().id().split("-").length);
   }
 }

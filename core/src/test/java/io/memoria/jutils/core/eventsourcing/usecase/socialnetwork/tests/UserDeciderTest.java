@@ -8,6 +8,7 @@ import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserDec
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent.MessageSent;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvolver;
 import io.memoria.jutils.core.generator.IdGenerator;
+import io.memoria.jutils.core.value.Id;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -18,18 +19,18 @@ import static io.memoria.jutils.core.JutilsException.AlreadyExists.ALREADY_EXIST
 class UserDeciderTest {
   // CommandHandler
   private static final AtomicInteger atomicInteger = new AtomicInteger();
-  private static final IdGenerator idGen = () -> "0";
+  private static final IdGenerator idGen = () -> new Id("0");
   private static final UserDecider decide = new UserDecider(idGen);
   // Data
-  private static final String ALEX_Id = "alex";
-  private static final String BOB_Id = "bob";
+  private static final Id ALEX_Id = new Id("alex");
+  private static final Id BOB_Id = new Id("bob");
   private static final int ALEX_AGE = 19;
   private static final Account ALEX = new Account(ALEX_Id, ALEX_AGE);
   // Commands
   private static final AddFriend ADD_FRIEND = new AddFriend(ALEX_Id, BOB_Id);
   private static final SendMessage SEND_MESSAGE = new SendMessage(ALEX_Id, BOB_Id, "hello");
-  private static final Message MESSAGE = new Message("0", ALEX_Id, BOB_Id, "hello");
-  private static final MessageSent MESSAGE_SENT = new MessageSent("0", MESSAGE);
+  private static final Message MESSAGE = new Message(new Id("0"), ALEX_Id, BOB_Id, "hello");
+  private static final MessageSent MESSAGE_SENT = new MessageSent(new Id("0"), MESSAGE);
 
   @Test
   void sendMessage() {

@@ -1,28 +1,29 @@
 package io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain;
 
 import io.memoria.jutils.core.eventsourcing.state.State;
+import io.memoria.jutils.core.value.Id;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.Set;
 
 public interface User extends State {
-  record Account(String id, int age, Set<String> friends, Set<String> messages) implements User {
-    public Account(String id, int age) {
+  record Account(Id id, int age, Set<Id> friends, Set<Id> messages) implements User {
+    public Account(Id id, int age) {
       this(id, age, HashSet.empty(), HashSet.empty());
     }
 
-    public boolean canAddFriend(String friendId) {
+    public boolean canAddFriend(Id friendId) {
       return !this.friends.contains(friendId);
     }
 
-    public boolean canSendMessageTo(String friendId) {
+    public boolean canSendMessageTo(Id friendId) {
       return this.friends.contains(friendId);
     }
 
-    public Account withNewFriend(String friendId) {
+    public Account withNewFriend(Id friendId) {
       return new Account(id, age, friends.add(friendId), messages);
     }
 
-    public Account withNewMessage(String messageId) {
+    public Account withNewMessage(Id messageId) {
       return new Account(id, age, friends, messages.add(messageId));
     }
   }

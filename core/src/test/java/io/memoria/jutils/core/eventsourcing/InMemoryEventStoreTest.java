@@ -2,6 +2,7 @@ package io.memoria.jutils.core.eventsourcing;
 
 import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.event.EventStore;
+import io.memoria.jutils.core.value.Id;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,13 +14,13 @@ import java.util.List;
 import java.util.Map;
 
 class InMemoryEventStoreTest {
-  private static record GreetingCreated(String id, String aggId, String value) implements Event {}
+  private static record GreetingCreated(Id id, String aggId, String value) implements Event {}
 
   private final Map<String, ArrayList<Event>> db = new HashMap<>();
   private final EventStore store = new InMemoryEventStore(db);
-  private final GreetingCreated e1 = new GreetingCreated("0", "0", "hello");
-  private final GreetingCreated e2 = new GreetingCreated("1", "1", "Bye");
-  private final GreetingCreated e3 = new GreetingCreated("2", "1", "Ciao");
+  private final GreetingCreated e1 = new GreetingCreated(new Id("0"), "0", "hello");
+  private final GreetingCreated e2 = new GreetingCreated(new Id("1"), "1", "Bye");
+  private final GreetingCreated e3 = new GreetingCreated(new Id("2"), "1", "Ciao");
 
   @Test
   void add() {

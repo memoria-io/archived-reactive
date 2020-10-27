@@ -13,6 +13,7 @@ import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserDec
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvent.AccountCreated;
 import io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.domain.UserEvolver;
 import io.memoria.jutils.core.generator.IdGenerator;
+import io.memoria.jutils.core.value.Id;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ import java.util.Map;
 class HandlerTest {
   private static final Map<String, ArrayList<Event>> db = new HashMap<>();
   private static final EventStore eventStore = new InMemoryEventStore(db);
-  private static final IdGenerator idGen = () -> "0";
+  private static final IdGenerator idGen = () -> new Id("0");
   private static final String workSpaceAggId = "02";
   private static final CommandHandler<User, UserCommand> handler = new CommandHandler<>(eventStore,
                                                                                         new UserEvolver(),
@@ -45,7 +46,7 @@ class HandlerTest {
     var handleMono = handler.apply(workSpaceAggId, cmd);
     // Then
     StepVerifier.create(handleMono).expectComplete().verify();
-    Assertions.assertTrue(db.get(workSpaceAggId).contains(new AccountCreated("0", "0", 18)));
+    Assertions.assertTrue(db.get(workSpaceAggId).contains(new AccountCreated(new Id("0"), new Id("0"), 18)));
   }
 
   @Test
