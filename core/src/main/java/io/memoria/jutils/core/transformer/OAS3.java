@@ -17,5 +17,10 @@ public sealed interface OAS3 {
 
   record OAS3Object(Map<String, OAS3> properties) implements OAS3 {}
 
+  /**
+   * Keys types is always string in OAS
+   */
+  record OAS3Map(OAS3 valuesType) implements OAS3 {}
+
   record OAS3String() implements OAS3 {}
 }
