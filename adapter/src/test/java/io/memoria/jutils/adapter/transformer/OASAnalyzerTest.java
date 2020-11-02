@@ -44,9 +44,9 @@ class OASAnalyzerTest {
   void analyseGenericSubClass() {
     // Given
     class Person<T> {
-      
+
     }
-    
+
     class SomeClass<A, B, C> {
       public A a;
       public B b;
@@ -58,9 +58,10 @@ class OASAnalyzerTest {
     var oas3 = (OAS3Object) OASAnalyzer.analyse(TestGenericSubClass.class);
     // Then
     // Due to type erasure t is considered 
-    assertTrue(oas3.properties().get("someClass") instanceof OAS3Object sc &&
-               sc.properties().get("name") instanceof OAS3String );
-//    && sc.properties().get("a") instanceof OAS3Integer
+    assertTrue(oas3.properties().get("someClass") instanceof OAS3Object);
+    var obj = (OAS3Object) oas3.properties().get("someClass");
+    assertTrue(obj.properties().get("name") instanceof OAS3String);
+    assertTrue(obj.properties().get("a") instanceof OAS3Integer);
   }
 
   @Test

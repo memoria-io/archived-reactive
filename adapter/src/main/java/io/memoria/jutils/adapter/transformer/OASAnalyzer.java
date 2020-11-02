@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -43,39 +42,39 @@ public class OASAnalyzer {
     return new OAS3Object(map);
   }
 
-  public static boolean isGeneric(Type type) {
-    return type instanceof ParameterizedType;
-  }
-
-  public static Option<OAS3> asGeneric(Field f) {
-
-    if (f.getGenericType() instanceof ParameterizedType type) {
-      // Get Parameter names in code
-      var params = f.getType().getTypeParameters();
-      var paramsNames = Arrays.stream(params).map(TypeVariable::getName).collect(toSet());
-      // Match types with names
-      var nameAndType = new HashMap<String, Type>();
-      var typeArguments = type.getActualTypeArguments();
-      for (int i = 0; i < typeArguments.length; i++) {
-        nameAndType.put(params[i].getName(), typeArguments[i]);
-      }
-      var objectMap = new HashMap<String, OAS3>();
-      var fields = (f.getType().isRecord()) ? f.getType().getDeclaredFields() : f.getType().getFields();
-      for (Field field : fields) {
-        if (field.getType().equals(Object.class) && paramsNames.contains(field.getGenericType().getTypeName())) {
-          System.out.println(field.getType() + ":" + field.getGenericType());
-          var t = nameAndType.get(field.getGenericType().getTypeName());
-          if (t instanceof Class<?> classT)
-            objectMap.put(field.getName(), analyse(classT));
-          //          else if (t instanceof ParameterizedType parameterizedType)
-          //            objectMap.put
-        } else {
-          objectMap.put(field.getName(), analyse(field.getType()));
-        }
-      }
-      return Option.some(new OAS3Object(objectMap));
+  public static <T> Option<OAS3> asGeneric(Field f) {
+    if (f.getGenericType() instanceof ParameterizedType p) {
+      return Option.some(fromGeneric(p, f.getType()));
     }
     return Option.none();
+  }
+
+  public static <T> OAS3 fromGeneric(ParameterizedType parameterizedType, Class<T> rawType) {
+    // Get Parameter names in code
+    var params = rawType.getTypeParameters();
+    var paramsNames = Arrays.stream(params).map(TypeVariable::getName).collect(toSet());
+    // Match types with names
+    var nameAndType = new HashMap<String, Type>();
+    var typeArguments = parameterizedType.getActualTypeArguments();
+    for (int i = 0; i < typeArguments.length; i++) {
+      nameAndType.put(params[i].getName(), typeArguments[i]);
+    }
+    var objectMap = new HashMap<String, OAS3>();
+    var fields = (rawType.isRecord()) ? rawType.getDeclaredFields() : rawType.getFields();
+    for (Field field : fields) {
+      if (field.getType().equals(Object.class) && paramsNames.contains(field.getGenericType().getTypeName())) {
+        var t = nameAndType.get(field.getGenericType().getTypeName());
+        if (t instanceof Class<?> classT) {
+          objectMap.put(field.getName(), analyse(classT));
+        } else if (t instanceof ParameterizedType pt) {
+          var oas = fromGeneric(pt, (Class<?>) pt.getRawType());
+          objectMap.put(field.getName(), oas);
+        }
+      } else {
+        objectMap.put(field.getName(), analyse(field.getType()));
+      }
+    }
+    return new OAS3Object(objectMap);
   }
 
   public static Option<OAS3> genericField(Field f) {
