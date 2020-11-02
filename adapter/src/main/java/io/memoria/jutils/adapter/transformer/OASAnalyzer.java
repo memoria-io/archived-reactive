@@ -42,7 +42,7 @@ public class OASAnalyzer {
     return new OAS3Object(map);
   }
 
-  public static <T> Option<OAS3> asGeneric(Field f) {
+  public static Option<OAS3> asGeneric(Field f) {
     if (f.getGenericType() instanceof ParameterizedType p) {
       return Option.some(fromGeneric(p, f.getType()));
     }
