@@ -77,10 +77,6 @@ public class OASAnalyzer {
     return new OAS3Object(objectMap);
   }
 
-  public static Option<OAS3> genericField(Field f) {
-    return null;
-  }
-
   public static Option<OAS3> asMap(Field f) {
     if (Map.class.isAssignableFrom(f.getType())) {
       ParameterizedType type = (ParameterizedType) f.getGenericType();
