@@ -15,6 +15,8 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.memoria.jutils.core.value.Id;
+import io.memoria.jutils.jackson.transformer.id.IdDeserializer;
+import io.memoria.jutils.jackson.transformer.id.IdSerializer;
 import io.vavr.jackson.datatype.VavrModule;
 
 import java.text.SimpleDateFormat;

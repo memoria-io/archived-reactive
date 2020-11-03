@@ -1,4 +1,4 @@
-package io.memoria.jutils.jackson.transformer;
+package io.memoria.jutils.jackson.transformer.id;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
