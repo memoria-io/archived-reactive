@@ -28,7 +28,6 @@ public class OASAnalyzer {
     return asPrimitive(c).orElse(() -> asStandardObject(c))
                          .orElse(() -> asArray(c))
                          .getOrElse(() -> asUserDefinedObject(c));
-
   }
 
   public static <T> OAS3 asUserDefinedObject(Class<T> c) {

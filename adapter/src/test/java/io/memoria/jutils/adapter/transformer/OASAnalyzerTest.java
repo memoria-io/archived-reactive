@@ -43,9 +43,7 @@ class OASAnalyzerTest {
   @Test
   void analyseGenericSubClass() {
     // Given
-    class Person<T> {
-
-    }
+    class Person<T> {}
 
     class SomeClass<A, B, C> {
       public A a;
