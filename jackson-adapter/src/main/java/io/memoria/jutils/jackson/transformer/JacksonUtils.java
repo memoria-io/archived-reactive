@@ -55,6 +55,22 @@ public class JacksonUtils {
     return mixinWrapperObjectFormat(om, baseClass);
   }
 
+  public static ObjectMapper jsonPrettyPrinting(ObjectMapper om) {
+    var printer = new DefaultPrettyPrinter().withoutSpacesInObjectEntries();
+    printer.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
+    var resultMapper = om.enable(SerializationFeature.INDENT_OUTPUT);
+    resultMapper.setDefaultPrettyPrinter(printer);
+
+    return resultMapper;
+  }
+
+  public static SimpleModule jutilsModule() {
+    SimpleModule jutils = new SimpleModule();
+    jutils.addDeserializer(Id.class, new IdDeserializer());
+    jutils.addSerializer(Id.class, new IdSerializer());
+    return jutils;
+  }
+
   /**
    * Maps inheriting classes simple names written "As.WRAPPER_OBJECT" to this baseClass argument
    * <p>
@@ -75,22 +91,6 @@ public class JacksonUtils {
 
   public static ObjectMapper setDateFormat(ObjectMapper om) {
     return om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd" + "'T'" + "HH:mm:ss"));
-  }
-
-  public static ObjectMapper jsonPrettyPrinting(ObjectMapper om) {
-    var printer = new DefaultPrettyPrinter().withoutSpacesInObjectEntries();
-    printer.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
-    var resultMapper = om.enable(SerializationFeature.INDENT_OUTPUT);
-    resultMapper.setDefaultPrettyPrinter(printer);
-
-    return resultMapper;
-  }
-
-  public static SimpleModule jutilsModule() {
-    SimpleModule jutils = new SimpleModule();
-    jutils.addDeserializer(Id.class, new IdDeserializer());
-    jutils.addSerializer(Id.class, new IdSerializer());
-    return jutils;
   }
 
   private JacksonUtils() {}

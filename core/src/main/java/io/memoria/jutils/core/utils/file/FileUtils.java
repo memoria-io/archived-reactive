@@ -1,10 +1,11 @@
 package io.memoria.jutils.core.utils.file;
 
-import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,54 +17,82 @@ import java.util.stream.BaseStream;
 public record FileUtils(Scheduler scheduler) {
   private static final BiFunction<String, String, String> joinLines = (a, b) -> a + System.lineSeparator() + b;
 
-  public static Try<Path> resourcePath(String path) {
-    return Try.of(() -> {
-      var url = ClassLoader.getSystemClassLoader().getResource(path);
-      return Paths.get(Objects.requireNonNull(url).getPath());
-    });
+  public Mono<String> read(Path filePath) {
+    return readLines(filePath).reduce(joinLines);
   }
 
-  public Mono<String> read(Path path) {
-    return Mono.fromCallable(() -> Files.readString(path)).subscribeOn(scheduler);
+  public Mono<String> read(Path filePath, String nestingPrefix) {
+    return readLines(filePath, nestingPrefix).reduce(joinLines);
   }
 
-  public Mono<String> read(Path path, String nestingPrefix) {
-    return readLines(path, nestingPrefix).reduce(joinLines);
+  public Flux<String> readLines(Path filePath) {
+    return Flux.using(() -> Files.lines(filePath), Flux::fromStream, BaseStream::close).subscribeOn(scheduler);
   }
 
-  public Flux<String> readLines(Path path) {
-    return Flux.using(() -> Files.lines(path), Flux::fromStream, BaseStream::close).subscribeOn(scheduler);
+  public Flux<String> readLines(Path filePath, String nestingPrefix) {
+    return readLines(filePath).flatMap(line -> expand(filePath, line, nestingPrefix));
   }
 
-  public Flux<String> readLines(Path path, String nestingPrefix) {
-    return Flux.using(() -> Files.lines(path), Flux::fromStream, BaseStream::close).flatMap(line -> {
-      if (line.startsWith(nestingPrefix)) {
-        var inclusionPathStr = line.split(nestingPrefix)[1].trim();
-        var inclusionPath = path.getParent().resolve(inclusionPathStr);
-        return Mono.fromCallable(() -> Files.lines(inclusionPath)).flatMapMany(Flux::fromStream);
-      } else {
-        return Flux.just(line);
+  public Mono<String> readResource(String resourcePath) {
+    return Mono.fromCallable(() -> {
+      var inputStream = Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(resourcePath));
+      var result = new ByteArrayOutputStream();
+      byte[] buffer = new byte[1024];
+      int length;
+      while ((length = inputStream.read(buffer)) != -1) {
+        result.write(buffer, 0, length);
       }
+      return result.toString(StandardCharsets.UTF_8);
     }).subscribeOn(scheduler);
   }
 
-  public Mono<String> readResource(String path) {
-    return resourcePath(path).map(this::read).getOrElseGet(Mono::error);
+  public Mono<String> readResource(String resourcePath, String nestingPrefix) {
+    return readResourceLines(resourcePath, nestingPrefix).reduce(joinLines);
   }
 
-  public Mono<String> readResource(String path, String nestingPrefix) {
-    return resourcePath(path).map(p -> read(p, nestingPrefix)).getOrElseGet(Mono::error);
+  public Flux<String> readResourceLines(String resourcePath) {
+    return readResource(resourcePath).map(String::lines).flatMapMany(Flux::fromStream);
   }
 
-  public Flux<String> readResourceLines(String path, String nestingPrefix) {
-    return resourcePath(path).map(p -> readLines(p, nestingPrefix)).getOrElseGet(Flux::error);
-  }
-
-  public Flux<String> readResourceLines(String path) {
-    return resourcePath(path).map(this::readLines).getOrElseGet(Flux::error);
+  public Flux<String> readResourceLines(String resourcePath, String nestingPrefix) {
+    return readResourceLines(resourcePath).flatMap(line -> expandResource(resourcePath, line, nestingPrefix));
   }
 
   public Mono<Path> write(Path path, String content) {
     return Mono.fromCallable(() -> Files.writeString(path, content, StandardOpenOption.CREATE)).subscribeOn(scheduler);
+  }
+
+  private Flux<String> expand(Path filePath, String line, String nestingPrefix) {
+    if (line.trim().startsWith(nestingPrefix)) {
+      var subFilePath = line.split(nestingPrefix)[1].trim();
+      if (subFilePath.startsWith("/")) {
+        return readLines(Paths.get(subFilePath), nestingPrefix);
+      } else {
+        // Handling relative path 
+        if (filePath.getParent() != null) {
+          var inclusionPath = filePath.getParent().resolve(subFilePath);
+          return readLines(inclusionPath, nestingPrefix);
+        } else {
+          var inclusionPath = filePath.resolve(subFilePath);
+          return readLines(inclusionPath, nestingPrefix);
+        }
+      }
+    } else {
+      return Flux.just(line);
+    }
+  }
+
+  private Flux<String> expandResource(String filePath, String line, String nestingPrefix) {
+    if (line.trim().startsWith(nestingPrefix)) {
+      var subFilePath = line.split(nestingPrefix)[1].trim();
+      var relativePath = parentPath(filePath) + subFilePath;
+      return readResourceLines(relativePath, nestingPrefix);
+    } else {
+      return Flux.just(line);
+    }
+  }
+
+  private String parentPath(String filePath) {
+    return filePath.replaceFirst("[^/]+$", "");
   }
 }

@@ -45,7 +45,9 @@ public class EvolverTest {
   @Test
   public void applyCurriedFlux() {
     var acc = new Account(new Id("0"), 10);
-    var newAcc = e.curriedFlux(acc).apply(Flux.just(new BalanceAdded(new Id("0"), new Id("0"), 10), new BalanceAdded(new Id("0"), new Id("0"), 10)));
+    var newAcc = e.curriedFlux(acc)
+                  .apply(Flux.just(new BalanceAdded(new Id("0"), new Id("0"), 10),
+                                   new BalanceAdded(new Id("0"), new Id("0"), 10)));
     StepVerifier.create(newAcc.map(Account::balance)).expectNext(30).expectComplete().verify();
   }
 
@@ -53,21 +55,26 @@ public class EvolverTest {
   public void applyCurriedTraversal() {
     var acc = new Account(new Id("0"), 10);
     var newAcc = e.curriedTraversable(acc)
-                  .apply(List.of(new BalanceAdded(new Id("0"), new Id("0"), 10), new BalanceAdded(new Id("0"), new Id("0"), 10)));
+                  .apply(List.of(new BalanceAdded(new Id("0"), new Id("0"), 10),
+                                 new BalanceAdded(new Id("0"), new Id("0"), 10)));
     Assertions.assertEquals(30, newAcc.balance);
   }
 
   @Test
   public void applyFlux() {
     var acc = new Account(new Id("0"), 10);
-    var newAcc = e.apply(acc, Flux.just(new BalanceAdded(new Id("0"), new Id("0"), 10), new BalanceAdded(new Id("0"), new Id("0"), 10)));
+    var newAcc = e.apply(acc,
+                         Flux.just(new BalanceAdded(new Id("0"), new Id("0"), 10),
+                                   new BalanceAdded(new Id("0"), new Id("0"), 10)));
     StepVerifier.create(newAcc.map(Account::balance)).expectNext(30).expectComplete().verify();
   }
 
   @Test
   public void applyTraversal() {
     var acc = new Account(new Id("0"), 10);
-    var newAcc = e.apply(acc, List.of(new BalanceAdded(new Id("0"), new Id("0"), 10), new BalanceAdded(new Id("0"), new Id("0"), 10)));
+    var newAcc = e.apply(acc,
+                         List.of(new BalanceAdded(new Id("0"), new Id("0"), 10),
+                                 new BalanceAdded(new Id("0"), new Id("0"), 10)));
     Assertions.assertEquals(30, newAcc.balance);
   }
 }
