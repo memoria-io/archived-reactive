@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 
 import static java.lang.System.lineSeparator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FileUtilsTest {
   private static final FileUtils fu = new FileUtils(Schedulers.elastic());
@@ -55,5 +56,11 @@ class FileUtilsTest {
   void should_read_resource_in_lines() {
     var flux = fu.readResourceLines("file.txt");
     StepVerifier.create(flux).expectNextCount(NUM_OF_LINES).expectComplete().verify();
+  }
+  
+  @Test
+  void should_read_resource_path(){
+    assertTrue(FileUtils.resourcePath("file.txt").isSuccess());
+    assertTrue(FileUtils.resourcePath("filezzz.txt").isFailure());
   }
 }

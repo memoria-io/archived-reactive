@@ -1,5 +1,6 @@
 package io.memoria.jutils.core.utils.file;
 
+import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -16,6 +17,10 @@ import java.util.stream.BaseStream;
 
 public record FileUtils(Scheduler scheduler) {
   private static final BiFunction<String, String, String> joinLines = (a, b) -> a + System.lineSeparator() + b;
+
+  public static Try<Path> resourcePath(String path) {
+    return Try.of(() -> Paths.get(ClassLoader.getSystemResource(path).toURI()));
+  }
 
   public Mono<String> read(Path filePath) {
     return readLines(filePath).reduce(joinLines);
