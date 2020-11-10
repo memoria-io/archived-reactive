@@ -15,11 +15,6 @@
 
     <name>${project.artifactId}</name>
     <description>Etcd Module</description>
-    <properties>
-        <sonar.projectKey>IsmailMarmoush_jutils</sonar.projectKey>
-        <sonar.organization>ismailmarmoush</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-    </properties>
     <dependencies>
         <!--======================================================================================== -->
         <!-- Modules Dependencies -->
