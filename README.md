@@ -3,6 +3,8 @@
 [![Publish](https://github.com/memoria-io/jutils/workflows/Publish/badge.svg)](https://github.com/memoria-io/jutils/actions?query=workflow%3APublish)
 [![Codecove](https://codecov.io/github/memoria-io/jutils/coverage.svg?precision=2)](https://codecov.io/gh/memoria-io/jutils)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.memoria/jutils/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/io.memoria/jutils/)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=IsmailMarmoush_jutils&metric=alert_status)](https://sonarcloud.io/dashboard?id=IsmailMarmoush_jutils)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=IsmailMarmoush_jutils&metric=security_rating)](https://sonarcloud.io/dashboard?id=IsmailMarmoush_jutils)
 
 # JUtils
 `jutils` is a tool-box that makes it easier and faster to build reactive applications.
