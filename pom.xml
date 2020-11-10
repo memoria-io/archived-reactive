@@ -24,7 +24,7 @@
         <sonar.organization>ismailmarmoush</sonar.organization>
         <sonar.projectKey>IsmailMarmoush_jutils</sonar.projectKey>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <!--<sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>-->
+        <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
     </properties>
     <modules>
         <module>core</module>
