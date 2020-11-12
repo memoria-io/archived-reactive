@@ -2,9 +2,7 @@ package io.memoria.jutils.core.transformer;
 
 import io.vavr.collection.List;
 
-import java.io.IOException;
-
-public class PropertyException extends IOException {
+public class PropertyException extends TransformerException {
   public static PropertyException noMatchingAdapter(String property) {
     return new PropertyException("Property [%s] has no matching adapter".formatted(property));
   }
@@ -25,5 +23,4 @@ public class PropertyException extends IOException {
   public PropertyException(String message) {
     super(message);
   }
-
 }
