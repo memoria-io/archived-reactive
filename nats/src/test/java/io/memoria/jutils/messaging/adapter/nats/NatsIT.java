@@ -18,6 +18,7 @@ import java.util.Random;
 import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofSeconds;
 import static java.util.Objects.requireNonNull;
+import static reactor.core.scheduler.Schedulers.boundedElastic;
 import static reactor.core.scheduler.Schedulers.elastic;
 
 class NatsIT {
@@ -34,8 +35,8 @@ class NatsIT {
   NatsIT() throws IOException, InterruptedException {
     var duration = Duration.ofMillis(1000);
     nc = NatsUtils.createConnection("nats://localhost:4222", duration, duration, 1000, Duration.ofMillis(1000));
-    msgSender = new NatsSender(nc, mf, elastic(), ofSeconds(1));
-    msgReceiver = new NatsReceiver(nc, mf, elastic(), ofSeconds(1));
+    msgSender = new NatsSender(nc, mf, boundedElastic(), ofSeconds(1));
+    msgReceiver = new NatsReceiver(nc, mf, boundedElastic(), ofSeconds(1));
     infiniteMsgsFlux = Flux.interval(ofMillis(100)).map(this::iToMessage);
     limitedMsgsFlux = infiniteMsgsFlux.take(MSG_COUNT);
     limitedMsgsArr = requireNonNull(limitedMsgsFlux.collectList().block()).toArray(new Message[0]);
