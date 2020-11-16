@@ -1,7 +1,5 @@
-package io.memoria.jutils.core.eventsourcing;
+package io.memoria.jutils.core.eventsourcing.event;
 
-import io.memoria.jutils.core.eventsourcing.event.Event;
-import io.memoria.jutils.core.eventsourcing.event.EventStore;
 import io.vavr.control.Option;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

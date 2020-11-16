@@ -1,7 +1,7 @@
 package io.memoria.jutils.core.eventsourcing.usecase.socialnetwork.tests;
 
 import io.memoria.jutils.core.eventsourcing.ESException.ESInvalidOperation;
-import io.memoria.jutils.core.eventsourcing.InMemoryEventStore;
+import io.memoria.jutils.core.eventsourcing.event.InMemoryEventStore;
 import io.memoria.jutils.core.eventsourcing.cmd.CommandHandler;
 import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.event.EventStore;
