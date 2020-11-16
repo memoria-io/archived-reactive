@@ -18,7 +18,7 @@ public class NettyClientUtils {
                      .baseUrl(host)
                      .get()
                      .uri(joinPath(path))
-                     .responseSingle((res, body) -> body.asString().map(s -> Tuple.of(res.status(), s)));
+                     .responseSingle((res, body) -> body.asString().defaultIfEmpty("").map(s -> Tuple.of(res.status(), s)));
   }
 
   public static Mono<Tuple2<HttpResponseStatus, String>> get(Consumer<HttpHeaders> httpHeaders,
@@ -29,7 +29,7 @@ public class NettyClientUtils {
                      .headers(httpHeaders)
                      .get()
                      .uri(joinPath(path))
-                     .responseSingle((res, body) -> body.asString().map(s -> Tuple.of(res.status(), s)));
+                     .responseSingle((res, body) -> body.asString().defaultIfEmpty("").map(s -> Tuple.of(res.status(), s)));
   }
 
   public static Mono<Tuple2<HttpResponseStatus, String>> post(String payload, String host, String... path) {
@@ -38,7 +38,7 @@ public class NettyClientUtils {
                      .post()
                      .uri(joinPath(path))
                      .send(ByteBufFlux.fromString(Flux.just(payload)))
-                     .responseSingle((res, body) -> body.asString().map(s -> Tuple.of(res.status(), s)));
+                     .responseSingle((res, body) -> body.asString().defaultIfEmpty("").map(s-> Tuple.of(res.status(),s)));
   }
 
   public static Mono<Tuple2<HttpResponseStatus, String>> post(String payload,
@@ -51,7 +51,7 @@ public class NettyClientUtils {
                      .post()
                      .uri(joinPath(path))
                      .send(ByteBufFlux.fromString(Flux.just(payload)))
-                     .responseSingle((res, body) -> body.asString().map(s -> Tuple.of(res.status(), s)));
+                     .responseSingle((res, body) -> body.asString().defaultIfEmpty("").map(s -> Tuple.of(res.status(), s)));
   }
 
   private NettyClientUtils() {}

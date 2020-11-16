@@ -14,6 +14,7 @@ import reactor.test.StepVerifier;
 
 import static io.memoria.jutils.core.utils.netty.NettyClientUtils.post;
 import static io.memoria.jutils.core.utils.netty.NettyServerUtils.stringReply;
+import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpResponseStatus.UNAUTHORIZED;
 
@@ -43,6 +44,12 @@ class NettyClientUtilsTest {
   void stringReplyTest() {
     var monoResp = post("payload", host, stringReplyPath);
     StepVerifier.create(monoResp).expectNext(Tuple.of(OK, "payload")).expectComplete().verify();
+  }
+
+  @Test
+  void notFoundTest() {
+    var monoResp = post("payload", host, "someUndefinedPath");
+    StepVerifier.create(monoResp).expectNext(Tuple.of(NOT_FOUND, "")).expectComplete().verify();
   }
 
   private static Mono<Void> handlePost(HttpServerRequest req, HttpServerResponse resp) {
