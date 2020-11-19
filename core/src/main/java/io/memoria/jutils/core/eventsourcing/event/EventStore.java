@@ -4,11 +4,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface EventStore {
-  Mono<Void> add(String streamId, Event event);
+  Flux<String> add(String topic, Flux<Event> event);
 
-  Mono<Void> add(String streamId, Iterable<Event> events);
+  Mono<Boolean> exists(String topic);
 
-  Mono<Boolean> exists(String streamId);
-
-  Flux<Event> stream(String streamId);
+  Flux<Event> stream(String topic);
 }

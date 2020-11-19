@@ -9,7 +9,7 @@ import io.vavr.collection.Traversable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
+import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toFlux;
 import static java.util.function.Function.identity;
 
 public final class CommandHandler<S extends State, C extends Command> implements Function2<String, C, Mono<Void>> {
@@ -31,7 +31,8 @@ public final class CommandHandler<S extends State, C extends Command> implements
       return Mono.error(ESException.create("Aggregate Id is null or empty"));
     var eventFlux = store.stream(aggId);
     var stateMono = evolver.apply(initialState, eventFlux);
-    return stateMono.flatMap(state -> toMono(decider.apply(state, cmd))).flatMap(list -> store.add(aggId, list));
+    var newEventsFlux = stateMono.flatMapMany(s -> toFlux(decider.apply(s, cmd)));
+    return store.add(aggId,newEventsFlux).then();
   }
 
   public Mono<Void> apply(String aggId, Flux<C> cmdFlux) {
@@ -39,6 +40,6 @@ public final class CommandHandler<S extends State, C extends Command> implements
   }
 
   public Mono<Void> apply(String aggId, Traversable<C> t) {
-    return t.foldLeft(Mono.<Void>empty(), (a, b) -> a.then(apply(aggId, b)));
+    return t.foldLeft(Mono.empty(), (a, b) -> a.then(apply(aggId, b)));
   }
 }
