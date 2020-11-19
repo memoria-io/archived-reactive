@@ -10,6 +10,6 @@ import java.io.IOException;
 public class IdSerializer extends JsonSerializer<Id> {
   @Override
   public void serialize(Id value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-    gen.writeString(value.id());
+    gen.writeString(value.value());
   }
 }

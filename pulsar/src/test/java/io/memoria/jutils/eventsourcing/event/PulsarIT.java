@@ -17,7 +17,7 @@ class PulsarIT {
   private static final String topic = "topic-" + new Random().nextInt(1000);
   private static final int MSG_COUNT = 3;
   private static final StringTransformer transformer = new GreetingTransformer();
-  
+
   private final PulsarEventStore pulsarEventStore;
   private final Flux<Event> events;
   private final Event[] expectedEvents;
@@ -41,7 +41,7 @@ class PulsarIT {
   }
 
   private static GreetingEvent toGreetingEvent(long i) {
-    return new GreetingEvent("0", "User(%s)".formatted(i));
+    return new GreetingEvent(i + "", "name_%s".formatted(i));
   }
 }
 
