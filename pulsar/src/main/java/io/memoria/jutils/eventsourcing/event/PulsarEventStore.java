@@ -33,11 +33,13 @@ public class PulsarEventStore implements EventStore {
 
   @Override
   public Flux<String> add(String topic, Flux<Event> events) {
-    return Mono.fromCallable(() -> createProducer(topic))
-               .flatMapMany(producer -> events.map(transformer::serialize)
-                                              .map(Try::get)
-                                              .flatMap(msg -> Mono.fromFuture(producer.sendAsync(msg))
-                                                                  .map(Object::toString)));
+    return Mono.fromCallable(() -> createProducer(topic)).flatMapMany(producer -> sendEvents(producer, events));
+  }
+
+  private Flux<String> sendEvents(Producer<String> producer, Flux<Event> events) {
+    return events.map(transformer::serialize)
+                 .map(Try::get)
+                 .flatMap(msg -> Mono.fromFuture(producer.sendAsync(msg)).map(Object::toString));
   }
 
   private Producer<String> createProducer(String topic) throws PulsarClientException {
