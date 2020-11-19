@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.time.Duration;
 
 public class NatsUtils {
-  public static final String CHANNEL_SEPARATOR = ".";
   private static final Logger log = LoggerFactory.getLogger(NatsUtils.class.getName());
   private static final ErrorListener err = new ErrorListener() {
     public void errorOccurred(Connection conn, String type) {
@@ -46,12 +45,6 @@ public class NatsUtils {
                                       .errorListener(err)
                                       .build();
     return Nats.connect(config);
-  }
-
-  
-
-  public static String toSubject(String topic, int partition) {
-    return topic + CHANNEL_SEPARATOR + partition;
   }
 
   private NatsUtils() {}
