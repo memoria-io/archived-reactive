@@ -1,13 +1,12 @@
-package io.memoria.jutils.eventsourcing.event;
+package io.memoria.jutils.kafka.eventsourcing.event;
 
-import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class KafkaTestConfigs {
+public class KafkaConfigs {
   public static final Map<String, Object> producerConf = new HashMap<>();
   public static final Map<String, Object> consumerConf = new HashMap<>();
 

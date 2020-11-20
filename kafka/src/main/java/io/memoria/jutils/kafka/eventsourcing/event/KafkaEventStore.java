@@ -1,4 +1,4 @@
-package io.memoria.jutils.eventsourcing.event;
+package io.memoria.jutils.kafka.eventsourcing.event;
 
 import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.event.EventStore;
@@ -49,7 +49,7 @@ public class KafkaEventStore implements EventStore {
 
   @Override
   public Flux<Event> add(String topic, Flux<Event> events) {
-    return events.flatMap(e -> sendRecord(topic, e));
+    return events.concatMap(e -> sendRecord(topic, e));
   }
 
   @Override
@@ -74,8 +74,8 @@ public class KafkaEventStore implements EventStore {
 
   private Flux<Event> pollOnce(TopicPartition tp) {
     return Mono.fromCallable(() -> consumer.poll(timeout))
-               .map(crs -> crs.records(tp))
-               .flatMapMany(Flux::fromIterable)
+               .flux()
+               .concatMap(crs -> Flux.fromIterable(crs.records(tp)))
                .map(ConsumerRecord::value)
                .map(str -> transformer.deserialize(str, Event.class).get());
   }

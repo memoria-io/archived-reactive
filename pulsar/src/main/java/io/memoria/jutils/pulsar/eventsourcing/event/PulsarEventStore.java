@@ -1,4 +1,4 @@
-package io.memoria.jutils.eventsourcing.event;
+package io.memoria.jutils.pulsar.eventsourcing.event;
 
 import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.event.EventStore;

@@ -1,4 +1,4 @@
-package io.memoria.jutils.eventsourcing.event;
+package io.memoria.jutils.nats;
 
 import io.nats.client.Connection;
 import io.nats.client.ConnectionListener.Events;
@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.Duration;
 
-public class NatsUtils {
-  private static final Logger log = LoggerFactory.getLogger(NatsUtils.class.getName());
+public class NatsCore {
+  private static final Logger log = LoggerFactory.getLogger(NatsCore.class.getName());
   private static final ErrorListener err = new ErrorListener() {
     public void errorOccurred(Connection conn, String type) {
       log.error("Error {}", type);
@@ -41,13 +41,13 @@ public class NatsUtils {
                                       .reconnectWait(reconTimeout)
                                       .bufferSize(bufferSize)
                                       .pingInterval(pingInterval)
-                                      .connectionListener(NatsUtils::onConnectionEvent)
+                                      .connectionListener(NatsCore::onConnectionEvent)
                                       .errorListener(err)
                                       .build();
     return Nats.connect(config);
   }
 
-  private NatsUtils() {}
+  private NatsCore() {}
 
   private static void onConnectionEvent(Connection conn, Events type) {
     log.info("Status change {}", type);

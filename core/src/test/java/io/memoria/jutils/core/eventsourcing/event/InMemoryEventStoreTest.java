@@ -1,8 +1,5 @@
-package io.memoria.jutils.core.eventsourcing;
+package io.memoria.jutils.core.eventsourcing.event;
 
-import io.memoria.jutils.core.eventsourcing.event.Event;
-import io.memoria.jutils.core.eventsourcing.event.EventStore;
-import io.memoria.jutils.core.eventsourcing.event.InMemoryEventStore;
 import io.memoria.jutils.core.value.Id;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

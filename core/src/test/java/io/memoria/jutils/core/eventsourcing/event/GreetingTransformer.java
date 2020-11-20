@@ -1,6 +1,5 @@
-package io.memoria.jutils.eventsourcing.event;
+package io.memoria.jutils.core.eventsourcing.event;
 
-import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.transformer.StringTransformer;
 import io.vavr.control.Try;
 
