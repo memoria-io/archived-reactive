@@ -65,3 +65,6 @@ All modules depend on Core. There are currently no other inter-dependencies betw
 
 ## Contribution
 You can just do pull requests, and I will check them asap.
+
+## TODOs
+* Eventstore testing suite

@@ -13,8 +13,8 @@ import static io.vavr.Predicates.instanceOf;
 public record YamlJackson(ObjectMapper mapper) implements Yaml {
 
   @Override
+  @SuppressWarnings("unchecked")
   public <T> Try<T> deserialize(String str, Class<T> tClass) {
-    //noinspection unchecked
     return Try.of(() -> mapper.readValue(str, tClass))
               .mapFailure(Case($(instanceOf(JacksonException.class)), e -> new PropertyException(e.getMessage())));
   }

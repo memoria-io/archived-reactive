@@ -13,12 +13,12 @@ import reactor.core.scheduler.Scheduler;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
-public record NatsEventStore(Connection nc, StringTransformer transformer, Duration timeout, Scheduler scheduler)
+public record NatsEventStore(Connection nc, Duration timeout, Scheduler scheduler, StringTransformer transformer)
         implements EventStore {
   private static final Logger log = LoggerFactory.getLogger(NatsEventStore.class.getName());
 
   @Override
-  public Flux<String> add(String topic, Flux<Event> events) {
+  public Flux<Event> add(String topic, Flux<Event> events) {
     return events.map(e -> publish(topic, e)).subscribeOn(scheduler).timeout(timeout);
   }
 
@@ -48,9 +48,9 @@ public record NatsEventStore(Connection nc, StringTransformer transformer, Durat
     return Flux.defer(() -> f.subscribeOn(scheduler).timeout(timeout));
   }
 
-  private String publish(String topic, Event e) {
-    var msg = this.transformer.serialize(e).get().getBytes(StandardCharsets.UTF_8);
+  private Event publish(String topic, Event event) {
+    var msg = this.transformer.serialize(event).get().getBytes(StandardCharsets.UTF_8);
     nc.publish(topic, msg);
-    return e.id().value();
+    return event;
   }
 }

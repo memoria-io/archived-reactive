@@ -29,19 +29,33 @@ class NatsIT {
   NatsIT() throws IOException, InterruptedException {
     var duration = Duration.ofMillis(1000);
     nc = NatsUtils.createConnection("nats://localhost:4222", duration, duration, 1000, duration);
-    this.eventStore = new NatsEventStore(nc, new GreetingTransformer(), duration, Schedulers.boundedElastic());
+    this.eventStore = new NatsEventStore(nc, duration, Schedulers.boundedElastic(), new GreetingTransformer());
 
     // Given
     events = Flux.interval(ofMillis(100)).map(NatsIT::toGreetingEvent).map(e -> (Event) e).take(MSG_COUNT);
     expectedEvents = requireNonNull(events.collectList().block()).toArray(new Event[0]);
   }
 
-  @Test
-  @DisplayName("Consumed messages should be same as published ones.")
-  void NatsPubSub() {
-    var sender = eventStore.add(topic, events);
-    var receiver = eventStore.stream(topic);
-    StepVerifier.create(sender.zipWith(receiver)).expectNextCount(MSG_COUNT).expectComplete().verify();
+  // @Test TODO
+  @DisplayName("Should produce messages and consume them correctly")
+  void produceAndConsume() {
+    // When
+    var sentFlux = eventStore.add(topic, events);
+    var receiveFlux = eventStore.stream(topic).take(MSG_COUNT);
+    // Then
+    StepVerifier.create(sentFlux).expectNextCount(MSG_COUNT).expectComplete().verify();
+    StepVerifier.create(receiveFlux).expectNext(expectedEvents).expectComplete().verify();
+  }
+
+  //  @Test TODO
+  @DisplayName("Should check if topic exists or not")
+  void checkTopics() {
+    // When
+    var sentFlux = eventStore.add(topic, events);
+    StepVerifier.create(sentFlux).expectNextCount(MSG_COUNT).expectComplete().verify();
+    // Then
+    StepVerifier.create(eventStore.exists(topic)).expectNext(true).expectComplete().verify();
+    StepVerifier.create(eventStore.exists(topic + "bla")).expectNext(false).expectComplete().verify();
   }
 
   @AfterEach

@@ -57,9 +57,9 @@ class FileUtilsTest {
     var flux = fu.readResourceLines("file.txt");
     StepVerifier.create(flux).expectNextCount(NUM_OF_LINES).expectComplete().verify();
   }
-  
+
   @Test
-  void should_read_resource_path(){
+  void should_read_resource_path() {
     assertTrue(FileUtils.resourcePath("file.txt").isSuccess());
     assertTrue(FileUtils.resourcePath("filezzz.txt").isFailure());
   }

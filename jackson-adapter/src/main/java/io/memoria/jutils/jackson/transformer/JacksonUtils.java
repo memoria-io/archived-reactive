@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactoryBuilder;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
@@ -45,7 +45,7 @@ public class JacksonUtils {
 
   public static ObjectMapper defaultYaml() {
     var yfb = new YAMLFactoryBuilder(YAMLFactory.builder().build());
-    yfb.configure(Feature.INDENT_ARRAYS, true);
+    yfb.configure(YAMLGenerator.Feature.INDENT_ARRAYS_WITH_INDICATOR, true);
     ObjectMapper om = new ObjectMapper(yfb.build());
     om = setDateFormat(om);
     om = addJ8Modules(om);
@@ -72,24 +72,6 @@ public class JacksonUtils {
   }
 
   /**
-   * Maps inheriting classes simple names written with format "As.WRAPPER_OBJECT" to this baseClass argument
-   * <p>
-   * note for this to work properly subclasses have to be in separate files from their baseClass otherwise Jvm will
-   * return "BaseClass$ChildClass" kind of naming
-   *
-   * @param baseClass base classes
-   * @return a new {@link JacksonUtils}
-   */
-  public static ObjectMapper mixinWrapperObjectFormat(ObjectMapper om, Class<?>... baseClass) {
-    @JsonTypeInfo(include = As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-    class WrapperObjectByClassName {}
-    for (Class<?> cls : baseClass) {
-      om.addMixIn(cls, WrapperObjectByClassName.class);
-    }
-    return om;
-  }
-
-  /**
    * Maps inheriting classes simple names written with format "As.PROPERTY" and property name is "@type" to this
    * baseClass argument
    * <p>
@@ -101,6 +83,24 @@ public class JacksonUtils {
    */
   public static ObjectMapper mixinPropertyFormat(ObjectMapper om, Class<?>... baseClass) {
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "$type")
+    class WrapperObjectByClassName {}
+    for (Class<?> cls : baseClass) {
+      om.addMixIn(cls, WrapperObjectByClassName.class);
+    }
+    return om;
+  }
+
+  /**
+   * Maps inheriting classes simple names written with format "As.WRAPPER_OBJECT" to this baseClass argument
+   * <p>
+   * note for this to work properly subclasses have to be in separate files from their baseClass otherwise Jvm will
+   * return "BaseClass$ChildClass" kind of naming
+   *
+   * @param baseClass base classes
+   * @return a new {@link JacksonUtils}
+   */
+  public static ObjectMapper mixinWrapperObjectFormat(ObjectMapper om, Class<?>... baseClass) {
+    @JsonTypeInfo(include = As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
     class WrapperObjectByClassName {}
     for (Class<?> cls : baseClass) {
       om.addMixIn(cls, WrapperObjectByClassName.class);

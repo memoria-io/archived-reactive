@@ -32,7 +32,7 @@ public final class CommandHandler<S extends State, C extends Command> implements
     var eventFlux = store.stream(aggId);
     var stateMono = evolver.apply(initialState, eventFlux);
     var newEventsFlux = stateMono.flatMapMany(s -> toFlux(decider.apply(s, cmd)));
-    return store.add(aggId,newEventsFlux).then();
+    return store.add(aggId, newEventsFlux).then();
   }
 
   public Mono<Void> apply(String aggId, Flux<C> cmdFlux) {

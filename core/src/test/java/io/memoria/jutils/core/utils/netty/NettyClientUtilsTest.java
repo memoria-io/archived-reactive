@@ -41,15 +41,15 @@ class NettyClientUtilsTest {
   }
 
   @Test
-  void stringReplyTest() {
-    var monoResp = post("payload", host, stringReplyPath);
-    StepVerifier.create(monoResp).expectNext(Tuple.of(OK, "payload")).expectComplete().verify();
-  }
-
-  @Test
   void notFoundTest() {
     var monoResp = post("payload", host, "someUndefinedPath");
     StepVerifier.create(monoResp).expectNext(Tuple.of(NOT_FOUND, "")).expectComplete().verify();
+  }
+
+  @Test
+  void stringReplyTest() {
+    var monoResp = post("payload", host, stringReplyPath);
+    StepVerifier.create(monoResp).expectNext(Tuple.of(OK, "payload")).expectComplete().verify();
   }
 
   private static Mono<Void> handlePost(HttpServerRequest req, HttpServerResponse resp) {

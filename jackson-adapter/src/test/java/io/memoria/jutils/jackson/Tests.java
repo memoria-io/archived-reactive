@@ -40,7 +40,7 @@ public class Tests {
     // File utils
     files = new FileUtils(Schedulers.boundedElastic());
     // Json
-    var jsonMapper = JacksonUtils.mixinPropertyFormat(JacksonUtils.defaultJson(),Employee.class);
+    var jsonMapper = JacksonUtils.mixinPropertyFormat(JacksonUtils.defaultJson(), Employee.class);
     jsonMapper.registerSubtypes(Manager.class, Engineer.class);
     json = new JsonJackson(jsonMapper);
     // Yaml

@@ -31,7 +31,7 @@ jobs:
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar    
+          restore-keys: ${{ runner.os }}-sonar
       - name: Maven Install
         run: mvn -B install -Psonar_cloud
         env:

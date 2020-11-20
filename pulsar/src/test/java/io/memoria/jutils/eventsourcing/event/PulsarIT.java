@@ -22,7 +22,10 @@ class PulsarIT {
   private final Event[] expectedEvents;
 
   PulsarIT() throws PulsarClientException {
-    this.eventStore = new PulsarEventStore("pulsar://localhost:6650", ofMillis(100), new GreetingTransformer());
+    this.eventStore = new PulsarEventStore("pulsar://localhost:6650",
+                                           "http://localhost:8080",
+                                           ofMillis(100),
+                                           new GreetingTransformer());
     // Given
     events = Flux.interval(ofMillis(100)).map(PulsarIT::toGreetingEvent).map(e -> (Event) e).take(MSG_COUNT);
     expectedEvents = requireNonNull(events.collectList().block()).toArray(new Event[0]);
@@ -37,6 +40,17 @@ class PulsarIT {
     // Then
     StepVerifier.create(sentFlux).expectNextCount(MSG_COUNT).expectComplete().verify();
     StepVerifier.create(receiveFlux).expectNext(expectedEvents).expectComplete().verify();
+  }
+
+  @Test
+  @DisplayName("Should check if topic exists or not")
+  void checkTopics() {
+    // When
+    var sentFlux = eventStore.add(topic, events);
+    StepVerifier.create(sentFlux).expectNextCount(MSG_COUNT).expectComplete().verify();
+    // Then
+    StepVerifier.create(eventStore.exists(topic)).expectNext(true).expectComplete().verify();
+    StepVerifier.create(eventStore.exists(topic + "bla")).expectNext(false).expectComplete().verify();
   }
 
   private static GreetingEvent toGreetingEvent(long i) {
