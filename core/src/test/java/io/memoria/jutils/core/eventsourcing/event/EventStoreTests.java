@@ -3,13 +3,14 @@ package io.memoria.jutils.core.eventsourcing.event;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
+import java.util.Objects;
 import java.util.Random;
 
 import static java.time.Duration.ofMillis;
 
 public class EventStoreTests {
   private static final String topic = "topic-" + new Random().nextInt(1000);
-  private static final int MSG_COUNT = 3;
+  private static final int MSG_COUNT = 100;
   private final EventStore eventStore;
   private final Flux<Event> events;
   private final Event[] expectedEvents;
@@ -17,8 +18,8 @@ public class EventStoreTests {
   public EventStoreTests(EventStore eventStore) {
     this.eventStore = eventStore;
     // Given
-    events = Flux.interval(ofMillis(100)).map(GreetingEvent::new).map(e -> (Event) e).take(MSG_COUNT);
-    expectedEvents = new Event[]{new GreetingEvent(0), new GreetingEvent(1), new GreetingEvent(2)};
+    events = Flux.interval(ofMillis(10)).map(GreetingEvent::new).map(e -> (Event) e).take(MSG_COUNT);
+    expectedEvents = Objects.requireNonNull(events.collectList().block()).toArray(new Event[0]);
   }
 
   public void addShouldBeInRightOrder() {

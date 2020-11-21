@@ -14,26 +14,22 @@ import org.apache.pulsar.client.api.Schema;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
-
 public class PulsarEventStore implements EventStore {
   private final PulsarClient client;
   private final PulsarAdmin admin;
-  private final Duration frequency;
   private final StringTransformer transformer;
 
-  public PulsarEventStore(String serviceUrl, String adminUrl, Duration frequency, StringTransformer transformer)
+  public PulsarEventStore(String serviceUrl, String adminUrl, StringTransformer transformer)
           throws PulsarClientException {
     this.client = PulsarClient.builder().serviceUrl(serviceUrl).build();
     this.admin = PulsarAdmin.builder().serviceHttpUrl(adminUrl).build();
-    this.frequency = frequency;
     this.transformer = transformer;
   }
 
   @Override
   public Flux<Event> add(String topic, Flux<Event> events) {
     return Mono.fromCallable(() -> createProducer(topic))
-               .flatMapMany(producer -> events.flatMap(e -> send(producer, e)));
+               .flatMapMany(producer -> events.concatMap(e -> send(producer, e)));
   }
 
   @Override
@@ -45,8 +41,7 @@ public class PulsarEventStore implements EventStore {
 
   @Override
   public Flux<Event> stream(String topic) {
-    return Mono.fromCallable(() -> createConsumer(topic))
-               .flatMapMany(consumer -> Flux.interval(frequency).concatMap(i -> receive(consumer)));
+    return Mono.fromCallable(() -> createConsumer(topic)).flatMapMany(this::receive);
   }
 
   private Consumer<String> createConsumer(String topic) throws PulsarClientException {
@@ -59,15 +54,16 @@ public class PulsarEventStore implements EventStore {
     return client.newProducer(Schema.STRING).topic(topic).create();
   }
 
-  private Mono<Event> receive(Consumer<String> consumer) {
-    return Mono.fromFuture(consumer.receiveAsync())
+  private Flux<Event> receive(Consumer<String> consumer) {
+    return Mono.fromFuture(consumer::receiveAsync)
                .map(Message::getValue)
-               .map(value -> transformer.deserialize(value, Event.class).get());
+               .map(value -> transformer.deserialize(value, Event.class).get())
+               .repeat();
   }
 
   private Mono<Event> send(Producer<String> producer, Event event) {
     return Mono.fromCallable(() -> transformer.serialize(event).get())
-               .flatMap(msg -> Mono.fromFuture(producer.sendAsync(msg)))
+               .flatMap(msg -> Mono.fromFuture(() -> producer.sendAsync(msg)))
                .map(e -> event);
   }
 }

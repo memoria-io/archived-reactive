@@ -49,7 +49,7 @@ public class KafkaEventStore implements EventStore {
 
   @Override
   public Flux<Event> add(String topic, Flux<Event> events) {
-    return events.concatMap(e -> sendRecord(topic, e));
+    return events.concatMap(e -> sendRecord(topic, e)).subscribeOn(scheduler);
   }
 
   @Override
@@ -58,7 +58,7 @@ public class KafkaEventStore implements EventStore {
       ListTopicsResult listTopics = adminClient.listTopics();
       var names = listTopics.names().get();
       return names.contains(topic);
-    });
+    }).subscribeOn(scheduler);
   }
 
   @Override
@@ -69,15 +69,17 @@ public class KafkaEventStore implements EventStore {
       // must call poll before seek
       consumer.poll(timeout);
       consumer.seek(tp, 0);
-    }).thenMany(Flux.<Flux<Event>>generate(c -> c.next(pollOnce(tp))).concatMap(f -> f).subscribeOn(scheduler));
+    }).thenMany(pollEvents(tp)).subscribeOn(scheduler);
   }
 
-  private Flux<Event> pollOnce(TopicPartition tp) {
+  private Flux<Event> pollEvents(TopicPartition tp) {
     return Mono.fromCallable(() -> consumer.poll(timeout))
+               .subscribeOn(scheduler)
                .flux()
                .concatMap(crs -> Flux.fromIterable(crs.records(tp)))
                .map(ConsumerRecord::value)
-               .map(str -> transformer.deserialize(str, Event.class).get());
+               .map(str -> transformer.deserialize(str, Event.class).get())
+               .repeat();
   }
 
   private Mono<Event> sendRecord(String topic, Event event) {

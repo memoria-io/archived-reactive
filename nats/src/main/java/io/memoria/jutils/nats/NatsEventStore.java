@@ -56,9 +56,9 @@ public class NatsEventStore implements EventStore {
   public Flux<Event> stream(String topic) {
     Flux<Event> f = Flux.create(s -> {
       try {
-        sc.subscribe(topic, m -> {
-          s.next(transformer.deserialize(new String(m.getData()), Event.class).get());
-        }, new SubscriptionOptions.Builder().deliverAllAvailable().build());
+        sc.subscribe(topic,
+                     m -> s.next(transformer.deserialize(new String(m.getData()), Event.class).get()),
+                     new SubscriptionOptions.Builder().deliverAllAvailable().build());
       } catch (IOException | InterruptedException | TimeoutException e) {
         e.printStackTrace();
         s.error(e);
