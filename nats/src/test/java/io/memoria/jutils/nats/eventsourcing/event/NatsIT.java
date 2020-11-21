@@ -20,7 +20,7 @@ class NatsIT {
       s.next("hello");
       s.next("hello");
       s.complete();
-    }).doOnNext(System.out::println);
+    });
     StepVerifier.create(f).expectNext("hello", "hello").expectComplete().verify();
   }
 

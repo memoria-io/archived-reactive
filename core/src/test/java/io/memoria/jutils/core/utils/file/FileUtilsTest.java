@@ -48,7 +48,6 @@ class FileUtilsTest {
     var file = fu.readResource("file.txt").block();
     // Then
     assert file != null;
-    System.out.println(file.split(lineSeparator()).length);
     assertEquals(expectedFile, file);
   }
 
