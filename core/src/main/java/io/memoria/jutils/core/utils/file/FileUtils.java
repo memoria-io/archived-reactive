@@ -35,7 +35,7 @@ public record FileUtils(Scheduler scheduler) {
   }
 
   public Flux<String> readLines(Path filePath, String nestingPrefix) {
-    return readLines(filePath).flatMap(line -> expand(filePath, line, nestingPrefix));
+    return readLines(filePath).concatMap(line -> expand(filePath, line, nestingPrefix));
   }
 
   public Mono<String> readResource(String resourcePath) {
@@ -60,7 +60,7 @@ public record FileUtils(Scheduler scheduler) {
   }
 
   public Flux<String> readResourceLines(String resourcePath, String nestingPrefix) {
-    return readResourceLines(resourcePath).flatMap(line -> expandResource(resourcePath, line, nestingPrefix));
+    return readResourceLines(resourcePath).concatMap(line -> expandResource(resourcePath, line, nestingPrefix));
   }
 
   public Mono<Path> write(Path path, String content) {

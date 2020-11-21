@@ -38,8 +38,8 @@ class FileUtilsTest {
     var stringMono = fu.readResource("Config.yaml", "include:");
     var lineFlux = fu.readResourceLines("Config.yaml", "include:");
     // Then
-    StepVerifier.create(stringMono).expectNext("name: bob\nage: 20").expectComplete().verify();
-    StepVerifier.create(lineFlux).expectNext("name: bob").expectNext("age: 20").expectComplete().verify();
+    StepVerifier.create(stringMono).expectNext("name: bob\nage: 20\naddress: 15 bakerstreet").expectComplete().verify();
+    StepVerifier.create(lineFlux).expectNext("name: bob", "age: 20","address: 15 bakerstreet").expectComplete().verify();
   }
 
   @Test
