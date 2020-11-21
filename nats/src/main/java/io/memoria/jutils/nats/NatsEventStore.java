@@ -62,6 +62,7 @@ public class NatsEventStore implements EventStore {
       } catch (IOException | InterruptedException | TimeoutException e) {
         e.printStackTrace();
         s.error(e);
+        Thread.currentThread().interrupt();
       }
       log.info("subscribing to: " + topic);
       s.onDispose(() -> log.info("Dispose signal, Unsubscribing now from subject: " + topic));
