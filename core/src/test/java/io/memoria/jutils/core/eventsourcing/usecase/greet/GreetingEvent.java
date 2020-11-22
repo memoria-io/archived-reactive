@@ -1,5 +1,6 @@
-package io.memoria.jutils.core.eventsourcing.event;
+package io.memoria.jutils.core.eventsourcing.usecase.greet;
 
+import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.value.Id;
 
 public record GreetingEvent(Id id, String senderName) implements Event {

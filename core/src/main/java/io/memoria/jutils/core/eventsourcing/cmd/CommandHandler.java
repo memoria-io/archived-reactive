@@ -1,6 +1,7 @@
 package io.memoria.jutils.core.eventsourcing.cmd;
 
 import io.memoria.jutils.core.eventsourcing.ESException;
+import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.event.EventStore;
 import io.memoria.jutils.core.eventsourcing.event.Evolver;
 import io.memoria.jutils.core.eventsourcing.state.State;
@@ -32,6 +33,7 @@ public final class CommandHandler<S extends State, C extends Command> implements
     var eventFlux = store.stream(aggId);
     var stateMono = evolver.apply(initialState, eventFlux);
     var newEventsFlux = stateMono.flatMapMany(s -> toFlux(decider.apply(s, cmd)));
+    
     return store.add(aggId, newEventsFlux).then();
   }
 

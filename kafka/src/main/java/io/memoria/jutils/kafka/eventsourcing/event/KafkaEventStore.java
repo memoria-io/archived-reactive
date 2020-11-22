@@ -11,7 +11,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,6 +20,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class KafkaEventStore implements EventStore {
   private final KafkaConsumer<String, String> consumer;
@@ -73,22 +74,27 @@ public class KafkaEventStore implements EventStore {
   }
 
   private Flux<Event> pollEvents(TopicPartition tp) {
-    return Mono.fromCallable(() -> consumer.poll(timeout))
-               .subscribeOn(scheduler)
-               .flux()
-               .concatMap(crs -> Flux.fromIterable(crs.records(tp)))
-               .map(ConsumerRecord::value)
-               .map(str -> transformer.deserialize(str, Event.class).get())
-               .repeat();
+    return Flux.<List<Event>>generate(sink -> {
+      var list = toEventList(consumer.poll(timeout).records(tp));
+      if (list.size() > 0) {
+        sink.next(list);
+      } else {
+        sink.complete();
+      }
+    }).concatMap(Flux::fromIterable).subscribeOn(scheduler);
+  }
+
+  private List<Event> toEventList(List<ConsumerRecord<String, String>> crs) {
+    return crs.stream()
+              .map(ConsumerRecord::value)
+              .map(str -> transformer.deserialize(str, Event.class).get())
+              .collect(Collectors.toList());
   }
 
   private Mono<Event> sendRecord(String topic, Event event) {
     var prodRec = new ProducerRecord<>(topic, 0, event.id().value(), transformer.serialize(event).get());
-    return Mono.<RecordMetadata>create(sink -> producer.send(prodRec, (metadata, e) -> {
-      if (metadata != null)
-        sink.success(metadata);
-      else
-        sink.error(e);
-    })).subscribeOn(scheduler).map(e -> event);
+    return Mono.fromCallable(() -> producer.send(prodRec).get(timeout.toMillis(), TimeUnit.MILLISECONDS))
+               .map(e -> event)
+               .subscribeOn(scheduler);
   }
 }

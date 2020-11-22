@@ -9,8 +9,8 @@ import io.memoria.jutils.core.eventsourcing.state.State;
 public class ESException extends Exception {
   public static class ESInvalidOperation extends ESException {
     private ESInvalidOperation(State state, Command command) {
-      super("Invalid operation: %s on current state: %s".formatted(state.getClass().getSimpleName(),
-                                                                   command.getClass().getSimpleName()));
+      super("Invalid operation: %s on current state: %s".formatted(command.getClass().getSimpleName(),
+                                                                   state.getClass().getSimpleName()));
     }
   }
 

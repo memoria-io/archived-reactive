@@ -1,5 +1,6 @@
 package io.memoria.jutils.core.eventsourcing.event;
 
+import io.memoria.jutils.core.eventsourcing.usecase.greet.GreetingEvent;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -10,7 +11,7 @@ import static java.time.Duration.ofMillis;
 
 public class EventStoreTests {
   private static final String topic = "topic-" + new Random().nextInt(1000);
-  private static final int MSG_COUNT = 100;
+  private static final int MSG_COUNT = 3;
   private final EventStore eventStore;
   private final Flux<Event> events;
   private final Event[] expectedEvents;

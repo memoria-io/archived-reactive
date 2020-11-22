@@ -17,7 +17,7 @@ public class KafkaConfigs {
     producerConf.put(ProducerConfig.RETRIES_CONFIG, 0);
     producerConf.put(ProducerConfig.BATCH_SIZE_CONFIG, 1);
     producerConf.put(ProducerConfig.LINGER_MS_CONFIG, 1);
-    producerConf.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 2000);
+    producerConf.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 3000);
     producerConf.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
                      "org.apache.kafka.common.serialization.StringSerializer");
     producerConf.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
