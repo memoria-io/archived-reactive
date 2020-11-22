@@ -18,7 +18,7 @@ public class EventStoreTests {
   public EventStoreTests(EventStore eventStore) {
     this.eventStore = eventStore;
     // Given
-    events = Flux.interval(ofMillis(10)).map(GreetingEvent::new).map(e -> (Event) e).take(MSG_COUNT);
+    events = Flux.interval(ofMillis(100)).map(GreetingEvent::new).map(e -> (Event) e).take(MSG_COUNT);
     expectedEvents = Objects.requireNonNull(events.collectList().block()).toArray(new Event[0]);
   }
 
