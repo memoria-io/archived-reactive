@@ -39,7 +39,10 @@ class FileUtilsTest {
     var lineFlux = fu.readResourceLines("Config.yaml", "include:");
     // Then
     StepVerifier.create(stringMono).expectNext("name: bob\nage: 20\naddress: 15 bakerstreet").expectComplete().verify();
-    StepVerifier.create(lineFlux).expectNext("name: bob", "age: 20","address: 15 bakerstreet").expectComplete().verify();
+    StepVerifier.create(lineFlux)
+                .expectNext("name: bob", "age: 20", "address: 15 bakerstreet")
+                .expectComplete()
+                .verify();
   }
 
   @Test

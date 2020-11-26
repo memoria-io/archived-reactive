@@ -1,6 +1,0 @@
-pulsar:
-  serviceUrl: "pulsar://localhost:6650"
-
-reactorPulsar:
-  request.timeout: 1000
-

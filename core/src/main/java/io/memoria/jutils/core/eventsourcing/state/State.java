@@ -1,3 +1,7 @@
 package io.memoria.jutils.core.eventsourcing.state;
 
-public interface State {}
+import io.memoria.jutils.core.value.Id;
+
+public interface State {
+  Id id();
+}
