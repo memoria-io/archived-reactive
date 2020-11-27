@@ -1,11 +1,11 @@
 package io.memoria.jutils.core.eventsourcing.socialnetwork.domain;
 
-import io.memoria.jutils.core.eventsourcing.Event;
-import io.memoria.jutils.core.eventsourcing.Evolver;
+import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.User.Account;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.AccountCreated;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.FriendAdded;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.MessageSent;
+import io.memoria.jutils.core.eventsourcing.state.Evolver;
 
 public record UserEvolver() implements Evolver<User> {
   @Override

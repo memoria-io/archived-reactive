@@ -1,4 +1,4 @@
-package io.memoria.jutils.core.eventsourcing;
+package io.memoria.jutils.core.eventsourcing.event;
 
 import io.vavr.control.Option;
 import reactor.core.publisher.Flux;

@@ -1,6 +1,6 @@
 package io.memoria.jutils.core.eventsourcing.cmd;
 
-import io.memoria.jutils.core.eventsourcing.Event;
+import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.state.State;
 import io.vavr.Function2;
 import io.vavr.collection.List;

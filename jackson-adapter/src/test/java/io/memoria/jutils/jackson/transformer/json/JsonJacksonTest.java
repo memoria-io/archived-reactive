@@ -44,22 +44,6 @@ class JsonJacksonTest {
   }
 
   @Test
-  void deserializePerson() {
-    // When
-    var person = Tests.json.deserialize(Tests.BOB_PERSON_JSON, Person.class).get();
-    // Then
-    assertEquals(Tests.BOB_PERSON, person);
-  }
-
-  @Test
-  void serializePerson() {
-    // When
-    var bob = Tests.json.serialize(Tests.BOB_PERSON).get();
-    // Then
-    assertEquals(Tests.BOB_PERSON_JSON, bob);
-  }
-
-  @Test
   void deserializeNameCreated() {
     // When
     var person = Tests.json.deserialize(Tests.NAME_CREATED_JSON, NameCreated.class).get();
@@ -68,10 +52,26 @@ class JsonJacksonTest {
   }
 
   @Test
+  void deserializePerson() {
+    // When
+    var person = Tests.json.deserialize(Tests.BOB_PERSON_JSON, Person.class).get();
+    // Then
+    assertEquals(Tests.BOB_PERSON, person);
+  }
+
+  @Test
   void serializeNameCreated() {
     // When
     var bob = Tests.json.serialize(Tests.NAME_CREATED).get();
     // Then
     assertEquals(Tests.NAME_CREATED_JSON, bob);
+  }
+
+  @Test
+  void serializePerson() {
+    // When
+    var bob = Tests.json.serialize(Tests.BOB_PERSON).get();
+    // Then
+    assertEquals(Tests.BOB_PERSON_JSON, bob);
   }
 }

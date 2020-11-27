@@ -1,5 +1,8 @@
 package io.memoria.jutils.core.eventsourcing;
 
+import io.memoria.jutils.core.eventsourcing.event.Event;
+import io.memoria.jutils.core.eventsourcing.event.EventStore;
+import io.memoria.jutils.core.eventsourcing.event.InMemoryEventStore;
 import io.memoria.jutils.core.eventsourcing.greeting.GreetingEvent;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;

@@ -1,6 +1,8 @@
 {
   "id":"1",
   "name":"bob",
-  "createdAt":"2020-12-01T11:00:00",
-  "version":"1.0.0"
+  "meta":{
+    "createdAt":"2020-12-01T11:00:00",
+    "version":"1.0.0"
+  }
 }

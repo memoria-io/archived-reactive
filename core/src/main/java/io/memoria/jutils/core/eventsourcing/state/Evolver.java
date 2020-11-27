@@ -1,6 +1,6 @@
-package io.memoria.jutils.core.eventsourcing;
+package io.memoria.jutils.core.eventsourcing.state;
 
-import io.memoria.jutils.core.eventsourcing.state.State;
+import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.vavr.Function1;
 import io.vavr.Function2;
 import io.vavr.collection.Traversable;

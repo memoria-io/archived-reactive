@@ -1,7 +1,7 @@
 package io.memoria.jutils.core.eventsourcing.cmd;
 
-import io.memoria.jutils.core.eventsourcing.Event;
-import io.memoria.jutils.core.eventsourcing.Evolver;
+import io.memoria.jutils.core.eventsourcing.event.Event;
+import io.memoria.jutils.core.eventsourcing.state.Evolver;
 import io.memoria.jutils.core.eventsourcing.state.State;
 import io.memoria.jutils.core.eventsourcing.state.StateStore;
 import io.memoria.jutils.core.value.Id;
