@@ -15,11 +15,8 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.memoria.jutils.core.value.Id;
-import io.memoria.jutils.core.value.Version;
 import io.memoria.jutils.jackson.transformer.adapters.IdTransformer.IdDeserializer;
 import io.memoria.jutils.jackson.transformer.adapters.IdTransformer.IdSerializer;
-import io.memoria.jutils.jackson.transformer.adapters.VersionTransformer.VersionDeserializer;
-import io.memoria.jutils.jackson.transformer.adapters.VersionTransformer.VersionSerializer;
 import io.vavr.jackson.datatype.VavrModule;
 
 import java.text.SimpleDateFormat;
@@ -72,9 +69,6 @@ public class JacksonUtils {
     // Id
     jutils.addSerializer(Id.class, new IdSerializer());
     jutils.addDeserializer(Id.class, new IdDeserializer());
-    // Version
-    jutils.addSerializer(Version.class, new VersionSerializer());
-    jutils.addDeserializer(Version.class, new VersionDeserializer());
     return jutils;
   }
 

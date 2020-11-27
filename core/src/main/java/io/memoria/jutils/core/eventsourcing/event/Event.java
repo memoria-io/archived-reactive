@@ -2,8 +2,10 @@ package io.memoria.jutils.core.eventsourcing.event;
 
 import io.memoria.jutils.core.value.Id;
 
-public interface Event {
-  Id id();
+import java.time.LocalDateTime;
 
-  Meta meta();
+public interface Event {
+  LocalDateTime createdAt();
+
+  Id id();
 }

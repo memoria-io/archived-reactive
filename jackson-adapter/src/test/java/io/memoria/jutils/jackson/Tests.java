@@ -1,11 +1,9 @@
 package io.memoria.jutils.jackson;
 
-import io.memoria.jutils.core.eventsourcing.event.Meta;
 import io.memoria.jutils.core.transformer.json.Json;
 import io.memoria.jutils.core.transformer.yaml.Yaml;
 import io.memoria.jutils.core.utils.file.FileUtils;
 import io.memoria.jutils.core.value.Id;
-import io.memoria.jutils.core.value.Version;
 import io.memoria.jutils.jackson.transformer.Employee;
 import io.memoria.jutils.jackson.transformer.Engineer;
 import io.memoria.jutils.jackson.transformer.JacksonUtils;
@@ -67,9 +65,7 @@ public class Tests {
     ALEX_ENGINEER = new Engineer("alex", LocalDate.of(2000, 1, 1), List.of("fix issue 3", "Fix issue 4"));
     ANNIKA_MANAGER = new Manager("Annika", List.of(BOB_ENGINEER, ALEX_ENGINEER));
     BOB_PERSON = new Person("bob", List.of("1", "2", "3").map(Id::new));
-    NAME_CREATED = new NameCreated(new Id("1"),
-                                   "bob",
-                                   new Meta(LocalDateTime.of(2020, 12, 1, 11, 0), new Version(1, 0, 0)));
+    NAME_CREATED = new NameCreated(new Id("1"), "bob", LocalDateTime.of(2020, 12, 1, 11, 0));
   }
 
   private Tests() {}
