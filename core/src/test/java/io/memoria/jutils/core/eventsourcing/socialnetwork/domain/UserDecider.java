@@ -2,13 +2,13 @@ package io.memoria.jutils.core.eventsourcing.socialnetwork.domain;
 
 import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.eventsourcing.cmd.Decider;
+import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.User.Account;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.AddFriend;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.CreateAccount;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.SendMessage;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.AccountCreated;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.FriendAdded;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.MessageSent;
-import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.User.Account;
 import io.memoria.jutils.core.generator.IdGenerator;
 import io.vavr.collection.List;
 import io.vavr.control.Try;

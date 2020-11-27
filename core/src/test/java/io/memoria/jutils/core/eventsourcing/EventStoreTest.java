@@ -13,7 +13,7 @@ import java.util.Random;
 
 import static java.time.Duration.ofMillis;
 
-public class EventStoreTest {
+class EventStoreTest {
   private static final String topic = "topic-" + new Random().nextInt(1000);
   private static final int MSG_COUNT = 20;
   private final EventStore eventStore;
@@ -30,7 +30,7 @@ public class EventStoreTest {
   }
 
   @Test
-  public void addShouldBeInRightOrder() {
+  void addShouldBeInRightOrder() {
     // When
     var sentFlux = eventStore.add(topic, events);
     // Then
@@ -38,7 +38,7 @@ public class EventStoreTest {
   }
 
   @Test
-  public void produceAndConsume() {
+  void produceAndConsume() {
     // When
     var sentFlux = eventStore.add(topic, events);
     var receiveFlux = eventStore.stream(topic).take(MSG_COUNT);
@@ -48,7 +48,7 @@ public class EventStoreTest {
   }
 
   @Test
-  public void topicExists() {
+  void topicExists() {
     // When
     var sentFlux = eventStore.add(topic, events);
     StepVerifier.create(sentFlux).expectNextCount(MSG_COUNT).expectComplete().verify();

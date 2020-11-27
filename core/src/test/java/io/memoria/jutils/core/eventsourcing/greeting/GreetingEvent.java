@@ -16,7 +16,7 @@ public record GreetingEvent(Id id, String senderName) implements Event {
   }
 
   @Override
-  public LocalDateTime creationMoment() {
+  public LocalDateTime createdAt() {
     return LocalDateTime.of(2020, 1, 1, 1, 0);
   }
 

@@ -14,12 +14,12 @@ public class InMemoryStateStore<S extends State> implements StateStore<S> {
   }
 
   @Override
-  public synchronized S save(S state) {
-    return this.db.put(state.id(), state);
+  public Option<S> get(Id id) {
+    return Option.of(this.db.get(id));
   }
 
   @Override
-  public Option<S> get(Id id) {
-    return Option.of(this.db.get(id));
+  public synchronized S save(S state) {
+    return this.db.put(state.id(), state);
   }
 }

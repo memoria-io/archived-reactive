@@ -4,6 +4,7 @@ import io.memoria.jutils.jackson.Tests;
 import io.memoria.jutils.jackson.transformer.Department;
 import io.memoria.jutils.jackson.transformer.Engineer;
 import io.memoria.jutils.jackson.transformer.Manager;
+import io.memoria.jutils.jackson.transformer.NameCreated;
 import io.memoria.jutils.jackson.transformer.Person;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Assertions;
@@ -56,5 +57,21 @@ class JsonJacksonTest {
     var bob = Tests.json.serialize(Tests.BOB_PERSON).get();
     // Then
     assertEquals(Tests.BOB_PERSON_JSON, bob);
+  }
+
+  @Test
+  void deserializeNameCreated() {
+    // When
+    var person = Tests.json.deserialize(Tests.NAME_CREATED_JSON, NameCreated.class).get();
+    // Then
+    assertEquals(Tests.NAME_CREATED, person);
+  }
+
+  @Test
+  void serializeNameCreated() {
+    // When
+    var bob = Tests.json.serialize(Tests.NAME_CREATED).get();
+    // Then
+    assertEquals(Tests.NAME_CREATED_JSON, bob);
   }
 }

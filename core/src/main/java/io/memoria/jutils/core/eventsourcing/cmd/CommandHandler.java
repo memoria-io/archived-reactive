@@ -27,7 +27,7 @@ public final class CommandHandler<S extends State, C extends Command> implements
   public Try<List<Event>> apply(Id aggId, C cmd) {
     var state = stateStore.get(aggId).getOrElse(initialState);
     var eventsTrial = decider.apply(state, cmd);
-    return eventsTrial.map(events -> evolver.apply(state, events)).map(stateStore::save).flatMap(s -> eventsTrial);
+    return eventsTrial.map(evolver.curriedTraversable(state)).map(stateStore::save).flatMap(s -> eventsTrial);
   }
 
   public Try<List<Event>> apply(Id aggId, Traversable<C> cmds) {

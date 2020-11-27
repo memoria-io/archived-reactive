@@ -6,7 +6,7 @@ import io.memoria.jutils.core.value.Version;
 import java.time.LocalDateTime;
 
 public interface Event {
-  LocalDateTime creationMoment();
+  LocalDateTime createdAt();
 
   Id id();
 

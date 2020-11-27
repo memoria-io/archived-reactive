@@ -5,10 +5,10 @@ import io.vavr.collection.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class CommandHandlerTest {
+class CommandHandlerTest {
 
   @Test
-  public void applyAllCommands() {
+  void applyAllCommands() {
     // Given
     var testData = new SocialNetworkTestData();
     // When
@@ -18,7 +18,7 @@ public class CommandHandlerTest {
   }
 
   @Test
-  public void applyOneCommand() {
+  void applyOneCommand() {
     // Given
     var testData = new SocialNetworkTestData();
     // When
@@ -28,7 +28,7 @@ public class CommandHandlerTest {
   }
 
   @Test
-  public void applyTwice() {
+  void applyTwice() {
     // Given
     var testData = new SocialNetworkTestData();
     // When

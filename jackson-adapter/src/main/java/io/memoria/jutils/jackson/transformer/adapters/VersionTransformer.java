@@ -9,15 +9,13 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import io.memoria.jutils.core.value.Version;
 
 import java.io.IOException;
-import java.util.function.Function;
 
 public final class VersionTransformer {
 
   public static class VersionDeserializer extends JsonDeserializer<Version> {
     @Override
     public Version deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-      return Version.from(p.readValueAs(String.class))
-                    .getOrElseThrow((Function<Throwable, IOException>) IOException::new);
+      return Version.from(p.readValueAs(String.class)).getOrElseThrow(t -> new IOException(t.getMessage()));
     }
   }
 
