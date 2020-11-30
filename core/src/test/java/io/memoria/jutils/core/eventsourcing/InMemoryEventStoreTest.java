@@ -15,12 +15,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static java.time.Duration.ofMillis;
 
 class InMemoryEventStoreTest {
-  private static final Id topic = new Id("topic-" + new Random().nextInt(1000));
-  private static final int MSG_COUNT = 20;
+  private static final Id id = new Id("topic-" + new Random().nextInt(1000));
+  private static final int MSG_COUNT = 10;
   private final EventStore eventStore;
   private final Map<Id, List<Event>> db;
   private final Flux<Event> events;
@@ -37,18 +39,55 @@ class InMemoryEventStoreTest {
   @Test
   void addShouldBeInRightOrder() {
     // When
-    var addedEvents = events.concatMap(e -> eventStore.add(topic, e));
+    var addedEvents = events.concatMap(e -> eventStore.add(id, e));
     // Then
     StepVerifier.create(addedEvents).expectNext(expectedEvents).expectComplete().verify();
   }
 
   @Test
+  void idLocking() throws InterruptedException {
+    var es = Executors.newFixedThreadPool(10);
+    var idZero = new Id("0");
+    var idOne = new Id("1");
+    var idTwo = new Id("2");
+    for (int i = 0; i < 3; i++) {
+      es.submit(() -> {
+        transaction(idZero);
+        transaction(idOne);
+        transaction(idTwo);
+      });
+    }
+    es.awaitTermination(1, TimeUnit.SECONDS);
+    StepVerifier.create(eventStore.get(idZero)).expectNext(expected(idZero)).expectComplete().verify();
+    StepVerifier.create(eventStore.get(idOne)).expectNext(expected(idOne)).expectComplete().verify();
+    StepVerifier.create(eventStore.get(idTwo)).expectNext(expected(idTwo)).expectComplete().verify();
+  }
+
+  @Test
   void produceAndConsume() {
     // When
-    var addedEvents = events.concatMap(e -> eventStore.add(topic, e));
-    var eventsMono = eventStore.get(topic);
+    var addedEvents = events.concatMap(e -> eventStore.add(id, e));
+    var eventsMono = eventStore.get(id);
     // Then
     StepVerifier.create(addedEvents).expectNext(expectedEvents).expectComplete().verify();
     StepVerifier.create(eventsMono).expectNext(Arrays.asList(expectedEvents)).expectComplete().verify();
+  }
+
+  private List<Event> expected(Id id) {
+    return Flux.range(0, 10)
+               .map(i -> (Event) new GreetingEvent(id, "new_name_" + i))
+               .collectList()
+               .repeat(2)
+               .flatMap(Flux::fromIterable)
+               .collectList()
+               .block();
+  }
+
+  private void transaction(Id id) {
+    eventStore.startTransaction(id);
+    for (int x = 0; x < 10; x++) {
+      eventStore.add(id, new GreetingEvent(id, "new_name_" + x)).subscribe();
+    }
+    eventStore.endTransaction(id);
   }
 }
