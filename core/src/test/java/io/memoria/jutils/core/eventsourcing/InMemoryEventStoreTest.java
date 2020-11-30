@@ -4,27 +4,29 @@ import io.memoria.jutils.core.eventsourcing.event.Event;
 import io.memoria.jutils.core.eventsourcing.event.EventStore;
 import io.memoria.jutils.core.eventsourcing.event.InMemoryEventStore;
 import io.memoria.jutils.core.eventsourcing.greeting.GreetingEvent;
+import io.memoria.jutils.core.value.Id;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
 import static java.time.Duration.ofMillis;
 
-class EventStoreTest {
-  private static final String topic = "topic-" + new Random().nextInt(1000);
+class InMemoryEventStoreTest {
+  private static final Id topic = new Id("topic-" + new Random().nextInt(1000));
   private static final int MSG_COUNT = 20;
   private final EventStore eventStore;
-  private final Map<String, ArrayList<Event>> db;
+  private final Map<Id, List<Event>> db;
   private final Flux<Event> events;
   private final Event[] expectedEvents;
 
-  public EventStoreTest() {
+  public InMemoryEventStoreTest() {
     this.db = new HashMap<>();
     this.eventStore = new InMemoryEventStore(db);
     // Given
@@ -35,28 +37,18 @@ class EventStoreTest {
   @Test
   void addShouldBeInRightOrder() {
     // When
-    var sentFlux = eventStore.add(topic, events);
+    var addedEvents = events.concatMap(e -> eventStore.add(topic, e));
     // Then
-    StepVerifier.create(sentFlux).expectNext(expectedEvents).expectComplete().verify();
+    StepVerifier.create(addedEvents).expectNext(expectedEvents).expectComplete().verify();
   }
 
   @Test
   void produceAndConsume() {
     // When
-    var sentFlux = eventStore.add(topic, events);
-    var receiveFlux = eventStore.stream(topic).take(MSG_COUNT);
+    var addedEvents = events.concatMap(e -> eventStore.add(topic, e));
+    var eventsMono = eventStore.get(topic);
     // Then
-    StepVerifier.create(sentFlux).expectNextCount(MSG_COUNT).expectComplete().verify();
-    StepVerifier.create(receiveFlux).expectNext(expectedEvents).expectComplete().verify();
-  }
-
-  @Test
-  void topicExists() {
-    // When
-    var sentFlux = eventStore.add(topic, events);
-    StepVerifier.create(sentFlux).expectNextCount(MSG_COUNT).expectComplete().verify();
-    // Then
-    StepVerifier.create(eventStore.exists(topic)).expectNext(true).expectComplete().verify();
-    StepVerifier.create(eventStore.exists(topic + "bla")).expectNext(false).expectComplete().verify();
+    StepVerifier.create(addedEvents).expectNext(expectedEvents).expectComplete().verify();
+    StepVerifier.create(eventsMono).expectNext(Arrays.asList(expectedEvents)).expectComplete().verify();
   }
 }

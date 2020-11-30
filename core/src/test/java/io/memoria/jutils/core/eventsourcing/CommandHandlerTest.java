@@ -1,9 +1,11 @@
 package io.memoria.jutils.core.eventsourcing;
 
 import io.memoria.jutils.core.eventsourcing.ESException.ESInvalidOperation;
-import io.vavr.collection.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
+
+import java.util.List;
 
 class CommandHandlerTest {
 
@@ -12,9 +14,12 @@ class CommandHandlerTest {
     // Given
     var testData = new SocialNetworkTestData();
     // When
-    var eventTry = testData.handler.apply(testData.topic, List.of(testData.create, testData.add, testData.send)).get();
+    var handle = testData.handler.apply(testData.topic, Flux.just(testData.create, testData.add, testData.send));
     // Then
-    Assertions.assertEquals(List.of(testData.accountCreated, testData.friendAdded, testData.messageSent), eventTry);
+    StepVerifier.create(handle)
+                .expectNext(testData.accountCreated, testData.friendAdded, testData.messageSent)
+                .expectComplete()
+                .verify();
   }
 
   @Test
@@ -22,9 +27,9 @@ class CommandHandlerTest {
     // Given
     var testData = new SocialNetworkTestData();
     // When
-    var events = testData.handler.apply(testData.topic, testData.create).get();
+    var handle = testData.handler.apply(testData.topic, testData.create);
     // Then
-    Assertions.assertEquals(List.of(testData.accountCreated), events);
+    StepVerifier.create(handle).expectNext(List.of(testData.accountCreated)).expectComplete().verify();
   }
 
   @Test
@@ -32,8 +37,8 @@ class CommandHandlerTest {
     // Given
     var testData = new SocialNetworkTestData();
     // When
-    var events = testData.handler.apply(testData.topic, List.of(testData.create, testData.create));
+    var handle = testData.handler.apply(testData.topic, Flux.just(testData.create, testData.create));
     // Then
-    Assertions.assertTrue(events.getCause() instanceof ESInvalidOperation);
+    StepVerifier.create(handle).expectNext(testData.accountCreated).expectError(ESInvalidOperation.class).verify();
   }
 }

@@ -1,6 +1,8 @@
 package io.memoria.jutils.core.eventsourcing;
 
+import io.memoria.jutils.core.eventsourcing.cmd.BlockingCommandHandler;
 import io.memoria.jutils.core.eventsourcing.cmd.CommandHandler;
+import io.memoria.jutils.core.eventsourcing.event.InMemoryEventStore;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.Message;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.User;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.User.Visitor;
@@ -14,14 +16,15 @@ import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.Accou
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.FriendAdded;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.MessageSent;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvolver;
+import io.memoria.jutils.core.eventsourcing.state.BlockingStateStore;
 import io.memoria.jutils.core.eventsourcing.state.InMemoryStateStore;
-import io.memoria.jutils.core.eventsourcing.state.StateStore;
 import io.memoria.jutils.core.generator.IdGenerator;
 import io.memoria.jutils.core.value.Id;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SocialNetworkTestData {
   public final IdGenerator eventsIdGen;
@@ -38,9 +41,12 @@ public class SocialNetworkTestData {
   public final UserEvent accountCreated;
   public final UserEvent friendAdded;
   public final UserEvent messageSent;
-  public final Map<User, UserCommand> db;
-  public final StateStore<User> stateStore;
+  // Command Handler 
   public final CommandHandler<User, UserCommand> handler;
+  // Blocking Command Handler
+  public final Map<User, UserCommand> db;
+  public final BlockingStateStore<User> blockingStateStore;
+  public final BlockingCommandHandler<User, UserCommand> blockingHandler;
 
   public SocialNetworkTestData() {
     eventsIdGen = () -> new Id("event_0");
@@ -56,11 +62,17 @@ public class SocialNetworkTestData {
     accountCreated = new AccountCreated(eventsIdGen.get(), userId, 18);
     messageSent = new MessageSent(eventsIdGen.get(), new Message(eventsIdGen.get(), userId, friendId, "hello"));
     // Handler
-    db = new HashMap<>();
-    stateStore = new InMemoryStateStore<>(new HashMap<>());
-    handler = new CommandHandler<>(stateStore,
+    var eventStore = new InMemoryEventStore(new HashMap<>());
+    handler = new CommandHandler<>(eventStore,
                                    new UserEvolver(),
                                    new UserDecider(eventsIdGen),
                                    new Visitor(new Id("0")));
+    // Blocking Handler
+    db = new HashMap<>();
+    blockingStateStore = new InMemoryStateStore<>(new ConcurrentHashMap<>());
+    blockingHandler = new BlockingCommandHandler<>(blockingStateStore,
+                                                   new UserEvolver(),
+                                                   new UserDecider(eventsIdGen),
+                                                   new Visitor(new Id("0")));
   }
 }

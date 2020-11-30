@@ -3,13 +3,13 @@ package io.memoria.jutils.core.eventsourcing.state;
 import io.memoria.jutils.core.value.Id;
 import io.vavr.control.Option;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
-public class InMemoryStateStore<S extends State> implements StateStore<S> {
+public class InMemoryStateStore<S extends State> implements BlockingStateStore<S> {
 
-  private final Map<Id, S> db;
+  private final ConcurrentMap<Id, S> db;
 
-  public InMemoryStateStore(Map<Id, S> db) {
+  public InMemoryStateStore(ConcurrentMap<Id, S> db) {
     this.db = db;
   }
 
@@ -19,7 +19,8 @@ public class InMemoryStateStore<S extends State> implements StateStore<S> {
   }
 
   @Override
-  public synchronized S save(S state) {
-    return this.db.put(state.id(), state);
+  public S save(S s) {
+    this.db.put(s.id(), s);
+    return s;
   }
 }
