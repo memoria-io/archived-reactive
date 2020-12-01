@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -28,6 +29,16 @@ public class InMemoryEventStore implements EventStore {
       }
       db.get(id).add(e);
     }).thenReturn(e);
+  }
+
+  @Override
+  public <V> Mono<V> apply(Id id, Callable<V> action) {
+    return Mono.fromCallable(() -> {
+      startTransaction(id);
+      var r = action.call();
+      endTransaction(id);
+      return r;
+    });
   }
 
   public void endTransaction(Id id) {

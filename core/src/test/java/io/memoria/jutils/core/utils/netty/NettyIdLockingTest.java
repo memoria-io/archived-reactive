@@ -38,7 +38,7 @@ class NettyIdLockingTest {
         get(host, "/third").subscribe();
       });
     }
-    es.awaitTermination(2, TimeUnit.SECONDS);
+    es.awaitTermination(3, TimeUnit.SECONDS);
     var r1 = requireNonNull(get(host, "/first").block())._2;
     var r2 = requireNonNull(get(host, "/second").block())._2;
     var r3 = requireNonNull(get(host, "/third").block())._2;

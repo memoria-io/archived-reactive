@@ -45,6 +45,25 @@ class InMemoryEventStoreTest {
   }
 
   @Test
+  void applyWithIdLockingTest() throws InterruptedException {
+    var es = Executors.newFixedThreadPool(10);
+    var idZero = new Id("0");
+    var idOne = new Id("1");
+    var idTwo = new Id("2");
+    for (int i = 0; i < 3; i++) {
+      es.submit(() -> {
+        eventStore.apply(idZero, () -> loop(idZero)).subscribe();
+        eventStore.apply(idOne, () -> loop(idOne)).subscribe();
+        eventStore.apply(idTwo, () -> loop(idTwo)).subscribe();
+      });
+    }
+    es.awaitTermination(1, TimeUnit.SECONDS);
+    StepVerifier.create(eventStore.get(idZero)).expectNext(expected(idZero)).expectComplete().verify();
+    StepVerifier.create(eventStore.get(idOne)).expectNext(expected(idOne)).expectComplete().verify();
+    StepVerifier.create(eventStore.get(idTwo)).expectNext(expected(idTwo)).expectComplete().verify();
+  }
+
+  @Test
   void idLocking() throws InterruptedException {
     var es = Executors.newFixedThreadPool(10);
     var idZero = new Id("0");
@@ -83,11 +102,16 @@ class InMemoryEventStoreTest {
                .block();
   }
 
-  private void transaction(Id id) {
-    eventStore.startTransaction(id);
+  private boolean loop(Id id) {
     for (int x = 0; x < 10; x++) {
       eventStore.add(id, new GreetingEvent(id, "new_name_" + x)).subscribe();
     }
+    return true;
+  }
+
+  private void transaction(Id id) {
+    eventStore.startTransaction(id);
+    loop(id);
     eventStore.endTransaction(id);
   }
 }

@@ -27,10 +27,13 @@ public class CommandHandler<S extends State, C extends Command> implements Funct
   }
 
   @Override
-  public Mono<List<Event>> apply(Id aggId, C cmd) {
-    var stateMono = eventStore.get(aggId).map(events -> evolver.apply(initialState, events));
+  public Mono<List<Event>> apply(Id id, C cmd) {
+    eventStore.startTransaction(id);
+    var stateMono = eventStore.get(id).map(events -> evolver.apply(initialState, events));
     var eventsFlux = stateMono.flatMapMany(state -> toFlux(decider.apply(state, cmd)));
-    return eventsFlux.concatMap(e -> eventStore.add(aggId, e)).collectList();
+    var result = eventsFlux.concatMap(e -> eventStore.add(id, e)).collectList();
+    eventStore.endTransaction(id);
+    return result;
   }
 
   public Flux<Event> apply(Id aggId, Flux<C> cmds) {
