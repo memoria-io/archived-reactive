@@ -10,6 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.function.Function;
 
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toFlux;
 
@@ -28,12 +29,12 @@ public class CommandHandler<S extends State, C extends Command> implements Funct
 
   @Override
   public Mono<List<Event>> apply(Id id, C cmd) {
-    eventStore.startTransaction(id);
-    var stateMono = eventStore.get(id).map(events -> evolver.apply(initialState, events));
-    var eventsFlux = stateMono.flatMapMany(state -> toFlux(decider.apply(state, cmd)));
-    var result = eventsFlux.concatMap(e -> eventStore.add(id, e)).collectList();
-    eventStore.endTransaction(id);
-    return result;
+    return eventStore.transaction(id, () -> {
+      var stateMono = eventStore.get(id).map(events -> evolver.apply(initialState, events));
+      var eventsFlux = stateMono.flatMapMany(state -> toFlux(decider.apply(state, cmd)));
+      var result = eventsFlux.concatMap(e -> eventStore.add(id, e)).collectList();
+      return result;
+    }).flatMap(Function.identity());
   }
 
   public Flux<Event> apply(Id aggId, Flux<C> cmds) {

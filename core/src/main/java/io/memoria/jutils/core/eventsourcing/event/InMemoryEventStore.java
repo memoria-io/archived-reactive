@@ -32,27 +32,15 @@ public class InMemoryEventStore implements EventStore {
   }
 
   @Override
-  public <V> Mono<V> apply(Id id, Callable<V> action) {
-    return Mono.fromCallable(() -> {
-      startTransaction(id);
-      var r = action.call();
-      endTransaction(id);
-      return r;
-    });
-  }
-
-  public void endTransaction(Id id) {
-    locks.putIfAbsent(id, new ReentrantLock());
-    locks.get(id).unlock();
-  }
-
-  @Override
   public Mono<List<Event>> get(Id id) {
     return Mono.fromCallable(() -> Option.of(db.get(id))).map(o -> o.getOrElse(new ArrayList<>()));
   }
 
-  public void startTransaction(Id id) {
-    locks.putIfAbsent(id, new ReentrantLock());
-    locks.get(id).lock();
+  @Override
+  public <V> Mono<V> transaction(Id id, Callable<V> action) {
+    return Mono.fromCallable(action).doOnSubscribe(s -> {
+      locks.putIfAbsent(id, new ReentrantLock());
+      locks.get(id).lock();
+    }).doFinally(f -> locks.get(id).unlock());
   }
 }
