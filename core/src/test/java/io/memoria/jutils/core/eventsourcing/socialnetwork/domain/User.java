@@ -1,6 +1,6 @@
 package io.memoria.jutils.core.eventsourcing.socialnetwork.domain;
 
-import io.memoria.jutils.core.eventsourcing.state.State;
+import io.memoria.jutils.core.eventsourcing.State;
 import io.memoria.jutils.core.value.Id;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.Set;

@@ -7,7 +7,7 @@ import reactor.test.StepVerifier;
 
 import java.util.List;
 
-class CommandHandlerTest {
+class StatelessHandlerTest {
 
   @Test
   void applyAllCommands() {

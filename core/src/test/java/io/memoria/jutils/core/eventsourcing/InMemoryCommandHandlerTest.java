@@ -1,9 +1,8 @@
 package io.memoria.jutils.core.eventsourcing;
 
-import io.memoria.jutils.core.eventsourcing.event.Event;
-import io.memoria.jutils.core.eventsourcing.event.EventStore;
-import io.memoria.jutils.core.eventsourcing.event.InMemoryEventStore;
 import io.memoria.jutils.core.eventsourcing.greeting.GreetingEvent;
+import io.memoria.jutils.core.eventsourcing.stateless.EventStore;
+import io.memoria.jutils.core.eventsourcing.stateless.InMemoryCommandHandler;
 import io.memoria.jutils.core.value.Id;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -22,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import static java.time.Duration.ofMillis;
 import static java.util.function.Function.identity;
 
-class InMemoryEventStoreTest {
+class InMemoryCommandHandlerTest {
   private static final Id id = new Id("topic-" + new Random().nextInt(1000));
   private static final int MSG_COUNT = 10;
   private final EventStore eventStore;
@@ -30,9 +29,9 @@ class InMemoryEventStoreTest {
   private final Flux<Event> events;
   private final Event[] expectedEvents;
 
-  public InMemoryEventStoreTest() {
+  public InMemoryCommandHandlerTest() {
     this.db = new HashMap<>();
-    this.eventStore = new InMemoryEventStore(db);
+    this.eventStore = new InMemoryCommandHandler(db);
     // Given
     events = Flux.interval(ofMillis(1)).map(GreetingEvent::new).map(e -> (Event) e).take(MSG_COUNT);
     expectedEvents = Objects.requireNonNull(events.collectList().block()).toArray(new Event[0]);

@@ -5,7 +5,7 @@ import io.vavr.collection.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class BlockingCommandHandlerTest {
+class StatefulStatelessHandlerTest {
 
   @Test
   void applyAllCommands() {

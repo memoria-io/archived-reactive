@@ -1,6 +1,6 @@
 package io.memoria.jutils.core.eventsourcing.greeting;
 
-import io.memoria.jutils.core.eventsourcing.event.Event;
+import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.value.Id;
 
 import java.time.LocalDateTime;

@@ -1,6 +1,6 @@
 package io.memoria.jutils.core.eventsourcing.socialnetwork.domain;
 
-import io.memoria.jutils.core.eventsourcing.cmd.Command;
+import io.memoria.jutils.core.eventsourcing.Command;
 import io.memoria.jutils.core.value.Id;
 
 public interface UserCommand extends Command {
