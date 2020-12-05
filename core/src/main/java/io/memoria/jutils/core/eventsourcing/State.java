@@ -1,4 +1,4 @@
-package io.memoria.jutils.core.eventsourcing.state;
+package io.memoria.jutils.core.eventsourcing;
 
 import io.memoria.jutils.core.value.Id;
 

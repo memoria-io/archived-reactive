@@ -1,8 +1,5 @@
 package io.memoria.jutils.core.eventsourcing;
 
-import io.memoria.jutils.core.eventsourcing.cmd.Command;
-import io.memoria.jutils.core.eventsourcing.state.State;
-
 /**
  * Eventsourcing Exception
  */

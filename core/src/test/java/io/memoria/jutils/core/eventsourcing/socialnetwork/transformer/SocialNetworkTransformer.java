@@ -30,16 +30,16 @@ public class SocialNetworkTransformer implements StringTransformer {
 
   @Override
   public <T> Try<String> serialize(T t) {
-    String result = t.getClass().getSimpleName();
+    String type = t.getClass().getSimpleName();
     if (t instanceof AccountCreated e) {
-      return Try.success(result + ":" + e.id().value() + ":" + e.age());
+      return Try.success(type + ":" + e.id().value() +  ":" + e.accountId().value() + ":" + e.age());
     }
     if (t instanceof FriendAdded e) {
-      return Try.success(result + ":" + e.id().value() + ":" + e.friendId().value());
+      return Try.success(type + ":" + e.id().value() + ":" + e.friendId().value());
     }
     if (t instanceof MessageSent e) {
       return Try.success(
-              result + ":" + e.id().value() + ":" + e.message().id().value() + ":" + e.message().from().value() + ":" +
+              type + ":" + e.id().value() + ":" + e.message().id().value() + ":" + e.message().from().value() + ":" +
               e.message().to().value() + ":" + e.message().body());
     }
     return Try.failure(new Exception("Unknown type to be serialized"));

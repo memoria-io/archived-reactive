@@ -1,7 +1,7 @@
 package io.memoria.jutils.core.eventsourcing.socialnetwork.domain;
 
-import io.memoria.jutils.core.eventsourcing.cmd.Decider;
-import io.memoria.jutils.core.eventsourcing.event.Event;
+import io.memoria.jutils.core.eventsourcing.Decider;
+import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.User.Account;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.AddFriend;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.CreateAccount;
