@@ -2,10 +2,13 @@ package io.memoria.jutils.core.eventsourcing.stateless;
 
 import io.memoria.jutils.core.eventsourcing.Command;
 import io.memoria.jutils.core.eventsourcing.CommandHandler;
+import io.memoria.jutils.core.eventsourcing.Decider;
 import io.memoria.jutils.core.eventsourcing.Event;
+import io.memoria.jutils.core.eventsourcing.Evolver;
 import io.memoria.jutils.core.eventsourcing.State;
 import io.memoria.jutils.core.transformer.StringTransformer;
 import io.memoria.jutils.core.value.Id;
+import io.vavr.collection.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
@@ -17,11 +20,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.List;
 
 import static java.sql.Connection.TRANSACTION_READ_COMMITTED;
 
-public class SqlCommandHandler<S extends State, C extends Command> implements CommandHandler<S, C> {
+public final class SqlCommandHandler<S extends State, C extends Command> implements CommandHandler<S, C> {
   private static final Logger log = LoggerFactory.getLogger(SqlCommandHandler.class.getName());
   private static final String ID_COL = "id";
   private static final String CREATED_AT_COL = "createdAt";
@@ -29,33 +31,45 @@ public class SqlCommandHandler<S extends State, C extends Command> implements Co
 
   private final PooledConnection pooledConnection;
   private final StringTransformer stringTransformer;
+  private final S initialState;
+  private final Evolver<S> evolver;
+  private final Decider<S, C> decider;
   private final Scheduler scheduler;
 
   public SqlCommandHandler(PooledConnection pooledConnection,
                            StringTransformer stringTransformer,
+                           S initialState,
+                           Evolver<S> evolver,
+                           Decider<S, C> decider,
                            Scheduler scheduler) {
     this.pooledConnection = pooledConnection;
     this.stringTransformer = stringTransformer;
+    this.initialState = initialState;
+    this.evolver = evolver;
+    this.decider = decider;
     this.scheduler = scheduler;
   }
 
   @Override
-  public Flux<Event> apply(Id id, C c) {
-    Mono.fromCallable(() -> {
+  public Flux<Event> apply(Id id, C cmd) {
+    return Mono.fromCallable(() -> {
       // Connection
       var connection = this.pooledConnection.getConnection();
       connection.setAutoCommit(false);
       connection.setTransactionIsolation(TRANSACTION_READ_COMMITTED);
-      // table
       var tableName = toTableName(id.value());
-
-      var events = query(connection, tableName, id);
-
-      var stateMono = eventStore.get(id).map(events -> evolver.apply(initialState, events));
-      var eventsFlux = stateMono.flatMapMany(state -> toFlux(decider.apply(state, cmd)));
-      var result = eventsFlux.concatMap(e -> eventStore.add(id, e)).collectList();
-    });
-    return null;
+      createTableIfNotExists(connection, tableName);
+      var initialEvents = query(connection, tableName);
+      var state = evolver.apply(initialState, initialEvents);
+      var events = decider.apply(state, cmd).get();
+      if (add(connection, tableName, events) == events.length()) {
+        connection.commit();
+        return events;
+      } else {
+        connection.rollback();
+        throw new SQLException("Couldn't commit events, rolling back");
+      }
+    }).flatMapMany(Flux::fromIterable);
   }
 
   private int add(Connection connection, String tableName, List<Event> events) throws SQLException {
@@ -72,21 +86,19 @@ public class SqlCommandHandler<S extends State, C extends Command> implements Co
     return st.executeBatch().length;
   }
 
-  private List<Event> query(Connection connection, String tableName, Id aggId) throws SQLException {
-    var sql = "Select %s from %s where aggId = ?".formatted(PAYLOAD_COL, tableName);
-    var st = connection.prepareStatement(sql);
-    st.setString(1, aggId.value());
-    var resultSet = st.executeQuery();
-    List<Event> list = new ArrayList<>();
+  private List<Event> query(Connection connection, String tableName) throws SQLException {
+    var sql = "Select %s from %s".formatted(PAYLOAD_COL, tableName);
+    var resultSet = connection.prepareStatement(sql).executeQuery();
+    var list = new ArrayList<Event>();
     while (resultSet.next()) {
       var eventString = resultSet.getString(PAYLOAD_COL);
       var event = this.stringTransformer.deserialize(eventString, Event.class).get();
       list.add(event);
     }
-    return list;
+    return List.ofAll(list);
   }
 
-  Mono<Boolean> tableExists(Connection connection, String tableName) {
+  private static boolean createTableIfNotExists(Connection connection, String tableName) throws SQLException {
     var sql = """
               CREATE TABLE IF NOT EXISTS %s (
               id VARCHAR(36) NOT NULL,
@@ -95,7 +107,7 @@ public class SqlCommandHandler<S extends State, C extends Command> implements Co
               PRIMARY KEY (id)
             )
             """.formatted(tableName);
-    return Mono.fromCallable(() -> connection.prepareStatement(sql).execute()).subscribeOn(scheduler);
+    return connection.prepareStatement(sql).execute();
   }
 
   // TODO tableName SQL Injection validation

@@ -1,6 +1,5 @@
-package io.memoria.jutils.core.eventsourcing.stateful;
+package io.memoria.jutils.core.eventsourcing;
 
-import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.value.Id;
 import reactor.core.publisher.Flux;
 
