@@ -69,7 +69,7 @@ public final class SqlCommandHandler<S extends State, C extends Command> impleme
         connection.rollback();
         throw new SQLException("Couldn't commit events, rolling back");
       }
-    }).flatMapMany(Flux::fromIterable);
+    }).flatMapMany(Flux::fromIterable).subscribeOn(scheduler);
   }
 
   private int add(Connection connection, String tableName, List<Event> events) throws SQLException {
@@ -78,7 +78,7 @@ public final class SqlCommandHandler<S extends State, C extends Command> impleme
     var st = connection.prepareStatement(sql);
     for (Event e : events) {
       var eventPayload = this.stringTransformer.serialize(e).get();
-      st.setString(1, tableName);
+      st.setString(1, e.id().value());
       st.setTimestamp(2, Timestamp.valueOf(e.createdAt()));
       st.setString(3, eventPayload);
       st.addBatch();

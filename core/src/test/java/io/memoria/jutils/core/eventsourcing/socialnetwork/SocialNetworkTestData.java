@@ -1,5 +1,6 @@
-package io.memoria.jutils.core.eventsourcing;
+package io.memoria.jutils.core.eventsourcing.socialnetwork;
 
+import io.memoria.jutils.core.eventsourcing.CommandHandler;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.Message;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.User;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.User.Visitor;
@@ -13,15 +14,21 @@ import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.Accou
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.FriendAdded;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.MessageSent;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvolver;
+import io.memoria.jutils.core.eventsourcing.socialnetwork.transformer.SocialNetworkTransformer;
 import io.memoria.jutils.core.eventsourcing.stateful.StatefulCommandHandler;
 import io.memoria.jutils.core.eventsourcing.stateless.SqlCommandHandler;
 import io.memoria.jutils.core.generator.IdGenerator;
 import io.memoria.jutils.core.value.Id;
+import org.h2.jdbcx.JdbcDataSource;
+import reactor.core.scheduler.Schedulers;
 
+import java.sql.SQLException;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SocialNetworkTestData {
-  public final IdGenerator eventsIdGen;
+  private final AtomicInteger atomic = new AtomicInteger();
+  public final IdGenerator eventsIdGen = () -> new Id(atomic.getAndIncrement() + "");
   public final Id userId;
   public final Id friendId;
   public final Id topic;
@@ -36,11 +43,9 @@ public class SocialNetworkTestData {
   public final UserEvent friendAdded;
   public final UserEvent messageSent;
   // Command Handler 
-  public final SqlCommandHandler<User, UserCommand> sqlHandler;
-  public final StatefulCommandHandler<User, UserCommand> statefulHandler;
+  public final CommandHandler<User, UserCommand> handler;
 
-  public SocialNetworkTestData() {
-    eventsIdGen = () -> new Id("event_0");
+  public SocialNetworkTestData(boolean sqlHandler) {
     userId = new Id("alex_" + new Random().nextInt(1000));
     friendId = new Id("bob_" + new Random().nextInt(1000));
     topic = userId;
@@ -51,12 +56,11 @@ public class SocialNetworkTestData {
     add = new AddFriend(userId, friendId);
     send = new SendMessage(userId, friendId, "hello");
     // Events
-    friendAdded = new FriendAdded(eventsIdGen.get(), friendId);
-    accountCreated = new AccountCreated(eventsIdGen.get(), userId, 18);
-    messageSent = new MessageSent(eventsIdGen.get(), new Message(eventsIdGen.get(), userId, friendId, "hello"));
+    accountCreated = new AccountCreated(new Id("0"), userId, 18);
+    friendAdded = new FriendAdded(new Id("1"), friendId);
+    messageSent = new MessageSent(new Id("3"), new Message(new Id("2"), userId, friendId, "hello"));
     // Command handlers
-    sqlHandler = getSqlHandler();
-    statefulHandler = getStatefulHandler();
+    handler = (sqlHandler) ? getSqlHandler() : getStatefulHandler();
   }
 
   private StatefulCommandHandler<User, UserCommand> getStatefulHandler() {
@@ -64,9 +68,20 @@ public class SocialNetworkTestData {
   }
 
   private SqlCommandHandler<User, UserCommand> getSqlHandler() {
+    JdbcDataSource ds = new JdbcDataSource();
+    ds.setURL("jdbc:h2:~/test");
+    ds.setUser("sa");
+    ds.setPassword("sa");
+    try {
+      return new SqlCommandHandler<>(ds.getPooledConnection(),
+                                     new SocialNetworkTransformer(),
+                                     visitor,
+                                     new UserEvolver(),
+                                     new UserDecider(eventsIdGen),
+                                     Schedulers.boundedElastic());
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
     return null;
-    //    return new SqlCommandHandler<User, UserCommand>(visitor,
-    //                                                    new UserDecider(eventsIdGen),
-    //                                                    new Visitor(new Id("0")));
   }
 }
