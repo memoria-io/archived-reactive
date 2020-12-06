@@ -19,14 +19,16 @@ import io.memoria.jutils.core.eventsourcing.stateful.StatefulCommandHandler;
 import io.memoria.jutils.core.eventsourcing.stateless.SqlCommandHandler;
 import io.memoria.jutils.core.generator.IdGenerator;
 import io.memoria.jutils.core.value.Id;
-import org.h2.jdbcx.JdbcDataSource;
+import io.vavr.control.Option;
 import reactor.core.scheduler.Schedulers;
 
+import javax.sql.PooledConnection;
 import java.sql.SQLException;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SocialNetworkTestData {
+  private static final Random random = new Random();
   private final AtomicInteger atomic = new AtomicInteger();
   public final IdGenerator eventsIdGen = () -> new Id(atomic.getAndIncrement() + "");
   public final Id userId;
@@ -45,9 +47,9 @@ public class SocialNetworkTestData {
   // Command Handler 
   public final CommandHandler<User, UserCommand> handler;
 
-  public SocialNetworkTestData(boolean sqlHandler) {
-    userId = new Id("alex_" + new Random().nextInt(1000));
-    friendId = new Id("bob_" + new Random().nextInt(1000));
+  public SocialNetworkTestData(Option<PooledConnection> pooledConnection) throws SQLException {
+    userId = new Id("alex_" + random.nextInt(10000));
+    friendId = new Id("bob_" + random.nextInt(10000));
     topic = userId;
     // State
     visitor = new Visitor(userId);
@@ -60,28 +62,19 @@ public class SocialNetworkTestData {
     friendAdded = new FriendAdded(new Id("1"), friendId);
     messageSent = new MessageSent(new Id("3"), new Message(new Id("2"), userId, friendId, "hello"));
     // Command handlers
-    handler = (sqlHandler) ? getSqlHandler() : getStatefulHandler();
+    handler = (pooledConnection.isEmpty()) ? getStatefulHandler() : getSqlHandler(pooledConnection.get());
+  }
+
+  private SqlCommandHandler<User, UserCommand> getSqlHandler(PooledConnection pooledConnection) {
+    return new SqlCommandHandler<>(pooledConnection,
+                                   new SocialNetworkTransformer(),
+                                   visitor,
+                                   new UserEvolver(),
+                                   new UserDecider(eventsIdGen),
+                                   Schedulers.boundedElastic());
   }
 
   private StatefulCommandHandler<User, UserCommand> getStatefulHandler() {
     return new StatefulCommandHandler<>(visitor, new UserEvolver(), new UserDecider(eventsIdGen));
-  }
-
-  private SqlCommandHandler<User, UserCommand> getSqlHandler() {
-    JdbcDataSource ds = new JdbcDataSource();
-    ds.setURL("jdbc:h2:~/test");
-    ds.setUser("sa");
-    ds.setPassword("sa");
-    try {
-      return new SqlCommandHandler<>(ds.getPooledConnection(),
-                                     new SocialNetworkTransformer(),
-                                     visitor,
-                                     new UserEvolver(),
-                                     new UserDecider(eventsIdGen),
-                                     Schedulers.boundedElastic());
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    return null;
   }
 }

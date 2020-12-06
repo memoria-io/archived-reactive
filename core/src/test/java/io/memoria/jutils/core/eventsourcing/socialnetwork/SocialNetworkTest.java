@@ -1,19 +1,48 @@
 package io.memoria.jutils.core.eventsourcing.socialnetwork;
 
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+
+import static io.vavr.control.Option.none;
+import static io.vavr.control.Option.some;
+
 class SocialNetworkTest {
-  @Test
-  void sqlHandler() {
-    SocialNetworkSuite.applyAllCommands(new SocialNetworkTestData(true));
-    SocialNetworkSuite.applyOneCommand(new SocialNetworkTestData(true));
-    SocialNetworkSuite.applyTwice(new SocialNetworkTestData(true));
+  private static final JdbcDataSource ds;
+
+  static {
+    ds = new JdbcDataSource();
+    ds.setURL("jdbc:h2:~/test");
+    ds.setUser("sa");
+    ds.setPassword("sa");
   }
 
   @Test
-  void statefulHandler() {
-    SocialNetworkSuite.applyAllCommands(new SocialNetworkTestData(false));
-    SocialNetworkSuite.applyOneCommand(new SocialNetworkTestData(false));
-    SocialNetworkSuite.applyTwice(new SocialNetworkTestData(false));
+  void sqlHandlerFailurePath() throws SQLException {
+    SocialNetworkSuite.failurePath(new SocialNetworkTestData(some(ds.getPooledConnection())));
+  }
+
+  @Test
+  void sqlHandlerHappyPath() throws SQLException {
+    SocialNetworkSuite.happyPath(new SocialNetworkTestData(some(ds.getPooledConnection())));
+  }
+
+  @Test
+  void sqlHandlerManyCommands() throws SQLException {
+    SocialNetworkSuite.manyCommands(new SocialNetworkTestData(some(ds.getPooledConnection())));
+  }
+
+  @Test
+  void sqlHandlerOneCommand() throws SQLException {
+    SocialNetworkSuite.oneCommand(new SocialNetworkTestData(some(ds.getPooledConnection())));
+  }
+
+  @Test
+  void statefulHandlerHappyPath() throws SQLException {
+    SocialNetworkSuite.happyPath(new SocialNetworkTestData(none()));
+    SocialNetworkSuite.oneCommand(new SocialNetworkTestData(none()));
+    SocialNetworkSuite.failurePath(new SocialNetworkTestData(none()));
+    SocialNetworkSuite.manyCommands(new SocialNetworkTestData(none()));
   }
 }

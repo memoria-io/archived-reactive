@@ -32,7 +32,7 @@ public class SocialNetworkTransformer implements StringTransformer {
   public <T> Try<String> serialize(T t) {
     String type = t.getClass().getSimpleName();
     if (t instanceof AccountCreated e) {
-      return Try.success(type + ":" + e.id().value() +  ":" + e.accountId().value() + ":" + e.age());
+      return Try.success(type + ":" + e.id().value() + ":" + e.accountId().value() + ":" + e.age());
     }
     if (t instanceof FriendAdded e) {
       return Try.success(type + ":" + e.id().value() + ":" + e.friendId().value());
