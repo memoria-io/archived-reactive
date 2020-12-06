@@ -78,7 +78,7 @@ public final class SqlCommandHandler<S extends State, C extends Command> impleme
     var st = connection.prepareStatement(sql);
     for (Event e : events) {
       var eventPayload = this.stringTransformer.serialize(e).get();
-      st.setString(1, e.id().value());
+      st.setString(1, e.eventId().value());
       st.setTimestamp(2, Timestamp.valueOf(e.createdAt()));
       st.setString(3, eventPayload);
       st.addBatch();

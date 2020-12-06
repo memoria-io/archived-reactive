@@ -2,6 +2,7 @@ package io.memoria.jutils.core.eventsourcing.socialnetwork;
 
 import io.memoria.jutils.core.eventsourcing.ESException.ESInvalidOperation;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.SendMessage;
+import io.memoria.jutils.core.value.Id;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -26,7 +27,8 @@ public class SocialNetworkSuite {
   public static void manyCommands(SocialNetworkTestData testData) {
     // Given
     var createAddSend = Flux.just(testData.create, testData.add, testData.send);
-    var sendFlux = Flux.range(0, 100).map(i -> new SendMessage(testData.userId, testData.friendId, "hello_" + i));
+    var sendFlux = Flux.range(0, 100)
+                       .map(i -> new SendMessage(new Id("cmd_" + i), testData.userId, testData.friendId, "hello_" + i));
     // When
     var eventFlux = testData.handler.apply(testData.topic, createAddSend.concatWith(sendFlux));
     // Then

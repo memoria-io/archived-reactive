@@ -11,7 +11,7 @@ public record UserEvolver() implements Evolver<User> {
   @Override
   public User apply(User user, Event event) {
     if (event instanceof AccountCreated e)
-      return new Account(e.accountId(), e.age());
+      return new Account(e.aggId(), e.age());
     if (user instanceof Account account && event instanceof FriendAdded e)
       return account.withNewFriend(e.friendId());
     if (user instanceof Account account && event instanceof MessageSent e)

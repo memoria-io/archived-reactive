@@ -65,7 +65,7 @@ public class Tests {
     ALEX_ENGINEER = new Engineer("alex", LocalDate.of(2000, 1, 1), List.of("fix issue 3", "Fix issue 4"));
     ANNIKA_MANAGER = new Manager("Annika", List.of(BOB_ENGINEER, ALEX_ENGINEER));
     BOB_PERSON = new Person("bob", List.of("1", "2", "3").map(Id::new));
-    NAME_CREATED = new NameCreated(new Id("1"), "bob", LocalDateTime.of(2020, 12, 1, 11, 0));
+    NAME_CREATED = new NameCreated(new Id("1"), new Id("2"), "bob", LocalDateTime.of(2020, 12, 1, 11, 0));
   }
 
   private Tests() {}

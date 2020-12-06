@@ -7,21 +7,21 @@ import java.time.LocalDateTime;
 
 public interface UserEvent extends Event {
 
-  record AccountCreated(Id id, Id accountId, int age) implements UserEvent {
+  record AccountCreated(Id eventId, Id aggId, int age) implements UserEvent {
     @Override
     public LocalDateTime createdAt() {
       return LocalDateTime.of(2020, 1, 1, 1, 0);
     }
   }
 
-  record FriendAdded(Id id, Id friendId) implements UserEvent {
+  record FriendAdded(Id eventId, Id aggId, Id friendId) implements UserEvent {
     @Override
     public LocalDateTime createdAt() {
       return LocalDateTime.of(2020, 1, 1, 1, 0);
     }
   }
 
-  record MessageSent(Id id, Message message) implements UserEvent {
+  record MessageSent(Id eventId, Id aggId, Message message) implements UserEvent {
     @Override
     public LocalDateTime createdAt() {
       return LocalDateTime.of(2020, 1, 1, 1, 0);

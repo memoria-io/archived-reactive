@@ -1,5 +1,6 @@
 {
-  "id":"1",
+  "eventId":"1",
+  "aggId":"2",
   "name":"bob",
   "createdAt":"2020-12-01T11:00:00"
 }

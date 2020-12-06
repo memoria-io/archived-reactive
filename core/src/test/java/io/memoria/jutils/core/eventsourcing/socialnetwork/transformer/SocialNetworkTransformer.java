@@ -18,11 +18,12 @@ public class SocialNetworkTransformer implements StringTransformer {
       case "AccountCreated" -> Try.success((T) new AccountCreated(new Id(st[1]),
                                                                   new Id(st[2]),
                                                                   Integer.parseInt(st[3])));
-      case "FriendAdded" -> Try.success((T) new FriendAdded(new Id(st[1]), new Id(st[2])));
+      case "FriendAdded" -> Try.success((T) new FriendAdded(new Id(st[1]), new Id(st[2]), new Id(st[3])));
       case "MessageSent" -> Try.success((T) new MessageSent(new Id(st[1]),
-                                                            new Message(new Id(st[2]),
-                                                                        new Id(st[3]),
+                                                            new Id(st[2]),
+                                                            new Message(new Id(st[3]),
                                                                         new Id(st[4]),
+                                                                        new Id(st[5]),
                                                                         st[5])));
       default -> Try.failure(new Exception("Unknown type to be deserialized"));
     };
@@ -32,15 +33,15 @@ public class SocialNetworkTransformer implements StringTransformer {
   public <T> Try<String> serialize(T t) {
     String type = t.getClass().getSimpleName();
     if (t instanceof AccountCreated e) {
-      return Try.success(type + ":" + e.id().value() + ":" + e.accountId().value() + ":" + e.age());
+      return Try.success(type + ":" + e.eventId().value() + ":" + e.aggId().value() + ":" + e.age());
     }
     if (t instanceof FriendAdded e) {
-      return Try.success(type + ":" + e.id().value() + ":" + e.friendId().value());
+      return Try.success(type + ":" + e.eventId().value() + ":" + e.aggId().value() + ":" + e.friendId().value());
     }
     if (t instanceof MessageSent e) {
       return Try.success(
-              type + ":" + e.id().value() + ":" + e.message().id().value() + ":" + e.message().from().value() + ":" +
-              e.message().to().value() + ":" + e.message().body());
+              type + ":" + e.eventId().value() + ":" + e.aggId().value() + ":" + e.message().id().value() + ":" +
+              e.message().from().value() + ":" + e.message().to().value() + ":" + e.message().body());
     }
     return Try.failure(new Exception("Unknown type to be serialized"));
   }

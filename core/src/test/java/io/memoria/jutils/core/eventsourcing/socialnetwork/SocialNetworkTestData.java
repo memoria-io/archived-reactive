@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SocialNetworkTestData {
   private static final Random random = new Random();
   private final AtomicInteger atomic = new AtomicInteger();
-  public final IdGenerator eventsIdGen = () -> new Id(atomic.getAndIncrement() + "");
+  public final IdGenerator idGenerator = () -> new Id(atomic.getAndIncrement() + "");
   public final Id userId;
   public final Id friendId;
   public final Id topic;
@@ -54,13 +54,13 @@ public class SocialNetworkTestData {
     // State
     visitor = new Visitor(userId);
     // Commands
-    create = new CreateAccount(userId, 18);
-    add = new AddFriend(userId, friendId);
-    send = new SendMessage(userId, friendId, "hello");
+    create = new CreateAccount(idGenerator.get(), userId, 18);
+    add = new AddFriend(idGenerator.get(), userId, friendId);
+    send = new SendMessage(idGenerator.get(), userId, friendId, "hello");
     // Events
-    accountCreated = new AccountCreated(new Id("0"), userId, 18);
-    friendAdded = new FriendAdded(new Id("1"), friendId);
-    messageSent = new MessageSent(new Id("3"), new Message(new Id("2"), userId, friendId, "hello"));
+    accountCreated = new AccountCreated(new Id("3"), userId, 18);
+    friendAdded = new FriendAdded(new Id("4"), userId, friendId);
+    messageSent = new MessageSent(new Id("6"), userId, new Message(new Id("5"), userId, friendId, "hello"));
     // Command handlers
     handler = (pooledConnection.isEmpty()) ? getStatefulHandler() : getSqlHandler(pooledConnection.get());
   }
@@ -70,11 +70,11 @@ public class SocialNetworkTestData {
                                    new SocialNetworkTransformer(),
                                    visitor,
                                    new UserEvolver(),
-                                   new UserDecider(eventsIdGen),
+                                   new UserDecider(idGenerator),
                                    Schedulers.boundedElastic());
   }
 
   private StatefulCommandHandler<User, UserCommand> getStatefulHandler() {
-    return new StatefulCommandHandler<>(visitor, new UserEvolver(), new UserDecider(eventsIdGen));
+    return new StatefulCommandHandler<>(visitor, new UserEvolver(), new UserDecider(idGenerator));
   }
 }

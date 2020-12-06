@@ -31,12 +31,12 @@ public record UserDecider(IdGenerator idGenerator) implements Decider<User, User
   }
 
   private Try<List<Event>> apply(CreateAccount cmd) {
-    return Try.success(List.of(new AccountCreated(idGenerator.get(), cmd.id(), cmd.age())));
+    return Try.success(List.of(new AccountCreated(idGenerator.get(), cmd.aggId(), cmd.age())));
   }
 
   private Try<List<Event>> apply(Account account, AddFriend cmd) {
     if (account.canAddFriend(cmd.friendId()))
-      return Try.success(List.of(new FriendAdded(idGenerator.get(), cmd.friendId())));
+      return Try.success(List.of(new FriendAdded(idGenerator.get(), cmd.aggId(), cmd.friendId())));
     else
       return Try.failure(ALREADY_EXISTS);
   }
@@ -44,7 +44,7 @@ public record UserDecider(IdGenerator idGenerator) implements Decider<User, User
   private Try<List<Event>> apply(Account user, SendMessage cmd) {
     if (user.canSendMessageTo(cmd.toFriendId())) {
       var msg = new Message(idGenerator.get(), user.id(), cmd.toFriendId(), cmd.messageBody());
-      return Try.success(List.of(new MessageSent(idGenerator.get(), msg)));
+      return Try.success(List.of(new MessageSent(idGenerator.get(), cmd.aggId(), msg)));
     } else
       return Try.failure(NOT_FOUND);
   }
