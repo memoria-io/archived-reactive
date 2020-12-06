@@ -7,10 +7,7 @@ import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.eventsourcing.Evolver;
 import io.memoria.jutils.core.eventsourcing.State;
 import io.memoria.jutils.core.transformer.StringTransformer;
-import io.memoria.jutils.core.value.Id;
 import io.vavr.collection.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -23,8 +20,10 @@ import java.util.ArrayList;
 
 import static java.sql.Connection.TRANSACTION_READ_COMMITTED;
 
+/**
+ * An SQL based commandHandler
+ */
 public final class SqlCommandHandler<S extends State, C extends Command> implements CommandHandler<S, C> {
-  private static final Logger log = LoggerFactory.getLogger(SqlCommandHandler.class.getName());
   private static final String ID_COL = "id";
   private static final String CREATED_AT_COL = "createdAt";
   private static final String PAYLOAD_COL = "payload";
@@ -51,13 +50,12 @@ public final class SqlCommandHandler<S extends State, C extends Command> impleme
   }
 
   @Override
-  public Flux<Event> apply(Id id, C cmd) {
+  public Flux<Event> apply(C cmd) {
     return Mono.fromCallable(() -> {
-      // Connection
       var connection = this.pooledConnection.getConnection();
       connection.setAutoCommit(false);
       connection.setTransactionIsolation(TRANSACTION_READ_COMMITTED);
-      var tableName = toTableName(id.value());
+      var tableName = toTableName(cmd.aggId().value());
       createTableIfNotExists(connection, tableName);
       var initialEvents = query(connection, tableName);
       var state = evolver.apply(initialState, initialEvents);

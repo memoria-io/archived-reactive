@@ -9,14 +9,14 @@ import reactor.test.StepVerifier;
 public class SocialNetworkSuite {
   public static void failurePath(SocialNetworkTestData testData) {
     // When
-    var eventFlux = testData.handler.apply(testData.topic, Flux.just(testData.create, testData.create));
+    var eventFlux = testData.handler.apply(Flux.just(testData.create, testData.create));
     // Then
     StepVerifier.create(eventFlux).expectNext(testData.accountCreated).expectError(ESInvalidOperation.class).verify();
   }
 
   public static void happyPath(SocialNetworkTestData testData) {
     // When
-    var eventFlux = testData.handler.apply(testData.topic, Flux.just(testData.create, testData.add, testData.send));
+    var eventFlux = testData.handler.apply(Flux.just(testData.create, testData.add, testData.send));
     // Then
     StepVerifier.create(eventFlux)
                 .expectNext(testData.accountCreated, testData.friendAdded, testData.messageSent)
@@ -30,7 +30,7 @@ public class SocialNetworkSuite {
     var sendFlux = Flux.range(0, 100)
                        .map(i -> new SendMessage(new Id("cmd_" + i), testData.userId, testData.friendId, "hello_" + i));
     // When
-    var eventFlux = testData.handler.apply(testData.topic, createAddSend.concatWith(sendFlux));
+    var eventFlux = testData.handler.apply(createAddSend.concatWith(sendFlux));
     // Then
     StepVerifier.create(eventFlux)
                 .expectNext(testData.accountCreated, testData.friendAdded, testData.messageSent)
@@ -41,7 +41,7 @@ public class SocialNetworkSuite {
 
   public static void oneCommand(SocialNetworkTestData testData) {
     // When
-    var eventFlux = testData.handler.apply(testData.topic, testData.create);
+    var eventFlux = testData.handler.apply(testData.create);
     // Then
     StepVerifier.create(eventFlux).expectNext(testData.accountCreated).expectComplete().verify();
   }

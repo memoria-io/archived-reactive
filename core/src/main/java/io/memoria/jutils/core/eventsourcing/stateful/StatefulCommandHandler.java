@@ -14,10 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * A blocking State based command handler
- *
- * @param <S>
- * @param <C>
+ * A State based command handler
  */
 public final class StatefulCommandHandler<S extends State, C extends Command> implements CommandHandler<S, C> {
   // State 
@@ -34,14 +31,14 @@ public final class StatefulCommandHandler<S extends State, C extends Command> im
   }
 
   @Override
-  public Flux<Event> apply(Id id, C cmd) {
-    var state = Option.of(db.get(id)).getOrElse(initialState);
-    db.putIfAbsent(id, state);
+  public Flux<Event> apply(C cmd) {
+    var state = Option.of(db.get(cmd.aggId())).getOrElse(initialState);
+    db.putIfAbsent(cmd.aggId(), state);
     var eventsTrial = decider.apply(state, cmd);
     if (eventsTrial.isSuccess()) {
       var events = eventsTrial.get();
       var newState = evolver.apply(state, events);
-      if (db.replace(id, state, newState))
+      if (db.replace(cmd.aggId(), state, newState))
         return Flux.fromIterable(events);
       else
         return Flux.error(illegalStateException(state, newState));
