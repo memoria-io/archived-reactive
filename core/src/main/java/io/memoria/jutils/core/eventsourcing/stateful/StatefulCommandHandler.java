@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * A State based command handler
  */
-public final class StatefulCommandHandler<S extends State, C extends Command> implements CommandHandler<S, C> {
+public final class StatefulCommandHandler<S extends State, C extends Command> implements CommandHandler<C> {
   // State 
   private final S initialState;
   private final ConcurrentMap<Id, S> db = new ConcurrentHashMap<>();

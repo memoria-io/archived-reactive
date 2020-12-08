@@ -23,7 +23,7 @@ import static java.sql.Connection.TRANSACTION_READ_COMMITTED;
 /**
  * An SQL based commandHandler
  */
-public final class SqlCommandHandler<S extends State, C extends Command> implements CommandHandler<S, C> {
+public final class SqlCommandHandler<S extends State, C extends Command> implements CommandHandler<C> {
   private static final String ID_COL = "id";
   private static final String CREATED_AT_COL = "createdAt";
   private static final String PAYLOAD_COL = "payload";
