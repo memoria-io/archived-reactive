@@ -18,13 +18,14 @@ import java.util.concurrent.ConcurrentMap;
  */
 public final class StatefulCommandHandler<S extends State, C extends Command> implements CommandHandler<C> {
   // State 
-  private final S initialState;
-  private final ConcurrentMap<Id, S> db = new ConcurrentHashMap<>();
+  private final transient ConcurrentMap<Id, S> db;
+  private final transient S initialState;
   // Logic
   private final Evolver<S> evolver;
   private final Decider<S, C> decider;
 
   public StatefulCommandHandler(S initialState, Evolver<S> evolver, Decider<S, C> decider) {
+    this.db = new ConcurrentHashMap<>();
     this.initialState = initialState;
     this.evolver = evolver;
     this.decider = decider;

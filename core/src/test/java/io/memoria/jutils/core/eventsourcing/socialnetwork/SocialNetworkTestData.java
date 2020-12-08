@@ -45,7 +45,7 @@ public class SocialNetworkTestData {
   public final UserEvent friendAdded;
   public final UserEvent messageSent;
   // Command Handler 
-  public final CommandHandler<User, UserCommand> handler;
+  public final CommandHandler<UserCommand> handler;
 
   public SocialNetworkTestData(Option<PooledConnection> pooledConnection) throws SQLException {
     userId = new Id("alex_" + random.nextInt(10000));
