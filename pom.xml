@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>jutils</artifactId>
-    <version>0.209.0</version>
+    <version>0.210.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
@@ -26,6 +26,7 @@
         <module>security</module>
         <module>etcd</module>
         <module>jackson-adapter</module>
+        <module>jconf</module>
     </modules>
 
     <distributionManagement>

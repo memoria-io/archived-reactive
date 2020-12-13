@@ -18,19 +18,17 @@ from [Vavr](https://www.vavr.io/),
 
 * Vavr + Reactor Functional utilities
 * Reactor Netty utility functions
-* Yaml configuration loader utility
-    * Nesting capability using `include: foo/bar.yaml`
-    * YamlConfigMap parsing utility
-* Reactive wrapper for messaging:
-    * Apache Kafka
-    * Nats
-    * Apache Pulsar
-* Reactive wrapper for a Keyvalue store
-    * Etcd adapter
-* Json
-    * Google guice adapter
+* Reactive wrapper for etcd
 * Reactive CQRS and Eventsourcing utilities (alpha stage)
 * Reactive functional in-memory generic cruds (for tests, not for production)
+* Jackson Adapter (Json & Yaml) utilities
+* File reader utility
+* jconf is a module for reading yaml configuration files (depends on Jackson Adapter)
+    * Allows nesting of files using a marker e.g `include: sub_file.yaml` would replace this line with content
+      of `sub_file.yaml`
+    * Reading as a system property if not found as environment variable or else the default value if it was supplied:
+        * `path: ${JAVA_HOME}`
+        * `myVar: ${SOME_VAR:-defaultValue}`
 * jutils is up to date with the latest versions of JDK preview feature, currently `Java 15`.
 
 ## Usage
