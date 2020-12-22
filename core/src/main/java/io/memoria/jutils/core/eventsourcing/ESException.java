@@ -4,8 +4,8 @@ package io.memoria.jutils.core.eventsourcing;
  * Eventsourcing Exception
  */
 public class ESException extends Exception {
-  public static class ESNoAvailableHandler extends ESException {
-    private ESNoAvailableHandler(Command command) {
+  public static class ESNoHandlerAvailable extends ESException {
+    private ESNoHandlerAvailable(Command command) {
       super("No handler available for the command: %s ".formatted(command.getClass().getSimpleName()));
     }
   }
@@ -25,8 +25,8 @@ public class ESException extends Exception {
     return new ESNoDeciderAvailable(state, command);
   }
 
-  public static ESNoAvailableHandler noHandlerAvailable(Command command) {
-    return new ESNoAvailableHandler(command);
+  public static ESNoHandlerAvailable noHandlerAvailable(Command command) {
+    return new ESNoHandlerAvailable(command);
   }
 
   private ESException(String message) {
