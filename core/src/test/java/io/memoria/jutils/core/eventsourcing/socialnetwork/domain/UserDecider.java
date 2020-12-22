@@ -1,6 +1,7 @@
 package io.memoria.jutils.core.eventsourcing.socialnetwork.domain;
 
 import io.memoria.jutils.core.eventsourcing.Decider;
+import io.memoria.jutils.core.eventsourcing.ESException;
 import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.User.Account;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.AddFriend;
@@ -15,7 +16,6 @@ import io.vavr.control.Try;
 
 import static io.memoria.jutils.core.JutilsException.AlreadyExists.ALREADY_EXISTS;
 import static io.memoria.jutils.core.JutilsException.NotFound.NOT_FOUND;
-import static io.memoria.jutils.core.eventsourcing.ESException.invalidOperation;
 
 public record UserDecider(IdGenerator idGenerator) implements Decider<User, UserCommand> {
 
@@ -27,7 +27,7 @@ public record UserDecider(IdGenerator idGenerator) implements Decider<User, User
       return apply(account, cmd);
     if (user instanceof Account account && userCommand instanceof SendMessage cmd)
       return apply(account, cmd);
-    return Try.failure(invalidOperation(user, userCommand));
+    return Try.failure(ESException.noDeciderAvailable(user, userCommand));
   }
 
   private Try<List<Event>> apply(CreateAccount cmd) {
