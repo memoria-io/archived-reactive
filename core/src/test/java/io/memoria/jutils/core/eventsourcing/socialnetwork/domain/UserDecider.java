@@ -27,7 +27,7 @@ public record UserDecider(IdGenerator idGenerator) implements Decider<User, User
       return apply(account, cmd);
     if (user instanceof Account account && userCommand instanceof SendMessage cmd)
       return apply(account, cmd);
-    return Try.failure(ESException.noDeciderAvailable(user, userCommand));
+    return Try.failure(ESException.invalidOperation(user, userCommand));
   }
 
   private Try<List<Event>> apply(CreateAccount cmd) {

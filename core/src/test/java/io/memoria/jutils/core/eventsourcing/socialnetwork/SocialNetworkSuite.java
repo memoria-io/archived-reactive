@@ -1,6 +1,6 @@
 package io.memoria.jutils.core.eventsourcing.socialnetwork;
 
-import io.memoria.jutils.core.eventsourcing.ESException.ESNoDeciderAvailable;
+import io.memoria.jutils.core.eventsourcing.ESException.InvalidOperation;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.SendMessage;
 import io.memoria.jutils.core.value.Id;
 import reactor.core.publisher.Flux;
@@ -11,7 +11,7 @@ public class SocialNetworkSuite {
     // When
     var eventFlux = testData.handler.apply(Flux.just(testData.create, testData.create));
     // Then
-    StepVerifier.create(eventFlux).expectNext(testData.accountCreated).expectError(ESNoDeciderAvailable.class).verify();
+    StepVerifier.create(eventFlux).expectNext(testData.accountCreated).expectError(InvalidOperation.class).verify();
   }
 
   public static void happyPath(SocialNetworkTestData testData) {

@@ -4,16 +4,16 @@ package io.memoria.jutils.core.eventsourcing;
  * Eventsourcing Exception
  */
 public class ESException extends Exception {
-  public static class ESNoHandlerAvailable extends ESException {
-    private ESNoHandlerAvailable(Command command) {
+  public static class UnknownCommand extends ESException {
+    private UnknownCommand(Command command) {
       super("No handler available for the command: %s ".formatted(command.getClass().getSimpleName()));
     }
   }
 
-  public static class ESNoDeciderAvailable extends ESException {
-    private ESNoDeciderAvailable(State state, Command command) {
-      super("No decider available for the command: %s and state: %s".formatted(command.getClass().getSimpleName(),
-                                                                               state.getClass().getSimpleName()));
+  public static class InvalidOperation extends ESException {
+    private InvalidOperation(State state, Command command) {
+      super("Invalid operation: %s on current state: %s".formatted(command.getClass().getSimpleName(),
+                                                                   state.getClass().getSimpleName()));
     }
   }
 
@@ -21,12 +21,12 @@ public class ESException extends Exception {
     return new ESException(message);
   }
 
-  public static ESNoDeciderAvailable noDeciderAvailable(State state, Command command) {
-    return new ESNoDeciderAvailable(state, command);
+  public static InvalidOperation invalidOperation(State state, Command command) {
+    return new InvalidOperation(state, command);
   }
 
-  public static ESNoHandlerAvailable noHandlerAvailable(Command command) {
-    return new ESNoHandlerAvailable(command);
+  public static UnknownCommand unknownCommand(Command command) {
+    return new UnknownCommand(command);
   }
 
   private ESException(String message) {
