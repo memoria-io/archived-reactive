@@ -4,16 +4,16 @@ package io.memoria.jutils.core.eventsourcing;
  * Eventsourcing Exception
  */
 public class ESException extends Exception {
-  public static class UnknownCommand extends ESException {
-    private UnknownCommand(Command command) {
-      super("No handler available for the command: %s ".formatted(command.getClass().getSimpleName()));
-    }
-  }
-
   public static class InvalidOperation extends ESException {
     private InvalidOperation(State state, Command command) {
       super("Invalid operation: %s on current state: %s".formatted(command.getClass().getSimpleName(),
                                                                    state.getClass().getSimpleName()));
+    }
+  }
+
+  public static class UnknownCommand extends ESException {
+    private UnknownCommand(Command command) {
+      super("No handler available for the command: %s ".formatted(command.getClass().getSimpleName()));
     }
   }
 
