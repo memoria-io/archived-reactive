@@ -5,7 +5,7 @@ import io.vavr.Function2;
 import io.vavr.collection.Traversable;
 
 @FunctionalInterface
-public interface Evolver<S extends State> extends Function2<S, Event, S> {
+public interface Evolver<S extends Entity<?>> extends Function2<S, Event, S> {
 
   default S apply(S s, Traversable<Event> e) {
     return e.foldLeft(s, this);

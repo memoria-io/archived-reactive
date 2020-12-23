@@ -3,9 +3,9 @@ package io.memoria.jutils.core.eventsourcing.stateless;
 import io.memoria.jutils.core.eventsourcing.Command;
 import io.memoria.jutils.core.eventsourcing.CommandHandler;
 import io.memoria.jutils.core.eventsourcing.Decider;
+import io.memoria.jutils.core.eventsourcing.Entity;
 import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.eventsourcing.Evolver;
-import io.memoria.jutils.core.eventsourcing.State;
 import io.memoria.jutils.core.transformer.StringTransformer;
 import io.vavr.collection.List;
 import reactor.core.publisher.Flux;
@@ -23,7 +23,7 @@ import static java.sql.Connection.TRANSACTION_READ_COMMITTED;
 /**
  * An SQL based commandHandler
  */
-public final class SqlCommandHandler<S extends State, C extends Command> implements CommandHandler<C> {
+public final class SqlCommandHandler< S extends Entity<?>, C extends Command> implements CommandHandler<C> {
   private static final String ID_COL = "id";
   private static final String CREATED_AT_COL = "createdAt";
   private static final String PAYLOAD_COL = "payload";
@@ -32,14 +32,14 @@ public final class SqlCommandHandler<S extends State, C extends Command> impleme
   private final StringTransformer stringTransformer;
   private final S initialState;
   private final Evolver<S> evolver;
-  private final Decider<S, C> decider;
+  private final Decider< S, C> decider;
   private final Scheduler scheduler;
 
   public SqlCommandHandler(PooledConnection pooledConnection,
                            StringTransformer stringTransformer,
                            S initialState,
-                           Evolver<S> evolver,
-                           Decider<S, C> decider,
+                           Evolver< S> evolver,
+                           Decider< S, C> decider,
                            Scheduler scheduler) {
     this.pooledConnection = pooledConnection;
     this.stringTransformer = stringTransformer;

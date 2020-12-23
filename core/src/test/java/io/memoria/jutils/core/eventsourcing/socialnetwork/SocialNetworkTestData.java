@@ -3,7 +3,6 @@ package io.memoria.jutils.core.eventsourcing.socialnetwork;
 import io.memoria.jutils.core.eventsourcing.CommandHandler;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.Message;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.User;
-import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.User.Visitor;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.AddFriend;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.CreateAccount;
@@ -14,6 +13,7 @@ import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.Accou
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.FriendAdded;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.MessageSent;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvolver;
+import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserValue.Visitor;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.transformer.SocialNetworkTransformer;
 import io.memoria.jutils.core.eventsourcing.stateful.StatefulCommandHandler;
 import io.memoria.jutils.core.eventsourcing.stateless.SqlCommandHandler;
@@ -52,7 +52,7 @@ public class SocialNetworkTestData {
     friendId = new Id("bob_" + random.nextInt(10000));
     topic = userId;
     // State
-    visitor = new Visitor(userId);
+    visitor = new User(userId, new Visitor());
     // Commands
     create = new CreateAccount(idGenerator.get(), userId, 18);
     add = new AddFriend(idGenerator.get(), userId, friendId);

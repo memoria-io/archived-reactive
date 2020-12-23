@@ -3,9 +3,9 @@ package io.memoria.jutils.core.eventsourcing.stateful;
 import io.memoria.jutils.core.eventsourcing.Command;
 import io.memoria.jutils.core.eventsourcing.CommandHandler;
 import io.memoria.jutils.core.eventsourcing.Decider;
+import io.memoria.jutils.core.eventsourcing.Entity;
 import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.eventsourcing.Evolver;
-import io.memoria.jutils.core.eventsourcing.State;
 import io.memoria.jutils.core.value.Id;
 import io.vavr.control.Option;
 import reactor.core.publisher.Flux;
@@ -16,12 +16,12 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * A State based command handler
  */
-public final class StatefulCommandHandler<S extends State, C extends Command> implements CommandHandler<C> {
+public final class StatefulCommandHandler<S extends Entity<?>, C extends Command> implements CommandHandler<C> {
   // State 
   private final transient ConcurrentMap<Id, S> db;
   private final transient S initialState;
   // Logic
-  private final Evolver<S> evolver;
+  private final Evolver< S> evolver;
   private final Decider<S, C> decider;
 
   public StatefulCommandHandler(S initialState, Evolver<S> evolver, Decider<S, C> decider) {
