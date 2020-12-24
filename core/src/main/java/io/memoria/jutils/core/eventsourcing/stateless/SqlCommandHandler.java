@@ -3,7 +3,6 @@ package io.memoria.jutils.core.eventsourcing.stateless;
 import io.memoria.jutils.core.eventsourcing.Command;
 import io.memoria.jutils.core.eventsourcing.CommandHandler;
 import io.memoria.jutils.core.eventsourcing.Decider;
-import io.memoria.jutils.core.eventsourcing.Entity;
 import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.eventsourcing.Evolver;
 import io.memoria.jutils.core.transformer.StringTransformer;
@@ -23,7 +22,7 @@ import static java.sql.Connection.TRANSACTION_READ_COMMITTED;
 /**
  * An SQL based commandHandler
  */
-public final class SqlCommandHandler< S extends Entity<?>, C extends Command> implements CommandHandler<C> {
+public final class SqlCommandHandler<S, C extends Command> implements CommandHandler<C> {
   private static final String ID_COL = "id";
   private static final String CREATED_AT_COL = "createdAt";
   private static final String PAYLOAD_COL = "payload";
@@ -32,14 +31,14 @@ public final class SqlCommandHandler< S extends Entity<?>, C extends Command> im
   private final StringTransformer stringTransformer;
   private final S initialState;
   private final Evolver<S> evolver;
-  private final Decider< S, C> decider;
+  private final Decider<S, C> decider;
   private final Scheduler scheduler;
 
   public SqlCommandHandler(PooledConnection pooledConnection,
                            StringTransformer stringTransformer,
                            S initialState,
-                           Evolver< S> evolver,
-                           Decider< S, C> decider,
+                           Evolver<S> evolver,
+                           Decider<S, C> decider,
                            Scheduler scheduler) {
     this.pooledConnection = pooledConnection;
     this.stringTransformer = stringTransformer;
@@ -60,7 +59,7 @@ public final class SqlCommandHandler< S extends Entity<?>, C extends Command> im
       var initialEvents = query(connection, tableName);
       var state = evolver.apply(initialState, initialEvents);
       var events = decider.apply(state, cmd).get();
-      if (add(connection, tableName, events) == events.length()) {
+      if (appendEvents(connection, tableName, events) == events.length()) {
         connection.commit();
         return events;
       } else {
@@ -70,7 +69,7 @@ public final class SqlCommandHandler< S extends Entity<?>, C extends Command> im
     }).flatMapMany(Flux::fromIterable).subscribeOn(scheduler);
   }
 
-  private int add(Connection connection, String tableName, List<Event> events) throws SQLException {
+  private int appendEvents(Connection connection, String tableName, List<Event> events) throws SQLException {
     var sql = "INSERT INTO %s (%s, %s, %s) ".formatted(tableName, ID_COL, CREATED_AT_COL, PAYLOAD_COL) +
               "VALUES(?, ?, ?)";
     var st = connection.prepareStatement(sql);
