@@ -4,11 +4,11 @@ import io.memoria.jutils.core.value.Id;
 
 import java.util.Objects;
 
-public abstract class Entity<T> {
+public abstract class Entity<S> {
   public final Id id;
-  public final T value;
+  public final S value;
 
-  public Entity(Id id, T value) {
+  public Entity(Id id, S value) {
     this.id = id;
     this.value = value;
   }
