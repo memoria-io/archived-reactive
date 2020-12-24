@@ -13,6 +13,7 @@ import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.Accou
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.FriendAdded;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.MessageSent;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvolver;
+import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserValue;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserValue.Visitor;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.transformer.SocialNetworkTransformer;
 import io.memoria.jutils.core.eventsourcing.stateful.StatefulCommandHandler;
@@ -65,16 +66,16 @@ public class SocialNetworkTestData {
     handler = (pooledConnection.isEmpty()) ? getStatefulHandler() : getSqlHandler(pooledConnection.get());
   }
 
-  private SqlCommandHandler<User, UserCommand> getSqlHandler(PooledConnection pooledConnection) {
+  private SqlCommandHandler<UserValue, UserCommand> getSqlHandler(PooledConnection pooledConnection) {
     return new SqlCommandHandler<>(pooledConnection,
                                    new SocialNetworkTransformer(),
-                                   visitor,
+                                   new UserValue.Visitor(),
                                    new UserEvolver(),
                                    new UserDecider(idGenerator),
                                    Schedulers.boundedElastic());
   }
 
-  private StatefulCommandHandler<User, UserCommand> getStatefulHandler() {
-    return new StatefulCommandHandler<>(visitor, new UserEvolver(), new UserDecider(idGenerator));
+  private StatefulCommandHandler<UserValue, UserCommand> getStatefulHandler() {
+    return new StatefulCommandHandler<>(new Visitor(), new UserEvolver(), new UserDecider(idGenerator));
   }
 }
