@@ -9,7 +9,6 @@ import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.Add
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.CreateAccount;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.SendMessage;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserDecider;
-import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEntity;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.AccountCreated;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.FriendAdded;
@@ -35,8 +34,6 @@ public class SocialNetworkTestData {
   public final Id userId;
   public final Id friendId;
   public final Id topic;
-  // State
-  public final UserEntity visitor;
   // Commands
   public final UserCommand create;
   public final UserCommand add;
@@ -53,7 +50,6 @@ public class SocialNetworkTestData {
     friendId = new Id("bob_" + random.nextInt(10000));
     topic = userId;
     // State
-    visitor = new UserEntity(userId, new Visitor());
     // Commands
     create = new CreateAccount(idGenerator.get(), userId, 18);
     add = new AddFriend(idGenerator.get(), userId, friendId);
