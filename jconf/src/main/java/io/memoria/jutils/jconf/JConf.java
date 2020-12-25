@@ -51,8 +51,7 @@ public class JConf {
   }
 
   public <T> Mono<T> readResource(String path, Class<T> as) {
-    var resourcePath = FileUtils.resourcePath(path).get();
-    var lines = fileUtils.readLines(resourcePath, inclusionMarker);
+    var lines = fileUtils.readResourceLines(path, inclusionMarker);
     var docMono = JConfUtils.resolveLines(lines, this.configStore);
     return docMono.flatMap(str -> toMono(transformer.deserialize(str, as)));
   }
