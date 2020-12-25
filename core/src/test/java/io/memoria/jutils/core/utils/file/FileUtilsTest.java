@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FileUtilsTest {
-  private static final FileUtils fu = new FileUtils(Schedulers.boundedElastic());
+  private static final FileUtils fu = FileUtils.build();
   private static final String expectedFile = "hello\n\nworld";
   private static final int NUM_OF_LINES = expectedFile.split(lineSeparator()).length;
 

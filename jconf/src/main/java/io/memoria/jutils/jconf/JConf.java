@@ -4,70 +4,56 @@ import io.memoria.jutils.core.transformer.StringTransformer;
 import io.memoria.jutils.core.utils.file.FileUtils;
 import io.memoria.jutils.jackson.transformer.JacksonUtils;
 import io.memoria.jutils.jackson.transformer.yaml.YamlJackson;
-import io.vavr.control.Option;
-import reactor.core.publisher.Flux;
+import io.vavr.collection.Map;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Scheduler;
 
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
 
 public class JConf {
+  public static final String DEFAULT_FILE_INCLUSION_MARKER = "include:";
+
+  private final String inclusionMarker;
   private final FileUtils fileUtils;
-  private final StringTransformer yamlReader;
+  private final StringTransformer transformer;
+  private final Map<String, String> configStore;
 
-  public static String property(String match) {
-    var exp = match.replace("${", "").replace("}", "").trim();
-    var split = exp.split(":-");
-    if (split.length == 2) {
-      return Option.of(System.getProperty(split[0]))
-                   .orElse(() -> Option.of(System.getenv(split[0])))
-                   .getOrElse(split[1]);
-    }
-    if (split.length == 1) {
-      return Option.of(System.getProperty(split[0])).orElse(() -> Option.of(System.getenv(split[0]))).getOrElse(match);
-    }
-    return match;
-  }
-
-  public static String resolve(String line) {
-    var p = Pattern.compile("\\$\\{[\\sa-zA-Z_0-9]+(:-)?[\\sa-zA-Z_0-9]+}");//NOSONAR
-    var f = p.matcher(line);
-    Map<String, String> matches = new HashMap<>();
-    while (f.find()) {
-      var match = line.substring(f.start(), f.end());
-      matches.put(match, property(match));
-    }
-    for (Entry<String, String> entry : matches.entrySet()) {
-      line = line.replace(entry.getKey(), entry.getValue());
-    }
-    return line;
-  }
-
-  public JConf(Scheduler scheduler) {
-    this.fileUtils = new FileUtils(scheduler);
+  public static JConf build(Map<String, String> values) {
+    var fileUtils = FileUtils.build();
     var yom = JacksonUtils.defaultYaml();
     JacksonUtils.mixinPropertyFormat(yom);
-    this.yamlReader = new YamlJackson(yom);
+    var transformer = new YamlJackson(yom);
+    return new JConf(DEFAULT_FILE_INCLUSION_MARKER, fileUtils, transformer, values);
+  }
+
+  public static JConf build(String inclusionMarker,
+                            FileUtils fileUtils,
+                            StringTransformer transformer,
+                            Map<String, String> values) {
+    return new JConf(inclusionMarker, fileUtils, transformer, values);
+  }
+
+  private JConf(String inclusionMarker,
+                FileUtils fileUtils,
+                StringTransformer transformer,
+                Map<String, String> configStore) {
+    this.inclusionMarker = inclusionMarker;
+    this.fileUtils = fileUtils;
+    this.transformer = transformer;
+    this.configStore = configStore;
   }
 
   public <T> Mono<T> read(Path path, Class<T> as) {
-    return resolve(fileUtils.readLines(path, "include:"), as);
+    var lines = fileUtils.readLines(path, inclusionMarker);
+    var docMono = JConfUtils.resolveLines(lines, this.configStore);
+    return docMono.flatMap(str -> toMono(transformer.deserialize(str, as)));
   }
 
   public <T> Mono<T> readResource(String path, Class<T> as) {
-    return resolve(fileUtils.readResourceLines(path, "include:"), as);
-
-  }
-
-  private <T> Mono<T> resolve(Flux<String> lines, Class<T> as) {
-    return lines.map(JConf::resolve)
-                .reduce((a, b) -> a + System.lineSeparator() + b)
-                .flatMap(s -> toMono(yamlReader.deserialize(s, as)));
+    var resourcePath = FileUtils.resourcePath(path).get();
+    var lines = fileUtils.readLines(resourcePath, inclusionMarker);
+    var docMono = JConfUtils.resolveLines(lines, this.configStore);
+    return docMono.flatMap(str -> toMono(transformer.deserialize(str, as)));
   }
 }
