@@ -70,21 +70,20 @@ public final class SqlCommandHandler<S, C extends Command> implements CommandHan
   }
 
   private int appendEvents(Connection connection, String tableName, List<Event> events) throws SQLException {
-    var sql = "INSERT INTO %s (%s, %s, %s) ".formatted(tableName, ID_COL, CREATED_AT_COL, PAYLOAD_COL) +
-              "VALUES(?, ?, ?)";
+    var sql = "INSERT INTO %s (%s, %s) ".formatted(tableName, CREATED_AT_COL, PAYLOAD_COL) +
+              "VALUES(?, ?)";
     var st = connection.prepareStatement(sql);
     for (Event e : events) {
       var eventPayload = this.stringTransformer.serialize(e).get();
-      st.setString(1, e.eventId().value());
-      st.setTimestamp(2, Timestamp.valueOf(e.createdAt()));
-      st.setString(3, eventPayload);
+      st.setTimestamp(1, Timestamp.valueOf(e.createdAt()));
+      st.setString(2, eventPayload);
       st.addBatch();
     }
     return st.executeBatch().length;
   }
 
   private List<Event> query(Connection connection, String tableName) throws SQLException {
-    var sql = "Select %s from %s".formatted(PAYLOAD_COL, tableName);
+    var sql = "SELECT %s FROM %s ORDER BY id".formatted(PAYLOAD_COL, tableName);
     var resultSet = connection.prepareStatement(sql).executeQuery();
     var list = new ArrayList<Event>();
     while (resultSet.next()) {
@@ -98,7 +97,7 @@ public final class SqlCommandHandler<S, C extends Command> implements CommandHan
   private static boolean createTableIfNotExists(Connection connection, String tableName) throws SQLException {
     var sql = """
               CREATE TABLE IF NOT EXISTS %s (
-              id VARCHAR(36) NOT NULL,
+              id int NOT NULL AUTO_INCREMENT,
               createdAt TIMESTAMP NOT NULL,
               payload TEXT NOT NULL,
               PRIMARY KEY (id)
