@@ -97,7 +97,7 @@ public final class SqlCommandHandler<S, C extends Command> implements CommandHan
   private static boolean createTableIfNotExists(Connection connection, String tableName) throws SQLException {
     var sql = """
               CREATE TABLE IF NOT EXISTS %s (
-              id int NOT NULL AUTO_INCREMENT,
+              id INT GENERATED ALWAYS AS IDENTITY,
               createdAt TIMESTAMP NOT NULL,
               payload TEXT NOT NULL,
               PRIMARY KEY (id)

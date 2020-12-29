@@ -7,5 +7,5 @@ services:
   messagebus:
     image: apachepulsar/pulsar-standalone:2.4.2
     ports:
-      - 6650:6650
-      - 8080:8080
+      - 9001:6650
+      - 9002:8080

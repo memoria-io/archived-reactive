@@ -35,7 +35,7 @@ class PulsarEventStreamIT {
   PulsarEventStreamIT() throws PulsarClientException {
     this.json = new JsonJackson(JacksonUtils.defaultJson());
     this.topic = "user" + new Random().nextInt(1000);
-    this.eventStream = new PulsarEventStream("pulsar://localhost:6650", "http://localhost:8080", json);
+    this.eventStream = new PulsarEventStream("pulsar://localhost:9001", "http://localhost:9002", json);
   }
 
   @Test
