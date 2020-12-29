@@ -5,16 +5,14 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jutils</artifactId>
-        <version>0.221.0</version>
+        <version>0.222.0</version>
     </parent>
-
     <groupId>io.memoria.jutils</groupId>
-    <artifactId>etcd</artifactId>
-    <version>0.221.0</version>
+    <artifactId>pulsar</artifactId>
+    <version>0.222.0</version>
     <packaging>jar</packaging>
-
     <name>${project.artifactId}</name>
-    <description>Etcd Module</description>
+    <description>Pulsar Module</description>
     <dependencies>
         <!--======================================================================================== -->
         <!-- Modules Dependencies -->
@@ -39,9 +37,12 @@
         <!-- Messaging Dependencies -->
         <!--======================================================================================== -->
         <dependency>
-            <groupId>io.etcd</groupId>
-            <artifactId>jetcd-core</artifactId>
-            <version>0.5.4</version>
+            <groupId>org.apache.pulsar</groupId>
+            <artifactId>pulsar-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pulsar</groupId>
+            <artifactId>pulsar-client-admin</artifactId>
         </dependency>
     </dependencies>
 </project>
