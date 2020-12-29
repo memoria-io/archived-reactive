@@ -18,7 +18,6 @@ from [Vavr](https://www.vavr.io/),
 
 * Vavr + Reactor Functional utilities
 * Reactor Netty utility functions
-* Reactive wrapper for etcd
 * Reactive CQRS and Eventsourcing utilities (alpha stage)
 * Reactive functional in-memory generic cruds (for tests, not for production)
 * Jackson Adapter (Json & Yaml) utilities

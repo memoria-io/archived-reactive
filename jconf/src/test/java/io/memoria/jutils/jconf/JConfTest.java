@@ -5,6 +5,7 @@ import io.vavr.collection.HashMap;
 import io.vavr.control.Option;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import reactor.core.scheduler.Schedulers;
 
 class JConfTest {
   private static record Config(String first, String second, int third, String invalid) {}
@@ -20,7 +21,7 @@ class JConfTest {
   @Test
   void readFromFile() {
     // Given
-    var jconf = JConf.build(HashMap.empty());
+    var jconf = JConf.build(HashMap.empty(), Schedulers.boundedElastic());
     // When
     var configs = jconf.read(FileUtils.resourcePath(CONFIG_YAML).get(), Config.class).block();
     // Then
@@ -34,7 +35,7 @@ class JConfTest {
   @Test
   void readFromResource() {
     // Given
-    var jconf = JConf.build(HashMap.empty());
+    var jconf = JConf.build(HashMap.empty(),Schedulers.boundedElastic());
     // When
     var configs = jconf.readResource(CONFIG_YAML, Config.class).block();
     // Then
@@ -49,7 +50,7 @@ class JConfTest {
   void readProperty() {
     // Given
     var map = HashMap.of("FIRST_VAR", "some value");
-    var jconf = JConf.build(map);
+    var jconf = JConf.build(map,Schedulers.boundedElastic());
     // When
     var configs = jconf.readResource(CONFIG_YAML, Config.class).block();
     // Then

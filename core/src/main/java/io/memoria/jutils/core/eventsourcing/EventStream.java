@@ -1,12 +1,12 @@
 package io.memoria.jutils.core.eventsourcing;
 
-import io.memoria.jutils.core.value.Id;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface EventStream {
-  Flux<Event> publish(String topic, Flux<Event> events);
+  <E extends Event> Flux<E> add(String topic, Flux<E> Messages);
 
-  Flux<Event> stream(String topic, Id id);
+  Mono<Boolean> exists(String topic);
 
-  Flux<Event> stream(String topic);
+  <E extends Event> Flux<E> stream(String topic, Class<E> as);
 }

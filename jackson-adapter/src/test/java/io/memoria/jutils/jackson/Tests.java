@@ -42,7 +42,7 @@ public class Tests {
 
   static {
     // File utils
-    files = FileUtils.build();
+    files = FileUtils.build(Schedulers.boundedElastic());
     // Json
     var jsonMapper = JacksonUtils.mixinPropertyFormat(JacksonUtils.defaultJson(), Employee.class);
     jsonMapper.registerSubtypes(Manager.class, Engineer.class);

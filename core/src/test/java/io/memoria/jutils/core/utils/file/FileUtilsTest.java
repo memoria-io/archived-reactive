@@ -2,6 +2,7 @@ package io.memoria.jutils.core.utils.file;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FileUtilsTest {
-  private static final FileUtils fu = FileUtils.build();
+  private static final FileUtils fu = FileUtils.build(Schedulers.boundedElastic());
   private static final String expectedFile = "hello\n\nworld";
   private static final int NUM_OF_LINES = expectedFile.split(lineSeparator()).length;
 

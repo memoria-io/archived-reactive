@@ -6,6 +6,8 @@ import io.memoria.jutils.jackson.transformer.JacksonUtils;
 import io.memoria.jutils.jackson.transformer.yaml.YamlJackson;
 import io.vavr.collection.Map;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 import java.nio.file.Path;
 
@@ -19,8 +21,8 @@ public class JConf {
   private final StringTransformer transformer;
   private final Map<String, String> configStore;
 
-  public static JConf build(Map<String, String> values) {
-    var fileUtils = FileUtils.build();
+  public static JConf build(Map<String, String> values, Scheduler scheduler) {
+    var fileUtils = FileUtils.build(scheduler);
     var yom = JacksonUtils.defaultYaml();
     JacksonUtils.mixinPropertyFormat(yom);
     var transformer = new YamlJackson(yom);

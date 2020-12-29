@@ -24,10 +24,6 @@ public class FileUtils {
     this.scheduler = scheduler;
   }
 
-  public static FileUtils build() {
-    return new FileUtils(Schedulers.boundedElastic());
-  }
-
   public static FileUtils build(Scheduler scheduler) {
     return new FileUtils(scheduler);
   }
