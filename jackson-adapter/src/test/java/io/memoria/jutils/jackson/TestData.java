@@ -18,7 +18,7 @@ import reactor.core.scheduler.Schedulers;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class Tests {
+public class TestData {
   public static final FileUtils files;
   public static final Json json;
   public static final Yaml yaml;
@@ -68,5 +68,5 @@ public class Tests {
     NAME_CREATED = new NameCreated(new Id("1"), new Id("2"), "bob", LocalDateTime.of(2020, 12, 1, 11, 0));
   }
 
-  private Tests() {}
+  private TestData() {}
 }

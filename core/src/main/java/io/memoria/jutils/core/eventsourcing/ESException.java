@@ -20,7 +20,7 @@ public class ESException extends Exception {
     return new ESException(message);
   }
 
-  public static <S, C extends Command> InvalidOperation invalidOperation(String state, String command) {
+  public static InvalidOperation invalidOperation(String state, String command) {
     return new InvalidOperation(state, command);
   }
 

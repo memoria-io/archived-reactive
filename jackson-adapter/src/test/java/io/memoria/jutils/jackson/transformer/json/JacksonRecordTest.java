@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import io.memoria.jutils.jackson.Tests;
+import io.memoria.jutils.jackson.TestData;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -95,7 +95,7 @@ class JacksonRecordTest {
   @Test
   void toList() {
     // When
-    var list = Tests.json.deserialize(Tests.JSON_LIST, String[].class).get();
+    var list = TestData.json.deserialize(TestData.JSON_LIST, String[].class).get();
     // Then
     assertEquals(List.of("mercedes", "chevy", "porsche"), List.of(list));
   }

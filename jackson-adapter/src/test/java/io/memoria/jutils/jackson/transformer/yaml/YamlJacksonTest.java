@@ -1,6 +1,6 @@
 package io.memoria.jutils.jackson.transformer.yaml;
 
-import io.memoria.jutils.jackson.Tests;
+import io.memoria.jutils.jackson.TestData;
 import io.memoria.jutils.jackson.transformer.Engineer;
 import io.memoria.jutils.jackson.transformer.Manager;
 import org.junit.jupiter.api.Assertions;
@@ -10,25 +10,25 @@ class YamlJacksonTest {
 
   @Test
   void serializeEngineer() {
-    var yamlEngineer = Tests.yaml.serialize(Tests.BOB_ENGINEER).get();
-    Assertions.assertEquals(Tests.BOB_ENGINEER_YAML, yamlEngineer);
+    var yamlEngineer = TestData.yaml.serialize(TestData.BOB_ENGINEER).get();
+    Assertions.assertEquals(TestData.BOB_ENGINEER_YAML, yamlEngineer);
   }
 
   @Test
   void toEngineer() {
     // When
-    var engineer = Tests.yaml.deserialize(Tests.BOB_ENGINEER_YAML, Engineer.class).get();
+    var engineer = TestData.yaml.deserialize(TestData.BOB_ENGINEER_YAML, Engineer.class).get();
     // Then
-    Assertions.assertEquals(Tests.BOB_ENGINEER.name(), engineer.name());
-    Assertions.assertEquals(Tests.BOB_ENGINEER.tasks(), engineer.tasks());
+    Assertions.assertEquals(TestData.BOB_ENGINEER.name(), engineer.name());
+    Assertions.assertEquals(TestData.BOB_ENGINEER.tasks(), engineer.tasks());
   }
 
   @Test
   void toManager() {
     // When
-    var manager = Tests.yaml.deserialize(Tests.ANNIKA_MANAGER_YAML, Manager.class).get();
+    var manager = TestData.yaml.deserialize(TestData.ANNIKA_MANAGER_YAML, Manager.class).get();
     // Then
-    Assertions.assertEquals(Tests.ANNIKA_MANAGER.name(), manager.name());
-    Assertions.assertEquals(Tests.BOB_ENGINEER, manager.team().get(0));
+    Assertions.assertEquals(TestData.ANNIKA_MANAGER.name(), manager.name());
+    Assertions.assertEquals(TestData.BOB_ENGINEER, manager.team().get(0));
   }
 }

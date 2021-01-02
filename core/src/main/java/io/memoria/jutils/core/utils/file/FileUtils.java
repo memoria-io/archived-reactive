@@ -4,7 +4,6 @@ import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -20,16 +19,16 @@ public class FileUtils {
   private static final BiFunction<String, String, String> joinLines = (a, b) -> a + System.lineSeparator() + b;
   private final Scheduler scheduler;
 
-  private FileUtils(Scheduler scheduler) {
-    this.scheduler = scheduler;
-  }
-
   public static FileUtils build(Scheduler scheduler) {
     return new FileUtils(scheduler);
   }
 
   public static Try<Path> resourcePath(String path) {
     return Try.of(() -> Paths.get(ClassLoader.getSystemResource(path).toURI()));
+  }
+
+  private FileUtils(Scheduler scheduler) {
+    this.scheduler = scheduler;
   }
 
   public Mono<String> read(Path filePath) {

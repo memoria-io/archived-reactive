@@ -54,7 +54,7 @@ public class PulsarEventStream implements EventStream {
     return client.newProducer(Schema.STRING).topic(topic).create();
   }
 
-  private <E extends Event> Flux<E> receive(Consumer<String> consumer, Class<E> as) { 
+  private <E extends Event> Flux<E> receive(Consumer<String> consumer, Class<E> as) {
     return Mono.fromFuture(consumer::receiveAsync)
                .map(Message::getValue)
                .map(value -> transformer.deserialize(value, as).get())

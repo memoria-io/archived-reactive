@@ -35,7 +35,7 @@ class JConfTest {
   @Test
   void readFromResource() {
     // Given
-    var jconf = JConf.build(HashMap.empty(),Schedulers.boundedElastic());
+    var jconf = JConf.build(HashMap.empty(), Schedulers.boundedElastic());
     // When
     var configs = jconf.readResource(CONFIG_YAML, Config.class).block();
     // Then
@@ -50,7 +50,7 @@ class JConfTest {
   void readProperty() {
     // Given
     var map = HashMap.of("FIRST_VAR", "some value");
-    var jconf = JConf.build(map,Schedulers.boundedElastic());
+    var jconf = JConf.build(map, Schedulers.boundedElastic());
     // When
     var configs = jconf.readResource(CONFIG_YAML, Config.class).block();
     // Then

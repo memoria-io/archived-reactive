@@ -20,7 +20,7 @@ public final class StatefulCommandHandler<S, C extends Command> implements Comma
   // State 
   private final transient ConcurrentMap<Id, S> db;
   // Logic
-  private final S initialState;
+  private final transient S initialState;
   private final Evolver<S> evolver;
   private final Decider<S, C> decider;
 

@@ -57,4 +57,6 @@ public class JConfUtils {
   public static Mono<String> resolveLines(Flux<String> lines, Map<String, String> properties) {
     return lines.map(l -> resolveLine(l, properties)).reduce((a, b) -> a + System.lineSeparator() + b);
   }
+
+  private JConfUtils() {}
 }

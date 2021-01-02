@@ -70,8 +70,7 @@ public final class SqlCommandHandler<S, C extends Command> implements CommandHan
   }
 
   private int appendEvents(Connection connection, String tableName, List<Event> events) throws SQLException {
-    var sql = "INSERT INTO %s (%s, %s) ".formatted(tableName, CREATED_AT_COL, PAYLOAD_COL) +
-              "VALUES(?, ?)";
+    var sql = "INSERT INTO %s (%s, %s) ".formatted(tableName, CREATED_AT_COL, PAYLOAD_COL) + "VALUES(?, ?)";
     var st = connection.prepareStatement(sql);
     for (Event e : events) {
       var eventPayload = this.stringTransformer.serialize(e).get();

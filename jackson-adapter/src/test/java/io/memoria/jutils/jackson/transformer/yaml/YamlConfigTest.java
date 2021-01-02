@@ -1,6 +1,6 @@
 package io.memoria.jutils.jackson.transformer.yaml;
 
-import io.memoria.jutils.jackson.Tests;
+import io.memoria.jutils.jackson.TestData;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +12,7 @@ class YamlConfigTest {
   @Test
   @DisplayName("App config nested values should be deserialized correctly")
   void appConfig() {
-    var appConfig = Tests.yaml.deserialize(Tests.APP_CONFIG_YAML, AppConfig.class).get();
+    var appConfig = TestData.yaml.deserialize(TestData.APP_CONFIG_YAML, AppConfig.class).get();
     assertEquals("hello world", appConfig.subName());
     assertEquals(List.of("hi", "hello", "bye"), appConfig.subList());
   }
