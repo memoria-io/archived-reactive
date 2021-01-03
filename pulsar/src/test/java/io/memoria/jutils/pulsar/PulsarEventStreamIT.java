@@ -29,12 +29,12 @@ class PulsarEventStreamIT {
   }
 
   private final StringTransformer json;
-  private final String topic;
+  private final Id aggId;
   private final EventStream eventStream;
 
   PulsarEventStreamIT() throws PulsarClientException {
     this.json = new JsonJackson(JacksonUtils.defaultJson());
-    this.topic = "user" + new Random().nextInt(1000);
+    this.aggId = new Id("user" + new Random().nextInt(1000));
     this.eventStream = new PulsarEventStream("pulsar://localhost:9001", "http://localhost:9002", json);
   }
 
@@ -47,11 +47,11 @@ class PulsarEventStreamIT {
     var msgCount = 1000;
     var events = Flux.range(0, msgCount).map(i -> (Event) new UserCreated(Id.of(i), userName, userAge));
     // When
-    var addUsers = eventStream.add(topic, events);
-    var readAddedUsers = eventStream.stream(topic, UserCreated.class).take(msgCount);
+    var addUsers = eventStream.add(aggId, events);
+    var readAddedUsers = eventStream.stream(aggId, UserCreated.class).take(msgCount);
     // Then
     StepVerifier.create(addUsers).expectNextCount(msgCount).expectComplete().verify();
-    StepVerifier.create(eventStream.exists(topic)).expectNext(true).expectComplete().verify();
+    StepVerifier.create(eventStream.exists(aggId)).expectNext(true).expectComplete().verify();
     StepVerifier.create(readAddedUsers)
                 .expectNext(new UserCreated(Id.of(0), userName, userAge))
                 .expectNext(new UserCreated(Id.of(1), userName, userAge))

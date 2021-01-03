@@ -3,6 +3,7 @@ package io.memoria.jutils.pulsar;
 import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.eventsourcing.EventStream;
 import io.memoria.jutils.core.transformer.StringTransformer;
+import io.memoria.jutils.core.value.Id;
 import org.apache.pulsar.client.admin.PulsarAdmin;
 import org.apache.pulsar.client.admin.PulsarAdminException.NotFoundException;
 import org.apache.pulsar.client.api.Consumer;
@@ -27,21 +28,21 @@ public class PulsarEventStream implements EventStream {
   }
 
   @Override
-  public <E extends Event> Flux<E> add(String topic, Flux<E> events) {
-    return Mono.fromCallable(() -> createProducer(topic))
+  public <E extends Event> Flux<E> add(Id aggId, Flux<E> events) {
+    return Mono.fromCallable(() -> createProducer(aggId.value()))
                .flatMapMany(producer -> events.concatMap(e -> send(producer, e)));
   }
 
   @Override
-  public Mono<Boolean> exists(String topic) {
-    return Mono.fromFuture(admin.topics().getStatsAsync(topic))
+  public Mono<Boolean> exists(Id aggId) {
+    return Mono.fromFuture(admin.topics().getStatsAsync(aggId.value()))
                .map(stats -> true)
                .onErrorReturn(NotFoundException.class, false);
   }
 
   @Override
-  public <E extends Event> Flux<E> stream(String topic, Class<E> as) {
-    return Mono.fromCallable(() -> createConsumer(topic)).flatMapMany(i -> this.receive(i, as));
+  public <E extends Event> Flux<E> stream(Id aggId, Class<E> as) {
+    return Mono.fromCallable(() -> createConsumer(aggId.value())).flatMapMany(i -> this.receive(i, as));
   }
 
   private Consumer<String> createConsumer(String topic) throws PulsarClientException {
