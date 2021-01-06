@@ -15,7 +15,7 @@ public final class IdTransformer {
   public static class IdDeserializer extends JsonDeserializer<Id> {
     @Override
     public Id deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-      return new Id(p.readValueAs(String.class));
+      return Id.of(p.readValueAs(String.class));
     }
   }
 

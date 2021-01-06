@@ -15,15 +15,15 @@ public class SocialNetworkTransformer implements StringTransformer {
     var st = str.split(":");
     var type = st[0];
     return switch (type) {
-      case "AccountCreated" -> Try.success((T) new AccountCreated(new Id(st[1]),
-                                                                  new Id(st[2]),
+      case "AccountCreated" -> Try.success((T) new AccountCreated(Id.of(st[1]),
+                                                                  Id.of(st[2]),
                                                                   Integer.parseInt(st[3])));
-      case "FriendAdded" -> Try.success((T) new FriendAdded(new Id(st[1]), new Id(st[2]), new Id(st[3])));
-      case "MessageSent" -> Try.success((T) new MessageSent(new Id(st[1]),
-                                                            new Id(st[2]),
-                                                            new Message(new Id(st[3]),
-                                                                        new Id(st[4]),
-                                                                        new Id(st[5]),
+      case "FriendAdded" -> Try.success((T) new FriendAdded(Id.of(st[1]), Id.of(st[2]), Id.of(st[3])));
+      case "MessageSent" -> Try.success((T) new MessageSent(Id.of(st[1]),
+                                                            Id.of(st[2]),
+                                                            new Message(Id.of(st[3]),
+                                                                        Id.of(st[4]),
+                                                                        Id.of(st[5]),
                                                                         st[5])));
       default -> Try.failure(new Exception("Unknown type to be deserialized"));
     };

@@ -19,7 +19,7 @@ class PulsarEventStreamIT {
   private static record UserCreated(Id eventId, String name, int age) implements Event {
     @Override
     public Id aggId() {
-      return new Id(name);
+      return Id.of(name);
     }
 
     @Override
@@ -34,7 +34,7 @@ class PulsarEventStreamIT {
 
   PulsarEventStreamIT() throws PulsarClientException {
     this.json = new JsonJackson(JacksonUtils.defaultJson());
-    this.aggId = new Id("user" + new Random().nextInt(1000));
+    this.aggId = Id.of("user" + new Random().nextInt(1000));
     this.eventStream = new PulsarEventStream("pulsar://localhost:9001", "http://localhost:9002", json);
   }
 

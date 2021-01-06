@@ -28,7 +28,7 @@ public class SocialNetworkSuite {
     // Given
     var createAddSend = Flux.just(testData.create, testData.add, testData.send);
     var sendFlux = Flux.range(0, 100)
-                       .map(i -> new SendMessage(new Id("cmd_" + i), testData.userId, testData.friendId, "hello_" + i));
+                       .map(i -> new SendMessage(Id.of("cmd_" + i), testData.userId, testData.friendId, "hello_" + i));
     // When
     var eventFlux = testData.handler.apply(createAddSend.concatWith(sendFlux));
     // Then

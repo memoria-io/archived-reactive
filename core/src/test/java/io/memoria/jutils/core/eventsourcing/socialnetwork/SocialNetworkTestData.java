@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SocialNetworkTestData {
   private static final Random random = new Random();
   private final AtomicInteger atomic = new AtomicInteger();
-  public final IdGenerator idGenerator = () -> new Id(atomic.getAndIncrement() + "");
+  public final IdGenerator idGenerator = () -> Id.of(atomic.getAndIncrement() + "");
   public final Id userId;
   public final Id friendId;
   public final Id topic;
@@ -45,9 +45,9 @@ public class SocialNetworkTestData {
   // Command Handler 
   public final CommandHandler<UserCommand> handler;
 
-  public SocialNetworkTestData(Option<PooledConnection> pooledConnection) throws SQLException {
-    userId = new Id("alex_" + random.nextInt(10000));
-    friendId = new Id("bob_" + random.nextInt(10000));
+  public SocialNetworkTestData(Option<PooledConnection> pooledConnection) {
+    userId = Id.of("alex_" + random.nextInt(10000));
+    friendId = Id.of("bob_" + random.nextInt(10000));
     topic = userId;
     // State
     // Commands
@@ -55,9 +55,9 @@ public class SocialNetworkTestData {
     add = new AddFriend(idGenerator.get(), userId, friendId);
     send = new SendMessage(idGenerator.get(), userId, friendId, "hello");
     // Events
-    accountCreated = new AccountCreated(new Id("3"), userId, 18);
-    friendAdded = new FriendAdded(new Id("4"), userId, friendId);
-    messageSent = new MessageSent(new Id("6"), userId, new Message(new Id("5"), userId, friendId, "hello"));
+    accountCreated = new AccountCreated(Id.of(3), userId, 18);
+    friendAdded = new FriendAdded(Id.of(4), userId, friendId);
+    messageSent = new MessageSent(Id.of(6), userId, new Message(Id.of(5), userId, friendId, "hello"));
     // Command handlers
     handler = (pooledConnection.isEmpty()) ? getStatefulHandler() : getSqlHandler(pooledConnection.get());
   }

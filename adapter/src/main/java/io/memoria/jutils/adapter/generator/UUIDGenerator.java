@@ -8,6 +8,6 @@ import java.util.UUID;
 public record UUIDGenerator() implements IdGenerator {
   @Override
   public Id get() {
-    return new Id(UUID.randomUUID().toString());
+    return Id.of(UUID.randomUUID().toString());
   }
 }
