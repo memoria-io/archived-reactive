@@ -13,7 +13,7 @@ class SocialNetworkTest {
   private final SocialNetworkTestData testData;
 
   SocialNetworkTest() throws SQLException {
-    this.testData = new SocialNetworkTestData(true);
+    this.testData = new SocialNetworkTestData(false);
   }
 
   @Test

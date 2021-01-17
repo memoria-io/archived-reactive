@@ -62,7 +62,7 @@ public class SocialNetworkTestData {
     // Command handlers
     var transformer = new SocialNetworkTransformer();
     if (isR2) {
-      var connectionFactory = ConnectionFactories.get("r2dbc:h2:mem:///testdb");
+      var connectionFactory = ConnectionFactories.get("r2dbc:h2:mem:///testR2");
       handler = new R2CommandHandler<>(connectionFactory,
                                        transformer,
                                        new Visitor(),
@@ -70,7 +70,7 @@ public class SocialNetworkTestData {
                                        new UserDecider(idGenerator));
     } else {
       JdbcDataSource ds = new JdbcDataSource();
-      ds.setURL("jdbc:h2:~/test");
+      ds.setURL("jdbc:h2:mem:///testJDBC");
       ds.setUser("sa");
       ds.setPassword("sa");
       var pc = ds.getPooledConnection();
