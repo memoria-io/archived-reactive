@@ -24,22 +24,21 @@ public final class StatefulCommandHandler<S, C extends Command> implements Comma
   private final Evolver<S> evolver;
   private final Decider<S, C> decider;
 
-  public StatefulCommandHandler(S initialState, Evolver<S> evolver, Decider<S, C> decider) {
-    this.db = new ConcurrentHashMap<>();
+  public StatefulCommandHandler(ConcurrentMap<Id, S> db, S initialState, Evolver<S> evolver, Decider<S, C> decider) {
+    this.db = db;
     this.initialState = initialState;
     this.evolver = evolver;
     this.decider = decider;
   }
 
   @Override
-  public Flux<Event> apply(C cmd) {
-    return Mono.fromCallable(() -> {
+  public Mono<Void> apply(C cmd) {
+    return Mono.fromRunnable(() -> {
       var state = Option.of(db.get(cmd.aggId())).getOrElse(initialState);
       db.putIfAbsent(cmd.aggId(), state);
       var events = decider.apply(state, cmd).get();
       var newState = evolver.apply(state, events);
       db.put(cmd.aggId(), newState);
-      return events;
-    }).flatMapMany(Flux::fromIterable);
+    });
   }
 }

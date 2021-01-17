@@ -6,8 +6,6 @@ import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.Result;
 import io.r2dbc.spi.Row;
 import io.vavr.collection.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -15,8 +13,7 @@ import java.sql.Timestamp;
 
 import static io.memoria.jutils.r2es.R2Utils.executeUpdate;
 
-public class R2Transaction {
-  private static final Logger log = LoggerFactory.getLogger(R2Transaction.class.getName());
+public final class R2Transaction {
   private static final String CREATED_AT_COL = "createdAt";
   private static final String PAYLOAD_COL = "payload";
 
@@ -26,20 +23,21 @@ public class R2Transaction {
 
   public R2Transaction(Connection connection, String tableName, StringTransformer stringTransformer) {
     this.connection = connection;
-    R2Utils.setTransactionConfigs(connection);
     this.tableName = tableName;
     this.stringTransformer = stringTransformer;
   }
 
   public Mono<Integer> appendEvents(List<Event> events) {
-    var sql = "INSERT INTO %s (%s, %s) ".formatted(this.tableName, CREATED_AT_COL, PAYLOAD_COL) + "VALUES($1, $2)";
-    var st = this.connection.createStatement(sql);
+    var sql = "INSERT INTO %s (%s, %s) ".formatted(tableName, CREATED_AT_COL, PAYLOAD_COL) + "VALUES($1, $2)";
+    var st = connection.createStatement(sql);
     for (Event e : events) {
       var eventPayload = this.stringTransformer.serialize(e).get();
       st.bind("$1", Timestamp.valueOf(e.createdAt()).toString()).bind("$2", eventPayload);
       st.add();
     }
-    return executeUpdate(st);
+    return Mono.<Result>from(st.execute()).flatMap(r -> Mono.from(r.getRowsUpdated()))
+                                          .doOnSuccess(s -> connection.commitTransaction())
+                                          .doOnError(s -> connection.rollbackTransaction());
   }
 
   public Mono<Integer> createTableIfNotExists() {
@@ -51,7 +49,7 @@ public class R2Transaction {
               PRIMARY KEY (id)
             )
             """.formatted(tableName);
-    return executeUpdate(this.connection.createStatement(sql));
+    return executeUpdate(connection.createStatement(sql));
   }
 
   public Flux<Event> query() {
@@ -60,16 +58,9 @@ public class R2Transaction {
     return Flux.<Result>from(execute).flatMap(r -> r.map((row, rowMetadata) -> row)).map(this::rowToEvent);
   }
 
-  public Mono<Void> rollback() {
-    return Mono.from(this.connection.rollbackTransaction()).doOnSuccess(v -> log.info("Rolling back updates"));
-  }
-
-  private Event rowToEvent(Row row) {
+  public Event rowToEvent(Row row) {
     var eventString = row.get(PAYLOAD_COL, String.class);
     return this.stringTransformer.deserialize(eventString, Event.class).get();
   }
+  
 }
-
-  
-
-  

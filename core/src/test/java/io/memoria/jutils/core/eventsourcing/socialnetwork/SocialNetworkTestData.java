@@ -52,6 +52,7 @@ public class SocialNetworkTestData {
     friendAdded = new FriendAdded(Id.of(4), userId, friendId);
     messageSent = new MessageSent(Id.of(6), userId, new Message(Id.of(5), userId, friendId, "hello"));
     // Command handlers
-    handler = new StatefulCommandHandler<>(new Visitor(), new UserEvolver(), new UserDecider(idGenerator));
+    //    handler = new StatefulCommandHandler<>(db, new Visitor(), new UserEvolver(), new UserDecider(idGenerator));
+    handler = null;
   }
 }

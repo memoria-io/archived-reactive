@@ -48,7 +48,7 @@ public final class SqlCommandHandler<S, C extends Command> implements CommandHan
   }
 
   @Override
-  public Flux<Event> apply(C cmd) {
+  public Mono<Void> apply(C cmd) {
     return Mono.fromCallable(() -> {
       var connection = this.pooledConnection.getConnection();
       connection.setAutoCommit(false);
@@ -65,7 +65,7 @@ public final class SqlCommandHandler<S, C extends Command> implements CommandHan
         connection.rollback();
         throw new SQLException("Couldn't commit events, rolling back");
       }
-    }).flatMapMany(Flux::fromIterable).subscribeOn(scheduler);
+    }).subscribeOn(scheduler).then();
   }
 
   private int appendEvents(Connection connection, String tableName, List<Event> events) throws SQLException {

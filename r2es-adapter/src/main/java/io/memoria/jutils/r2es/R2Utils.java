@@ -39,11 +39,11 @@ public class R2Utils {
     return Mono.from(st.execute()).flatMap(s -> Mono.from(s.getRowsUpdated()));
   }
 
-  public static void setTransactionConfigs(Connection connection) {
-    connection.setAutoCommit(false);
-    connection.beginTransaction();
-    connection.setTransactionIsolationLevel(IsolationLevel.READ_COMMITTED);
-  }
 
   private R2Utils() {}
+
+  // TODO tableName SQL Injection validation
+  static String toTableName(String value) {
+    return value.replace(" ", "").replaceAll("[^A-Za-z0-9]", "");
+  }
 }
