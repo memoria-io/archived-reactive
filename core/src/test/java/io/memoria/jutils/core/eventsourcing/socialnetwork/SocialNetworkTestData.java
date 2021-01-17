@@ -2,7 +2,6 @@ package io.memoria.jutils.core.eventsourcing.socialnetwork;
 
 import io.memoria.jutils.core.eventsourcing.CommandHandler;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.Message;
-import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.User;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.User.Visitor;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.AddFriend;
@@ -14,16 +13,10 @@ import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.Accou
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.FriendAdded;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.MessageSent;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvolver;
-import io.memoria.jutils.core.eventsourcing.socialnetwork.transformer.SocialNetworkTransformer;
 import io.memoria.jutils.core.eventsourcing.stateful.StatefulCommandHandler;
-import io.memoria.jutils.core.eventsourcing.stateless.SqlCommandHandler;
 import io.memoria.jutils.core.generator.IdGenerator;
 import io.memoria.jutils.core.value.Id;
-import io.vavr.control.Option;
-import reactor.core.scheduler.Schedulers;
 
-import javax.sql.PooledConnection;
-import java.sql.SQLException;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,7 +38,7 @@ public class SocialNetworkTestData {
   // Command Handler 
   public final CommandHandler<UserCommand> handler;
 
-  public SocialNetworkTestData(Option<PooledConnection> pooledConnection) {
+  public SocialNetworkTestData() {
     userId = Id.of("alex_" + random.nextInt(10000));
     friendId = Id.of("bob_" + random.nextInt(10000));
     topic = userId;
@@ -59,19 +52,6 @@ public class SocialNetworkTestData {
     friendAdded = new FriendAdded(Id.of(4), userId, friendId);
     messageSent = new MessageSent(Id.of(6), userId, new Message(Id.of(5), userId, friendId, "hello"));
     // Command handlers
-    handler = (pooledConnection.isEmpty()) ? getStatefulHandler() : getSqlHandler(pooledConnection.get());
-  }
-
-  private SqlCommandHandler<User, UserCommand> getSqlHandler(PooledConnection pooledConnection) {
-    return new SqlCommandHandler<>(pooledConnection,
-                                   new SocialNetworkTransformer(),
-                                   new User.Visitor(),
-                                   new UserEvolver(),
-                                   new UserDecider(idGenerator),
-                                   Schedulers.boundedElastic());
-  }
-
-  private StatefulCommandHandler<User, UserCommand> getStatefulHandler() {
-    return new StatefulCommandHandler<>(new Visitor(), new UserEvolver(), new UserDecider(idGenerator));
+    handler = new StatefulCommandHandler<>(new Visitor(), new UserEvolver(), new UserDecider(idGenerator));
   }
 }

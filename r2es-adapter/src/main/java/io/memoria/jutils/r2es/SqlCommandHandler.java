@@ -1,4 +1,4 @@
-package io.memoria.jutils.core.eventsourcing.stateless;
+package io.memoria.jutils.r2es;
 
 import io.memoria.jutils.core.eventsourcing.Command;
 import io.memoria.jutils.core.eventsourcing.CommandHandler;

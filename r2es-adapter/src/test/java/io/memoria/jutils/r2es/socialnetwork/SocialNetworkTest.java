@@ -1,20 +1,31 @@
-package io.memoria.jutils.core.eventsourcing.socialnetwork;
+package io.memoria.jutils.r2es.socialnetwork;
 
 import io.memoria.jutils.core.eventsourcing.ESException.InvalidOperation;
-import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.SendMessage;
+import io.memoria.jutils.r2es.socialnetwork.domain.UserCommand.SendMessage;
 import io.memoria.jutils.core.value.Id;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-public class SocialNetworkSuite {
-  public static void failurePath(SocialNetworkTestData testData) {
+import java.sql.SQLException;
+
+class SocialNetworkTest {
+  private final SocialNetworkTestData testData;
+
+  SocialNetworkTest() throws SQLException {
+    this.testData = new SocialNetworkTestData(true);
+  }
+
+  @Test
+  void failurePath() {
     // When
     var eventFlux = testData.handler.apply(Flux.just(testData.create, testData.create));
     // Then
     StepVerifier.create(eventFlux).expectNext(testData.accountCreated).expectError(InvalidOperation.class).verify();
   }
 
-  public static void happyPath(SocialNetworkTestData testData) {
+  @Test
+  void happyPath() {
     // When
     var eventFlux = testData.handler.apply(Flux.just(testData.create, testData.add, testData.send));
     // Then
@@ -24,7 +35,8 @@ public class SocialNetworkSuite {
                 .verify();
   }
 
-  public static void manyCommands(SocialNetworkTestData testData) {
+  @Test
+  void manyCommands() {
     // Given
     var createAddSend = Flux.just(testData.create, testData.add, testData.send);
     var sendFlux = Flux.range(0, 100)
@@ -39,7 +51,8 @@ public class SocialNetworkSuite {
                 .verify();
   }
 
-  public static void oneCommand(SocialNetworkTestData testData) {
+  @Test
+  void oneCommand() {
     // When
     var eventFlux = testData.handler.apply(testData.create);
     // Then

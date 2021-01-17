@@ -2,22 +2,36 @@ package io.memoria.jutils.core;
 
 public class JutilsException extends Exception {
   public static class AlreadyExists extends JutilsException {
-    public static final AlreadyExists ALREADY_EXISTS = new AlreadyExists("Already exists");
-
-    public AlreadyExists(String message) {
+    private AlreadyExists(String message) {
       super(message);
     }
   }
 
   public static class NotFound extends JutilsException {
-    public static final NotFound NOT_FOUND = new NotFound("Not found");
-
-    public NotFound(String message) {
+    private NotFound(String message) {
       super(message);
     }
   }
 
-  public JutilsException(String msg) {
+  public static class ValidationError extends JutilsException {
+    private ValidationError(String message) {
+      super(message);
+    }
+  }
+
+  public static AlreadyExists alreadyExists(String message) {
+    return new AlreadyExists(message);
+  }
+
+  public static NotFound notFound(String message) {
+    return new NotFound(message);
+  }
+
+  public static ValidationError validationError(String message) {
+    return new ValidationError(message);
+  }
+
+  private JutilsException(String msg) {
     super(msg);
   }
 }
