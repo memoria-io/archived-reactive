@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 
 import static io.memoria.jutils.r2es.R2Utils.executeUpdate;
 
-public final class R2Transaction {
+public final class TableConnection {
   private static final String CREATED_AT_COL = "createdAt";
   private static final String PAYLOAD_COL = "payload";
 
@@ -21,7 +21,7 @@ public final class R2Transaction {
   private final String tableName;
   private final StringTransformer stringTransformer;
 
-  public R2Transaction(Connection connection, String tableName, StringTransformer stringTransformer) {
+  public TableConnection(Connection connection, String tableName, StringTransformer stringTransformer) {
     this.connection = connection;
     this.tableName = tableName;
     this.stringTransformer = stringTransformer;
@@ -35,9 +35,7 @@ public final class R2Transaction {
       st.bind("$1", Timestamp.valueOf(e.createdAt()).toString()).bind("$2", eventPayload);
       st.add();
     }
-    return Mono.<Result>from(st.execute()).flatMap(r -> Mono.from(r.getRowsUpdated()))
-                                          .doOnSuccess(s -> connection.commitTransaction())
-                                          .doOnError(s -> connection.rollbackTransaction());
+    return Mono.<Result>from(st.execute()).flatMap(r -> Mono.from(r.getRowsUpdated()));
   }
 
   public Mono<Integer> createTableIfNotExists() {
@@ -62,5 +60,4 @@ public final class R2Transaction {
     var eventString = row.get(PAYLOAD_COL, String.class);
     return this.stringTransformer.deserialize(eventString, Event.class).get();
   }
-  
 }
