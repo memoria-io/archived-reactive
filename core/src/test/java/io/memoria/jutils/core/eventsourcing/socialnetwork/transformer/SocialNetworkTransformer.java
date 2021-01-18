@@ -15,9 +15,7 @@ public class SocialNetworkTransformer implements StringTransformer {
     var st = str.split(":");
     var type = st[0];
     return switch (type) {
-      case "AccountCreated" -> Try.success((T) new AccountCreated(Id.of(st[1]),
-                                                                  Id.of(st[2]),
-                                                                  Integer.parseInt(st[3])));
+      case "AccountCreated" -> Try.success((T) new AccountCreated(Id.of(st[1]), Id.of(st[2]), Integer.parseInt(st[3])));
       case "FriendAdded" -> Try.success((T) new FriendAdded(Id.of(st[1]), Id.of(st[2]), Id.of(st[3])));
       case "MessageSent" -> Try.success((T) new MessageSent(Id.of(st[1]),
                                                             Id.of(st[2]),

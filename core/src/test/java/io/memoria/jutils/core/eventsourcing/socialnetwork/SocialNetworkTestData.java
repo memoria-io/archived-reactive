@@ -2,18 +2,14 @@ package io.memoria.jutils.core.eventsourcing.socialnetwork;
 
 import io.memoria.jutils.core.eventsourcing.CommandHandler;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.Message;
-import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.User.Visitor;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.AddFriend;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.CreateAccount;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserCommand.SendMessage;
-import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserDecider;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.AccountCreated;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.FriendAdded;
 import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvent.MessageSent;
-import io.memoria.jutils.core.eventsourcing.socialnetwork.domain.UserEvolver;
-import io.memoria.jutils.core.eventsourcing.stateful.StatefulCommandHandler;
 import io.memoria.jutils.core.generator.IdGenerator;
 import io.memoria.jutils.core.value.Id;
 

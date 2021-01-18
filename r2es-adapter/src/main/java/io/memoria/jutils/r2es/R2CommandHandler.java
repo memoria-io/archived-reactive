@@ -13,9 +13,6 @@ import reactor.core.publisher.Mono;
  * An SQL based commandHandler
  */
 public final class R2CommandHandler<S, C extends Command> implements CommandHandler<C> {
-  private static final String CREATED_AT_COL = "createdAt";
-  private static final String PAYLOAD_COL = "payload";
-
   private final ConnectionFactory connectionFactory;
   private final StringTransformer stringTransformer;
   private final S initialState;

@@ -3,14 +3,11 @@ package io.memoria.jutils.core.eventsourcing.stateful;
 import io.memoria.jutils.core.eventsourcing.Command;
 import io.memoria.jutils.core.eventsourcing.CommandHandler;
 import io.memoria.jutils.core.eventsourcing.Decider;
-import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.eventsourcing.Evolver;
 import io.memoria.jutils.core.value.Id;
 import io.vavr.control.Option;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**

@@ -1,8 +1,9 @@
 package io.memoria.jutils.r2es.socialnetwork;
 
 import io.memoria.jutils.core.eventsourcing.CommandHandler;
+import io.memoria.jutils.core.generator.IdGenerator;
+import io.memoria.jutils.core.value.Id;
 import io.memoria.jutils.r2es.R2CommandHandler;
-import io.memoria.jutils.r2es.R2Utils;
 import io.memoria.jutils.r2es.SqlCommandHandler;
 import io.memoria.jutils.r2es.socialnetwork.domain.Message;
 import io.memoria.jutils.r2es.socialnetwork.domain.User.Visitor;
@@ -16,13 +17,9 @@ import io.memoria.jutils.r2es.socialnetwork.domain.UserEvent.AccountCreated;
 import io.memoria.jutils.r2es.socialnetwork.domain.UserEvent.FriendAdded;
 import io.memoria.jutils.r2es.socialnetwork.domain.UserEvent.MessageSent;
 import io.memoria.jutils.r2es.socialnetwork.domain.UserEvolver;
-import io.memoria.jutils.core.eventsourcing.stateful.StatefulCommandHandler;
-import io.memoria.jutils.core.generator.IdGenerator;
-import io.memoria.jutils.core.value.Id;
 import io.memoria.jutils.r2es.socialnetwork.transformer.SocialNetworkTransformer;
 import io.r2dbc.spi.ConnectionFactories;
 import org.h2.jdbcx.JdbcDataSource;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.sql.SQLException;

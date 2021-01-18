@@ -4,6 +4,7 @@ import io.memoria.jutils.core.JutilsException;
 import io.memoria.jutils.core.eventsourcing.Decider;
 import io.memoria.jutils.core.eventsourcing.ESException;
 import io.memoria.jutils.core.eventsourcing.Event;
+import io.memoria.jutils.core.generator.IdGenerator;
 import io.memoria.jutils.r2es.socialnetwork.domain.User.Account;
 import io.memoria.jutils.r2es.socialnetwork.domain.User.Visitor;
 import io.memoria.jutils.r2es.socialnetwork.domain.UserCommand.AddFriend;
@@ -12,7 +13,6 @@ import io.memoria.jutils.r2es.socialnetwork.domain.UserCommand.SendMessage;
 import io.memoria.jutils.r2es.socialnetwork.domain.UserEvent.AccountCreated;
 import io.memoria.jutils.r2es.socialnetwork.domain.UserEvent.FriendAdded;
 import io.memoria.jutils.r2es.socialnetwork.domain.UserEvent.MessageSent;
-import io.memoria.jutils.core.generator.IdGenerator;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 

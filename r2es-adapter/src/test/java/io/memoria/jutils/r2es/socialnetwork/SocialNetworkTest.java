@@ -1,12 +1,8 @@
 package io.memoria.jutils.r2es.socialnetwork;
 
 import io.memoria.jutils.core.eventsourcing.ESException.InvalidOperation;
-import io.memoria.jutils.r2es.R2CommandHandler;
-import io.memoria.jutils.r2es.socialnetwork.domain.User;
-import io.memoria.jutils.r2es.socialnetwork.domain.UserCommand;
-import io.memoria.jutils.r2es.socialnetwork.domain.UserCommand.SendMessage;
 import io.memoria.jutils.core.value.Id;
-import io.r2dbc.spi.ConnectionFactories;
+import io.memoria.jutils.r2es.socialnetwork.domain.UserCommand.SendMessage;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;

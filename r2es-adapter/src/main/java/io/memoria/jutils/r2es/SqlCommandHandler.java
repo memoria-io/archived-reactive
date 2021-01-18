@@ -7,7 +7,6 @@ import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.eventsourcing.Evolver;
 import io.memoria.jutils.core.transformer.StringTransformer;
 import io.vavr.collection.List;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 

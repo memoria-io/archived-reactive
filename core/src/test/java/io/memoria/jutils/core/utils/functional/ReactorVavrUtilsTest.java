@@ -1,6 +1,5 @@
 package io.memoria.jutils.core.utils.functional;
 
-import io.memoria.jutils.core.JutilsException;
 import io.memoria.jutils.core.JutilsException.NotFound;
 import io.vavr.collection.List;
 import io.vavr.control.Either;
