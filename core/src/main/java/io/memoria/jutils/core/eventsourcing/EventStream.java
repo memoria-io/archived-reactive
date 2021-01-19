@@ -1,6 +1,6 @@
 package io.memoria.jutils.core.eventsourcing;
 
-import io.memoria.jutils.core.value.Id;
+import io.memoria.jutils.core.id.Id;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

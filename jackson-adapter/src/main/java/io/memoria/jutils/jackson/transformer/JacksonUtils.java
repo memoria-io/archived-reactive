@@ -14,7 +14,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import io.memoria.jutils.core.value.Id;
+import io.memoria.jutils.core.id.Id;
 import io.memoria.jutils.jackson.transformer.adapters.IdTransformer.IdDeserializer;
 import io.memoria.jutils.jackson.transformer.adapters.IdTransformer.IdSerializer;
 import io.vavr.jackson.datatype.VavrModule;

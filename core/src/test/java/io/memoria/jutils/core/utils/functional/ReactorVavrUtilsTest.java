@@ -12,6 +12,7 @@ import reactor.test.StepVerifier;
 import java.io.IOException;
 import java.util.function.Function;
 
+import static io.memoria.jutils.core.JutilsException.notFound;
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toFlux;
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toMono;
 import static io.memoria.jutils.core.utils.functional.ReactorVavrUtils.toVoidMono;
@@ -83,8 +84,8 @@ class ReactorVavrUtilsTest {
     var som = some(20);
     var non = none();
     // When
-    var somMono = toMono(som, NotFound.NOT_FOUND);
-    var nonMono = toMono(non, NotFound.NOT_FOUND);
+    var somMono = toMono(som, notFound("not found"));
+    var nonMono = toMono(non, notFound("not found"));
     // Then
     StepVerifier.create(somMono).expectNext(20).expectComplete().verify();
     StepVerifier.create(nonMono).expectError(NotFound.class).verify();
