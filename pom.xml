@@ -34,7 +34,7 @@
         <module>security</module>
         <module>pulsar-adapter</module>
         <module>jackson-adapter</module>
-        <module>r2es-adapter</module>
+        <module>eventsourcing-adapter</module>
     </modules>
 
     <distributionManagement>

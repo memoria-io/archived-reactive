@@ -1,7 +1,7 @@
 package io.memoria.jutils.jackson.transformer;
 
 import io.memoria.jutils.core.eventsourcing.Event;
-import io.memoria.jutils.core.value.Id;
+import io.memoria.jutils.core.id.Id;
 
 import java.time.LocalDateTime;
 

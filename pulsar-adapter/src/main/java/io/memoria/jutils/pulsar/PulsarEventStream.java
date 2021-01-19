@@ -3,7 +3,7 @@ package io.memoria.jutils.pulsar;
 import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.eventsourcing.EventStream;
 import io.memoria.jutils.core.transformer.StringTransformer;
-import io.memoria.jutils.core.value.Id;
+import io.memoria.jutils.core.id.Id;
 import org.apache.pulsar.client.admin.PulsarAdmin;
 import org.apache.pulsar.client.admin.PulsarAdminException.NotFoundException;
 import org.apache.pulsar.client.api.Consumer;
