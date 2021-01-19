@@ -2,8 +2,8 @@ package io.memoria.jutils.pulsar;
 
 import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.eventsourcing.EventStream;
-import io.memoria.jutils.core.transformer.StringTransformer;
 import io.memoria.jutils.core.id.Id;
+import io.memoria.jutils.core.transformer.StringTransformer;
 import io.memoria.jutils.jackson.transformer.JacksonUtils;
 import io.memoria.jutils.jackson.transformer.json.JsonJackson;
 import org.apache.pulsar.client.api.PulsarClientException;

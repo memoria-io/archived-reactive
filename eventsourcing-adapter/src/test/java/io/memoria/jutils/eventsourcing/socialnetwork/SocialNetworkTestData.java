@@ -1,7 +1,7 @@
 package io.memoria.jutils.eventsourcing.socialnetwork;
 
-import io.memoria.jutils.core.id.IdGenerator;
 import io.memoria.jutils.core.id.Id;
+import io.memoria.jutils.core.id.IdGenerator;
 import io.memoria.jutils.eventsourcing.socialnetwork.domain.Message;
 import io.memoria.jutils.eventsourcing.socialnetwork.domain.UserCommand;
 import io.memoria.jutils.eventsourcing.socialnetwork.domain.UserCommand.AddFriend;

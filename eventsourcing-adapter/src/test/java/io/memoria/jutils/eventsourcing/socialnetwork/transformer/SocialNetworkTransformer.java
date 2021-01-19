@@ -1,7 +1,7 @@
 package io.memoria.jutils.eventsourcing.socialnetwork.transformer;
 
-import io.memoria.jutils.core.transformer.StringTransformer;
 import io.memoria.jutils.core.id.Id;
+import io.memoria.jutils.core.transformer.StringTransformer;
 import io.memoria.jutils.eventsourcing.socialnetwork.domain.Message;
 import io.memoria.jutils.eventsourcing.socialnetwork.domain.UserEvent.AccountCreated;
 import io.memoria.jutils.eventsourcing.socialnetwork.domain.UserEvent.FriendAdded;

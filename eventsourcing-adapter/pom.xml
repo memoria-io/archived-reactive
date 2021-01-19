@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jutils</artifactId>
-        <version>0.227.0</version>
+        <version>0.229.0</version>
     </parent>
 
     <groupId>io.memoria.jutils</groupId>
-    <artifactId>r2es-adapter</artifactId>
-    <version>0.227.0</version>
+    <artifactId>eventsourcing-adapter</artifactId>
+    <version>0.229.0</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     <description>R2dbc Eventsourcing Module</description>
