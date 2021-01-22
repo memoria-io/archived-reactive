@@ -5,7 +5,6 @@ import io.memoria.jutils.core.transformer.StringTransformer;
 import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.Result;
 import io.r2dbc.spi.Row;
-import io.r2dbc.spi.Statement;
 import io.vavr.collection.List;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,10 +18,6 @@ public final class R2Connection {
   private final Connection connection;
   private final String tableName;
   private final StringTransformer stringTransformer;
-
-  public static Mono<Integer> executeUpdate(Statement st) {
-    return Mono.from(st.execute()).flatMap(s -> Mono.from(s.getRowsUpdated()));
-  }
 
   public R2Connection(Connection connection, String tableName, StringTransformer stringTransformer) {
     this.connection = connection;
@@ -50,7 +45,7 @@ public final class R2Connection {
               PRIMARY KEY (id)
             )
             """.formatted(tableName);
-    return executeUpdate(connection.createStatement(sql));
+    return SqlUtils.exec(connection.createStatement(sql)).last();
   }
 
   public Flux<Event> query() {

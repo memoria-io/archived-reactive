@@ -13,7 +13,6 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 import reactor.test.StepVerifier.LastStep;
 
-import java.sql.SQLException;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -79,9 +78,7 @@ class SNTest {
     StepVerifier.create(eventFlux).expectComplete().verify();
   }
 
-  private static Stream<Arguments> commandHandlers() throws SQLException {
-    return Stream.of(of(SNTestUtils.memCH(idGenerator)),
-                     of(SNTestUtils.r2CH(idGenerator)),
-                     of(SNTestUtils.sqlCH(idGenerator)));
+  private static Stream<Arguments> commandHandlers() {
+    return Stream.of(of(SNTestUtils.memCH(idGenerator)), of(SNTestUtils.r2CH(idGenerator)));
   }
 }

@@ -11,12 +11,8 @@ import io.memoria.jutils.eventsourcing.socialnetwork.domain.UserCommand;
 import io.memoria.jutils.eventsourcing.socialnetwork.domain.UserDecider;
 import io.memoria.jutils.eventsourcing.socialnetwork.domain.UserEvolver;
 import io.memoria.jutils.eventsourcing.socialnetwork.transformer.SNTransformer;
-import io.memoria.jutils.eventsourcing.sql.SqlCommandHandler;
 import io.r2dbc.spi.ConnectionFactories;
-import org.h2.jdbcx.JdbcDataSource;
-import reactor.core.scheduler.Schedulers;
 
-import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SNTestUtils {
@@ -33,20 +29,6 @@ public class SNTestUtils {
                                   new Visitor(),
                                   new UserEvolver(),
                                   new UserDecider(idGenerator));
-  }
-
-  public static CommandHandler<UserCommand> sqlCH(IdGenerator idGenerator) throws SQLException {
-    JdbcDataSource ds = new JdbcDataSource();
-    ds.setURL("jdbc:h2:mem:///testJDBC");
-    ds.setUser("sa");
-    ds.setPassword("sa");
-    var pc = ds.getPooledConnection();
-    return new SqlCommandHandler<>(pc,
-                                   new SNTransformer(),
-                                   new Visitor(),
-                                   new UserEvolver(),
-                                   new UserDecider(idGenerator),
-                                   Schedulers.boundedElastic());
   }
 
   private SNTestUtils() {}
