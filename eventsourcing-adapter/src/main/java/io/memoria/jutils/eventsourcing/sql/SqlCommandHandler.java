@@ -7,6 +7,8 @@ import io.memoria.jutils.core.eventsourcing.Event;
 import io.memoria.jutils.core.eventsourcing.Evolver;
 import io.memoria.jutils.core.transformer.StringTransformer;
 import io.vavr.collection.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
@@ -16,12 +18,15 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
+import static io.memoria.jutils.core.utils.text.TextUtils.safeSQLTableName;
 import static java.sql.Connection.TRANSACTION_READ_COMMITTED;
 
 /**
  * An SQL based commandHandler
  */
 public final class SqlCommandHandler<S, C extends Command> implements CommandHandler<C> {
+  private static final Logger log = LoggerFactory.getLogger(SqlCommandHandler.class.getName());
+
   private static final String CREATED_AT_COL = "createdAt";
   private static final String PAYLOAD_COL = "payload";
 
@@ -52,8 +57,9 @@ public final class SqlCommandHandler<S, C extends Command> implements CommandHan
       var connection = this.pooledConnection.getConnection();
       connection.setAutoCommit(false);
       connection.setTransactionIsolation(TRANSACTION_READ_COMMITTED);
-      var tableName = toTableName(cmd.aggId().value());
-      createTableIfNotExists(connection, tableName);
+      var tableName = safeSQLTableName(cmd.aggId().value());
+      var ctr = createTableIfNotExists(connection, tableName);
+      log.debug("Create table if it doesn't exist:" + ctr);
       var initialEvents = query(connection, tableName);
       var state = evolver.apply(initialState, initialEvents);
       var events = decider.apply(state, cmd).get();
@@ -101,10 +107,5 @@ public final class SqlCommandHandler<S, C extends Command> implements CommandHan
             )
             """.formatted(tableName);
     return connection.prepareStatement(sql).execute();
-  }
-
-  // TODO tableName SQL Injection validation
-  private static String toTableName(String value) {
-    return value.replace(" ", "").replaceAll("[^A-Za-z0-9]", "");
   }
 }

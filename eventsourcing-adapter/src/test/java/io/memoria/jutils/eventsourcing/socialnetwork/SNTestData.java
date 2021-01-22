@@ -14,7 +14,7 @@ import io.memoria.jutils.eventsourcing.socialnetwork.domain.UserEvent.MessageSen
 
 import java.util.Random;
 
-public class SocialNetworkTestData {
+public class SNTestData {
   public final Id userId;
   public final Id friendId;
   public final Id topic;
@@ -27,7 +27,7 @@ public class SocialNetworkTestData {
   public final UserEvent friendAdded;
   public final UserEvent messageSent;
 
-  public SocialNetworkTestData(Random random, IdGenerator idGenerator) {
+  public SNTestData(Random random, IdGenerator idGenerator) {
     userId = Id.of("alex_" + random.nextInt(10000));
     friendId = Id.of("bob_" + random.nextInt(10000));
     topic = userId;

@@ -8,7 +8,7 @@ import io.memoria.jutils.eventsourcing.socialnetwork.domain.UserEvent.FriendAdde
 import io.memoria.jutils.eventsourcing.socialnetwork.domain.UserEvent.MessageSent;
 import io.vavr.control.Try;
 
-public class SocialNetworkTransformer implements StringTransformer {
+public class SNTransformer implements StringTransformer {
   @Override
   @SuppressWarnings("unchecked")
   public <T> Try<T> deserialize(String str, Class<T> tClass) {

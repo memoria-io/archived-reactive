@@ -5,9 +5,12 @@ import io.memoria.jutils.core.eventsourcing.CommandHandler;
 import io.memoria.jutils.core.eventsourcing.Decider;
 import io.memoria.jutils.core.eventsourcing.Evolver;
 import io.memoria.jutils.core.transformer.StringTransformer;
+import io.memoria.jutils.core.utils.text.TextUtils;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.IsolationLevel;
 import reactor.core.publisher.Mono;
+
+import static io.memoria.jutils.core.utils.text.TextUtils.safeSQLTableName;
 
 /**
  * An SQL based commandHandler
@@ -40,7 +43,7 @@ public final class R2CommandHandler<S, C extends Command> implements CommandHand
       con.setTransactionIsolationLevel(IsolationLevel.READ_COMMITTED);
 
       // R2Con setup
-      var tableName = R2Utils.toTableName(cmd.aggId().value());
+      var tableName = safeSQLTableName(cmd.aggId().value());
       var table = new R2Connection(con, tableName, stringTransformer);
 
       // Evolve
