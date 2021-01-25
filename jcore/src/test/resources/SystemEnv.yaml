@@ -1,0 +1,2 @@
+javaHomePath: ${JAVA_HOME:-/hello/java}
+otherValue: ${NON_EXISTENT_LAFDAFS:-defaultValue}

@@ -1,4 +1,0 @@
-first: ${FIRST_VAR:-defaultValue}
-include: sub_config.yaml
-third: ${third:-500}
-invalid: ${heyy:--bye}

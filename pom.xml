@@ -5,17 +5,20 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jbom</artifactId>
-        <version>0.23.0</version>
+        <version>0.24.0</version>
     </parent>
 
     <artifactId>jutils</artifactId>
-    <version>0.231.0</version>
+    <version>0.232.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
     <description>Java utilities</description>
     <url>https://memoria.io</url>
     <properties>
+        <reactor.version>2020.0.2</reactor.version>
+        <vavr.version>0.10.3</vavr.version>
+
         <r2spi.version>0.8.3.RELEASE</r2spi.version>
         <r2h2.version>0.8.4.RELEASE</r2h2.version>
         <pulsar.version>2.7.0</pulsar.version>
@@ -28,13 +31,13 @@
         <url>https://memoria.io</url>
     </organization>
     <modules>
-        <module>core</module>
-        <module>adapter</module>
-        <module>jconf</module>
-        <module>security</module>
-        <module>pulsar-adapter</module>
-        <module>jackson-adapter</module>
-        <module>eventsourcing-adapter</module>
+        <module>jcore</module>
+        <module>jtext</module>
+        <module>jpulsar</module>
+        <module>jsec</module>
+        <module>jes</module>
+        <module>jweb</module>
+
     </modules>
 
     <distributionManagement>
@@ -53,6 +56,27 @@
     </distributionManagement>
     <dependencyManagement>
         <dependencies>
+            <!--======================================================================================== -->
+            <!-- Reactive Dependencies -->
+            <!--======================================================================================== -->
+            <dependency>
+                <groupId>io.projectreactor</groupId>
+                <artifactId>reactor-bom</artifactId>
+                <version>${reactor.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.vavr</groupId>
+                <artifactId>vavr</artifactId>
+                <version>${vavr.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.vavr</groupId>
+                <artifactId>vavr-jackson</artifactId>
+                <version>${vavr.version}</version>
+            </dependency>
             <!--======================================================================================== -->
             <!-- Streaming Dependencies -->
             <!--======================================================================================== -->
@@ -117,6 +141,27 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <dependencies>
+        <!--======================================================================================== -->
+        <!-- Reactive Dependencies -->
+        <!--======================================================================================== -->
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--======================================================================================== -->
+        <!-- Functional Dependencies -->
+        <!--======================================================================================== -->
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+        </dependency>
+    </dependencies>
 </project>
 
 
