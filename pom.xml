@@ -37,7 +37,7 @@
         <module>jsec</module>
         <module>jes</module>
         <module>jweb</module>
-        <module>jvavr</module>
+
     </modules>
 
     <distributionManagement>
@@ -66,10 +66,15 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            
+
             <dependency>
                 <groupId>io.vavr</groupId>
                 <artifactId>vavr</artifactId>
+                <version>${vavr.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.vavr</groupId>
+                <artifactId>vavr-jackson</artifactId>
                 <version>${vavr.version}</version>
             </dependency>
             <!--======================================================================================== -->
@@ -148,6 +153,13 @@
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <!--======================================================================================== -->
+        <!-- Functional Dependencies -->
+        <!--======================================================================================== -->
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
         </dependency>
     </dependencies>
 </project>
