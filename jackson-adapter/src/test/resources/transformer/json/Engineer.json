@@ -1,9 +1,0 @@
-{
-  "$type":"Engineer",
-  "name":"bob",
-  "birthday":"2000-01-01",
-  "tasks":[
-    "fix issue 1",
-    "Fix issue 2"
-  ]
-}
