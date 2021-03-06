@@ -1,7 +1,7 @@
 package io.memoria.jutils.jpulsar;
 
 import io.memoria.jutils.jcore.eventsourcing.Event;
-import io.memoria.jutils.jcore.eventsourcing.EventStream;
+import io.memoria.jutils.jcore.eventsourcing.EventBus;
 import io.memoria.jutils.jcore.id.Id;
 import io.memoria.jutils.jcore.text.TextTransformer;
 import io.vavr.control.Try;
@@ -14,7 +14,7 @@ import reactor.test.StepVerifier;
 import java.time.LocalDateTime;
 import java.util.Random;
 
-class PulsarEventStreamIT {
+class PulsarEventBusIT {
   private static record UserCreated(Id eventId, String name) implements Event {
     @Override
     public Id aggId() {
@@ -29,9 +29,9 @@ class PulsarEventStreamIT {
 
   private final TextTransformer json;
   private final Id aggId;
-  private final EventStream eventStream;
+  private final EventBus eventBus;
 
-  PulsarEventStreamIT() throws PulsarClientException {
+  PulsarEventBusIT() throws PulsarClientException {
     this.json = new TextTransformer() {
       @Override
       @SuppressWarnings("unchecked")
@@ -47,7 +47,7 @@ class PulsarEventStreamIT {
       }
     };
     this.aggId = Id.of("user" + new Random().nextInt(1000));
-    this.eventStream = new PulsarEventStream("pulsar://localhost:9001", "http://localhost:9002", json);
+    this.eventBus = new PulsarEventStream("pulsar://localhost:9001", "http://localhost:9002", json);
   }
 
   @Test
@@ -58,11 +58,11 @@ class PulsarEventStreamIT {
     var msgCount = 1000;
     var events = Flux.range(0, msgCount).map(i -> (Event) new UserCreated(Id.of(i), userName));
     // When
-    var addUsers = eventStream.add(aggId, events);
-    var readAddedUsers = eventStream.stream(aggId, UserCreated.class).take(msgCount);
+    var addUsers = eventBus.publish(aggId, events);
+    var readAddedUsers = eventBus.subscribe(aggId,0, UserCreated.class).take(msgCount);
     // Then
     StepVerifier.create(addUsers).expectNextCount(msgCount).expectComplete().verify();
-    StepVerifier.create(eventStream.exists(aggId)).expectNext(true).expectComplete().verify();
+    StepVerifier.create(eventBus.exists(aggId)).expectNext(true).expectComplete().verify();
     StepVerifier.create(readAddedUsers)
                 .expectNext(new UserCreated(Id.of(0), userName))
                 .expectNext(new UserCreated(Id.of(1), userName))
