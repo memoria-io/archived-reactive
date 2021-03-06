@@ -43,17 +43,17 @@ public final class R2CommandHandler<S, C extends Command> implements CommandHand
 
       // R2Con setup
       var tableName = safeTableName(cmd.aggId().value());
-      var table = new R2Connection(con, tableName, textTransformer);
+      var tableConnection = new R2Connection(con, tableName, textTransformer);
 
       // Evolve
-      var eventsFlux = table.createTableIfNotExists().thenMany(table.query());
+      var eventsFlux = tableConnection.createTableIfNotExists().thenMany(tableConnection.query());
       var latestState = eventsFlux.reduce(initialState, evolver);
 
       // Apply command
       var newEvents = latestState.map(s -> decider.apply(s, cmd).get());
 
       // Append events
-      return newEvents.flatMap(table::appendEvents)
+      return newEvents.flatMap(tableConnection::appendEvents)
                       .then()
                       .doOnSuccess(s -> con.commitTransaction())
                       .doOnError(s -> con.rollbackTransaction());
