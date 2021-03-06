@@ -79,6 +79,6 @@ class SNTest {
   }
 
   private static Stream<Arguments> commandHandlers() {
-    return Stream.of(of(SNTestUtils.memCH(idGenerator)), of(SNTestUtils.r2CH(idGenerator)));
+    return Stream.of(of(SNTestUtils.r2CH(idGenerator)));
   }
 }
