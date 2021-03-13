@@ -1,0 +1,85 @@
+package io.memoria.jutils.jcore.eventsourcing;
+
+import io.vavr.collection.List;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
+
+import java.time.Duration;
+import java.util.concurrent.ConcurrentHashMap;
+
+class InMemoryEventStoreTest {
+  private final String topic = "firstTopic";
+  private final ConcurrentHashMap<String, ConcurrentHashMap<Integer, Flux<Event>>> store;
+  private final EventStore eventStore;
+
+  InMemoryEventStoreTest() {
+    store = new ConcurrentHashMap<>();
+    eventStore = new InMemoryEventStore(store);
+  }
+
+  @Test
+  @DisplayName("Events should be produced in the right order")
+  void order() {
+    // Given
+    int partition0 = 0;
+    var events0 = UserCreated.createMany(topic, 0);
+    var events1 = UserCreated.createMany(topic, 1);
+    // When
+    var actual0 = eventStore.publish(topic, partition0, events0).block();
+    var actual1 = eventStore.publish(topic, partition0, events1).block();
+    // Then
+    var expected = store.get(topic).get(partition0);
+    assert actual0 != null;
+    StepVerifier.create(expected)
+                .expectNext(actual0.appendAll(actual1).toJavaArray(Event[]::new))
+                .expectComplete()
+                .verify();
+  }
+
+  @Test
+  @DisplayName("Published events should be same as inserted")
+  void samePublished() {
+    // Given
+    var events = List.range(0, 100).map(i -> (Event) new UserCreated(i, topic));
+    // When
+    var publishedEvents = eventStore.publish(topic, 0, events).block();
+    // Then
+    Assertions.assertEquals(events, publishedEvents);
+  }
+
+  @Test
+  @DisplayName("Subscribed events should be same as in DB")
+  void sameSubscribed() {
+    // Given
+    int partition0 = 0;
+    var events = Flux.interval(Duration.ofMillis(1)).take(100).map(i -> (Event) new UserCreated(i, topic));
+    store.get(topic).put(partition0, events);
+    // When
+    var flux = eventStore.subscribe(topic, partition0, 0);
+    // Then
+    StepVerifier.create(flux).expectNextCount(100).expectComplete().verify();
+  }
+
+  @Test
+  @DisplayName("Partitioning should work as expected")
+  void works() {
+    // Given
+    int partition0 = 0;
+    int partition1 = 1;
+    var events = List.range(0, 100).map(i -> new UserCreated(i, topic));
+    // When
+    var actual0 = eventStore.publish(topic, partition0, UserCreated.createMany(topic, 0)).block();
+    var actual1 = eventStore.publish(topic, partition1, UserCreated.createMany(topic, 1)).block();
+
+    // then
+    var expected0 = store.get(topic).get(partition0);
+    var expected1 = store.get(topic).get(partition1);
+    assert actual0 != null;
+    assert actual1 != null;
+    StepVerifier.create(expected0).expectNext(actual0.toJavaArray(Event[]::new)).expectComplete().verify();
+    StepVerifier.create(expected1).expectNext(actual1.toJavaArray(Event[]::new)).expectComplete().verify();
+  }
+}

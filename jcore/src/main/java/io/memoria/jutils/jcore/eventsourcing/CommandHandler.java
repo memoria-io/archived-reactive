@@ -6,6 +6,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import static io.memoria.jutils.jcore.vavr.ReactorVavrUtils.toMono;
 
@@ -18,7 +19,7 @@ public class CommandHandler<S, C extends Command> {
 
   private final ConcurrentHashMap<Id, S> db;
   private final Decider<S, C> decider;
-  private final EventPublisher publisher;
+  private final EventStore eventStore;
   private final String topic;
   private final int partition;
   private final Evolver<S> evolver;
@@ -26,14 +27,14 @@ public class CommandHandler<S, C extends Command> {
 
   public CommandHandler(ConcurrentHashMap<Id, S> db,
                         Decider<S, C> decider,
-                        EventPublisher publisher,
+                        EventStore eventStore,
                         String topic,
                         int partition,
                         Evolver<S> evolver,
                         S initState) {
     this.db = db;
     this.decider = decider;
-    this.publisher = publisher;
+    this.eventStore = eventStore;
     this.topic = topic;
     this.partition = partition;
     this.evolver = evolver;
@@ -53,11 +54,15 @@ public class CommandHandler<S, C extends Command> {
   }
 
   private Mono<List<Event>> handle(S s, C command) {
-    var pub = publisher.apply(topic, partition);
-    return toMono(decider.apply(s, command)).flatMap(pub).map(events -> {
-      var newState = events.foldLeft(s, evolver);
-      db.put(command.aggId(), newState);
-      return events;
-    });
+    return Mono.fromCallable(() -> toMono(decider.apply(s, command)))
+               .flatMap(Function.identity())
+               .flatMap(events -> eventStore.publish(topic, partition, events))
+               .map(events -> persist(s, command, events));
+  }
+
+  private List<Event> persist(S s, C command, List<Event> events) {
+    var newState = events.foldLeft(s, evolver);
+    db.put(command.aggId(), newState);
+    return events;
   }
 }
