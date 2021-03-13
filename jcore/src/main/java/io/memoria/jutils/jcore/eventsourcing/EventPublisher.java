@@ -1,8 +1,8 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
-import io.memoria.jutils.jcore.id.Id;
-import reactor.core.publisher.Flux;
+import io.vavr.Function3;
+import io.vavr.collection.List;
+import reactor.core.publisher.Mono;
 
-public interface EventPublisher {
-  <E extends Event> Flux<E> publish(Id aggId, Flux<E> events);
-}
+@FunctionalInterface
+public interface EventPublisher extends Function3<String,Integer, List<Event>, Mono<List<Event>>> {}

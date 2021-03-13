@@ -36,8 +36,6 @@
         <module>jpulsar</module>
         <module>jsec</module>
         <module>jweb</module>
-        <module>r2es</module>
-        <module>r2pg</module>
     </modules>
 
     <distributionManagement>

@@ -1,9 +1,10 @@
 package io.memoria.jutils.jpulsar;
 
 import io.memoria.jutils.jcore.eventsourcing.Event;
-import io.memoria.jutils.jcore.eventsourcing.EventBus;
+import io.memoria.jutils.jcore.eventsourcing.EventPublisher;
 import io.memoria.jutils.jcore.id.Id;
 import io.memoria.jutils.jcore.text.TextTransformer;
+import io.vavr.collection.List;
 import org.apache.pulsar.client.admin.PulsarAdmin;
 import org.apache.pulsar.client.admin.PulsarAdminException.NotFoundException;
 import org.apache.pulsar.client.api.Consumer;
@@ -15,12 +16,12 @@ import org.apache.pulsar.client.api.Schema;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public class PulsarEventStream implements EventBus {
+public class PulsarEventPublisher implements EventPublisher {
   private final PulsarClient client;
   private final PulsarAdmin admin;
   private final TextTransformer transformer;
 
-  public PulsarEventStream(String serviceUrl, String adminUrl, TextTransformer transformer)
+  public PulsarEventPublisher(String serviceUrl, String adminUrl, TextTransformer transformer)
           throws PulsarClientException {
     this.client = PulsarClient.builder().serviceUrl(serviceUrl).build();
     this.admin = PulsarAdmin.builder().serviceHttpUrl(adminUrl).build();
@@ -28,19 +29,21 @@ public class PulsarEventStream implements EventBus {
   }
 
   @Override
+  public Mono<List<Event>> apply(String s, Integer integer, Iterable<Event> events) {
+    return null;
+  }
+
   public <E extends Event> Flux<E> publish(Id aggId, Flux<E> events) {
     return Mono.fromCallable(() -> createProducer(aggId.value()))
                .flatMapMany(producer -> events.concatMap(e -> send(producer, e)));
   }
 
-  @Override
   public Mono<Boolean> exists(Id aggId) {
     return Mono.fromFuture(admin.topics().getStatsAsync(aggId.value()))
                .map(stats -> true)
                .onErrorReturn(NotFoundException.class, false);
   }
 
-  @Override
   public <E extends Event> Flux<E> subscribe(Id aggId, long offset, Class<E> as) {
     return createConsumer(aggId.value(), offset).flatMapMany(i -> this.receive(i, as));
   }
