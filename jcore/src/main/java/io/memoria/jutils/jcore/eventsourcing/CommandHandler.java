@@ -22,7 +22,7 @@ public class CommandHandler<S, C extends Command> {
                                                                 int partition,
                                                                 Evolver<S> evolver) {
     ConcurrentHashMap<Id, S> db = new ConcurrentHashMap<>();
-    var initialEvents = subscriber.lastEventPredicate()
+    var initialEvents = subscriber.lastEventPredicate(topic, partition)
                                   .flatMapMany(ep -> subscriber.subscribe(topic, partition, 0).takeUntil(ep));
     return initialEvents.map(event -> db.compute(event.aggId(), (k, oldValue) -> evolver.apply(oldValue, event)))
                         .then(Mono.just(db));

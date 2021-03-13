@@ -1,13 +1,13 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
-import io.vavr.collection.List;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
-public record InMemorySubscriber(ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> store)
+public record InMemorySubscriber(ConcurrentHashMap<String, ConcurrentHashMap<Integer, Flux<Event>>> store)
         implements EventSubscriber {
 
   @Override
@@ -18,13 +18,15 @@ public record InMemorySubscriber(ConcurrentHashMap<String, ConcurrentHashMap<Int
   @Override
   public Mono<Predicate<Event>> lastEventPredicate(String topic, int partition) {
     return Mono.fromCallable(() -> store.get(topic))
-               .map(store -> store.get(partition))
-               .map(List::last)
-               .map(event -> ev -> event.eventId().equals(ev.eventId()));
+               .flatMapMany(store -> store.get(partition))
+               .last()
+               .map(Event::eventId)
+               .map(lastEventId -> (Predicate<Event>) ev -> ev.eventId().equals(lastEventId))
+               .onErrorReturn(NoSuchElementException.class, ev -> true);
   }
 
   @Override
   public Flux<Event> subscribe(String topic, int partition, long startOffset) {
-    return Mono.fromCallable(() -> store.get(topic)).flatMapMany(p -> Flux.fromIterable(p.get(partition)));
+    return Mono.fromCallable(() -> store.get(topic)).flatMapMany(p -> p.get(partition)).skip(startOffset);
   }
 }

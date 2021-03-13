@@ -29,7 +29,7 @@ public class PulsarEventPublisher implements EventPublisher {
   }
 
   @Override
-  public Mono<List<Event>> apply(String s, Integer integer, Iterable<Event> events) {
+  public Mono<List<Event>> apply(String s, Integer integer, List<Event> events) {
     return null;
   }
 

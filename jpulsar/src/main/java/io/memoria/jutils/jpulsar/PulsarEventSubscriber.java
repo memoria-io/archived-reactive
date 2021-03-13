@@ -35,7 +35,7 @@ public class PulsarEventSubscriber implements EventSubscriber {
   }
 
   @Override
-  public Mono<Predicate<Event>> lastEventPredicate() {
+  public Mono<Predicate<Event>> lastEventPredicate(String topic, int partition) {
     return null;
   }
 
