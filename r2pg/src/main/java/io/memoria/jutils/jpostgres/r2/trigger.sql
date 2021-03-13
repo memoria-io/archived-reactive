@@ -9,13 +9,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;;
 
-CREATE TABLE IF NOT EXISTS login_event
-(
-    id         serial PRIMARY KEY,
-    username   varchar(255),
-    login_time timestamp
-);;
-
 DROP TRIGGER IF EXISTS notify_login_event ON login_event;;
 
 CREATE TRIGGER notify_login_event
