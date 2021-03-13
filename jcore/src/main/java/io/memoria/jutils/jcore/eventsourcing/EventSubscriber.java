@@ -11,4 +11,8 @@ public interface EventSubscriber {
   Mono<Predicate<Event>> lastEventPredicate(String topic, int partition);
 
   Flux<Event> subscribe(String topic, int partition, long startOffset);
+
+  default Flux<Event> readUntilEnd(String topic, int partition) {
+    return lastEventPredicate(topic, partition).flatMapMany(ep -> subscribe(topic, partition, 0).takeUntil(ep));
+  }
 }

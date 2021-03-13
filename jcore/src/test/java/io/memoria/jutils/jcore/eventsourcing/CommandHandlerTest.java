@@ -1,5 +1,7 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
+import io.memoria.jutils.jcore.eventsourcing.User.Visitor;
+import io.memoria.jutils.jcore.eventsourcing.UserCommand.CreateUser;
 import io.memoria.jutils.jcore.id.IdGenerator;
 import io.memoria.jutils.jcore.id.SerialIdGenerator;
 import org.junit.jupiter.api.Test;
@@ -33,13 +35,16 @@ class CommandHandlerTest {
   CommandHandlerTest() {
     topic = "topic-" + r.nextInt(100);
     System.out.println(topic);
+    eventStore.put(topic, new ConcurrentHashMap<>());
+    eventStore.get(topic).put(0, Flux.empty());
   }
 
   @Test
   void initialEvents() {
-    eventStore.put(topic, new ConcurrentHashMap<>());
-    eventStore.get(topic).put(0, Flux.empty());
-    var stateStore = CommandHandler.initialState(sub, topic, 0, evolver).block();
-    var commandHandler = new CommandHandler<>(stateStore, decider, pub, topic, 0, evolver);
+    var initEvents = sub.readUntilEnd(topic, 0);
+    var stateStore = CommandHandler.buildState(initEvents, evolver).block();
+    var commandHandler = new CommandHandler<>(stateStore, decider, pub, topic, 0, evolver, new Visitor());
+    commandHandler.handle(new CreateUser(0, topic)).subscribe();
+    eventStore.get(topic).get(0).subscribe(System.out::println);
   }
 }
