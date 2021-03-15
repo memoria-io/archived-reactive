@@ -27,6 +27,10 @@ public final class ReactorVavrUtils {
     return t.isSuccess() ? Mono.just(t.get()) : Mono.error(t.getCause());
   }
 
+  public static <T> Mono<T> toMono(Option<T> option) {
+    return (option.isDefined()) ? Mono.just(option.get()) : Mono.empty();
+  }
+
   public static <T> Mono<T> toMono(Option<T> option, Throwable throwable) {
     return (option.isDefined()) ? Mono.just(option.get()) : Mono.error(throwable);
   }

@@ -1,6 +1,7 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
 import io.memoria.jutils.jcore.id.Id;
+import io.vavr.Function1;
 import io.vavr.collection.List;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -10,7 +11,8 @@ import java.util.function.Function;
 
 import static io.memoria.jutils.jcore.vavr.ReactorVavrUtils.toMono;
 
-public class CommandHandler<S, C extends Command> {
+@SuppressWarnings("ClassCanBeRecord")
+public class CommandHandler<S, C extends Command> implements Function1<C, Mono<List<Event>>> {
   public static <S> Mono<ConcurrentHashMap<Id, S>> buildState(Flux<Event> events, Evolver<S> evolver) {
     ConcurrentHashMap<Id, S> db = new ConcurrentHashMap<>();
     return events.map(event -> db.compute(event.aggId(), (k, oldValue) -> evolver.apply(oldValue, event)))
@@ -45,7 +47,8 @@ public class CommandHandler<S, C extends Command> {
    * @return mono of events batch that were successfully published after applying the command or empty mono if no
    * aggregate was found
    */
-  public Mono<List<Event>> handle(C command) {
+  @Override
+  public Mono<List<Event>> apply(C command) {
     return get(command.aggId()).flatMap(s -> handle(s, command));
   }
 

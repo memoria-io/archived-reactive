@@ -1,18 +1,17 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
 import io.vavr.collection.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InMemoryEventStoreTest {
   private final String topic = "firstTopic";
-  private final ConcurrentHashMap<String, ConcurrentHashMap<Integer, Flux<Event>>> store;
+  private final ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> store;
   private final EventStore eventStore;
 
   InMemoryEventStoreTest() {
@@ -33,10 +32,7 @@ class InMemoryEventStoreTest {
     // Then
     var expected = store.get(topic).get(partition0);
     assert actual0 != null;
-    StepVerifier.create(expected)
-                .expectNext(actual0.appendAll(actual1).toJavaArray(Event[]::new))
-                .expectComplete()
-                .verify();
+    assertEquals(expected, actual0.appendAll(actual1));
   }
 
   @Test
@@ -47,7 +43,7 @@ class InMemoryEventStoreTest {
     // When
     var publishedEvents = eventStore.publish(topic, 0, events).block();
     // Then
-    Assertions.assertEquals(events, publishedEvents);
+    assertEquals(events, publishedEvents);
   }
 
   @Test
@@ -55,12 +51,13 @@ class InMemoryEventStoreTest {
   void sameSubscribed() {
     // Given
     int partition0 = 0;
-    var events = Flux.interval(Duration.ofMillis(1)).take(100).map(i -> (Event) new UserCreated(i, topic));
+    var events = List.range(0, 100).map(i -> (Event) new UserCreated(i, topic));
+    store.put(topic, new ConcurrentHashMap<>());
     store.get(topic).put(partition0, events);
     // When
-    var flux = eventStore.subscribe(topic, partition0, 0);
+    var publishedFlux = eventStore.subscribe(topic, partition0, 0);
     // Then
-    StepVerifier.create(flux).expectNextCount(100).expectComplete().verify();
+    StepVerifier.create(publishedFlux).expectNextCount(100).expectComplete().verify();
   }
 
   @Test
@@ -79,7 +76,7 @@ class InMemoryEventStoreTest {
     var expected1 = store.get(topic).get(partition1);
     assert actual0 != null;
     assert actual1 != null;
-    StepVerifier.create(expected0).expectNext(actual0.toJavaArray(Event[]::new)).expectComplete().verify();
-    StepVerifier.create(expected1).expectNext(actual1.toJavaArray(Event[]::new)).expectComplete().verify();
+    assertEquals(expected0, actual0);
+    assertEquals(expected1, actual1);
   }
 }

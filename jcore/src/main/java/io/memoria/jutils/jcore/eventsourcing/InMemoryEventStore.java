@@ -1,14 +1,15 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
 import io.vavr.collection.List;
+import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
 
-public record InMemoryEventStore(ConcurrentHashMap<String, ConcurrentHashMap<Integer, Flux<Event>>> store)
+import static io.memoria.jutils.jcore.vavr.ReactorVavrUtils.toMono;
+
+public record InMemoryEventStore(ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> store)
         implements EventStore {
   @Override
   public Mono<Boolean> exists(String topic) {
@@ -16,27 +17,21 @@ public record InMemoryEventStore(ConcurrentHashMap<String, ConcurrentHashMap<Int
   }
 
   @Override
-  public Mono<Predicate<Event>> endPred(String topic, int partition) {
-    return Mono.fromCallable(() -> store.get(topic))
-               .flatMapMany(store -> store.get(partition))
-               .last()
-               .map(Event::eventId)
-               .map(lastEventId -> (Predicate<Event>) ev -> ev.eventId().equals(lastEventId))
-               .onErrorReturn(NoSuchElementException.class, ev -> true);
+  public Mono<Event> lastEvent(String topic, int partition) {
+    return toMono(Try.of(() -> store.get(topic).get(partition).last()).toOption());
   }
 
   @Override
   public Mono<List<Event>> publish(String topic, int partition, List<Event> events) {
-    var eventFlux = Flux.fromIterable(events);
     return Mono.fromCallable(() -> {
       store.computeIfPresent(topic, (topicKey, oldTopic) -> {
-        oldTopic.computeIfPresent(partition, (partitionKey, previousList) -> previousList.concatWith(eventFlux));
-        oldTopic.computeIfAbsent(partition, partitionKey -> eventFlux);
+        oldTopic.computeIfPresent(partition, (partitionKey, previousList) -> previousList.appendAll(events));
+        oldTopic.computeIfAbsent(partition, partitionKey -> events);
         return oldTopic;
       });
       store.computeIfAbsent(topic, topicKey -> {
-        var map = new ConcurrentHashMap<Integer, Flux<Event>>();
-        map.put(partition, eventFlux);
+        var map = new ConcurrentHashMap<Integer, List<Event>>();
+        map.put(partition, events);
         return map;
       });
       return events;
@@ -45,6 +40,6 @@ public record InMemoryEventStore(ConcurrentHashMap<String, ConcurrentHashMap<Int
 
   @Override
   public Flux<Event> subscribe(String topic, int partition, int offset) {
-    return Mono.fromCallable(() -> store.get(topic)).flatMapMany(p -> p.get(partition)).skip(offset);
+    return Mono.fromCallable(() -> store.get(topic)).flatMapMany(p -> Flux.fromIterable(p.get(partition)));
   }
 }
