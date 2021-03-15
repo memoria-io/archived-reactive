@@ -69,7 +69,8 @@ All modules depend on Core. There are currently no other inter-dependencies betw
 You can just do pull requests, and I will check them asap.
 
 ## TODOs
+
 * CommandHandler with eventbus as eventstore
 * Pulsar as Eventstore
-* Kafka as Eventstore  
+* Kafka as Eventstore
 * Eventstore testing suite
