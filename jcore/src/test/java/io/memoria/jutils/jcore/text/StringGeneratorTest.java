@@ -1,6 +1,5 @@
 package io.memoria.jutils.jcore.text;
 
-import io.memoria.jutils.jcore.text.TextGenerator;
 import io.vavr.collection.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

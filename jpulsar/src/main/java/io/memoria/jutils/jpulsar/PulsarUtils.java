@@ -1,6 +1,5 @@
 package io.memoria.jutils.jpulsar;
 
-import io.vavr.collection.List;
 import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.Message;
 import org.apache.pulsar.client.api.MessageId;

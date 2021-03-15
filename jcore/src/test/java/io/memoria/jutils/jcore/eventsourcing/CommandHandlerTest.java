@@ -5,7 +5,6 @@ import io.memoria.jutils.jcore.eventsourcing.UserCommand.CreateUser;
 import io.memoria.jutils.jcore.id.IdGenerator;
 import io.memoria.jutils.jcore.id.SerialIdGenerator;
 import io.vavr.collection.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -14,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommandHandlerTest {
