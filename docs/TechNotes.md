@@ -9,16 +9,9 @@
     * It should be the responsibility of a service how an object is persisted, it should only care about business logic
       not implementations of how that object is saved
     * same as for controllers should ony be about converting json to DTOs and selecting which service should handle the
-      request.  
+      request.
+
 # Kafka Integration
-
-## Kafka Docker
-```bash
-docker-compose -f deploy/kafka-docker-compose.yml up -d
-```
-
-## Kafka shells
-Download Kafka and cd into it.
 
 ```bash
 bin/kafka-topics.sh --list --bootstrap-server localhost:9092

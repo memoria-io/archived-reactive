@@ -11,10 +11,6 @@ import static io.memoria.jutils.jcore.vavr.ReactorVavrUtils.toMono;
 
 public record InMemoryEventStore(ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> store)
         implements EventStore {
-  @Override
-  public Mono<Boolean> exists(String topic) {
-    return Mono.fromCallable(() -> store.containsKey(topic));
-  }
 
   @Override
   public Mono<Event> lastEvent(String topic, int partition) {
@@ -39,7 +35,7 @@ public record InMemoryEventStore(ConcurrentHashMap<String, ConcurrentHashMap<Int
   }
 
   @Override
-  public Flux<Event> subscribe(String topic, int partition, int offset) {
+  public Flux<Event> subscribe(String topic, int partition, long offset) {
     return Mono.fromCallable(() -> store.get(topic)).flatMapMany(p -> Flux.fromIterable(p.get(partition)));
   }
 }

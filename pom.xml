@@ -21,7 +21,8 @@
         <r2spi.version>0.8.4.RELEASE</r2spi.version>
         <r2pg.version>0.8.7.RELEASE</r2pg.version>
         <r2h2.version>0.8.4.RELEASE</r2h2.version>
-        <pulsar.version>2.7.0</pulsar.version>
+<!--        <pulsar.version>2.7.0</pulsar.version>-->
+        <kafka.version>2.7.0</kafka.version>
         <jackson.version>2.12.0</jackson.version>
         <argon2.version>2.8</argon2.version>
         <jsonwebtoken.version>0.11.2</jsonwebtoken.version>
@@ -78,15 +79,25 @@
             <!--======================================================================================== -->
             <!-- Streaming Dependencies -->
             <!--======================================================================================== -->
+<!--            <dependency>-->
+<!--                <groupId>org.apache.pulsar</groupId>-->
+<!--                <artifactId>pulsar-client</artifactId>-->
+<!--                <version>${pulsar.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.apache.pulsar</groupId>-->
+<!--                <artifactId>pulsar-client-admin</artifactId>-->
+<!--                <version>${pulsar.version}</version>-->
+<!--            </dependency>-->
             <dependency>
-                <groupId>org.apache.pulsar</groupId>
-                <artifactId>pulsar-client</artifactId>
-                <version>${pulsar.version}</version>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.pulsar</groupId>
-                <artifactId>pulsar-client-admin</artifactId>
-                <version>${pulsar.version}</version>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-streams</artifactId>
+                <version>${kafka.version}</version>
             </dependency>
             <!--======================================================================================== -->
             <!-- Database Dependencies -->
