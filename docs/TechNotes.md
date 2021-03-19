@@ -10,3 +10,18 @@
       not implementations of how that object is saved
     * same as for controllers should ony be about converting json to DTOs and selecting which service should handle the
       request.  
+# Kafka Integration
+
+## Kafka Docker
+```bash
+docker-compose -f deploy/kafka-docker-compose.yml up -d
+```
+
+## Kafka shells
+Download Kafka and cd into it.
+
+```bash
+bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
+```
