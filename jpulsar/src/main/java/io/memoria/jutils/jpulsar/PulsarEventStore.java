@@ -6,6 +6,7 @@ import io.memoria.jutils.jcore.text.TextTransformer;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 import org.apache.pulsar.client.admin.PulsarAdmin;
+import org.apache.pulsar.client.admin.PulsarAdminException;
 import org.apache.pulsar.client.admin.PulsarAdminException.NotFoundException;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
@@ -24,9 +25,14 @@ public class PulsarEventStore implements EventStore {
 
   public PulsarEventStore(String serviceUrl, String adminUrl, TextTransformer transformer)
           throws PulsarClientException {
-    this.client = PulsarClient.builder().serviceUrl(serviceUrl).build();
+    this.client = PulsarClient.builder().serviceUrl(serviceUrl).enableTransaction(true).build();
     this.admin = PulsarAdmin.builder().serviceHttpUrl(adminUrl).build();
     this.transformer = transformer;
+    try {
+      admin.brokers().updateDynamicConfiguration("transactionCoordinatorEnabled","true");
+    } catch (PulsarAdminException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
