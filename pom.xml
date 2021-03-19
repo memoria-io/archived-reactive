@@ -33,7 +33,7 @@
     <modules>
         <module>jcore</module>
         <module>jtext</module>
-        <module>jpulsar</module>
+        <module>jkafka</module>
         <module>jsec</module>
         <module>jweb</module>
     </modules>
