@@ -9,7 +9,7 @@
     </parent>
 
     <groupId>io.memoria.jutils</groupId>
-    <artifactId>r2es</artifactId>
+    <artifactId>jr2</artifactId>
     <version>0.232.0</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
