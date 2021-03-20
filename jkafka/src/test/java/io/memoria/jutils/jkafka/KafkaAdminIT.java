@@ -23,7 +23,7 @@ class KafkaAdminIT {
   }
 
   @Test
-  void createTopic() throws InterruptedException, ExecutionException, TimeoutException {
+  void check() throws InterruptedException, ExecutionException, TimeoutException {
     // Given
     final String topic = "MyTopic-" + new Random().nextInt(1000);
 

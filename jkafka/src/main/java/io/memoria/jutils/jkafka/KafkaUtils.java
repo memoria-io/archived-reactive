@@ -42,13 +42,13 @@ public class KafkaUtils {
     return partitions;
   }
 
-  public static long currentOffset(AdminClient admin, String topic, int partition, Duration timeout)
+  public static int currentOffset(AdminClient admin, String topic, int partition, Duration timeout)
           throws InterruptedException, ExecutionException, TimeoutException {
     var tp = new TopicPartition(topic, partition);
-    return admin.listOffsets(Map.of(tp, OffsetSpec.latest()))
-                .partitionResult(tp)
-                .get(timeout.toMillis(), MILLISECONDS)
-                .offset();
+    return (int) admin.listOffsets(Map.of(tp, OffsetSpec.latest()))
+                      .partitionResult(tp)
+                      .get(timeout.toMillis(), MILLISECONDS)
+                      .offset();
   }
 
   public static KafkaConsumer<String, String> init(KafkaConsumer<String, String> consumer,
