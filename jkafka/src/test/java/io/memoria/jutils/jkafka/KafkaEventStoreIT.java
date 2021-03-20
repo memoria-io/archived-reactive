@@ -21,19 +21,18 @@ class KafkaEventStoreIT {
   private static final int SECOND_PARTITION = 1;
   private static final int MSG_COUNT = 20;
   private static final long OFFSET = 0;
-  private final String topic = "MyTopic-" + new Random().nextInt(1000);
-  private final EventStore eventStore;
-  private final List<Event> firstEvents;
-  private final Event[] expectedFirstEvents;
-  private final List<Event> secondEvents;
-  private final Event[] expectedSecondEvents;
+  private static final EventStore eventStore;
+  private static final List<Event> firstEvents;
+  private static final Event[] expectedFirstEvents;
+  private static final List<Event> secondEvents;
+  private static final Event[] expectedSecondEvents;
 
-  public KafkaEventStoreIT() {
-    this.eventStore = new KafkaEventStore(producerConf,
-                                          consumerConf,
-                                          Duration.ofMillis(2000),
-                                          new UserTextTransformer(),
-                                          Schedulers.boundedElastic());
+  static {
+    eventStore = new KafkaEventStore(producerConf,
+                                     consumerConf,
+                                     Duration.ofMillis(2000),
+                                     new UserTextTransformer(),
+                                     Schedulers.boundedElastic());
     // Given
     firstEvents = List.range(0, MSG_COUNT).map(UserCreated::new).map(e -> (Event) e).take(MSG_COUNT);
     expectedFirstEvents = firstEvents.toJavaArray(Event[]::new);
@@ -50,11 +49,52 @@ class KafkaEventStoreIT {
   //    StepVerifier.create(sentFlux).expectNext(expectedEvents).expectComplete().verify();
   //  }
   //
-  
+
+  @Test
+  void createTopic() {
+    // Given
+    final String topic = "MyTopic-" + new Random().nextInt(1000);
+
+    // When
+    StepVerifier.create(eventStore.createTopic(topic, 2, 1)).verifyComplete();
+    // Then
+    StepVerifier.create(eventStore.exists(topic)).expectNext(true).expectComplete().verify();
+    StepVerifier.create(eventStore.nOfPartitions(topic)).expectNext(2).verifyComplete();
+  }
+
+  @Test
+  void currentOffset() {
+    // Given
+    final String topic = "MyTopic-" + new Random().nextInt(1000);
+
+    // When
+    StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, firstEvents))
+                .expectNext(firstEvents)
+                .verifyComplete();
+    // Then
+    StepVerifier.create(eventStore.currentOffset(topic, FIRST_PARTITION)).expectNext(MSG_COUNT + 1L).verifyComplete();
+  }
+
+  @Test
+  void lastEvent() {
+    // Given
+    final String topic = "MyTopic-" + new Random().nextInt(1000);
+
+    // When
+    StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, firstEvents))
+                .expectNext(firstEvents)
+                .verifyComplete();
+    // Then
+    StepVerifier.create(eventStore.lastEvent(topic, FIRST_PARTITION)).expectNext(firstEvents.last()).verifyComplete();
+  }
+
   @Test
   @DisplayName("Multiple different partitions")
   void partitions() {
-    StepVerifier.create(eventStore.createTopic(topic, 2, 1)).expectNext(2).verifyComplete();
+    // Given
+    final String topic = "MyTopic-" + new Random().nextInt(1000);
+    StepVerifier.create(eventStore.createTopic(topic, 2, 1)).verifyComplete();
+
     // When
     StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, firstEvents))
                 .expectNext(firstEvents)
@@ -62,6 +102,7 @@ class KafkaEventStoreIT {
     StepVerifier.create(eventStore.publish(topic, SECOND_PARTITION, secondEvents))
                 .expectNext(secondEvents)
                 .verifyComplete();
+
     // Then
     StepVerifier.create(eventStore.subscribe(topic, FIRST_PARTITION, OFFSET).take(MSG_COUNT))
                 .expectNext(expectedFirstEvents)
@@ -73,6 +114,9 @@ class KafkaEventStoreIT {
 
   @Test
   void produceAndConsume() {
+    // Given
+    final String topic = "MyTopic-" + new Random().nextInt(1000);
+
     // When
     StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, firstEvents))
                 .expectNext(firstEvents)
@@ -81,34 +125,5 @@ class KafkaEventStoreIT {
     StepVerifier.create(eventStore.subscribe(topic, FIRST_PARTITION, OFFSET).take(MSG_COUNT))
                 .expectNext(expectedFirstEvents)
                 .verifyComplete();
-  }
-
-  @Test
-  void createTopic() {
-    // When
-    StepVerifier.create(eventStore.createTopic(topic, 2, 1)).expectNext(2).verifyComplete();
-    // Then
-    StepVerifier.create(eventStore.exists(topic)).expectNext(true).expectComplete().verify();
-    StepVerifier.create(eventStore.nOfPartitions(topic)).expectNext(2).verifyComplete();
-  }
-
-  @Test
-  void lastEvent() {
-    // When
-    StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, firstEvents))
-                .expectNext(firstEvents)
-                .verifyComplete();
-    // Then
-    StepVerifier.create(eventStore.lastEvent(topic, FIRST_PARTITION)).expectNext(firstEvents.last()).verifyComplete();
-  }
-
-  @Test
-  void currentOffset() {
-    // When
-    StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, firstEvents))
-                .expectNext(firstEvents)
-                .verifyComplete();
-    // Then
-    StepVerifier.create(eventStore.currentOffset(topic, FIRST_PARTITION)).expectNext(MSG_COUNT + 1L).verifyComplete();
   }
 }

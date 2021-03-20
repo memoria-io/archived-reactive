@@ -9,6 +9,7 @@ import io.vavr.control.Try;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -38,19 +39,25 @@ public class KafkaEventStore implements EventStore {
                          Duration reqTimeout,
                          TextTransformer transformer,
                          Scheduler scheduler) {
-    this.admin = adminClient(producerConfig);
     this.producer = new KafkaProducer<>(producerConfig);
     this.producer.initTransactions();
     this.consumer = new KafkaConsumer<>(consumerConfig);
+    this.admin = adminClient(producerConfig.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG).toString());
     this.timeout = reqTimeout;
     this.scheduler = scheduler;
     this.transformer = transformer;
   }
 
   @Override
-  public Mono<Integer> createTopic(String topic, int partitions, int replicationFr) {
+  public Mono<Void> createTopic(String topic, int partitions, int replicationFr) {
     return Mono.fromCallable(() -> createKafkaTopic(admin, topic, partitions, (short) replicationFr, timeout))
+               .then()
                .subscribeOn(scheduler);
+  }
+
+  @Override
+  public Mono<Long> currentOffset(String topic, int partition) {
+    return Mono.fromCallable(() -> KafkaUtils.currentOffset(admin, topic, partition, timeout)).subscribeOn(scheduler);
   }
 
   @Override
@@ -67,11 +74,6 @@ public class KafkaEventStore implements EventStore {
   }
 
   @Override
-  public Mono<Long> currentOffset(String topic, int partition) {
-    return Mono.fromCallable(() -> KafkaUtils.currentOffset(admin, topic, partition, timeout)).subscribeOn(scheduler);
-  }
-
-  @Override
   public Mono<Integer> nOfPartitions(String topic) {
     return Mono.fromCallable(() -> nPartitions(admin, topic, timeout))
                .flatMap(ReactorVavrUtils::toMono)
@@ -85,7 +87,6 @@ public class KafkaEventStore implements EventStore {
                .map(transformer::serialize)
                .map(Try::get)
                .flatMap(ev -> Mono.fromCallable(() -> sendRecord(producer, topic, partition, ev, timeout)))
-               .doOnNext(System.out::println)
                .then(Mono.fromRunnable(producer::commitTransaction))
                .then(Mono.just(events))
                .subscribeOn(scheduler);

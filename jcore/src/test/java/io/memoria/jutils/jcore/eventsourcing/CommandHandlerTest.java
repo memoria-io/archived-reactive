@@ -34,7 +34,6 @@ class CommandHandlerTest {
 
   CommandHandlerTest() {
     topic = "topic-" + r.nextInt(100);
-    System.out.println(topic);
     eventDB.put(topic, new ConcurrentHashMap<>());
     eventDB.get(topic).put(0, List.empty());
   }

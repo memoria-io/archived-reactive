@@ -40,19 +40,6 @@ class KafkaStreamsIT {
   private static final int i = 961;
   private static final String INPUT_TOPIC = "streams-plaintext-input" + i;
   private static final String OUTPUT_TOPIC = "streams-plaintext-output" + i;
-  private final KafkaConsumer<String, String> consumer;
-  private final KafkaProducer<String, String> producer;
-  private final AdminClient adminClient;
-
-  KafkaStreamsIT() {
-    this.consumer = new KafkaConsumer<>(TestConfigs.consumerConf);
-    this.producer = new KafkaProducer<>(TestConfigs.producerConf);
-    // Setup admin client
-    Properties config = new Properties();
-    var serverURL = TestConfigs.producerConf.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG).toString();
-    config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, serverURL);
-    adminClient = AdminClient.create(config);
-  }
 
   public static void main(String[] args) {
     final Serde<String> stringSerde = Serdes.String();
@@ -69,33 +56,46 @@ class KafkaStreamsIT {
                                                .groupBy((key, value) -> value)
                                                .count();
     wordCounts.toStream().to(OUTPUT_TOPIC, Produced.with(stringSerde, longSerde));
-    
+
     KafkaStreams kafkaStreams = new KafkaStreams(streamsBuilder.build(), properties);
     kafkaStreams.setUncaughtExceptionHandler((Thread thread, Throwable throwable) -> {
       throwable.printStackTrace();
     });
     kafkaStreams.start();
   }
+  private final KafkaConsumer<String, String> consumer;
+  private final KafkaProducer<String, String> producer;
+  private final AdminClient adminClient;
 
-//  @Test
-//  void testKafkaStream() {
-//
-//    //    StepVerifier.create(stream(INPUT_TOPIC).doOnNext(System.out::println))
-//    //                .expectNextCount(10)
-//    //                .expectComplete()
-//    //                .verify();
-//
-//    var f = Flux.interval(ofMillis(100))
-//                .take(10)
-//                .concatMap(i -> sendRecord(INPUT_TOPIC,
-//                                           i + "",
-//                                           "all streams lead to kafka\nhello kafka streams\njoin kafka summit" + i));
-//    StepVerifier.create(f).expectNextCount(10).expectComplete().verify();
-//    //    StepVerifier.create(stream(OUTPUT_TOPIC).doOnNext(System.out::println))
-//    //                .expectNextCount(10)
-//    //                .expectComplete()
-//    //                .verify();
-//  }
+  KafkaStreamsIT() {
+    this.consumer = new KafkaConsumer<>(TestConfigs.consumerConf);
+    this.producer = new KafkaProducer<>(TestConfigs.producerConf);
+    // Setup admin client
+    Properties config = new Properties();
+    var serverURL = TestConfigs.producerConf.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG).toString();
+    config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, serverURL);
+    adminClient = AdminClient.create(config);
+  }
+
+  //  @Test
+  //  void testKafkaStream() {
+  //
+  //    //    StepVerifier.create(stream(INPUT_TOPIC).doOnNext(System.out::println))
+  //    //                .expectNextCount(10)
+  //    //                .expectComplete()
+  //    //                .verify();
+  //
+  //    var f = Flux.interval(ofMillis(100))
+  //                .take(10)
+  //                .concatMap(i -> sendRecord(INPUT_TOPIC,
+  //                                           i + "",
+  //                                           "all streams lead to kafka\nhello kafka streams\njoin kafka summit" + i));
+  //    StepVerifier.create(f).expectNextCount(10).expectComplete().verify();
+  //    //    StepVerifier.create(stream(OUTPUT_TOPIC).doOnNext(System.out::println))
+  //    //                .expectNextCount(10)
+  //    //                .expectComplete()
+  //    //                .verify();
+  //  }
 
   private Flux<String> pollEvents(String topic) {
     var tp = new TopicPartition(topic, 0);

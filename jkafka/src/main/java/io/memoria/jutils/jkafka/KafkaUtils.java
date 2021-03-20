@@ -9,7 +9,6 @@ import org.apache.kafka.clients.admin.OffsetSpec;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 
@@ -25,10 +24,9 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 
 public class KafkaUtils {
-  public static AdminClient adminClient(Map<String, Object> producerConfig) {
-    var serverURL = producerConfig.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG).toString();
+  public static AdminClient adminClient(String serverUrl) {
     var config = new Properties();
-    config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, serverURL);
+    config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, serverUrl);
     return AdminClient.create(config);
   }
 
@@ -59,6 +57,15 @@ public class KafkaUtils {
   //    }).thenMany(pollOnce(consumer, topic, partition, timeout));
   //    return null;
   //  }
+
+  public static long currentOffset(AdminClient admin, String topic, int partition, Duration timeout)
+          throws InterruptedException, ExecutionException, TimeoutException {
+    var tp = new TopicPartition(topic, partition);
+    return admin.listOffsets(Map.of(tp, OffsetSpec.latest()))
+                .partitionResult(tp)
+                .get(timeout.toMillis(), MILLISECONDS)
+                .offset();
+  }
 
   public static void init(KafkaConsumer<String, String> consumer,
                           String topic,
@@ -98,15 +105,6 @@ public class KafkaUtils {
                                       Duration timeout) {
     var tp = new TopicPartition(topic, partition);
     return consumer.poll(timeout).records(tp).stream().map(ConsumerRecord::value).collect(toList());
-  }
-
-  public static long currentOffset(AdminClient admin, String topic, int partition, Duration timeout)
-          throws InterruptedException, ExecutionException, TimeoutException {
-    var tp = new TopicPartition(topic, partition);
-    return admin.listOffsets(Map.of(tp, OffsetSpec.latest()))
-                .partitionResult(tp)
-                .get(timeout.toMillis(), MILLISECONDS)
-                .offset();
   }
 
   public static long sendRecord(KafkaProducer<String, String> producer,
