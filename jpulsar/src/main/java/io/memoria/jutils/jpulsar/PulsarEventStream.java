@@ -1,7 +1,7 @@
 package io.memoria.jutils.jpulsar;
 
 import io.memoria.jutils.jcore.eventsourcing.Event;
-import io.memoria.jutils.jcore.eventsourcing.EventStream;
+import io.memoria.jutils.jcore.eventsourcing.EventBus;
 import io.memoria.jutils.jcore.id.Id;
 import io.memoria.jutils.jcore.text.TextTransformer;
 import org.apache.pulsar.client.admin.PulsarAdmin;
@@ -15,7 +15,7 @@ import org.apache.pulsar.client.api.Schema;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public class PulsarEventStream implements EventStream {
+public class PulsarEventStream implements EventBus {
   private final PulsarClient client;
   private final PulsarAdmin admin;
   private final TextTransformer transformer;
@@ -28,7 +28,7 @@ public class PulsarEventStream implements EventStream {
   }
 
   @Override
-  public <E extends Event> Flux<E> add(Id aggId, Flux<E> events) {
+  public <E extends Event> Flux<E> publish(Id aggId, Flux<E> events) {
     return Mono.fromCallable(() -> createProducer(aggId.value()))
                .flatMapMany(producer -> events.concatMap(e -> send(producer, e)));
   }
@@ -41,14 +41,15 @@ public class PulsarEventStream implements EventStream {
   }
 
   @Override
-  public <E extends Event> Flux<E> stream(Id aggId, Class<E> as) {
-    return Mono.fromCallable(() -> createConsumer(aggId.value())).flatMapMany(i -> this.receive(i, as));
+  public <E extends Event> Flux<E> subscribe(Id aggId, long offset, Class<E> as) {
+    return createConsumer(aggId.value(), offset).flatMapMany(i -> this.receive(i, as));
   }
 
-  private Consumer<String> createConsumer(String topic) throws PulsarClientException {
-    var consumer = client.newConsumer(Schema.STRING).topic(topic).subscriptionName(topic + "_subscription").subscribe();
-    consumer.seek(0);
-    return consumer;
+  private Mono<Consumer<String>> createConsumer(String topic, long offset) {
+    return Mono.fromFuture(client.newConsumer(Schema.STRING)
+                                 .topic(topic)
+                                 .subscriptionName(topic + "_subscription")
+                                 .subscribeAsync()).flatMap(c -> Mono.fromFuture(c.seekAsync(offset)).thenReturn(c));
   }
 
   private Producer<String> createProducer(String topic) throws PulsarClientException {
