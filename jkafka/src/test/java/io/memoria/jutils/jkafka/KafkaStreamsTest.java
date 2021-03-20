@@ -18,23 +18,18 @@ import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Produced;
-import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
-import reactor.test.StepVerifier;
 
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.time.Duration.ofMillis;
 import static java.time.temporal.ChronoUnit.SECONDS;
 
 class KafkaStreamsTest {
@@ -50,11 +45,11 @@ class KafkaStreamsTest {
   private final AdminClient adminClient;
 
   KafkaStreamsTest() {
-    this.consumer = new KafkaConsumer<>(Tests.consumerConf);
-    this.producer = new KafkaProducer<>(Tests.producerConf);
+    this.consumer = new KafkaConsumer<>(TestConfigs.consumerConf);
+    this.producer = new KafkaProducer<>(TestConfigs.producerConf);
     // Setup admin client
     Properties config = new Properties();
-    var serverURL = Tests.producerConf.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG).toString();
+    var serverURL = TestConfigs.producerConf.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG).toString();
     config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, serverURL);
     adminClient = AdminClient.create(config);
   }

@@ -38,4 +38,24 @@ public record InMemoryEventStore(ConcurrentHashMap<String, ConcurrentHashMap<Int
   public Flux<Event> subscribe(String topic, int partition, long offset) {
     return Mono.fromCallable(() -> store.get(topic)).flatMapMany(p -> Flux.fromIterable(p.get(partition)));
   }
+
+  @Override
+  public Mono<Boolean> exists(String topic) {
+    return null;
+  }
+
+  @Override
+  public Mono<Integer> createTopic(String topic, int partitions, int replicationFactor) {
+    return null;
+  }
+
+  @Override
+  public Mono<Integer> nOfPartitions(String topic) {
+    return null;
+  }
+
+  @Override
+  public Mono<Long> lastOffset(String topic, int partition) {
+    return null;
+  }
 }

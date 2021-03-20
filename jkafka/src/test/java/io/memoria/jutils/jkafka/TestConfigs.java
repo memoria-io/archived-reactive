@@ -5,10 +5,8 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-public class KafkaConfigs {
-//  private static final String TRANSACTION_ID = UUID.randomUUID().toString();
+public class TestConfigs {
   private static final String TRANSACTION_ID = "node_0";
   public static final Map<String, Object> producerConf = new HashMap<>();
   public static final Map<String, Object> consumerConf = new HashMap<>();
@@ -26,6 +24,7 @@ public class KafkaConfigs {
     producerConf.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                      "org.apache.kafka.common.serialization.StringSerializer");
     producerConf.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, TRANSACTION_ID);
+    
     // Consumer configs
     consumerConf.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
     consumerConf.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
