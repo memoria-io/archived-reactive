@@ -18,8 +18,8 @@
     <properties>
         <reactor.version>2020.0.2</reactor.version>
         <vavr.version>0.10.3</vavr.version>
-        <r2spi.version>0.8.4.RELEASE</r2spi.version>
-        <r2pg.version>0.8.7.RELEASE</r2pg.version>
+
+        <r2spi.version>0.8.3.RELEASE</r2spi.version>
         <r2h2.version>0.8.4.RELEASE</r2h2.version>
         <pulsar.version>2.7.0</pulsar.version>
         <jackson.version>2.12.0</jackson.version>
@@ -35,9 +35,9 @@
         <module>jtext</module>
         <module>jpulsar</module>
         <module>jsec</module>
+        <module>jes</module>
         <module>jweb</module>
-        <module>r2es</module>
-        <module>r2pg</module>
+
     </modules>
 
     <distributionManagement>
@@ -97,11 +97,6 @@
                 <groupId>io.r2dbc</groupId>
                 <artifactId>r2dbc-spi</artifactId>
                 <version>${r2spi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.r2dbc</groupId>
-                <artifactId>r2dbc-postgresql</artifactId>
-                <version>0.8.7.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>io.r2dbc</groupId>

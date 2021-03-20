@@ -30,21 +30,6 @@ class DefaultFileUtilsTest {
     StepVerifier.create(fileExistsMono).expectNext(true).expectComplete().verify();
   }
 
-  @Test
-  void readFileWithSystemEnv() {
-    var javaHome = System.getenv("JAVA_HOME");
-    if (javaHome != null && !javaHome.isEmpty()) {
-      var fileMono = file.readLines("SystemEnv.yaml");
-      StepVerifier.create(fileMono)
-                  .expectNextMatches(s -> s.startsWith("javaHomePath: ") && s.length() > 15)
-                  .expectNext("otherValue: defaultValue")
-                  .expectComplete()
-                  .verify();
-    } else {
-      log.warn("Test skipped, couldn't read the system environment variable JAVA_HOME");
-    }
-  }
-
   @ParameterizedTest
   @MethodSource("paths")
   @DisplayName("should read the nested files")
@@ -61,6 +46,21 @@ class DefaultFileUtilsTest {
                 .expectNext("address: 15 bakerstreet")
                 .expectComplete()
                 .verify();
+  }
+
+  @Test
+  void readFileWithSystemEnv() {
+    var javaHome = System.getenv("JAVA_HOME");
+    if (javaHome != null && !javaHome.isEmpty()) {
+      var fileMono = file.readLines("SystemEnv.yaml");
+      StepVerifier.create(fileMono)
+                  .expectNextMatches(s -> s.startsWith("javaHomePath: ") && s.length() > 15)
+                  .expectNext("otherValue: defaultValue")
+                  .expectComplete()
+                  .verify();
+    } else {
+      log.warn("Test skipped, couldn't read the system environment variable JAVA_HOME");
+    }
   }
 
   private static Stream<String> paths() {
