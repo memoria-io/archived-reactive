@@ -1,6 +1,7 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
 import io.memoria.jutils.jcore.id.Id;
+import io.memoria.jutils.jcore.msgbus.MsgBusAdmin;
 import io.vavr.Function1;
 import io.vavr.collection.List;
 import reactor.core.publisher.Flux;
@@ -21,7 +22,7 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<L
 
   private final ConcurrentHashMap<Id, S> db;
   private final Decider<S, C> decider;
-  private final EventStore eventStore;
+  private final MsgBusAdmin eventStore;
   private final String topic;
   private final int partition;
   private final Evolver<S> evolver;
@@ -29,7 +30,7 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<L
 
   public CommandHandler(ConcurrentHashMap<Id, S> db,
                         Decider<S, C> decider,
-                        EventStore eventStore,
+                        MsgBusAdmin eventStore,
                         String topic,
                         int partition,
                         Evolver<S> evolver,
@@ -59,7 +60,7 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<L
   private Mono<List<Event>> handle(S s, C command) {
     return Mono.fromCallable(() -> toMono(decider.apply(s, command)))
                .flatMap(Function.identity())
-               .flatMap(events -> eventStore.publish(topic, partition, command.aggId().value(), events))
+               .flatMap(events -> eventStore.publish(events))
                .map(events -> persist(s, command, events));
   }
 

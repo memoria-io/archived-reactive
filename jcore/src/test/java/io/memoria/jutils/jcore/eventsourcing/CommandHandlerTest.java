@@ -4,6 +4,7 @@ import io.memoria.jutils.jcore.eventsourcing.User.Visitor;
 import io.memoria.jutils.jcore.eventsourcing.UserCommand.CreateUser;
 import io.memoria.jutils.jcore.id.IdGenerator;
 import io.memoria.jutils.jcore.id.SerialIdGenerator;
+import io.memoria.jutils.jcore.msgbus.MsgBusAdmin;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +24,7 @@ class CommandHandlerTest {
   private static final Evolver<User> evolver = new UserEvolver();
 
   private static final ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> eventDB;
-  private static final EventStore eventStore;
+  private static final MsgBusAdmin eventStore;
 
   static {
     eventDB = new ConcurrentHashMap<>();

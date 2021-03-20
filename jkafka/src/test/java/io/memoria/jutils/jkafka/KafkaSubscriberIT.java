@@ -1,7 +1,7 @@
 package io.memoria.jutils.jkafka;
 
 import io.memoria.jutils.jcore.eventsourcing.Event;
-import io.memoria.jutils.jcore.eventsourcing.EventStore;
+import io.memoria.jutils.jcore.msgbus.MsgBusAdmin;
 import io.memoria.jutils.jkafka.data.user.UserCreated;
 import io.memoria.jutils.jkafka.data.user.UserTextTransformer;
 import io.vavr.collection.List;
@@ -17,25 +17,25 @@ import java.util.Random;
 import static io.memoria.jutils.jkafka.TestConfigs.consumerConf;
 import static io.memoria.jutils.jkafka.TestConfigs.producerConf;
 
-class KafkaEventStoreIT {
+class KafkaSubscriberIT {
   private static final String FIRST_TRANS_ID = "T0";
   private static final int FIRST_PARTITION = 0;
   private static final String SECOND_TRANS_ID = "T1";
   private static final int SECOND_PARTITION = 1;
   private static final int MSG_COUNT = 20;
   private static final long OFFSET = 0;
-  private static final EventStore eventStore;
+  private static final MsgBusAdmin eventStore;
   private static final List<Event> firstEvents;
   private static final Event[] expectedFirstEvents;
   private static final List<Event> secondEvents;
   private static final Event[] expectedSecondEvents;
 
   static {
-    eventStore = new KafkaEventStore(producerConf,
-                                     consumerConf,
-                                     Duration.ofMillis(2000),
-                                     new UserTextTransformer(),
-                                     Schedulers.boundedElastic());
+    eventStore = new KafkaPublisher(producerConf,
+                                    consumerConf,
+                                    Duration.ofMillis(2000),
+                                    new UserTextTransformer(),
+                                    Schedulers.boundedElastic());
     // Given
     firstEvents = List.range(0, MSG_COUNT).map(UserCreated::new).map(e -> (Event) e).take(MSG_COUNT);
     expectedFirstEvents = firstEvents.toJavaArray(Event[]::new);
