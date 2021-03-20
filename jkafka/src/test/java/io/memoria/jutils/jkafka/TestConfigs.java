@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TestConfigs {
-  private static final String TRANSACTION_ID = "node_0";
   public static final Map<String, Object> producerConf = new HashMap<>();
   public static final Map<String, Object> consumerConf = new HashMap<>();
 
@@ -23,7 +22,7 @@ public class TestConfigs {
                      "org.apache.kafka.common.serialization.StringSerializer");
     producerConf.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                      "org.apache.kafka.common.serialization.StringSerializer");
-    producerConf.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, TRANSACTION_ID);
+    
 
     // Consumer configs
     consumerConf.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");

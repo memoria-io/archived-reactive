@@ -15,7 +15,7 @@ public interface EventStore {
 
   Mono<Integer> nOfPartitions(String topic);
 
-  Mono<List<Event>> publish(String topic, int partition, List<Event> events);
+  Mono<List<Event>> publish(String topic, int partition, String transactionId, List<Event> events);
 
   Flux<Event> subscribe(String topic, int partition, long offset);
 }

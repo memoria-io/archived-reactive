@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InMemoryEventStoreTest {
+  private static final String TRANS_ID = "0";
   private final String topic = "firstTopic";
   private final ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> store;
   private final EventStore eventStore;
@@ -27,8 +28,8 @@ class InMemoryEventStoreTest {
     var events0 = UserCreated.createMany(topic, 0);
     var events1 = UserCreated.createMany(topic, 1);
     // When
-    var actual0 = eventStore.publish(topic, partition0, events0).block();
-    var actual1 = eventStore.publish(topic, partition0, events1).block();
+    var actual0 = eventStore.publish(topic, partition0, TRANS_ID, events0).block();
+    var actual1 = eventStore.publish(topic, partition0, TRANS_ID, events1).block();
     // Then
     var expected = store.get(topic).get(partition0);
     assert actual0 != null;
@@ -41,7 +42,7 @@ class InMemoryEventStoreTest {
     // Given
     var events = List.range(0, 100).map(i -> (Event) new UserCreated(i, topic));
     // When
-    var publishedEvents = eventStore.publish(topic, 0, events).block();
+    var publishedEvents = eventStore.publish(topic, 0, TRANS_ID, events).block();
     // Then
     assertEquals(events, publishedEvents);
   }
@@ -68,8 +69,8 @@ class InMemoryEventStoreTest {
     int partition1 = 1;
     var events = List.range(0, 100).map(i -> new UserCreated(i, topic));
     // When
-    var actual0 = eventStore.publish(topic, partition0, UserCreated.createMany(topic, 0)).block();
-    var actual1 = eventStore.publish(topic, partition1, UserCreated.createMany(topic, 1)).block();
+    var actual0 = eventStore.publish(topic, partition0, TRANS_ID, UserCreated.createMany(topic, 0)).block();
+    var actual1 = eventStore.publish(topic, partition1, TRANS_ID, UserCreated.createMany(topic, 1)).block();
 
     // then
     var expected0 = store.get(topic).get(partition0);

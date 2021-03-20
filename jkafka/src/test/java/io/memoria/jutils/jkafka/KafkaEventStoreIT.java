@@ -18,7 +18,9 @@ import static io.memoria.jutils.jkafka.TestConfigs.consumerConf;
 import static io.memoria.jutils.jkafka.TestConfigs.producerConf;
 
 class KafkaEventStoreIT {
+  private static final String FIRST_TRANS_ID = "T0";
   private static final int FIRST_PARTITION = 0;
+  private static final String SECOND_TRANS_ID = "T1";
   private static final int SECOND_PARTITION = 1;
   private static final int MSG_COUNT = 20;
   private static final long OFFSET = 0;
@@ -59,7 +61,7 @@ class KafkaEventStoreIT {
     final String topic = "MyTopic-" + new Random().nextInt(1000);
 
     // When
-    StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, firstEvents))
+    StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, FIRST_TRANS_ID, firstEvents))
                 .expectNext(firstEvents)
                 .verifyComplete();
     // Then
@@ -70,8 +72,8 @@ class KafkaEventStoreIT {
   void dualPublish() {
     // Given
     final String topic = "MyTopic-" + new Random().nextInt(1000);
-    var pub1 = eventStore.publish(topic, FIRST_PARTITION, firstEvents);
-    var pub2 = eventStore.publish(topic, FIRST_PARTITION, secondEvents);
+    var pub1 = eventStore.publish(topic, FIRST_PARTITION, FIRST_TRANS_ID, firstEvents);
+    var pub2 = eventStore.publish(topic, FIRST_PARTITION, FIRST_TRANS_ID, secondEvents);
     // When
     StepVerifier.create(pub1.zipWith(pub2)).expectNext(Tuples.of(firstEvents, secondEvents)).verifyComplete();
     // Then
@@ -86,7 +88,7 @@ class KafkaEventStoreIT {
     final String topic = "MyTopic-" + new Random().nextInt(1000);
 
     // When
-    StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, firstEvents))
+    StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, FIRST_TRANS_ID, firstEvents))
                 .expectNext(firstEvents)
                 .verifyComplete();
     // Then
@@ -101,10 +103,10 @@ class KafkaEventStoreIT {
     StepVerifier.create(eventStore.createTopic(topic, 2, 1)).verifyComplete();
 
     // When
-    StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, firstEvents))
+    StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, FIRST_TRANS_ID, firstEvents))
                 .expectNext(firstEvents)
                 .verifyComplete();
-    StepVerifier.create(eventStore.publish(topic, SECOND_PARTITION, secondEvents))
+    StepVerifier.create(eventStore.publish(topic, SECOND_PARTITION, SECOND_TRANS_ID, secondEvents))
                 .expectNext(secondEvents)
                 .verifyComplete();
 
@@ -121,9 +123,8 @@ class KafkaEventStoreIT {
   void publishAndConsume() {
     // Given
     final String topic = "MyTopic-" + new Random().nextInt(1000);
-
     // When
-    StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, firstEvents))
+    StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, FIRST_TRANS_ID, firstEvents))
                 .expectNext(firstEvents)
                 .verifyComplete();
     // Then

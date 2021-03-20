@@ -51,16 +51,17 @@ public class KafkaUtils {
                 .offset();
   }
 
-  public static void init(KafkaConsumer<String, String> consumer,
-                          String topic,
-                          int partition,
-                          long offset,
-                          Duration timeout) {
+  public static KafkaConsumer<String, String> init(KafkaConsumer<String, String> consumer,
+                                                   String topic,
+                                                   int partition,
+                                                   long offset,
+                                                   Duration timeout) {
     var tp = new TopicPartition(topic, partition);
     consumer.assign(List.of(tp));
     // must call poll before seek
     consumer.poll(timeout);
     consumer.seek(tp, offset);
+    return consumer;
   }
 
   public static Option<String> lastMessage(AdminClient admin,

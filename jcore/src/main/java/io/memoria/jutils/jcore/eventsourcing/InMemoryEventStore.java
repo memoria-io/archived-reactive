@@ -38,7 +38,7 @@ public record InMemoryEventStore(ConcurrentHashMap<String, ConcurrentHashMap<Int
   }
 
   @Override
-  public Mono<List<Event>> publish(String topic, int partition, List<Event> events) {
+  public Mono<List<Event>> publish(String topic, int partition, String transactionId, List<Event> events) {
     return Mono.fromCallable(() -> {
       store.computeIfPresent(topic, (topicKey, oldTopic) -> {
         oldTopic.computeIfPresent(partition, (partitionKey, previousList) -> previousList.appendAll(events));

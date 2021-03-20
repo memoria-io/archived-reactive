@@ -16,6 +16,8 @@ import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static io.memoria.jutils.jkafka.KafkaUtils.adminClient;
 import static io.memoria.jutils.jkafka.KafkaUtils.createKafkaTopic;
@@ -27,21 +29,25 @@ import static io.memoria.jutils.jkafka.KafkaUtils.sendRecord;
 import static io.memoria.jutils.jkafka.KafkaUtils.topicExists;
 
 public class KafkaEventStore implements EventStore {
+  private final ConcurrentHashMap<String, ReentrantLock> locks;
   private final AdminClient admin;
-  private final KafkaConsumer<String, String> consumer;
-  private final KafkaProducer<String, String> producer;
   private final Duration timeout;
   private final Scheduler scheduler;
   private final TextTransformer transformer;
+  private final Map<String, Object> producerConfig;
+  private final Map<String, Object> consumerConfig;
 
   public KafkaEventStore(Map<String, Object> producerConfig,
                          Map<String, Object> consumerConfig,
                          Duration reqTimeout,
                          TextTransformer transformer,
                          Scheduler scheduler) {
-    this.producer = new KafkaProducer<>(producerConfig);
-    this.producer.initTransactions();
-    this.consumer = new KafkaConsumer<>(consumerConfig);
+    locks = new ConcurrentHashMap<>();
+    //    producer = new KafkaProducer<>(producerConfig);
+    //    producer.initTransactions();
+    //    consumer = new KafkaConsumer<>(consumerConfig);
+    this.producerConfig = producerConfig;
+    this.consumerConfig = consumerConfig;
     this.admin = adminClient(producerConfig.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG).toString());
     this.timeout = reqTimeout;
     this.scheduler = scheduler;
@@ -67,7 +73,7 @@ public class KafkaEventStore implements EventStore {
 
   @Override
   public Mono<Event> lastEvent(String topic, int partition) {
-    return Mono.fromCallable(() -> lastMessage(admin, consumer, topic, partition, timeout))
+    return Mono.fromCallable(() -> lastMessage(admin, new KafkaConsumer<>(consumerConfig), topic, partition, timeout))
                .flatMap(ReactorVavrUtils::toMono)
                .map(msg -> transformer.deserialize(msg, Event.class).get())
                .subscribeOn(scheduler);
@@ -81,21 +87,32 @@ public class KafkaEventStore implements EventStore {
   }
 
   @Override
-  public Mono<List<Event>> publish(String topic, int partition, List<Event> events) {
-    return Mono.fromRunnable(producer::beginTransaction)
-               .thenMany(Flux.fromIterable(events))
-               .map(transformer::serialize)
-               .map(Try::get)
-               .flatMap(ev -> Mono.fromCallable(() -> sendRecord(producer, topic, partition, ev, timeout)))
-               .then(Mono.fromRunnable(producer::commitTransaction))
-               .then(Mono.just(events))
-               .subscribeOn(scheduler);
+  public Mono<List<Event>> publish(String topic, int partition, String transactionId, List<Event> events) {
+    return Mono.fromRunnable(() -> {
+      locks.computeIfAbsent(transactionId, this::lock);
+      locks.computeIfPresent(transactionId,(k,v)-> v.)
+      producerConfig.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, transactionId);
+      var producer = new KafkaProducer<String, String>(producerConfig);
+      producer.initTransactions();
+      producer.beginTransaction();
+      events.map(transformer::serialize)
+            .map(Try::get)
+            .map(msg -> Try.of(() -> sendRecord(producer, topic, partition, msg, timeout)))
+            .map(Try::get);
+      producer.commitTransaction();
+    }).then(Mono.just(events)).subscribeOn(scheduler);
+  }
+
+  private ReentrantLock lock(String k) {
+    var l = new ReentrantLock();
+    l.lock();
+    return l;
   }
 
   @Override
   public Flux<Event> subscribe(String topic, int partition, long offset) {
-    return Mono.fromRunnable(() -> init(consumer, topic, partition, offset, timeout))
-               .thenMany(Mono.fromCallable(() -> pollOnce(consumer, topic, partition, timeout)).repeat())
+    return Mono.fromCallable(() -> init(new KafkaConsumer<>(consumerConfig), topic, partition, offset, timeout))
+               .flatMapMany(consumer -> Mono.fromCallable(() -> pollOnce(consumer, topic, partition, timeout)).repeat())
                .concatMap(Flux::fromIterable)
                .map(msg -> transformer.deserialize(msg, Event.class).get())
                .subscribeOn(scheduler);

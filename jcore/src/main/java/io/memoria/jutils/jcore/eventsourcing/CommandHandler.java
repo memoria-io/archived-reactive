@@ -59,7 +59,7 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<L
   private Mono<List<Event>> handle(S s, C command) {
     return Mono.fromCallable(() -> toMono(decider.apply(s, command)))
                .flatMap(Function.identity())
-               .flatMap(events -> eventStore.publish(topic, partition, events))
+               .flatMap(events -> eventStore.publish(topic, partition, command.aggId().value(), events))
                .map(events -> persist(s, command, events));
   }
 
