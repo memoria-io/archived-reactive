@@ -1,19 +1,18 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
 import io.memoria.jutils.jcore.id.Id;
-import io.memoria.jutils.jcore.msgbus.MsgBusAdmin;
+import io.memoria.jutils.jcore.msgbus.MsgBusPublisher;
+import io.memoria.jutils.jcore.text.TextTransformer;
 import io.vavr.Function1;
 import io.vavr.collection.List;
+import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-
-import static io.memoria.jutils.jcore.vavr.ReactorVavrUtils.toMono;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class CommandHandler<S, C extends Command> implements Function1<C, Mono<List<Event>>> {
+public class CommandHandler<S, C extends Command> implements Function1<C, Mono<Void>> {
   public static <S> Mono<ConcurrentHashMap<Id, S>> buildState(Flux<Event> events, Evolver<S> evolver) {
     ConcurrentHashMap<Id, S> db = new ConcurrentHashMap<>();
     return events.map(event -> db.compute(event.aggId(), (k, oldValue) -> evolver.apply(oldValue, event)))
@@ -22,26 +21,23 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<L
 
   private final ConcurrentHashMap<Id, S> db;
   private final Decider<S, C> decider;
-  private final MsgBusAdmin eventStore;
-  private final String topic;
-  private final int partition;
+  private final MsgBusPublisher publisher;
   private final Evolver<S> evolver;
   private final S initState;
+  private final TextTransformer transformer;
 
   public CommandHandler(ConcurrentHashMap<Id, S> db,
                         Decider<S, C> decider,
-                        MsgBusAdmin eventStore,
-                        String topic,
-                        int partition,
+                        MsgBusPublisher publisher,
                         Evolver<S> evolver,
-                        S initState) {
+                        S initState,
+                        TextTransformer transformer) {
     this.db = db;
     this.decider = decider;
-    this.eventStore = eventStore;
-    this.topic = topic;
-    this.partition = partition;
+    this.publisher = publisher;
     this.evolver = evolver;
     this.initState = initState;
+    this.transformer = transformer;
   }
 
   /**
@@ -49,24 +45,24 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<L
    * aggregate was found
    */
   @Override
-  public Mono<List<Event>> apply(C command) {
-    return get(command.aggId()).flatMap(s -> handle(s, command));
+  public Mono<Void> apply(C cmd) {
+    return Mono.fromCallable(() -> {
+      var s = db.getOrDefault(cmd.aggId(), initState);
+      var events = decider.apply(s, cmd).get();
+      var msgs = events.map(transformer::serialize).map(Try::get);
+      return publish(msgs).then(Mono.<Void>fromRunnable(() -> persist(s, cmd, events)));
+    }).flatMap(mono -> mono);
   }
 
-  private Mono<S> get(Id aggId) {
-    return Mono.fromCallable(() -> db.getOrDefault(aggId, initState));
+  private Mono<Void> publish(List<String> msgs) {
+    return publisher.beginTransaction()
+                    .thenMany(Flux.fromIterable(msgs))
+                    .concatMap(publisher::publish)
+                    .then(publisher.commitTransaction());
   }
 
-  private Mono<List<Event>> handle(S s, C command) {
-    return Mono.fromCallable(() -> toMono(decider.apply(s, command)))
-               .flatMap(Function.identity())
-               .flatMap(events -> eventStore.publish(events))
-               .map(events -> persist(s, command, events));
-  }
-
-  private List<Event> persist(S s, C command, List<Event> events) {
+  private void persist(S s, C command, List<Event> events) {
     var newState = events.foldLeft(s, evolver);
     db.put(command.aggId(), newState);
-    return events;
   }
 }
