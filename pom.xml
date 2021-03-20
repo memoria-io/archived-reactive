@@ -5,25 +5,22 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jbom</artifactId>
-        <version>0.24.0</version>
+        <version>0.25.0</version>
     </parent>
 
     <artifactId>jutils</artifactId>
-    <version>0.232.0</version>
+    <version>0.233.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
     <description>Java utilities</description>
     <url>https://memoria.io</url>
     <properties>
-        <reactor.version>2020.0.2</reactor.version>
+        <reactor.version>2020.0.5</reactor.version>
         <vavr.version>0.10.3</vavr.version>
-
-        <r2spi.version>0.8.3.RELEASE</r2spi.version>
-        <r2h2.version>0.8.4.RELEASE</r2h2.version>
-        <pulsar.version>2.7.0</pulsar.version>
-        <jackson.version>2.12.0</jackson.version>
-        <argon2.version>2.8</argon2.version>
+        <kafka.version>2.7.0</kafka.version>
+        <jackson.version>2.12.2</jackson.version>
+        <argon2.version>2.9.1</argon2.version>
         <jsonwebtoken.version>0.11.2</jsonwebtoken.version>
     </properties>
     <organization>
@@ -33,11 +30,9 @@
     <modules>
         <module>jcore</module>
         <module>jtext</module>
-        <module>jpulsar</module>
+        <module>jkafka</module>
         <module>jsec</module>
-        <module>jes</module>
         <module>jweb</module>
-
     </modules>
 
     <distributionManagement>
@@ -81,28 +76,14 @@
             <!-- Streaming Dependencies -->
             <!--======================================================================================== -->
             <dependency>
-                <groupId>org.apache.pulsar</groupId>
-                <artifactId>pulsar-client</artifactId>
-                <version>${pulsar.version}</version>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.pulsar</groupId>
-                <artifactId>pulsar-client-admin</artifactId>
-                <version>${pulsar.version}</version>
-            </dependency>
-            <!--======================================================================================== -->
-            <!-- Database Dependencies -->
-            <!--======================================================================================== -->
-            <dependency>
-                <groupId>io.r2dbc</groupId>
-                <artifactId>r2dbc-spi</artifactId>
-                <version>${r2spi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.r2dbc</groupId>
-                <artifactId>r2dbc-h2</artifactId>
-                <version>${r2h2.version}</version>
-                <scope>test</scope>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-streams</artifactId>
+                <version>${kafka.version}</version>
             </dependency>
             <!--======================================================================================== -->
             <!-- Json Dependencies -->

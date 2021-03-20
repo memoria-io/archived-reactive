@@ -13,22 +13,32 @@ import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 import static java.lang.Boolean.TRUE;
+import static java.util.function.Function.identity;
 
 public final class ReactorVavrUtils {
-  public static <T> Flux<T> toFlux(Try<List<T>> t) {
-    return t.isSuccess() ? Flux.fromIterable(t.get()) : Flux.error(t.getCause());
+  public static <T> Flux<T> toFlux(Try<List<T>> tr) {
+    return Mono.fromCallable(() -> tr.isSuccess() ? Flux.fromIterable(tr.get()) : Flux.<T>error(tr.getCause()))
+               .flatMapMany(identity());
   }
 
   public static <L extends Throwable, R> Mono<R> toMono(Either<L, R> either) {
-    return either.isRight() ? Mono.just(either.get()) : Mono.error(either.getLeft());
+    return Mono.fromCallable(() -> either.isRight() ? Mono.just(either.get()) : Mono.<R>error(either.getLeft()))
+               .flatMap(identity());
   }
 
   public static <T> Mono<T> toMono(Try<T> t) {
-    return t.isSuccess() ? Mono.just(t.get()) : Mono.error(t.getCause());
+    return Mono.fromCallable(() -> t.isSuccess() ? Mono.just(t.get()) : Mono.<T>error(t.getCause()))
+               .flatMap(identity());
+  }
+
+  public static <T> Mono<T> toMono(Option<T> option) {
+    return Mono.fromCallable(() -> (option.isDefined()) ? Mono.just(option.get()) : Mono.<T>empty())
+               .flatMap(identity());
   }
 
   public static <T> Mono<T> toMono(Option<T> option, Throwable throwable) {
-    return (option.isDefined()) ? Mono.just(option.get()) : Mono.error(throwable);
+    return Mono.fromCallable(() -> (option.isDefined()) ? Mono.just(option.get()) : Mono.<T>error(throwable))
+               .flatMap(identity());
   }
 
   public static <T> Function<Boolean, Mono<T>> toMono(Callable<T> t, Throwable throwable) {

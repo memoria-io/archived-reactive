@@ -70,4 +70,7 @@ You can just do pull requests, and I will check them asap.
 
 ## TODOs
 
+* CommandHandler with eventbus as eventstore
+* Pulsar as Eventstore
+* Kafka as Eventstore
 * Eventstore testing suite

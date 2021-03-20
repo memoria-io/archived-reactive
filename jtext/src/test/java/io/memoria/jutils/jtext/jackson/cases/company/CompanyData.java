@@ -26,7 +26,6 @@ public class CompanyData {
   public static final NameCreated NAME_CREATED;
 
   static {
-    
     // Json Resources
     JSON_LIST = fileUtils.read("cases/company/json/List.json").block();
     BOB_ENGINEER_JSON = fileUtils.read("cases/company/json/Engineer.json").block();

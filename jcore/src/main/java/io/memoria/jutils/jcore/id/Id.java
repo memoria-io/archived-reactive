@@ -3,8 +3,6 @@ package io.memoria.jutils.jcore.id;
 import java.util.Objects;
 
 public class Id {
-  private final String value;
-
   public static Id of(long id) {
     return new Id(id + "");
   }
@@ -12,6 +10,8 @@ public class Id {
   public static Id of(String id) {
     return new Id(id);
   }
+
+  private final String value;
 
   private Id(String value) {
     if (value == null || value.isEmpty())

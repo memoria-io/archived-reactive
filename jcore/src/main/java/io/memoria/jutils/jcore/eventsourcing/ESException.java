@@ -5,12 +5,20 @@ package io.memoria.jutils.jcore.eventsourcing;
  */
 public class ESException extends Exception {
   public static class InvalidOperation extends ESException {
+    public static InvalidOperation create(String state, String command) {
+      return new InvalidOperation(state, command);
+    }
+
     private InvalidOperation(String stateName, String commandName) {
       super("Invalid operation: %s on current state: %s".formatted(commandName, stateName));
     }
   }
 
   public static class UnknownCommand extends ESException {
+    public static UnknownCommand create(String command) {
+      return new UnknownCommand(command);
+    }
+
     private UnknownCommand(String command) {
       super("No handler available for the command: %s ".formatted(command));
     }
@@ -18,14 +26,6 @@ public class ESException extends Exception {
 
   public static ESException create(String message) {
     return new ESException(message);
-  }
-
-  public static InvalidOperation invalidOperation(String state, String command) {
-    return new InvalidOperation(state, command);
-  }
-
-  public static UnknownCommand unknownCommand(String command) {
-    return new UnknownCommand(command);
   }
 
   private ESException(String message) {
