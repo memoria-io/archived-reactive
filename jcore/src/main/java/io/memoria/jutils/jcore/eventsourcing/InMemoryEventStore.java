@@ -17,17 +17,6 @@ public record InMemoryEventStore(ConcurrentHashMap<String, ConcurrentHashMap<Int
     return Mono.fromCallable(() -> createTopic(topic, partitions)).then();
   }
 
-  private int createTopic(String topic, int partitions) throws ESException {
-    if (store.containsKey(topic))
-      throw ESException.create("Topic already exists");
-    else {
-      var map = new ConcurrentHashMap<Integer, List<Event>>();
-      List.range(0, partitions).forEach(i -> map.put(i, List.empty()));
-      store.put(topic, map);
-      return partitions;
-    }
-  }
-
   @Override
   public Mono<Long> currentOffset(String topic, int partition) {
     return toMono(Try.of(() -> (long) store.get(topic).get(partition).size()));
@@ -68,5 +57,16 @@ public record InMemoryEventStore(ConcurrentHashMap<String, ConcurrentHashMap<Int
   @Override
   public Flux<Event> subscribe(String topic, int partition, long offset) {
     return Mono.fromCallable(() -> store.get(topic)).flatMapMany(p -> Flux.fromIterable(p.get(partition)));
+  }
+
+  private int createTopic(String topic, int partitions) throws ESException {
+    if (store.containsKey(topic))
+      throw ESException.create("Topic already exists");
+    else {
+      var map = new ConcurrentHashMap<Integer, List<Event>>();
+      List.range(0, partitions).forEach(i -> map.put(i, List.empty()));
+      store.put(topic, map);
+      return partitions;
+    }
   }
 }
