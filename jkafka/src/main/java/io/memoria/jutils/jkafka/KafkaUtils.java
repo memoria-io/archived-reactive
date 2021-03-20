@@ -42,22 +42,6 @@ public class KafkaUtils {
     return partitions;
   }
 
-  //  public static Mono<String> last(KafkaConsumer<String, String> consumer,
-  //                                  String topic,
-  //                                  int partition,
-  //                                  Duration timeout) {
-  //    Mono.fromRunnable(() -> {
-  //      var tp = new TopicPartition(topic, partition);
-  //      consumer.assign(List.of(tp));
-  //      consumer.seekToEnd(List.of(tp));
-  //      var lastOffset = consumer.position(tp);
-  //      // must call poll before seek
-  //      consumer.poll(timeout);
-  //      consumer.seek(tp, lastOffset - 1);
-  //    }).thenMany(pollOnce(consumer, topic, partition, timeout));
-  //    return null;
-  //  }
-
   public static long currentOffset(AdminClient admin, String topic, int partition, Duration timeout)
           throws InterruptedException, ExecutionException, TimeoutException {
     var tp = new TopicPartition(topic, partition);

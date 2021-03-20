@@ -5,13 +5,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface EventStore {
-  /**
-   * 
-   * @param topic
-   * @param partitions
-   * @param replicationFactor
-   * @return number of partitions
-   */
   Mono<Void> createTopic(String topic, int partitions, int replicationFactor);
 
   Mono<Long> currentOffset(String topic, int partition);

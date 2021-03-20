@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
+import reactor.util.function.Tuples;
 
 import java.time.Duration;
 import java.util.Random;
@@ -40,16 +41,6 @@ class KafkaEventStoreIT {
     expectedSecondEvents = secondEvents.toJavaArray(Event[]::new);
   }
 
-  //
-  //  @Test
-  //   void addShouldBeInRightOrder() {
-  //    // When
-  //    var sentFlux = eventStore.add(topic, events);
-  //    // Then
-  //    StepVerifier.create(sentFlux).expectNext(expectedEvents).expectComplete().verify();
-  //  }
-  //
-
   @Test
   void createTopic() {
     // Given
@@ -73,6 +64,20 @@ class KafkaEventStoreIT {
                 .verifyComplete();
     // Then
     StepVerifier.create(eventStore.currentOffset(topic, FIRST_PARTITION)).expectNext(MSG_COUNT + 1L).verifyComplete();
+  }
+
+  @Test
+  void dualPublish() {
+    // Given
+    final String topic = "MyTopic-" + new Random().nextInt(1000);
+    var pub1 = eventStore.publish(topic, FIRST_PARTITION, firstEvents);
+    var pub2 = eventStore.publish(topic, FIRST_PARTITION, secondEvents);
+    // When
+    StepVerifier.create(pub1.zipWith(pub2)).expectNext(Tuples.of(firstEvents, secondEvents)).verifyComplete();
+    // Then
+    StepVerifier.create(eventStore.subscribe(topic, FIRST_PARTITION, OFFSET).take(MSG_COUNT))
+                .expectNext(expectedFirstEvents)
+                .verifyComplete();
   }
 
   @Test
@@ -113,7 +118,7 @@ class KafkaEventStoreIT {
   }
 
   @Test
-  void produceAndConsume() {
+  void publishAndConsume() {
     // Given
     final String topic = "MyTopic-" + new Random().nextInt(1000);
 

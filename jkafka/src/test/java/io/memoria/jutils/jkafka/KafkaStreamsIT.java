@@ -58,11 +58,10 @@ class KafkaStreamsIT {
     wordCounts.toStream().to(OUTPUT_TOPIC, Produced.with(stringSerde, longSerde));
 
     KafkaStreams kafkaStreams = new KafkaStreams(streamsBuilder.build(), properties);
-    kafkaStreams.setUncaughtExceptionHandler((Thread thread, Throwable throwable) -> {
-      throwable.printStackTrace();
-    });
+    kafkaStreams.setUncaughtExceptionHandler((Thread thread, Throwable throwable) -> throwable.printStackTrace());
     kafkaStreams.start();
   }
+
   private final KafkaConsumer<String, String> consumer;
   private final KafkaProducer<String, String> producer;
   private final AdminClient adminClient;
