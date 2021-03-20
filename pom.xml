@@ -33,10 +33,11 @@
     <modules>
         <module>jcore</module>
         <module>jtext</module>
+        <module>jpulsar</module>
         <module>jsec</module>
         <module>jweb</module>
-        <module>jr2</module>
-        <module>jr2pg</module>
+        <module>r2es</module>
+        <module>r2pg</module>
     </modules>
 
     <distributionManagement>

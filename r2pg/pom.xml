@@ -20,7 +20,7 @@
         <!--======================================================================================== -->
         <dependency>
             <groupId>io.memoria.jutils</groupId>
-            <artifactId>jr2</artifactId>
+            <artifactId>r2es</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <!--======================================================================================== -->

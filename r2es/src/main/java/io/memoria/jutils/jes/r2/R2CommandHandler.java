@@ -14,7 +14,6 @@ import static io.memoria.jutils.jes.r2.SqlUtils.safeTableName;
 /**
  * An SQL based commandHandler
  */
-@SuppressWarnings("ClassCanBeRecord")
 public final class R2CommandHandler<S, C extends Command> implements CommandHandler<C> {
   private final ConnectionFactory connectionFactory;
   private final TextTransformer textTransformer;
