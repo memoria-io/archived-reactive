@@ -90,7 +90,8 @@ public class KafkaEventStore implements EventStore {
   @Override
   public Flux<Event> subscribe(String topic, int partition, long offset) {
     return Mono.fromRunnable(() -> init(consumer, topic, partition, offset, timeout))
-               .thenMany(pollOnce(consumer, topic, partition, timeout).repeat())
+               .thenMany(Mono.fromCallable(() -> pollOnce(consumer, topic, partition, timeout)).repeat())
+               .concatMap(Flux::fromIterable)
                .map(msg -> transformer.deserialize(msg, Event.class).get())
                .subscribeOn(scheduler);
   }

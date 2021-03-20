@@ -13,7 +13,6 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -47,21 +46,21 @@ public class KafkaUtils {
     return partitions;
   }
 
-//  public static Mono<String> last(KafkaConsumer<String, String> consumer,
-//                                  String topic,
-//                                  int partition,
-//                                  Duration timeout) {
-//    Mono.fromRunnable(() -> {
-//      var tp = new TopicPartition(topic, partition);
-//      consumer.assign(List.of(tp));
-//      consumer.seekToEnd(List.of(tp));
-//      var lastOffset = consumer.position(tp);
-//      // must call poll before seek
-//      consumer.poll(timeout);
-//      consumer.seek(tp, lastOffset - 1);
-//    }).thenMany(pollOnce(consumer, topic, partition, timeout));
-//    return null;
-//  }
+  //  public static Mono<String> last(KafkaConsumer<String, String> consumer,
+  //                                  String topic,
+  //                                  int partition,
+  //                                  Duration timeout) {
+  //    Mono.fromRunnable(() -> {
+  //      var tp = new TopicPartition(topic, partition);
+  //      consumer.assign(List.of(tp));
+  //      consumer.seekToEnd(List.of(tp));
+  //      var lastOffset = consumer.position(tp);
+  //      // must call poll before seek
+  //      consumer.poll(timeout);
+  //      consumer.seek(tp, lastOffset - 1);
+  //    }).thenMany(pollOnce(consumer, topic, partition, timeout));
+  //    return null;
+  //  }
 
   public static void init(KafkaConsumer<String, String> consumer,
                           String topic,
@@ -81,16 +80,12 @@ public class KafkaUtils {
     return Option.of(map.get(topic)).map(opt -> opt.partitions().size());
   }
 
-  public static Flux<String> pollOnce(KafkaConsumer<String, String> consumer,
+  public static List<String> pollOnce(KafkaConsumer<String, String> consumer,
                                       String topic,
                                       int partition,
                                       Duration timeout) {
     var tp = new TopicPartition(topic, partition);
-    return Mono.fromCallable(() -> consumer.poll(timeout)
-                                           .records(tp)
-                                           .stream()
-                                           .map(ConsumerRecord::value)
-                                           .collect(toList())).flatMapMany(Flux::fromIterable);
+    return consumer.poll(timeout).records(tp).stream().map(ConsumerRecord::value).collect(toList());
   }
 
   public static long lastPartitionOffset(AdminClient admin, String topic, int partition, Duration timeout)
