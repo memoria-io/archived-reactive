@@ -17,5 +17,5 @@ public interface EventStore {
 
   Mono<Integer> nOfPartitions(String topic);
 
-  Mono<Long> lastOffset(String topic, int partition);
+  Mono<Long> currentOffset(String topic, int partition);
 }

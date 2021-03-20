@@ -55,7 +55,7 @@ public record InMemoryEventStore(ConcurrentHashMap<String, ConcurrentHashMap<Int
   }
 
   @Override
-  public Mono<Long> lastOffset(String topic, int partition) {
+  public Mono<Long> currentOffset(String topic, int partition) {
     return null;
   }
 }

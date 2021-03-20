@@ -78,9 +78,12 @@ public class KafkaUtils {
                                            int partition,
                                            Duration timeout)
           throws InterruptedException, ExecutionException, TimeoutException {
-    var lastOffset = lastPartitionOffset(admin, topic, partition, timeout);
-    init(consumer, topic, partition, lastOffset - 1, timeout);
-    return io.vavr.collection.List.ofAll(pollOnce(consumer, topic, partition, timeout)).lastOption();
+    var lastOffset = currentOffset(admin, topic, partition, timeout);
+    var tp = new TopicPartition(topic, partition);
+    consumer.assign(List.of(tp));
+    consumer.seek(tp, lastOffset - 2);
+    var list = pollOnce(consumer, topic, partition, timeout);
+    return io.vavr.collection.List.ofAll(list).lastOption();
   }
 
   public static Option<Integer> nPartitions(AdminClient admin, String topic, Duration timeout)
@@ -97,7 +100,7 @@ public class KafkaUtils {
     return consumer.poll(timeout).records(tp).stream().map(ConsumerRecord::value).collect(toList());
   }
 
-  public static long lastPartitionOffset(AdminClient admin, String topic, int partition, Duration timeout)
+  public static long currentOffset(AdminClient admin, String topic, int partition, Duration timeout)
           throws InterruptedException, ExecutionException, TimeoutException {
     var tp = new TopicPartition(topic, partition);
     return admin.listOffsets(Map.of(tp, OffsetSpec.latest()))

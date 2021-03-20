@@ -16,19 +16,19 @@ import java.util.Random;
 import static io.memoria.jutils.jkafka.TestConfigs.consumerConf;
 import static io.memoria.jutils.jkafka.TestConfigs.producerConf;
 
-public class KafkaEventStoreTest {
-  private static final String topic = "topic-" + new Random().nextInt(1000);
+class KafkaEventStoreIT {
   private static final int FIRST_PARTITION = 0;
   private static final int SECOND_PARTITION = 1;
   private static final int MSG_COUNT = 20;
   private static final long OFFSET = 0;
+  private final String topic = "MyTopic-" + new Random().nextInt(1000);
   private final EventStore eventStore;
   private final List<Event> firstEvents;
   private final Event[] expectedFirstEvents;
   private final List<Event> secondEvents;
   private final Event[] expectedSecondEvents;
 
-  public KafkaEventStoreTest() {
+  public KafkaEventStoreIT() {
     this.eventStore = new KafkaEventStore(producerConf,
                                           consumerConf,
                                           Duration.ofMillis(2000),
@@ -50,6 +50,7 @@ public class KafkaEventStoreTest {
   //    StepVerifier.create(sentFlux).expectNext(expectedEvents).expectComplete().verify();
   //  }
   //
+  
   @Test
   @DisplayName("Multiple different partitions")
   void partitions() {
@@ -102,12 +103,12 @@ public class KafkaEventStoreTest {
   }
 
   @Test
-  void lastOffset() {
+  void currentOffset() {
     // When
     StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, firstEvents))
                 .expectNext(firstEvents)
                 .verifyComplete();
     // Then
-    StepVerifier.create(eventStore.lastOffset(topic, FIRST_PARTITION)).expectNext(21L).verifyComplete();
+    StepVerifier.create(eventStore.currentOffset(topic, FIRST_PARTITION)).expectNext(MSG_COUNT + 1L).verifyComplete();
   }
 }

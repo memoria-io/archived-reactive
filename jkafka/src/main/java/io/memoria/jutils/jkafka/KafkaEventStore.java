@@ -20,7 +20,6 @@ import static io.memoria.jutils.jkafka.KafkaUtils.adminClient;
 import static io.memoria.jutils.jkafka.KafkaUtils.createKafkaTopic;
 import static io.memoria.jutils.jkafka.KafkaUtils.init;
 import static io.memoria.jutils.jkafka.KafkaUtils.lastMessage;
-import static io.memoria.jutils.jkafka.KafkaUtils.lastPartitionOffset;
 import static io.memoria.jutils.jkafka.KafkaUtils.nPartitions;
 import static io.memoria.jutils.jkafka.KafkaUtils.pollOnce;
 import static io.memoria.jutils.jkafka.KafkaUtils.sendRecord;
@@ -68,8 +67,8 @@ public class KafkaEventStore implements EventStore {
   }
 
   @Override
-  public Mono<Long> lastOffset(String topic, int partition) {
-    return Mono.fromCallable(() -> lastPartitionOffset(admin, topic, partition, timeout)).subscribeOn(scheduler);
+  public Mono<Long> currentOffset(String topic, int partition) {
+    return Mono.fromCallable(() -> KafkaUtils.currentOffset(admin, topic, partition, timeout)).subscribeOn(scheduler);
   }
 
   @Override

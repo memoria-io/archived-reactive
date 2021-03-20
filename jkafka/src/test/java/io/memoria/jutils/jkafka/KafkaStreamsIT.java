@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 
-class KafkaStreamsTest {
+class KafkaStreamsIT {
 
   private static final Scheduler scheduler = Schedulers.boundedElastic();
   private static final Duration timeout = Duration.of(1, SECONDS);
@@ -44,7 +44,7 @@ class KafkaStreamsTest {
   private final KafkaProducer<String, String> producer;
   private final AdminClient adminClient;
 
-  KafkaStreamsTest() {
+  KafkaStreamsIT() {
     this.consumer = new KafkaConsumer<>(TestConfigs.consumerConf);
     this.producer = new KafkaProducer<>(TestConfigs.producerConf);
     // Setup admin client
