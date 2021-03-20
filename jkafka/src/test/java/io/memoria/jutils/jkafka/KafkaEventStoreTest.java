@@ -98,6 +98,16 @@ public class KafkaEventStoreTest {
                 .expectNext(firstEvents)
                 .verifyComplete();
     // Then
-    StepVerifier.create(eventStore.lastEvent(topic, FIRST_PARTITION)).expectNext(firstEvents.head()).verifyComplete();
+    StepVerifier.create(eventStore.lastEvent(topic, FIRST_PARTITION)).expectNext(firstEvents.last()).verifyComplete();
+  }
+
+  @Test
+  void lastOffset() {
+    // When
+    StepVerifier.create(eventStore.publish(topic, FIRST_PARTITION, firstEvents))
+                .expectNext(firstEvents)
+                .verifyComplete();
+    // Then
+    StepVerifier.create(eventStore.lastOffset(topic, FIRST_PARTITION)).expectNext(21L).verifyComplete();
   }
 }

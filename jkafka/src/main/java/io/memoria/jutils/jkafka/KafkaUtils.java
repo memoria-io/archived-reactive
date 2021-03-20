@@ -11,9 +11,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.List;
@@ -74,6 +72,17 @@ public class KafkaUtils {
     consumer.seek(tp, offset);
   }
 
+  public static Option<String> lastMessage(AdminClient admin,
+                                           KafkaConsumer<String, String> consumer,
+                                           String topic,
+                                           int partition,
+                                           Duration timeout)
+          throws InterruptedException, ExecutionException, TimeoutException {
+    var lastOffset = lastPartitionOffset(admin, topic, partition, timeout);
+    init(consumer, topic, partition, lastOffset - 1, timeout);
+    return io.vavr.collection.List.ofAll(pollOnce(consumer, topic, partition, timeout)).lastOption();
+  }
+
   public static Option<Integer> nPartitions(AdminClient admin, String topic, Duration timeout)
           throws InterruptedException, ExecutionException, TimeoutException {
     var map = admin.describeTopics(List.of(topic)).all().get(timeout.toMillis(), MILLISECONDS);
@@ -97,17 +106,14 @@ public class KafkaUtils {
                 .offset();
   }
 
-  public static Mono<RecordMetadata> sendRecord(KafkaProducer<String, String> producer,
-                                                String topic,
-                                                int partition,
-                                                String key,
-                                                String value,
-                                                Duration timeout) {
+  public static long sendRecord(KafkaProducer<String, String> producer,
+                                String topic,
+                                int partition,
+                                String value,
+                                Duration timeout) throws InterruptedException, ExecutionException, TimeoutException {
     var tp = new TopicPartition(topic, partition);
-    return Mono.fromCallable(() -> {
-      var prodRec = new ProducerRecord<>(tp.topic(), tp.partition(), key, value);
-      return producer.send(prodRec).get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-    });
+    var prodRec = new ProducerRecord<String, String>(tp.topic(), tp.partition(), null, value);
+    return producer.send(prodRec).get(timeout.toMillis(), TimeUnit.MILLISECONDS).offset();
   }
 
   public static Boolean topicExists(AdminClient admin, String topic) throws InterruptedException, ExecutionException {

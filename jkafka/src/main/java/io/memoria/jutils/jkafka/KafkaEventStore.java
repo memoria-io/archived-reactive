@@ -5,10 +5,10 @@ import io.memoria.jutils.jcore.eventsourcing.EventStore;
 import io.memoria.jutils.jcore.text.TextTransformer;
 import io.memoria.jutils.jcore.vavr.ReactorVavrUtils;
 import io.vavr.collection.List;
+import io.vavr.control.Try;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -19,9 +19,11 @@ import java.util.Map;
 import static io.memoria.jutils.jkafka.KafkaUtils.adminClient;
 import static io.memoria.jutils.jkafka.KafkaUtils.createKafkaTopic;
 import static io.memoria.jutils.jkafka.KafkaUtils.init;
+import static io.memoria.jutils.jkafka.KafkaUtils.lastMessage;
 import static io.memoria.jutils.jkafka.KafkaUtils.lastPartitionOffset;
 import static io.memoria.jutils.jkafka.KafkaUtils.nPartitions;
 import static io.memoria.jutils.jkafka.KafkaUtils.pollOnce;
+import static io.memoria.jutils.jkafka.KafkaUtils.sendRecord;
 import static io.memoria.jutils.jkafka.KafkaUtils.topicExists;
 
 public class KafkaEventStore implements EventStore {
@@ -58,9 +60,10 @@ public class KafkaEventStore implements EventStore {
   }
 
   @Override
-  public Mono<Integer> nOfPartitions(String topic) {
-    return Mono.fromCallable(() -> nPartitions(admin, topic, timeout))
+  public Mono<Event> lastEvent(String topic, int partition) {
+    return Mono.fromCallable(() -> lastMessage(admin, consumer, topic, partition, timeout))
                .flatMap(ReactorVavrUtils::toMono)
+               .map(msg -> transformer.deserialize(msg, Event.class).get())
                .subscribeOn(scheduler);
   }
 
@@ -70,17 +73,19 @@ public class KafkaEventStore implements EventStore {
   }
 
   @Override
-  public Mono<Event> lastEvent(String topic, int partition) {
-    //    return last(consumer, topic, partition, timeout).map(str -> transformer.deserialize(str, Event.class).get())
-    //                                                    .subscribeOn(scheduler);
-    return null;
+  public Mono<Integer> nOfPartitions(String topic) {
+    return Mono.fromCallable(() -> nPartitions(admin, topic, timeout))
+               .flatMap(ReactorVavrUtils::toMono)
+               .subscribeOn(scheduler);
   }
 
   @Override
   public Mono<List<Event>> publish(String topic, int partition, List<Event> events) {
     return Mono.fromRunnable(producer::beginTransaction)
                .thenMany(Flux.fromIterable(events))
-               .flatMap(ev -> publishEvent(topic, partition, ev))
+               .map(transformer::serialize)
+               .map(Try::get)
+               .flatMap(ev -> Mono.fromCallable(() -> sendRecord(producer, topic, partition, ev, timeout)))
                .doOnNext(System.out::println)
                .then(Mono.fromRunnable(producer::commitTransaction))
                .then(Mono.just(events))
@@ -94,11 +99,5 @@ public class KafkaEventStore implements EventStore {
                .concatMap(Flux::fromIterable)
                .map(msg -> transformer.deserialize(msg, Event.class).get())
                .subscribeOn(scheduler);
-  }
-
-  private Mono<Long> publishEvent(String topic, int partition, Event ev) {
-    var value = transformer.serialize(ev).get();
-    return KafkaUtils.sendRecord(producer, topic, partition, ev.aggId().value(), value, timeout)
-                     .map(RecordMetadata::offset);
   }
 }
