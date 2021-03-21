@@ -26,7 +26,7 @@ class MemAdminTest {
     // Then
     StepVerifier.create(admin.exists(topic)).expectNext(true).expectComplete().verify();
     StepVerifier.create(admin.nOfPartitions(topic)).expectNext(2).verifyComplete();
-    StepVerifier.create(admin.currentOffset(topic, 0)).expectNext(3).verifyComplete();
-    StepVerifier.create(admin.currentOffset(topic, 1)).expectNext(4).verifyComplete();
+    StepVerifier.create(admin.currentOffset(topic, 0)).expectNext(3L).verifyComplete();
+    StepVerifier.create(admin.currentOffset(topic, 1)).expectNext(4L).verifyComplete();
   }
 }
