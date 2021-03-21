@@ -1,6 +1,7 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
 import io.memoria.jutils.jcore.eventsourcing.data.user.User;
+import io.memoria.jutils.jcore.eventsourcing.data.user.User.Account;
 import io.memoria.jutils.jcore.eventsourcing.data.user.User.Visitor;
 import io.memoria.jutils.jcore.eventsourcing.data.user.UserCommand;
 import io.memoria.jutils.jcore.eventsourcing.data.user.UserCommand.CreateUser;
@@ -9,7 +10,7 @@ import io.memoria.jutils.jcore.eventsourcing.data.user.UserEvent.UserCreated;
 import io.memoria.jutils.jcore.eventsourcing.data.user.UserEvolver;
 import io.memoria.jutils.jcore.eventsourcing.data.user.UserTextTransformer;
 import io.memoria.jutils.jcore.id.Id;
-import io.memoria.jutils.jcore.id.SerialIdGenerator;
+import io.memoria.jutils.jcore.id.IdGenerator;
 import io.memoria.jutils.jcore.msgbus.MemAdmin;
 import io.memoria.jutils.jcore.msgbus.MemPublisher;
 import io.memoria.jutils.jcore.msgbus.MemSubscriber;
@@ -22,8 +23,8 @@ import reactor.core.publisher.Flux;
 import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommandHandlerTest {
@@ -37,7 +38,7 @@ class CommandHandlerTest {
 
   CommandHandlerTest() {
     // Constants
-    var idGen = new SerialIdGenerator(new AtomicLong());
+    IdGenerator idGen = () -> Id.of(1);
     var decider = new UserDecider(idGen, () -> LocalDateTime.of(2020, 10, 10, 10, 10));
     // Setup
     stateStore = new ConcurrentHashMap<>();
@@ -58,9 +59,10 @@ class CommandHandlerTest {
 
   @Test
   void initialEvents() {
-    cmdHandler.apply(new CreateUser(0, "name")).subscribe();
+    cmdHandler.apply(new CreateUser(0, "bob")).subscribe();
     var userCreatedMsg = eventStore.get(topic).get(partition).head();
     var userCreated = transformer.deserialize(userCreatedMsg, Event.class).get();
     assertTrue(userCreated instanceof UserCreated);
+    assertTrue(stateStore.get(Id.of("bob")) instanceof Account);
   }
 }

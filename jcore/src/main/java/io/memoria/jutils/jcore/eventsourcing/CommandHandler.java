@@ -19,7 +19,7 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<V
                  .then(Mono.just(db));
   }
 
-  private final ConcurrentHashMap<Id, S> db;
+  private final ConcurrentHashMap<Id, S> stateStore;
   private final Decider<S, C> decider;
   private final MsgBusPublisher publisher;
   private final Evolver<S> evolver;
@@ -32,7 +32,7 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<V
                         Evolver<S> evolver,
                         TextTransformer transformer,
                         MsgBusPublisher publisher) {
-    this.db = stateStore;
+    this.stateStore = stateStore;
     this.decider = decider;
     this.publisher = publisher;
     this.evolver = evolver;
@@ -47,7 +47,7 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<V
   @Override
   public Mono<Void> apply(C cmd) {
     return Mono.fromCallable(() -> {
-      var s = db.getOrDefault(cmd.aggId(), initState);
+      var s = stateStore.getOrDefault(cmd.aggId(), initState);
       var events = decider.apply(s, cmd).get();
       var msgs = events.map(transformer::serialize).map(Try::get);
       return publish(msgs).then(Mono.<Void>fromRunnable(() -> persist(s, cmd, events)));
@@ -56,7 +56,7 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<V
 
   private void persist(S s, C command, List<Event> events) {
     var newState = events.foldLeft(s, evolver);
-    db.put(command.aggId(), newState);
+    stateStore.put(command.aggId(), newState);
   }
 
   private Mono<Void> publish(List<String> msgs) {
