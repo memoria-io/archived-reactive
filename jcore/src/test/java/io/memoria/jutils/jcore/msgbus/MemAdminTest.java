@@ -21,8 +21,8 @@ class MemAdminTest {
     var topic = "topic";
     // When
     StepVerifier.create(admin.createTopic(topic, 2, 1)).verifyComplete();
-    store.get(topic).put(0,List.of("1","2","3"));
-    store.get(topic).put(1,List.of("1","2","3","4"));
+    store.get(topic).put(0, List.of("1", "2", "3"));
+    store.get(topic).put(1, List.of("1", "2", "3", "4"));
     // Then
     StepVerifier.create(admin.exists(topic)).expectNext(true).expectComplete().verify();
     StepVerifier.create(admin.nOfPartitions(topic)).expectNext(2).verifyComplete();

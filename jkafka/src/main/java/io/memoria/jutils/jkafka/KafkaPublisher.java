@@ -15,7 +15,7 @@ public class KafkaPublisher implements MsgBusPublisher {
   public final String topic;
   public final int partition;
   public final String TRANSACTION_ID;
-  
+
   private final KafkaProducer<String, String> producer;
   private final Duration timeout;
   private final Scheduler scheduler;
@@ -36,13 +36,13 @@ public class KafkaPublisher implements MsgBusPublisher {
   }
 
   @Override
-  public Mono<Void> beginTransaction() {
-    return Mono.<Void>fromRunnable(producer::beginTransaction).subscribeOn(scheduler);
+  public Mono<Void> abortTransaction() {
+    return Mono.<Void>fromRunnable(producer::abortTransaction).subscribeOn(scheduler);
   }
 
   @Override
-  public Mono<Void> abortTransaction() {
-    return Mono.<Void>fromRunnable(producer::abortTransaction).subscribeOn(scheduler);
+  public Mono<Void> beginTransaction() {
+    return Mono.<Void>fromRunnable(producer::beginTransaction).subscribeOn(scheduler);
   }
 
   @Override

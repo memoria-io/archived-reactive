@@ -1,6 +1,6 @@
-package io.memoria.jutils.jcore.eventsourcing;
+package io.memoria.jutils.jcore.eventsourcing.data.user;
 
-interface User {
+public interface User {
   record Account(String name) implements User {}
 
   record Visitor() implements User {}

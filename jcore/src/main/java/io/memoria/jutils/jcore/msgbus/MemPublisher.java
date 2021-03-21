@@ -11,12 +11,12 @@ public record MemPublisher(String topic,
         implements MsgBusPublisher {
 
   @Override
-  public Mono<Void> beginTransaction() {
+  public Mono<Void> abortTransaction() {
     return Mono.empty();
   }
 
   @Override
-  public Mono<Void> abortTransaction() {
+  public Mono<Void> beginTransaction() {
     return Mono.empty();
   }
 

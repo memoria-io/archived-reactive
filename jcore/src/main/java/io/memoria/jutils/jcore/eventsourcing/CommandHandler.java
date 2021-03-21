@@ -26,13 +26,13 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<V
   private final S initState;
   private final TextTransformer transformer;
 
-  public CommandHandler(ConcurrentHashMap<Id, S> db,
+  public CommandHandler(S initState,
+                        ConcurrentHashMap<Id, S> stateStore,
                         Decider<S, C> decider,
-                        MsgBusPublisher publisher,
                         Evolver<S> evolver,
-                        S initState,
-                        TextTransformer transformer) {
-    this.db = db;
+                        TextTransformer transformer,
+                        MsgBusPublisher publisher) {
+    this.db = stateStore;
     this.decider = decider;
     this.publisher = publisher;
     this.evolver = evolver;
@@ -54,15 +54,15 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<V
     }).flatMap(mono -> mono);
   }
 
+  private void persist(S s, C command, List<Event> events) {
+    var newState = events.foldLeft(s, evolver);
+    db.put(command.aggId(), newState);
+  }
+
   private Mono<Void> publish(List<String> msgs) {
     return publisher.beginTransaction()
                     .thenMany(Flux.fromIterable(msgs))
                     .concatMap(publisher::publish)
                     .then(publisher.commitTransaction());
-  }
-
-  private void persist(S s, C command, List<Event> events) {
-    var newState = events.foldLeft(s, evolver);
-    db.put(command.aggId(), newState);
   }
 }

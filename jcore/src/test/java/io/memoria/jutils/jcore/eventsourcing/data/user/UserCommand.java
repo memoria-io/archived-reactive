@@ -1,9 +1,10 @@
-package io.memoria.jutils.jcore.eventsourcing;
+package io.memoria.jutils.jcore.eventsourcing.data.user;
 
+import io.memoria.jutils.jcore.eventsourcing.Command;
 import io.memoria.jutils.jcore.id.Id;
 import io.vavr.collection.List;
 
-interface UserCommand extends Command {
+public interface UserCommand extends Command {
 
   record CreateUser(Id commandId, Id aggId, String username) implements UserCommand {
     public static List<UserCommand> createMany(String topic, long i) {
