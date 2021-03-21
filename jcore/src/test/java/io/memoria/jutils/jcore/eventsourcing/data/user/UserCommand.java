@@ -12,8 +12,8 @@ public interface UserCommand extends Command {
       return List.range((i * factor) + 1, (i * factor) + factor).map(j -> new CreateUser(j, topic));
     }
 
-    public CreateUser(long eventId, String topic) {
-      this(Id.of(eventId), Id.of(topic), "username" + eventId);
+    public CreateUser(long eventId, String name) {
+      this(Id.of(eventId), Id.of(name), "username" + eventId);
     }
   }
 }
