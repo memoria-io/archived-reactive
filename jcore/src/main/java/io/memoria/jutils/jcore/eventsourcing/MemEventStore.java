@@ -16,6 +16,11 @@ public record MemEventStore(String topic,
         implements EventStore {
 
   @Override
+  public Mono<Event> last() {
+    return toMono(Try.of(() -> store.get(topic).get(partition).last()));
+  }
+
+  @Override
   public Mono<Long> publish(List<Event> msgs) {
     return Mono.fromCallable(() -> {
       store.computeIfPresent(topic, (topicKey, oldTopic) -> {
@@ -35,10 +40,5 @@ public record MemEventStore(String topic,
   @Override
   public Flux<Event> subscribe(long offset) {
     return toMono(Try.of(() -> store.get(topic).get(partition))).flatMapMany(Flux::fromIterable).skip(offset);
-  }
-
-  @Override
-  public Mono<Event> last() {
-    return toMono(Try.of(() -> store.get(topic).get(partition).last()));
   }
 }

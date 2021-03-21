@@ -40,7 +40,7 @@ public class KafkaAdmin implements EventStoreAdmin {
   public Mono<Boolean> exists(String topic) {
     return Mono.fromCallable(() -> topicExists(admin, topic)).subscribeOn(scheduler);
   }
-  
+
   @Override
   public Mono<Integer> nOfPartitions(String topic) {
     return Mono.fromCallable(() -> nPartitions(admin, topic, timeout))

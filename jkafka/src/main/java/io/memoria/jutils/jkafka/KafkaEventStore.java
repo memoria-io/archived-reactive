@@ -49,6 +49,12 @@ public class KafkaEventStore implements EventStore {
   }
 
   @Override
+  public Mono<Event> last() {
+    var lastMono = toMono(KafkaUtils.lastMessage(consumerConfig, topic, partition, timeout));
+    return lastMono.map(msg -> transformer.deserialize(msg, Event.class)).map(Try::get).subscribeOn(scheduler);
+  }
+
+  @Override
   public Mono<Long> publish(List<Event> events) {
     return Mono.fromCallable(() -> events.map(transformer::serialize).map(Try::get))
                .flatMap(msgs -> toMono(sendRecords(producer, topic, partition, msgs, timeout)))
@@ -63,11 +69,5 @@ public class KafkaEventStore implements EventStore {
                .map(msg -> transformer.deserialize(msg, Event.class))
                .map(Try::get)
                .subscribeOn(scheduler);
-  }
-
-  @Override
-  public Mono<Event> last() {
-    var lastMono = toMono(KafkaUtils.lastMessage(consumerConfig, topic, partition, timeout));
-    return lastMono.map(msg -> transformer.deserialize(msg, Event.class)).map(Try::get).subscribeOn(scheduler);
   }
 }

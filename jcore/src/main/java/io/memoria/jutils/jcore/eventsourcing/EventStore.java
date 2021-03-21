@@ -5,11 +5,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface EventStore {
+  Mono<Event> last();
+
   Mono<Long> publish(List<Event> msg);
 
   Flux<Event> subscribe(long offset);
-
-  Mono<Event> last();
 
   /**
    * Used for initial state building
