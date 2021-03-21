@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommandHandlerTest {
@@ -41,7 +40,6 @@ class CommandHandlerTest {
     IdGenerator idGen = () -> Id.of(1);
     var decider = new UserDecider(idGen, () -> LocalDateTime.of(2020, 10, 10, 10, 10));
     // Setup
-    stateStore = new ConcurrentHashMap<>();
     eventStore = new ConcurrentHashMap<>();
     var msgBusAdmin = new MemAdmin(eventStore);
     var offset = msgBusAdmin.currentOffset(topic, partition).onErrorReturn(0L).block();
@@ -53,7 +51,7 @@ class CommandHandlerTest {
                                .map(msg -> transformer.deserialize(msg, Event.class))
                                .map(Try::get);
     var evolver = new UserEvolver();
-    CommandHandler.buildState(initEvents, evolver).block();
+    stateStore = CommandHandler.buildState(initEvents, evolver).block();
     cmdHandler = new CommandHandler<>(new Visitor(), stateStore, decider, evolver, transformer, publisher);
   }
 

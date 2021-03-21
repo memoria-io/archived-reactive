@@ -1,7 +1,7 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
 import io.memoria.jutils.jcore.id.Id;
-import io.memoria.jutils.jcore.msgbus.MsgBusPublisher;
+import io.memoria.jutils.jcore.msgbus.MsgBus;
 import io.memoria.jutils.jcore.text.TextTransformer;
 import io.vavr.Function1;
 import io.vavr.collection.List;
@@ -11,33 +11,28 @@ import reactor.core.publisher.Mono;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-@SuppressWarnings("ClassCanBeRecord")
-public class CommandHandler<S, C extends Command> implements Function1<C, Mono<Void>> {
-  public static <S> Mono<ConcurrentHashMap<Id, S>> buildState(Flux<Event> events, Evolver<S> evolver) {
+public record CommandHandler<S, C extends Command>(S initState,
+                                                   MsgBus msgBus,
+                                                   ConcurrentHashMap<Id, S> stateStore,
+                                                   TextTransformer transformer,
+                                                   Decider<S, C> decider,
+                                                   Evolver<S> evolver) implements Function1<C, Mono<Void>> {
+
+  public static <S> Mono<ConcurrentHashMap<Id, S>> evolve(String topic,
+                                                          int partition,
+                                                          MsgBus msgBus,
+                                                          TextTransformer transformer,
+                                                          Evolver<S> evolver) {
     ConcurrentHashMap<Id, S> db = new ConcurrentHashMap<>();
-    return events.map(event -> db.compute(event.aggId(), (k, oldValue) -> evolver.apply(oldValue, event)))
+    msgBus.currentOffset(topic, partition)
+          .map(offset -> offset - 2)
+          .map(msgBus::subscribe)
+          .map(msg -> transformer.deserialize(msg, Event.class));
+    return msgBus.subscribe()
+                 .map(msg -> transformer.deserialize(msg, Event.class))
+                 .map(Try::get)
+                 .map(event -> db.compute(event.aggId(), (k, oldValue) -> evolver.apply(oldValue, event)))
                  .then(Mono.just(db));
-  }
-
-  private final ConcurrentHashMap<Id, S> stateStore;
-  private final Decider<S, C> decider;
-  private final MsgBusPublisher publisher;
-  private final Evolver<S> evolver;
-  private final S initState;
-  private final TextTransformer transformer;
-
-  public CommandHandler(S initState,
-                        ConcurrentHashMap<Id, S> stateStore,
-                        Decider<S, C> decider,
-                        Evolver<S> evolver,
-                        TextTransformer transformer,
-                        MsgBusPublisher publisher) {
-    this.stateStore = stateStore;
-    this.decider = decider;
-    this.publisher = publisher;
-    this.evolver = evolver;
-    this.initState = initState;
-    this.transformer = transformer;
   }
 
   /**
@@ -60,9 +55,9 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<V
   }
 
   private Mono<Void> publish(List<String> msgs) {
-    return publisher.beginTransaction()
-                    .thenMany(Flux.fromIterable(msgs))
-                    .concatMap(publisher::publish)
-                    .then(publisher.commitTransaction());
+    return msgBus.beginTransaction()
+                 .thenMany(Flux.fromIterable(msgs))
+                 .concatMap(msgBus::publish)
+                 .then(msgBus.commitTransaction());
   }
 }

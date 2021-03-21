@@ -8,8 +8,7 @@ import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
 
-import static io.memoria.jutils.jkafka.KafkaUtils.adminClient;
-import static io.memoria.jutils.jkafka.KafkaUtils.createKafkaTopic;
+import static io.memoria.jutils.jkafka.KafkaUtils.createAdmin;
 import static io.memoria.jutils.jkafka.KafkaUtils.nPartitions;
 import static io.memoria.jutils.jkafka.KafkaUtils.topicExists;
 
@@ -19,14 +18,14 @@ public class KafkaAdmin implements MsgBusAdmin {
   private final Scheduler scheduler;
 
   public KafkaAdmin(String url, Duration timeout, Scheduler scheduler) {
-    this.admin = adminClient(url);
+    this.admin = createAdmin(url);
     this.timeout = timeout;
     this.scheduler = scheduler;
   }
 
   @Override
   public Mono<Void> createTopic(String topic, int partitions, int replicationFr) {
-    return Mono.fromCallable(() -> createKafkaTopic(admin, topic, partitions, (short) replicationFr, timeout))
+    return Mono.fromCallable(() -> KafkaUtils.createTopic(admin, topic, partitions, (short) replicationFr, timeout))
                .then()
                .subscribeOn(scheduler);
   }
@@ -40,15 +39,7 @@ public class KafkaAdmin implements MsgBusAdmin {
   public Mono<Boolean> exists(String topic) {
     return Mono.fromCallable(() -> topicExists(admin, topic)).subscribeOn(scheduler);
   }
-
-  //  @Override
-  //  public Mono<Event> lastEvent(String topic, int partition) {
-  //    return Mono.fromCallable(() -> lastMessage(admin,consumer, topic, partition, timeout))
-  //               .flatMap(ReactorVavrUtils::toMono)
-  //               .map(msg -> transformer.deserialize(msg, Event.class).get())
-  //               .subscribeOn(scheduler);
-  //  }
-
+  
   @Override
   public Mono<Integer> nOfPartitions(String topic) {
     return Mono.fromCallable(() -> nPartitions(admin, topic, timeout))
