@@ -2,6 +2,7 @@ package io.memoria.jutils.jkafka;
 
 import io.vavr.collection.List;
 import io.vavr.control.Option;
+import io.vavr.control.Try;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.ListTopicsResult;
@@ -52,29 +53,31 @@ public class KafkaUtils {
     return partitions;
   }
 
-  public static long currentOffset(AdminClient admin, String topic, int partition, Duration timeout)
-          throws InterruptedException, ExecutionException, TimeoutException {
+  public static Try<Long> currentOffset(AdminClient admin, String topic, int partition, Duration timeout) {
     var tp = new TopicPartition(topic, partition);
-    return admin.listOffsets(Map.of(tp, OffsetSpec.latest()))
-                .partitionResult(tp)
-                .get(timeout.toMillis(), MILLISECONDS)
-                .offset();
+    return Try.of(() -> admin.listOffsets(Map.of(tp, OffsetSpec.latest()))
+                             .partitionResult(tp)
+                             .get(timeout.toMillis(), MILLISECONDS)
+                             .offset());
   }
 
-  public static Option<String> lastMessage(Map<String, Object> consumerConfig,
-                                           String topic,
-                                           int partition,
-                                           Duration timeout)
-          throws InterruptedException, ExecutionException, TimeoutException {
+  public static Try<String> lastMessage(Map<String, Object> consumerConfig,
+                                        String topic,
+                                        int partition,
+                                        Duration timeout) {
+    var tp = new TopicPartition(topic, partition);
+    // Create admin and consumer
     var url = consumerConfig.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG).toString();
     var admin = createAdmin(url);
     var consumer = new KafkaConsumer<String, String>(consumerConfig);
-    var lastOffset = currentOffset(admin, topic, partition, timeout);
-    var tp = new TopicPartition(topic, partition);
+    // Seek and Fetch
     consumer.assign(List.of(tp).toJavaList());
-    consumer.seek(tp, lastOffset - 2);
-    var list = pollOnce(consumer, topic, partition, timeout);
-    return io.vavr.collection.List.ofAll(list).lastOption();
+    var tryOffset = currentOffset(admin, topic, partition, timeout);
+    return tryOffset.map(lastOffset -> {
+      consumer.seek(tp, lastOffset - 2);
+      var polledList = pollOnce(consumer, topic, partition, timeout);
+      return List.ofAll(polledList);
+    }).flatMap(list -> list.lastOption().toTry());
   }
 
   public static Option<Integer> nPartitions(AdminClient admin, String topic, Duration timeout)
@@ -93,25 +96,27 @@ public class KafkaUtils {
     return list.map(ConsumerRecord::value);
   }
 
-  public static List<String> sendRecords(KafkaProducer<String, String> producer,
-                                         String topic,
-                                         int partition,
-                                         List<String> msgs,
-                                         Duration timeout)
-          throws ExecutionException, InterruptedException, TimeoutException {
+  public static Try<Long> sendRecords(KafkaProducer<String, String> producer,
+                                      String topic,
+                                      int partition,
+                                      List<String> msgs,
+                                      Duration timeout) {
+    var offset = Option.<Long>none();
     producer.beginTransaction();
     var tp = new TopicPartition(topic, partition);
     try {
       for (String msg : msgs) {
         var rec = new ProducerRecord<String, String>(tp.topic(), tp.partition(), null, msg);
-        producer.send(rec).get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+        var meta = producer.send(rec).get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+        if (meta.hasOffset())
+          offset = Option.some(meta.offset());
       }
     } catch (ExecutionException | InterruptedException | TimeoutException e) {
       producer.abortTransaction();
-      throw e;
+      return Try.failure(e);
     }
     producer.commitTransaction();
-    return msgs;
+    return offset.toTry();
   }
 
   public static Boolean topicExists(AdminClient admin, String topic) throws InterruptedException, ExecutionException {

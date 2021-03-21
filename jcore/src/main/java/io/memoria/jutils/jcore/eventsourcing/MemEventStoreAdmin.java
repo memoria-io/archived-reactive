@@ -1,6 +1,5 @@
-package io.memoria.jutils.jcore.msgbus;
+package io.memoria.jutils.jcore.eventsourcing;
 
-import io.memoria.jutils.jcore.eventsourcing.ESException;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
@@ -9,8 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static io.memoria.jutils.jcore.vavr.ReactorVavrUtils.toMono;
 
-public record MemAdmin(ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<String>>> store)
-        implements MsgBusAdmin {
+public record MemEventStoreAdmin(ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<String>>> store)
+        implements EventStoreAdmin {
 
   @Override
   public Mono<Void> createTopic(String topic, int partitions, int replicationFactor) {

@@ -1,6 +1,6 @@
 package io.memoria.jutils.jkafka;
 
-import io.memoria.jutils.jcore.msgbus.MsgBusAdmin;
+import io.memoria.jutils.jcore.eventsourcing.EventStoreAdmin;
 import io.memoria.jutils.jcore.vavr.ReactorVavrUtils;
 import org.apache.kafka.clients.admin.AdminClient;
 import reactor.core.publisher.Mono;
@@ -8,11 +8,12 @@ import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
 
+import static io.memoria.jutils.jcore.vavr.ReactorVavrUtils.toMono;
 import static io.memoria.jutils.jkafka.KafkaUtils.createAdmin;
 import static io.memoria.jutils.jkafka.KafkaUtils.nPartitions;
 import static io.memoria.jutils.jkafka.KafkaUtils.topicExists;
 
-public class KafkaAdmin implements MsgBusAdmin {
+public class KafkaAdmin implements EventStoreAdmin {
   private final AdminClient admin;
   private final Duration timeout;
   private final Scheduler scheduler;
@@ -32,7 +33,7 @@ public class KafkaAdmin implements MsgBusAdmin {
 
   @Override
   public Mono<Long> currentOffset(String topic, int partition) {
-    return Mono.fromCallable(() -> KafkaUtils.currentOffset(admin, topic, partition, timeout)).subscribeOn(scheduler);
+    return toMono(KafkaUtils.currentOffset(admin, topic, partition, timeout)).subscribeOn(scheduler);
   }
 
   @Override

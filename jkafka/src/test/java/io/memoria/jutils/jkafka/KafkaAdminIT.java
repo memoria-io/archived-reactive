@@ -1,6 +1,7 @@
 package io.memoria.jutils.jkafka;
 
-import io.memoria.jutils.jcore.msgbus.MsgBusAdmin;
+import io.memoria.jutils.jcore.eventsourcing.EventStoreAdmin;
+import io.vavr.collection.List;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.junit.jupiter.api.Test;
 import reactor.core.scheduler.Schedulers;
@@ -15,7 +16,7 @@ import static io.memoria.jutils.jkafka.TestConfigs.producerConf;
 import static org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
 
 class KafkaAdminIT {
-  private static final MsgBusAdmin admin;
+  private static final EventStoreAdmin admin;
 
   static {
     var url = producerConf.get(BOOTSTRAP_SERVERS_CONFIG).toString();
@@ -29,8 +30,8 @@ class KafkaAdminIT {
 
     // When
     StepVerifier.create(admin.createTopic(topic, 2, 1)).verifyComplete();
-    KafkaUtils.sendRecord(new KafkaProducer<>(producerConf), topic, 0, "hello p0", Duration.ofMillis(1000));
-    KafkaUtils.sendRecord(new KafkaProducer<>(producerConf), topic, 1, "hello p1", Duration.ofMillis(1000));
+    KafkaUtils.sendRecords(new KafkaProducer<>(producerConf), topic, 0, List.of("hello p0"), Duration.ofMillis(1000));
+    KafkaUtils.sendRecords(new KafkaProducer<>(producerConf), topic, 1, List.of("hello p1"), Duration.ofMillis(1000));
     // Then
     StepVerifier.create(admin.exists(topic)).expectNext(true).expectComplete().verify();
     StepVerifier.create(admin.nOfPartitions(topic)).expectNext(2).verifyComplete();

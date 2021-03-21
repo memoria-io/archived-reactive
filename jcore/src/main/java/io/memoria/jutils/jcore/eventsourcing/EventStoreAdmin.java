@@ -1,8 +1,8 @@
-package io.memoria.jutils.jcore.msgbus;
+package io.memoria.jutils.jcore.eventsourcing;
 
 import reactor.core.publisher.Mono;
 
-public interface MsgBusAdmin {
+public interface EventStoreAdmin {
   Mono<Void> createTopic(String topic, int partitions, int replicationFactor);
 
   Mono<Long> currentOffset(String topic, int partition);

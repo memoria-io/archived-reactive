@@ -1,18 +1,20 @@
 package io.memoria.jutils.jcore.msgbus;
 
+import io.memoria.jutils.jcore.eventsourcing.MemEventStoreAdmin;
+import io.memoria.jutils.jcore.eventsourcing.EventStoreAdmin;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-class MemAdminTest {
+class MemEventStoreAdminTest {
   private final ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<String>>> store;
-  private final MsgBusAdmin admin;
+  private final EventStoreAdmin admin;
 
-  MemAdminTest() {
+  MemEventStoreAdminTest() {
     store = new ConcurrentHashMap<>();
-    admin = new MemAdmin(store);
+    admin = new MemEventStoreAdmin(store);
   }
 
   @Test
