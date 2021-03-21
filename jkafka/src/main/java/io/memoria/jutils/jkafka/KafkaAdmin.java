@@ -32,7 +32,7 @@ public class KafkaAdmin implements MsgBusAdmin {
   }
 
   @Override
-  public Mono<Integer> currentOffset(String topic, int partition) {
+  public Mono<Long> currentOffset(String topic, int partition) {
     return Mono.fromCallable(() -> KafkaUtils.currentOffset(admin, topic, partition, timeout)).subscribeOn(scheduler);
   }
 

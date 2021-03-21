@@ -18,8 +18,8 @@ public record MemAdmin(ConcurrentHashMap<String, ConcurrentHashMap<Integer, List
   }
 
   @Override
-  public Mono<Integer> currentOffset(String topic, int partition) {
-    return toMono(Try.of(() -> store.get(topic).get(partition).size()));
+  public Mono<Long> currentOffset(String topic, int partition) {
+    return toMono(Try.of(() -> (long) store.get(topic).get(partition).size()));
   }
 
   @Override
