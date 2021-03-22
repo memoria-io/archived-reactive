@@ -13,6 +13,7 @@ import reactor.core.scheduler.Scheduler;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static io.memoria.jutils.jcore.vavr.ReactorVavrUtils.toMono;
 import static io.memoria.jutils.jkafka.KafkaUtils.createConsumer;
@@ -51,7 +52,10 @@ public class KafkaEventStore implements EventStore {
   @Override
   public Mono<Event> last() {
     var lastMono = toMono(KafkaUtils.lastMessage(consumerConfig, topic, partition, timeout));
-    return lastMono.map(msg -> transformer.deserialize(msg, Event.class)).map(Try::get).subscribeOn(scheduler);
+    return lastMono.onErrorResume(NoSuchElementException.class, t -> Mono.empty())
+                   .map(msg -> transformer.deserialize(msg, Event.class))
+                   .map(Try::get)
+                   .subscribeOn(scheduler);
   }
 
   @Override

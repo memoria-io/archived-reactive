@@ -17,6 +17,7 @@ import org.apache.kafka.common.TopicPartition;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -79,12 +80,16 @@ public class KafkaUtils {
     var consumer = new KafkaConsumer<String, String>(consumerConfig);
     // Seek and Fetch
     consumer.assign(List.of(tp).toJavaList());
-    var tryOffset = currentOffset(admin, topic, partition, timeout);
-    return tryOffset.map(lastOffset -> {
-      consumer.seek(tp, lastOffset - 2);
-      var polledList = pollOnce(consumer, topic, partition, timeout);
-      return List.ofAll(polledList);
-    }).flatMap(list -> list.lastOption().toTry());
+    return currentOffset(admin, topic, partition, timeout).flatMap(currentOffset -> {
+      System.out.println(currentOffset);
+      if (currentOffset <= 0)
+        return Try.failure(new NoSuchElementException());
+      if (currentOffset == 1)
+        consumer.seek(tp, 0);
+      else
+        consumer.seek(tp, currentOffset - 2);
+      return Try.of(() -> pollOnce(consumer, topic, partition, timeout).last());
+    });
   }
 
   public static Option<Integer> nPartitions(AdminClient admin, String topic, Duration timeout)
