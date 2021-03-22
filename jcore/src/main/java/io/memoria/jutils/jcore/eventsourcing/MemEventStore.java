@@ -11,13 +11,13 @@ import static io.memoria.jutils.jcore.vavr.ReactorVavrUtils.toMono;
 
 public record MemEventStore(String topic,
                             int partition,
-                            long offset,
                             ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> store)
         implements EventStore {
 
   @Override
   public Mono<Event> last() {
-    return toMono(Try.of(() -> store.get(topic).get(partition).last()));
+    return Mono.fromCallable(() -> store.get(topic).get(partition).last())
+               .onErrorResume(NullPointerException.class, t -> Mono.empty());
   }
 
   @Override

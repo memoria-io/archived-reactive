@@ -9,16 +9,12 @@ import io.memoria.jutils.jcore.id.IdGenerator;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 
-import java.time.LocalDateTime;
-import java.util.function.Supplier;
-
-public record UserDecider(IdGenerator idGen, Supplier<LocalDateTime> timeSupplier)
+public record UserDecider(IdGenerator idGen)
         implements Decider<User, UserCommand> {
   @Override
   public Try<List<Event>> apply(User user, UserCommand userCommand) {
     if (userCommand instanceof CreateUser cmd) {
-      var id = idGen.get();
-      return Try.success(List.of(new UserCreated(id, "name" + id)));
+      return Try.success(List.of(new UserCreated(idGen.get(),cmd.userId(), cmd.username())));
     }
     return Try.failure(UnknownCommand.create("Unknown command"));
   }

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public interface UserEvent extends Event {
 
-  record UserCreated(Id eventId, String name) implements Event {
+  record UserCreated(Id eventId, Id userId, String name) implements Event {
     @Override
     public Id aggId() {
       return Id.of("ignored");

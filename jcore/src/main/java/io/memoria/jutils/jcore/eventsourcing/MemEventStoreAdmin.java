@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static io.memoria.jutils.jcore.vavr.ReactorVavrUtils.toMono;
 
-public record MemEventStoreAdmin(ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<String>>> store)
+public record MemEventStoreAdmin(ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> store)
         implements EventStoreAdmin {
 
   @Override
@@ -35,7 +35,7 @@ public record MemEventStoreAdmin(ConcurrentHashMap<String, ConcurrentHashMap<Int
     if (store.containsKey(topic))
       throw ESException.create("Topic already exists");
     else {
-      var map = new ConcurrentHashMap<Integer, List<String>>();
+      var map = new ConcurrentHashMap<Integer, List<Event>>();
       List.range(0, partitions).forEach(i -> map.put(i, List.empty()));
       store.put(topic, map);
       return partitions;
