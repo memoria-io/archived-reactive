@@ -12,12 +12,12 @@ public class UserTextTransformer implements TextTransformer {
   @SuppressWarnings("unchecked")
   public <T> Try<T> deserialize(String str, Class<T> tClass) {
     var user = str.split(":");
-    return Try.success((T) new UserCreated(Id.of(user[0]), user[1]));
+    return Try.success((T) new UserEvent.UserCreated(Id.of(user[0]), Id.of(user[1]), user[2]));
   }
 
   @Override
   public <T> Try<String> serialize(T t) {
-    var user = (UserCreated) t;
-    return Try.success("%s:%s".formatted(user.eventId().value(), user.name()));
+    var user = (UserEvent.UserCreated) t;
+    return Try.success("%s:%s:%s".formatted(user.eventId().value(), user.userId(), user.name()));
   }
 }

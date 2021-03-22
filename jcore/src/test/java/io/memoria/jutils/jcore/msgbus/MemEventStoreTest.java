@@ -41,11 +41,12 @@ class MemEventStoreTest {
   void subscribe() {
     // Given
     var events = List.range(0, 100).map(i -> (Event) new UserCreated(Id.of("eventId"), Id.of(i), "name" + i));
+    var expectedLastEvent = (Event) new UserCreated(Id.of("eventId"), Id.of(99), "name" + 99);
+    // When
     esDB.put(TOPIC, new ConcurrentHashMap<>());
     esDB.get(TOPIC).put(PARTITION, events);
-    // When
-    var subscribe = eventStore.subscribe(0);
     // Then
-    StepVerifier.create(subscribe).expectNext(events.toJavaArray(Event[]::new)).verifyComplete();
+    StepVerifier.create(eventStore.subscribe(0)).expectNext(events.toJavaArray(Event[]::new)).verifyComplete();
+    StepVerifier.create(eventStore.last()).expectNext(expectedLastEvent);
   }
 }

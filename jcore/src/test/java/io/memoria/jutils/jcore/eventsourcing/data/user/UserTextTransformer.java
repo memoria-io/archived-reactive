@@ -12,7 +12,7 @@ public class UserTextTransformer implements TextTransformer {
   @SuppressWarnings("unchecked")
   public <T> Try<T> deserialize(String str, Class<T> tClass) {
     var user = str.split(":");
-    return Try.success((T) new UserEvent.UserCreated(Id.of(user[0]),Id.of(user[1]), user[2]));
+    return Try.success((T) new UserEvent.UserCreated(Id.of(user[0]), Id.of(user[1]), user[2]));
   }
 
   @Override

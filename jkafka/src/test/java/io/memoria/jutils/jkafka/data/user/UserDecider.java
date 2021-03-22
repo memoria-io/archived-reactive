@@ -1,11 +1,11 @@
-package io.memoria.jutils.jcore.eventsourcing.data.user;
+package io.memoria.jutils.jkafka.data.user;
 
 import io.memoria.jutils.jcore.eventsourcing.Decider;
 import io.memoria.jutils.jcore.eventsourcing.ESException.UnknownCommand;
 import io.memoria.jutils.jcore.eventsourcing.Event;
-import io.memoria.jutils.jcore.eventsourcing.data.user.UserCommand.CreateUser;
-import io.memoria.jutils.jcore.eventsourcing.data.user.UserEvent.UserCreated;
 import io.memoria.jutils.jcore.id.IdGenerator;
+import io.memoria.jutils.jkafka.data.user.UserCommand.CreateUser;
+import io.memoria.jutils.jkafka.data.user.UserEvent.UserCreated;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 
