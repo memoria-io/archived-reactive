@@ -30,8 +30,8 @@ class CommandHandlerTest {
 
   CommandHandlerTest() {
     // Setup
-    int partition = 0;
     String topic = "Topic_" + new Random().nextInt(1000);
+    int partition = 0;
     var admin = new KafkaAdmin("localhost:9092", Duration.ofMillis(1000), Schedulers.boundedElastic());
     admin.createTopic(topic, 2, 1).block();
     this.eventStore = new KafkaEventStore(TestConfigs.producerConf,
