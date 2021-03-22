@@ -26,9 +26,13 @@ public class KafkaAdmin implements EventStoreAdmin {
 
   @Override
   public Mono<Void> createTopic(String topic, int partitions, int replicationFr) {
-    return Mono.fromCallable(() -> KafkaUtils.createTopic(admin, topic, partitions, (short) replicationFr, timeout))
-               .then()
-               .subscribeOn(scheduler);
+    var createTopicMono = toMono(KafkaUtils.createTopic(admin, topic, partitions, (short) replicationFr, timeout));
+    return createTopicMono.then().subscribeOn(scheduler);
+  }
+
+  @Override
+  public Mono<Void> increasePartitionsTo(String topic, int partitions) {
+    return toMono(KafkaUtils.increasePartitionsTo(admin, topic, partitions, timeout)).subscribeOn(scheduler);
   }
 
   @Override
@@ -37,8 +41,8 @@ public class KafkaAdmin implements EventStoreAdmin {
   }
 
   @Override
-  public Mono<Boolean> exists(String topic) {
-    return Mono.fromCallable(() -> topicExists(admin, topic)).subscribeOn(scheduler);
+  public Mono<Boolean> exists(String topic, int partition) {
+    return toMono(topicExists(admin, topic, partition, timeout)).subscribeOn(scheduler);
   }
 
   @Override

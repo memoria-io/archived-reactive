@@ -17,13 +17,20 @@ public record MemEventStoreAdmin(ConcurrentHashMap<String, ConcurrentHashMap<Int
   }
 
   @Override
+  public Mono<Void> increasePartitionsTo(String topic, int partitions) {
+    return Mono.fromRunnable(() -> List.range(0, partitions)
+                                       .filter(i -> !store.get(topic).containsKey(i))
+                                       .map(i -> store.get(topic).put(i, List.empty())));
+  }
+
+  @Override
   public Mono<Long> currentOffset(String topic, int partition) {
     return toMono(Try.of(() -> (long) store.get(topic).get(partition).size()));
   }
 
   @Override
-  public Mono<Boolean> exists(String topic) {
-    return Mono.fromCallable(() -> store.containsKey(topic));
+  public Mono<Boolean> exists(String topic, int partition) {
+    return Mono.fromCallable(() -> store.containsKey(topic) && store.get(topic).containsKey(partition));
   }
 
   @Override

@@ -5,7 +5,7 @@ import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.admin.ListTopicsResult;
+import org.apache.kafka.clients.admin.NewPartitions;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.OffsetSpec;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -19,7 +19,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -45,12 +44,20 @@ public class KafkaUtils {
     return consumer;
   }
 
-  public static int createTopic(AdminClient admin, String topic, int partitions, short replicationFr, Duration timeout)
-          throws InterruptedException, ExecutionException, TimeoutException {
-    admin.createTopics(List.of(new NewTopic(topic, partitions, replicationFr)).toJavaList())
-         .numPartitions(topic)
-         .get(timeout.toMillis(), MILLISECONDS);
-    return partitions;
+  public static Try<Integer> createTopic(AdminClient admin,
+                                         String topic,
+                                         int partitions,
+                                         short replicationFr,
+                                         Duration timeout) {
+    return Try.of(() -> admin.createTopics(List.of(new NewTopic(topic, partitions, replicationFr)).toJavaList())
+                             .numPartitions(topic)
+                             .get(timeout.toMillis(), MILLISECONDS));
+  }
+
+  public static Try<Void> increasePartitionsTo(AdminClient admin, String topic, int partitions, Duration timeout) {
+    return Try.of(() -> admin.createPartitions(Map.of(topic, NewPartitions.increaseTo(partitions)))
+                             .all()
+                             .get(timeout.toMillis(), MILLISECONDS));
   }
 
   public static Try<Long> currentOffset(AdminClient admin, String topic, int partition, Duration timeout) {
@@ -107,7 +114,7 @@ public class KafkaUtils {
     try {
       for (String msg : msgs) {
         var rec = new ProducerRecord<String, String>(tp.topic(), tp.partition(), null, msg);
-        var meta = producer.send(rec).get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+        var meta = producer.send(rec).get(timeout.toMillis(), MILLISECONDS);
         if (meta.hasOffset())
           offset = Option.some(meta.offset());
       }
@@ -119,10 +126,14 @@ public class KafkaUtils {
     return offset.toTry();
   }
 
-  public static Boolean topicExists(AdminClient admin, String topic) throws InterruptedException, ExecutionException {
-    ListTopicsResult listTopics = admin.listTopics();
-    var names = listTopics.names().get();
-    return names.contains(topic);
+  public static Try<Boolean> topicExists(AdminClient admin, String topic, int partition, Duration timeout) {
+    return Try.of(() -> admin.describeTopics(List.of(topic).toJavaList())
+                             .all()
+                             .get(timeout.toMillis(), MILLISECONDS)
+                             .get(topic)
+                             .partitions()
+                             .stream()
+                             .anyMatch(p -> p.partition() == partition));
   }
 
   private KafkaUtils() {}
