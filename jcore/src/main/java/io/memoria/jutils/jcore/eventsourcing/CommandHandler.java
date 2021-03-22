@@ -13,7 +13,7 @@ public record CommandHandler<S, C extends Command>(S initState,
                                                    Decider<S, C> decider,
                                                    Evolver<S> evolver) implements Function1<C, Mono<Void>> {
 
-  public static <S> Mono<ConcurrentHashMap<Id, S>> createStateStore(EventStore eventStore, Evolver<S> evolver) {
+  public static <S> Mono<ConcurrentHashMap<Id, S>> buildState(EventStore eventStore, Evolver<S> evolver) {
     ConcurrentHashMap<Id, S> db = new ConcurrentHashMap<>();
     return eventStore.subscribeToLast()
                      .map(event -> db.compute(event.aggId(), (k, oldValue) -> evolver.apply(oldValue, event)))

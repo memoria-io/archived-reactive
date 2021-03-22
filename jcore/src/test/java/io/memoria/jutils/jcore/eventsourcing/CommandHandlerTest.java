@@ -7,7 +7,6 @@ import io.memoria.jutils.jcore.eventsourcing.data.user.UserCommand.CreateUser;
 import io.memoria.jutils.jcore.eventsourcing.data.user.UserDecider;
 import io.memoria.jutils.jcore.eventsourcing.data.user.UserEvolver;
 import io.memoria.jutils.jcore.id.Id;
-import io.memoria.jutils.jcore.id.IdGenerator;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -18,23 +17,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CommandHandlerTest {
-  private final String TOPIC = "Topic_" + new Random().nextInt(1000);
-  private final int PARTITION = 0;
 
   private final ConcurrentHashMap<Id, User> stateStore;
-  private final ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> eventStoreDB;
   private final CommandHandler<User, UserCommand> cmdHandler;
 
   CommandHandlerTest() {
-    // Constants
-    IdGenerator idGen = () -> Id.of(1);
-    var decider = new UserDecider(idGen);
     // Setup
-    eventStoreDB = new ConcurrentHashMap<>();
-    var eventStore = new MemEventStore(TOPIC, PARTITION, eventStoreDB);
-    var evolver = new UserEvolver();
-    stateStore = CommandHandler.createStateStore(eventStore, evolver).block();
-    cmdHandler = new CommandHandler<>(new Visitor(), stateStore, eventStore, decider, evolver);
+    int PARTITION = 0;
+    String TOPIC = "Topic_" + new Random().nextInt(1000);
+    var eventStore = new MemEventStore(TOPIC, PARTITION, new ConcurrentHashMap<>());
+    stateStore = CommandHandler.buildState(eventStore, new UserEvolver()).block();
+    cmdHandler = new CommandHandler<>(new Visitor(),
+                                      stateStore,
+                                      eventStore,
+                                      new UserDecider(() -> Id.of(1)),
+                                      new UserEvolver());
   }
 
   @Test
