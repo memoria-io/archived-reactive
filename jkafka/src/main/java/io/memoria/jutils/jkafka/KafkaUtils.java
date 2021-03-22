@@ -55,18 +55,18 @@ public class KafkaUtils {
                              .get(timeout.toMillis(), MILLISECONDS));
   }
 
-  public static Try<Void> increasePartitionsTo(AdminClient admin, String topic, int partitions, Duration timeout) {
-    return Try.of(() -> admin.createPartitions(Map.of(topic, NewPartitions.increaseTo(partitions)))
-                             .all()
-                             .get(timeout.toMillis(), MILLISECONDS));
-  }
-
   public static Try<Long> currentOffset(AdminClient admin, String topic, int partition, Duration timeout) {
     var tp = new TopicPartition(topic, partition);
     return Try.of(() -> admin.listOffsets(Map.of(tp, OffsetSpec.latest()))
                              .partitionResult(tp)
                              .get(timeout.toMillis(), MILLISECONDS)
                              .offset());
+  }
+
+  public static Try<Void> increasePartitionsTo(AdminClient admin, String topic, int partitions, Duration timeout) {
+    return Try.of(() -> admin.createPartitions(Map.of(topic, NewPartitions.increaseTo(partitions)))
+                             .all()
+                             .get(timeout.toMillis(), MILLISECONDS));
   }
 
   public static Try<String> lastMessage(Map<String, Object> consumerConfig,

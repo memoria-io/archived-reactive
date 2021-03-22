@@ -31,11 +31,6 @@ public class KafkaAdmin implements EventStoreAdmin {
   }
 
   @Override
-  public Mono<Void> increasePartitionsTo(String topic, int partitions) {
-    return toMono(KafkaUtils.increasePartitionsTo(admin, topic, partitions, timeout)).subscribeOn(scheduler);
-  }
-
-  @Override
   public Mono<Long> currentOffset(String topic, int partition) {
     return toMono(KafkaUtils.currentOffset(admin, topic, partition, timeout)).subscribeOn(scheduler);
   }
@@ -43,6 +38,11 @@ public class KafkaAdmin implements EventStoreAdmin {
   @Override
   public Mono<Boolean> exists(String topic, int partition) {
     return toMono(topicExists(admin, topic, partition, timeout)).subscribeOn(scheduler);
+  }
+
+  @Override
+  public Mono<Void> increasePartitionsTo(String topic, int partitions) {
+    return toMono(KafkaUtils.increasePartitionsTo(admin, topic, partitions, timeout)).subscribeOn(scheduler);
   }
 
   @Override

@@ -35,7 +35,8 @@ class KafkaEventStoreIT {
   void pubSubLast() {
     // Given
     var msgCount = 100;
-    var batches = Flux.range(0, msgCount).map(i -> List.of((Event) new UserCreated(Id.of("eventId"), Id.of(i), "name" + i)));
+    var batches = Flux.range(0, msgCount)
+                      .map(i -> List.of((Event) new UserCreated(Id.of("eventId"), Id.of(i), "name" + i)));
     var expectedEvents = Objects.requireNonNull(batches.flatMap(Flux::fromIterable).collectList().block())
                                 .toArray(Event[]::new);
     var expectedLastEvent = (Event) new UserCreated(Id.of("eventId"), Id.of(99), "name" + 99);
