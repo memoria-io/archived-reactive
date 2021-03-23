@@ -1,4 +1,4 @@
-name: Publish
+name: Release
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
       - name: Upload coverage to Codecov
         run: bash <(curl -s https://codecov.io/bash)
 
-  Publish:
+  Release:
     needs: Test
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
