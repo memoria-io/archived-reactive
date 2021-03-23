@@ -1,4 +1,4 @@
-[![Release](https://github.com/memoria-io/jutils/workflows/Publish/badge.svg)](https://github.com/memoria-io/jutils/actions?query=workflow%3APublish)
+[![Release](https://github.com/memoria-io/jutils/workflows/Release/badge.svg)](https://github.com/memoria-io/jutils/actions?query=workflow%3ARelease)
 [![Codecove](https://codecov.io/github/memoria-io/jutils/coverage.svg?precision=2)](https://codecov.io/gh/memoria-io/jutils)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.memoria/jutils/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/io.memoria/jutils/)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=memoria-io_jutils&metric=coverage)](https://sonarcloud.io/dashboard?id=memoria-io_jutils)
