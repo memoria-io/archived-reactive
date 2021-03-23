@@ -22,8 +22,7 @@ public class TestConfigs {
                      "org.apache.kafka.common.serialization.StringSerializer");
     producerConf.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                      "org.apache.kafka.common.serialization.StringSerializer");
-    
-
+    producerConf.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "transaction_id_123456789");
     // Consumer configs
     consumerConf.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
     consumerConf.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");

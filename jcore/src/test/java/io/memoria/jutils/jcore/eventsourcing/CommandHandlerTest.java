@@ -1,51 +1,42 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
-import io.memoria.jutils.jcore.eventsourcing.User.Visitor;
-import io.memoria.jutils.jcore.eventsourcing.UserCommand.CreateUser;
-import io.memoria.jutils.jcore.id.IdGenerator;
-import io.memoria.jutils.jcore.id.SerialIdGenerator;
+import io.memoria.jutils.jcore.eventsourcing.data.user.User;
+import io.memoria.jutils.jcore.eventsourcing.data.user.User.Visitor;
+import io.memoria.jutils.jcore.eventsourcing.data.user.UserCommand;
+import io.memoria.jutils.jcore.eventsourcing.data.user.UserCommand.CreateUser;
+import io.memoria.jutils.jcore.eventsourcing.data.user.UserDecider;
+import io.memoria.jutils.jcore.eventsourcing.data.user.UserEvent.UserCreated;
+import io.memoria.jutils.jcore.eventsourcing.data.user.UserEvolver;
+import io.memoria.jutils.jcore.id.Id;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
 
-import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Supplier;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommandHandlerTest {
-  private static final Random r = new Random();
-  private static final IdGenerator idGen = new SerialIdGenerator(new AtomicLong());
-  private static final Supplier<LocalDateTime> timeSupplier = () -> LocalDateTime.of(2020, 10, 10, 10, 10);
-  private static final Decider<User, UserCommand> decider = new UserDecider(idGen, timeSupplier);
-  private static final Evolver<User> evolver = new UserEvolver();
-
-  private static final ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> eventDB;
-  private static final EventStore eventStore;
-
-  static {
-    eventDB = new ConcurrentHashMap<>();
-    eventStore = new InMemoryEventStore(eventDB);
-  }
-
-  private final String topic;
+  private final CommandHandler<User, UserCommand> cmdHandler;
+  private final EventStore eventStore;
 
   CommandHandlerTest() {
-    topic = "topic-" + r.nextInt(100);
-    eventDB.put(topic, new ConcurrentHashMap<>());
-    eventDB.get(topic).put(0, List.empty());
+    // Setup
+    String TOPIC = "Topic_" + new Random().nextInt(1000);
+    int PARTITION = 0;
+    eventStore = new MemEventStore(TOPIC, PARTITION, new ConcurrentHashMap<>());
+    cmdHandler = new CommandHandler<>(new Visitor(), eventStore, new UserDecider(() -> Id.of(1)), new UserEvolver());
   }
 
   @Test
-  void initialEvents() {
-    var lastEventMono = eventStore.lastEvent(topic, 0);
-    var initEvents = lastEventMono.flatMapMany(le -> eventStore.subscribe(topic, 0, 0).takeUntil(le::equals));
-    var stateStore = CommandHandler.buildState(initEvents, evolver).block();
-    var commandHandler = new CommandHandler<>(stateStore, decider, eventStore, topic, 0, evolver, new Visitor());
-    commandHandler.apply(new CreateUser(0, topic)).subscribe();
-    var userCreated = eventDB.get(topic).get(0).head();
-    assertTrue(userCreated instanceof UserCreated);
+  void handleCommands() {
+    // Given
+    var commands = Flux.range(0, 100).map(i -> new CreateUser(Id.of(i), Id.of("bob_id" + i), "bob_name" + i));
+    var expectedEvents = List.range(0, 100)
+                             .map(i -> (Event) new UserCreated(Id.of(1), Id.of("bob_id" + i), "bob_name" + i));
+    // When
+    StepVerifier.create(commands.concatMap(cmdHandler)).expectNextCount(100).verifyComplete();
+    // Then
+    StepVerifier.create(eventStore.subscribe(0)).expectNext(expectedEvents.toJavaArray(Event[]::new)).verifyComplete();
   }
 }

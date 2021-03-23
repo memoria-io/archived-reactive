@@ -5,17 +5,18 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface EventStore {
-  Mono<Void> createTopic(String topic, int partitions, int replicationFactor);
+  Mono<Event> last();
 
-  Mono<Long> currentOffset(String topic, int partition);
+  Mono<Long> publish(List<Event> msg);
 
-  Mono<Boolean> exists(String topic);
+  Flux<Event> subscribe(long offset);
 
-  Mono<Event> lastEvent(String topic, int partition);
-
-  Mono<Integer> nOfPartitions(String topic);
-
-  Mono<List<Event>> publish(String topic, int partition, String transactionId, List<Event> events);
-
-  Flux<Event> subscribe(String topic, int partition, long offset);
+  /**
+   * Used for initial state building
+   *
+   * @return Flux which finishes when it meets the result of {@link EventStore#last()}
+   */
+  default Flux<Event> subscribeToLast() {
+    return last().flatMapMany(l -> subscribe(0).takeUntil(e -> e.eventId().equals(l.eventId())));
+  }
 }

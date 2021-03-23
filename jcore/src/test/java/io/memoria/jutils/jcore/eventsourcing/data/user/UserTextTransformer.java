@@ -1,4 +1,4 @@
-package io.memoria.jutils.jkafka.data.user;
+package io.memoria.jutils.jcore.eventsourcing.data.user;
 
 import io.memoria.jutils.jcore.id.Id;
 import io.memoria.jutils.jcore.text.TextTransformer;
