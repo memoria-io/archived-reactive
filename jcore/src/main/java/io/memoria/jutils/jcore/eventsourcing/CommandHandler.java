@@ -6,13 +6,9 @@ import io.vavr.collection.List;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
-public record CommandHandler<S, C extends Command>(S initState,
-                                                   ConcurrentHashMap<Id, S> stateStore,
-                                                   EventStore eventStore,
-                                                   Decider<S, C> decider,
-                                                   Evolver<S> evolver) implements Function1<C, Mono<Void>> {
-
+public class CommandHandler<S, C extends Command> implements Function1<C, Mono<Id>> {
   public static <S> Mono<ConcurrentHashMap<Id, S>> buildState(EventStore eventStore, Evolver<S> evolver) {
     ConcurrentHashMap<Id, S> db = new ConcurrentHashMap<>();
     return eventStore.subscribeToLast()
@@ -20,22 +16,37 @@ public record CommandHandler<S, C extends Command>(S initState,
                      .then(Mono.just(db));
   }
 
+  private final ConcurrentHashMap<Id, S> stateStore;
+  private final S initState;
+  private final EventStore eventStore;
+  private final Decider<S, C> decider;
+  private final Evolver<S> evolver;
+
+  public CommandHandler(S initState, EventStore eventStore, Decider<S, C> decider, Evolver<S> evolver) {
+    this.stateStore = new ConcurrentHashMap<>();
+    this.initState = initState;
+    this.eventStore = eventStore;
+    this.decider = decider;
+    this.evolver = evolver;
+  }
+
   /**
    * @return mono of events batch that were successfully published after applying the command or empty mono if no
    * aggregate was found
    */
   @Override
-  public Mono<Void> apply(C cmd) {
+  public Mono<Id> apply(C cmd) {
     return Mono.fromCallable(() -> {
       var s = stateStore.getOrDefault(cmd.aggId(), initState);
       var events = decider.apply(s, cmd).get();
-      return publish(events).then(Mono.<Void>fromRunnable(() -> persist(s, cmd, events)));
-    }).flatMap(mono -> mono);
+      return publish(events).then(Mono.fromCallable(() -> persist(s, cmd, events)));
+    }).flatMap(Function.identity());
   }
 
-  private void persist(S s, C command, List<Event> events) {
+  private Id persist(S s, C cmd, List<Event> events) {
     var newState = events.foldLeft(s, evolver);
-    stateStore.put(command.aggId(), newState);
+    stateStore.put(cmd.aggId(), newState);
+    return cmd.aggId();
   }
 
   private Mono<Void> publish(List<Event> msgs) {
