@@ -36,16 +36,16 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<S
   @Override
   public Mono<S> apply(C cmd) {
     return Mono.fromCallable(() -> {
-      var s = stateStore.getOrDefault(cmd.aggId(), initState);
-      var events = decider.apply(s, cmd).get();
-      return publish(events).then(Mono.fromCallable(() -> persist(s, cmd, events)));
+      var currentState = stateStore.getOrDefault(cmd.aggId(), initState);
+      var events = decider.apply(currentState, cmd).get();
+      return publish(events).then(Mono.fromCallable(() -> persist(currentState, cmd, events)));
     }).flatMap(Function.identity());
   }
 
-  private S persist(S s, C cmd, List<Event> events) {
-    var newState = events.foldLeft(s, evolver);
+  private S persist(S currentState, C cmd, List<Event> events) {
+    var newState = events.foldLeft(currentState, evolver);
     stateStore.put(cmd.aggId(), newState);
-    return s;
+    return newState;
   }
 
   private Mono<Void> publish(List<Event> msgs) {
