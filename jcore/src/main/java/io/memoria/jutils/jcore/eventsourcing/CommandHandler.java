@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-public class CommandHandler<S, C extends Command> implements Function1<C, Mono<Id>> {
+public class CommandHandler<S, C extends Command> implements Function1<C, Mono<S>> {
   public static <S> Mono<ConcurrentHashMap<Id, S>> buildState(EventStore eventStore, Evolver<S> evolver) {
     ConcurrentHashMap<Id, S> db = new ConcurrentHashMap<>();
     return eventStore.subscribeToLast()
@@ -31,11 +31,10 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<I
   }
 
   /**
-   * @return mono of events batch that were successfully published after applying the command or empty mono if no
-   * aggregate was found
+   * @return mono of the new State after applying such command on it.
    */
   @Override
-  public Mono<Id> apply(C cmd) {
+  public Mono<S> apply(C cmd) {
     return Mono.fromCallable(() -> {
       var s = stateStore.getOrDefault(cmd.aggId(), initState);
       var events = decider.apply(s, cmd).get();
@@ -43,10 +42,10 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<I
     }).flatMap(Function.identity());
   }
 
-  private Id persist(S s, C cmd, List<Event> events) {
+  private S persist(S s, C cmd, List<Event> events) {
     var newState = events.foldLeft(s, evolver);
     stateStore.put(cmd.aggId(), newState);
-    return cmd.aggId();
+    return s;
   }
 
   private Mono<Void> publish(List<Event> msgs) {
