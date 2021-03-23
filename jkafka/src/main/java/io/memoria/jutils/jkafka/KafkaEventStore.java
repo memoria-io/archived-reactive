@@ -4,47 +4,68 @@ import io.memoria.jutils.jcore.eventsourcing.Event;
 import io.memoria.jutils.jcore.eventsourcing.EventStore;
 import io.memoria.jutils.jcore.text.TextTransformer;
 import io.vavr.collection.List;
+import io.vavr.collection.Map;
 import io.vavr.control.Try;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static io.memoria.jutils.jcore.vavr.ReactorVavrUtils.toMono;
 import static io.memoria.jutils.jkafka.KafkaUtils.createConsumer;
+import static io.memoria.jutils.jkafka.KafkaUtils.createProducer;
 import static io.memoria.jutils.jkafka.KafkaUtils.pollOnce;
 import static io.memoria.jutils.jkafka.KafkaUtils.sendRecords;
 
 public class KafkaEventStore implements EventStore {
+  public static KafkaEventStore create(Map<String, Object> producerConfig,
+                                       Map<String, Object> consumerConfig,
+                                       String topic,
+                                       int partition,
+                                       TextTransformer transformer) {
+    return create(producerConfig,
+                  consumerConfig,
+                  topic,
+                  partition,
+                  transformer,
+                  Duration.ofMillis(1000),
+                  Schedulers.boundedElastic());
+  }
+
+  public static KafkaEventStore create(Map<String, Object> producerConfig,
+                                       Map<String, Object> consumerConfig,
+                                       String topic,
+                                       int partition,
+                                       TextTransformer transformer,
+                                       Duration reqTimeout,
+                                       Scheduler scheduler) {
+    return new KafkaEventStore(producerConfig, consumerConfig, topic, partition, transformer, reqTimeout, scheduler);
+  }
+
   public final String topic;
   public final int partition;
-  public final String TRANSACTION_ID;
   private final TextTransformer transformer;
   private final KafkaProducer<String, String> producer;
   private final Map<String, Object> consumerConfig;
   private final Duration timeout;
   private final Scheduler scheduler;
 
-  public KafkaEventStore(Map<String, Object> producerConfig,
-                         Map<String, Object> consumerConfig,
-                         String topic,
-                         int partition,
-                         TextTransformer transformer,
-                         Duration reqTimeout,
-                         Scheduler scheduler) {
+  private KafkaEventStore(Map<String, Object> producerConfig,
+                          Map<String, Object> consumerConfig,
+                          String topic,
+                          int partition,
+                          TextTransformer transformer,
+                          Duration reqTimeout,
+                          Scheduler scheduler) {
     this.topic = topic;
     this.partition = partition;
-    this.transformer = transformer;
-    this.TRANSACTION_ID = topic + "_" + partition;
-    producerConfig.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, TRANSACTION_ID);
-    this.producer = new KafkaProducer<>(producerConfig);
-    this.producer.initTransactions();
+    this.producer = createProducer(producerConfig, topic, partition);
     this.consumerConfig = consumerConfig;
+    this.transformer = transformer;
     this.timeout = reqTimeout;
     this.scheduler = scheduler;
   }

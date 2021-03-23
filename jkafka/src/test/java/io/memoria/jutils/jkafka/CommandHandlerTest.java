@@ -15,10 +15,8 @@ import io.memoria.jutils.jkafka.data.user.UserTextTransformer;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
-import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
-import java.time.Duration;
 import java.util.Random;
 
 class CommandHandlerTest {
@@ -29,15 +27,12 @@ class CommandHandlerTest {
   CommandHandlerTest() {
     String topic = "Topic_" + new Random().nextInt(1000);
     int partition = 0;
-    var admin = new KafkaAdmin("localhost:9092", Duration.ofMillis(1000), Schedulers.boundedElastic());
-    admin.createTopic(topic, 2, 1).block();
-    this.eventStore = new KafkaEventStore(TestConfigs.producerConf,
-                                          TestConfigs.consumerConf,
-                                          topic,
-                                          partition,
-                                          new UserTextTransformer(),
-                                          Duration.ofMillis(1000),
-                                          Schedulers.boundedElastic());
+    KafkaAdmin.create().createTopic(topic, 2, 1).block();
+    this.eventStore = KafkaEventStore.create(TestConfigs.producerConf,
+                                             TestConfigs.consumerConf,
+                                             topic,
+                                             partition,
+                                             new UserTextTransformer());
     cmdHandler = new CommandHandler<>(new Visitor(), eventStore, new UserDecider(() -> Id.of(1)), new UserEvolver());
   }
 

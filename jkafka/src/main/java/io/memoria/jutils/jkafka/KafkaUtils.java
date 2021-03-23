@@ -1,6 +1,8 @@
 package io.memoria.jutils.jkafka;
 
+import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
+import io.vavr.collection.Map;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -12,13 +14,12 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 
 import java.time.Duration;
-import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -26,9 +27,8 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class KafkaUtils {
   public static AdminClient createAdmin(String serverUrl) {
-    var config = new Properties();
-    config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, serverUrl);
-    return AdminClient.create(config);
+    var config = HashMap.<String, Object>of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, serverUrl);
+    return AdminClient.create(config.toJavaMap());
   }
 
   public static KafkaConsumer<String, String> createConsumer(Map<String, Object> consumerConfig,
@@ -36,13 +36,23 @@ public class KafkaUtils {
                                                              int partition,
                                                              long offset,
                                                              Duration timeout) {
-    var consumer = new KafkaConsumer<String, String>(consumerConfig);
+    var consumer = new KafkaConsumer<String, String>(consumerConfig.toJavaMap());
     var tp = new TopicPartition(topic, partition);
     consumer.assign(java.util.List.of(tp));
     // must call poll before seek
     consumer.poll(timeout);
     consumer.seek(tp, offset);
     return consumer;
+  }
+
+  public static KafkaProducer<String, String> createProducer(Map<String, Object> producerConfig,
+                                                             String topic,
+                                                             int partition) {
+    var transactionId = topic + "_" + partition;
+    var withTransaction = producerConfig.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, transactionId);
+    var producer = new KafkaProducer<String, String>(withTransaction.toJavaMap());
+    producer.initTransactions();
+    return producer;
   }
 
   public static Try<Integer> createTopic(AdminClient admin,
@@ -57,14 +67,14 @@ public class KafkaUtils {
 
   public static Try<Long> currentOffset(AdminClient admin, String topic, int partition, Duration timeout) {
     var tp = new TopicPartition(topic, partition);
-    return Try.of(() -> admin.listOffsets(Map.of(tp, OffsetSpec.latest()))
+    return Try.of(() -> admin.listOffsets(HashMap.of(tp, OffsetSpec.latest()).toJavaMap())
                              .partitionResult(tp)
                              .get(timeout.toMillis(), MILLISECONDS)
                              .offset());
   }
 
   public static Try<Void> increasePartitionsTo(AdminClient admin, String topic, int partitions, Duration timeout) {
-    return Try.of(() -> admin.createPartitions(Map.of(topic, NewPartitions.increaseTo(partitions)))
+    return Try.of(() -> admin.createPartitions(HashMap.of(topic, NewPartitions.increaseTo(partitions)).toJavaMap())
                              .all()
                              .get(timeout.toMillis(), MILLISECONDS));
   }
@@ -75,13 +85,12 @@ public class KafkaUtils {
                                         Duration timeout) {
     var tp = new TopicPartition(topic, partition);
     // Create admin and consumer
-    var url = consumerConfig.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG).toString();
+    var url = consumerConfig.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG).get().toString();
     var admin = createAdmin(url);
-    var consumer = new KafkaConsumer<String, String>(consumerConfig);
+    var consumer = new KafkaConsumer<String, String>(consumerConfig.toJavaMap());
     // Seek and Fetch
     consumer.assign(List.of(tp).toJavaList());
     return currentOffset(admin, topic, partition, timeout).flatMap(currentOffset -> {
-      System.out.println(currentOffset);
       if (currentOffset <= 0)
         return Try.failure(new NoSuchElementException());
       if (currentOffset == 1)

@@ -1,11 +1,9 @@
 package io.memoria.jutils.jkafka;
 
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
@@ -67,13 +65,10 @@ class KafkaStreamsIT {
   private final AdminClient adminClient;
 
   KafkaStreamsIT() {
-    this.consumer = new KafkaConsumer<>(TestConfigs.consumerConf);
-    this.producer = new KafkaProducer<>(TestConfigs.producerConf);
+    this.consumer = new KafkaConsumer<>(TestConfigs.consumerConf.toJavaMap());
+    this.producer = new KafkaProducer<>(TestConfigs.producerConf.toJavaMap());
     // Setup admin client
-    Properties config = new Properties();
-    var serverURL = TestConfigs.producerConf.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG).toString();
-    config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, serverURL);
-    adminClient = AdminClient.create(config);
+    adminClient = KafkaUtils.createAdmin("localhost:9092");
   }
 
   //  @Test

@@ -5,6 +5,7 @@ import io.memoria.jutils.jcore.vavr.ReactorVavrUtils;
 import org.apache.kafka.clients.admin.AdminClient;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
 
@@ -14,11 +15,19 @@ import static io.memoria.jutils.jkafka.KafkaUtils.nPartitions;
 import static io.memoria.jutils.jkafka.KafkaUtils.topicExists;
 
 public class KafkaAdmin implements EventStoreAdmin {
+  public static KafkaAdmin create() {
+    return new KafkaAdmin("localhost:9092", Duration.ofMillis(1000), Schedulers.boundedElastic());
+  }
+
+  public static KafkaAdmin create(String url, Duration timeout, Scheduler scheduler) {
+    return new KafkaAdmin(url, timeout, scheduler);
+  }
+
   private final AdminClient admin;
   private final Duration timeout;
   private final Scheduler scheduler;
 
-  public KafkaAdmin(String url, Duration timeout, Scheduler scheduler) {
+  private KafkaAdmin(String url, Duration timeout, Scheduler scheduler) {
     this.admin = createAdmin(url);
     this.timeout = timeout;
     this.scheduler = scheduler;

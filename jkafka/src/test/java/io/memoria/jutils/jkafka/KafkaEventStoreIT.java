@@ -8,10 +8,8 @@ import io.memoria.jutils.jkafka.data.user.UserTextTransformer;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
-import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
-import java.time.Duration;
 import java.util.Objects;
 import java.util.Random;
 
@@ -22,13 +20,11 @@ class KafkaEventStoreIT {
   private final EventStore eventStore;
 
   KafkaEventStoreIT() {
-    this.eventStore = new KafkaEventStore(TestConfigs.producerConf,
-                                          TestConfigs.consumerConf,
-                                          TOPIC,
-                                          PARTITION,
-                                          new UserTextTransformer(),
-                                          Duration.ofMillis(1000),
-                                          Schedulers.boundedElastic());
+    this.eventStore = KafkaEventStore.create(TestConfigs.producerConf,
+                                             TestConfigs.consumerConf,
+                                             TOPIC,
+                                             PARTITION,
+                                             new UserTextTransformer());
   }
 
   @Test
