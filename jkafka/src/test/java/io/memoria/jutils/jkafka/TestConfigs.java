@@ -1,8 +1,11 @@
 package io.memoria.jutils.jkafka;
 
+import io.vavr.collection.HashMap;
 import io.vavr.collection.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+
+import static io.vavr.collection.HashMap.*;
 
 public class TestConfigs {
   public static final Map<String, Object> producerConf;
@@ -19,7 +22,7 @@ public class TestConfigs {
     pConf.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 3000);
     pConf.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
     pConf.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-    producerConf = io.vavr.collection.HashMap.ofAll(pConf);
+    producerConf = ofAll(pConf);
 
     // Consumer configs
     var cConf = new java.util.HashMap<String, Object>();
@@ -32,6 +35,6 @@ public class TestConfigs {
     cConf.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
     cConf.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
               "org.apache.kafka.common.serialization.StringDeserializer");
-    consumerConf = io.vavr.collection.HashMap.ofAll(cConf);
+    consumerConf = ofAll(cConf);
   }
 }
