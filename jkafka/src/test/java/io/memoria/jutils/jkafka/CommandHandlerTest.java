@@ -36,7 +36,7 @@ class CommandHandlerTest {
   }
 
   @Test
-  void handleCommands2() {
+  void handleCommands() {
     // Given
     var commands = Flux.range(0, 100).map(i -> new CreateUser(Id.of(i), Id.of("bob_id" + i), "bob_name" + i));
     var expectedEvents = List.range(0, 100)
