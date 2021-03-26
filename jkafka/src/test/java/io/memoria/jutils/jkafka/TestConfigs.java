@@ -4,15 +4,13 @@ import io.vavr.collection.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
-import java.util.HashMap;
-
 public class TestConfigs {
   public static final Map<String, Object> producerConf;
   public static final Map<String, Object> consumerConf;
 
   static {
     // Producer configs
-    var pConf = new HashMap<String, Object>();
+    var pConf = new java.util.HashMap<String, Object>();
     pConf.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
     pConf.put(ProducerConfig.ACKS_CONFIG, "all");
     pConf.put(ProducerConfig.RETRIES_CONFIG, 2);
@@ -24,7 +22,7 @@ public class TestConfigs {
     producerConf = io.vavr.collection.HashMap.ofAll(pConf);
 
     // Consumer configs
-    var cConf = new HashMap<String, Object>();
+    var cConf = new java.util.HashMap<String, Object>();
     cConf.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
     cConf.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
     cConf.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, 135);

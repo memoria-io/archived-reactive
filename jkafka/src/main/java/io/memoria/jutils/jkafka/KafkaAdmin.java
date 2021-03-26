@@ -16,7 +16,7 @@ import static io.memoria.jutils.jkafka.KafkaUtils.topicExists;
 
 public class KafkaAdmin implements EventStoreAdmin {
   public static KafkaAdmin create() {
-    return new KafkaAdmin("localhost:9092", Duration.ofMillis(1000), Schedulers.boundedElastic());
+    return create("localhost:9092", Duration.ofMillis(1000), Schedulers.boundedElastic());
   }
 
   public static KafkaAdmin create(String url, Duration timeout, Scheduler scheduler) {

@@ -11,11 +11,7 @@ import java.util.Random;
 import static io.memoria.jutils.jkafka.TestConfigs.producerConf;
 
 class KafkaAdminIT {
-  private static final EventStoreAdmin admin;
-
-  static {
-    admin = KafkaAdmin.create();
-  }
+  private static final EventStoreAdmin admin = KafkaAdmin.create();
 
   @Test
   void check() {

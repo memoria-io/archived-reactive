@@ -14,18 +14,12 @@ import java.util.Objects;
 import java.util.Random;
 
 class KafkaEventStoreIT {
-  private static final String TOPIC = "users_topic" + new Random().nextInt(1000);
-  private static final int PARTITION = 0;
-
-  private final EventStore eventStore;
-
-  KafkaEventStoreIT() {
-    this.eventStore = KafkaEventStore.create(TestConfigs.producerConf,
-                                             TestConfigs.consumerConf,
-                                             TOPIC,
-                                             PARTITION,
-                                             new UserTextTransformer());
-  }
+  private final String topic = "users_topic" + new Random().nextInt(1000);
+  private final EventStore eventStore = KafkaEventStore.create(TestConfigs.producerConf,
+                                                               TestConfigs.consumerConf,
+                                                               topic,
+                                                               0,
+                                                               new UserTextTransformer());
 
   @Test
   void pubSubLast() {

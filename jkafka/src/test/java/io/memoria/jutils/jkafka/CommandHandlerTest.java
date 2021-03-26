@@ -26,12 +26,11 @@ class CommandHandlerTest {
 
   CommandHandlerTest() {
     String topic = "Topic_" + new Random().nextInt(1000);
-    int partition = 0;
     KafkaAdmin.create().createTopic(topic, 2, 1).block();
     this.eventStore = KafkaEventStore.create(TestConfigs.producerConf,
                                              TestConfigs.consumerConf,
                                              topic,
-                                             partition,
+                                             0,
                                              new UserTextTransformer());
     cmdHandler = new CommandHandler<>(new Visitor(), eventStore, new UserDecider(() -> Id.of(1)), new UserEvolver());
   }
