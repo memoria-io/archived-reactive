@@ -27,8 +27,8 @@ class CommandHandlerTest {
   CommandHandlerTest() {
     String topic = "Topic_" + new Random().nextInt(1000);
     KafkaAdmin.create().createTopic(topic, 2, 1).block();
-    this.eventStore = KafkaEventStore.create(TestConfigs.producerConf,
-                                             TestConfigs.consumerConf,
+    this.eventStore = KafkaEventStore.create(Tests.producerConf,
+                                             Tests.consumerConf,
                                              topic,
                                              0,
                                              new UserTextTransformer());

@@ -15,8 +15,8 @@ import java.util.Random;
 
 class KafkaEventStoreIT {
   private final String topic = "users_topic" + new Random().nextInt(1000);
-  private final EventStore eventStore = KafkaEventStore.create(TestConfigs.producerConf,
-                                                               TestConfigs.consumerConf,
+  private final EventStore eventStore = KafkaEventStore.create(Tests.producerConf,
+                                                               Tests.consumerConf,
                                                                topic,
                                                                0,
                                                                new UserTextTransformer());
@@ -35,6 +35,6 @@ class KafkaEventStoreIT {
     // Then
     StepVerifier.create(publishFlux).expectNextCount(msgCount).verifyComplete();
     StepVerifier.create(eventStore.subscribe(0).take(msgCount)).expectNext(expectedEvents).verifyComplete();
-    StepVerifier.create(eventStore.last()).expectNext(expectedLastEvent);
+    StepVerifier.create(eventStore.last()).expectNext(expectedLastEvent).verifyComplete();
   }
 }

@@ -8,7 +8,7 @@ import reactor.test.StepVerifier;
 import java.time.Duration;
 import java.util.Random;
 
-import static io.memoria.jutils.jkafka.TestConfigs.producerConf;
+import static io.memoria.jutils.jkafka.Tests.producerConf;
 
 class KafkaAdminIT {
   private static final EventStoreAdmin admin = KafkaAdmin.create();
@@ -24,8 +24,8 @@ class KafkaAdminIT {
     KafkaUtils.sendRecords(producer, topic, 0, List.of("hello p0"), Duration.ofMillis(1000));
     KafkaUtils.sendRecords(producer, topic, 1, List.of("hello p1"), Duration.ofMillis(1000));
     // Then
-    StepVerifier.create(admin.exists(topic, 0)).expectNext(true).expectComplete().verify();
-    StepVerifier.create(admin.exists(topic, 1)).expectNext(true).expectComplete().verify();
+    StepVerifier.create(admin.exists(topic, 0)).expectNext(true).verifyComplete();
+    StepVerifier.create(admin.exists(topic, 1)).expectNext(true).verifyComplete();
     StepVerifier.create(admin.nOfPartitions(topic)).expectNext(2).verifyComplete();
     StepVerifier.create(admin.currentOffset(topic, 0)).expectNext(2L).verifyComplete();
     StepVerifier.create(admin.currentOffset(topic, 1)).expectNext(2L).verifyComplete();

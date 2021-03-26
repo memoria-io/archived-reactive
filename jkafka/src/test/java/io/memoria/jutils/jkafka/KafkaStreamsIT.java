@@ -65,8 +65,8 @@ class KafkaStreamsIT {
   private final AdminClient adminClient;
 
   KafkaStreamsIT() {
-    this.consumer = new KafkaConsumer<>(TestConfigs.consumerConf.toJavaMap());
-    this.producer = new KafkaProducer<>(TestConfigs.producerConf.toJavaMap());
+    this.consumer = new KafkaConsumer<>(Tests.consumerConf.toJavaMap());
+    this.producer = new KafkaProducer<>(Tests.producerConf.toJavaMap());
     // Setup admin client
     adminClient = KafkaUtils.createAdmin("localhost:9092");
   }

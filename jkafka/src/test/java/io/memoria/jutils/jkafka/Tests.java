@@ -1,13 +1,12 @@
 package io.memoria.jutils.jkafka;
 
-import io.vavr.collection.HashMap;
 import io.vavr.collection.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
-import static io.vavr.collection.HashMap.*;
+import static io.vavr.collection.HashMap.ofAll;
 
-public class TestConfigs {
+public class Tests {
   public static final Map<String, Object> producerConf;
   public static final Map<String, Object> consumerConf;
 
