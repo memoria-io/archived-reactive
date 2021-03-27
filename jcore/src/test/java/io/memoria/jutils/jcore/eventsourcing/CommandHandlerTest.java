@@ -1,5 +1,6 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
+import io.memoria.jutils.jcore.id.Id;
 import io.memoria.jutils.jcore.usecase.user.User;
 import io.memoria.jutils.jcore.usecase.user.User.Visitor;
 import io.memoria.jutils.jcore.usecase.user.UserCommand;
@@ -7,7 +8,6 @@ import io.memoria.jutils.jcore.usecase.user.UserCommand.CreateUser;
 import io.memoria.jutils.jcore.usecase.user.UserDecider;
 import io.memoria.jutils.jcore.usecase.user.UserEvent.UserCreated;
 import io.memoria.jutils.jcore.usecase.user.UserEvolver;
-import io.memoria.jutils.jcore.id.Id;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
