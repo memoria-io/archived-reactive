@@ -15,8 +15,8 @@ import static io.memoria.jutils.jkafka.KafkaUtils.nPartitions;
 import static io.memoria.jutils.jkafka.KafkaUtils.topicExists;
 
 public class KafkaAdmin implements EventStoreAdmin {
-  public static KafkaAdmin create() {
-    return create("localhost:9092", Duration.ofMillis(1000), Schedulers.boundedElastic());
+  public static KafkaAdmin create(String urls) {
+    return create(urls, Duration.ofMillis(3000), Schedulers.boundedElastic());
   }
 
   public static KafkaAdmin create(String url, Duration timeout, Scheduler scheduler) {

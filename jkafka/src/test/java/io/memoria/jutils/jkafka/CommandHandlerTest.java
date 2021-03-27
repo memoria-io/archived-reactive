@@ -9,7 +9,9 @@ import io.memoria.jutils.jkafka.data.user.User;
 import io.memoria.jutils.jkafka.data.user.User.Visitor;
 import io.memoria.jutils.jkafka.data.user.UserCommand;
 import io.memoria.jutils.jkafka.data.user.UserCommand.CreateUser;
+import io.memoria.jutils.jkafka.data.user.UserCommand.SendMessage;
 import io.memoria.jutils.jkafka.data.user.UserDecider;
+import io.memoria.jutils.jkafka.data.user.UserEvent.MessageSent;
 import io.memoria.jutils.jkafka.data.user.UserEvent.UserCreated;
 import io.memoria.jutils.jkafka.data.user.UserEvolver;
 import io.vavr.collection.List;
@@ -23,29 +25,46 @@ class CommandHandlerTest {
 
   private final CommandHandler<User, UserCommand> cmdHandler;
   private final EventStore eventStore;
+  private final Id eventId = Id.of(0);
+  private final Id commandId = Id.of(1);
 
   CommandHandlerTest() {
-    String topic = "Topic_" + new Random().nextInt(1000);
-    KafkaAdmin.create().createTopic(topic, 2, 1).block();
+    String topic = "Topic_1" + new Random().nextInt(1000);
+    KafkaAdmin.create("localhost:9091,localhost:9092,localhost:9093").createTopic(topic, 2, 1).block();
     this.eventStore = KafkaEventStore.create(Tests.producerConf,
                                              Tests.consumerConf,
                                              topic,
                                              0,
                                              new SerializableTransformer());
-    cmdHandler = new CommandHandler<>(new Visitor(), eventStore, new UserDecider(() -> Id.of(1)), new UserEvolver());
+    cmdHandler = new CommandHandler<>(new Visitor(), eventStore, new UserDecider(() -> eventId), new UserEvolver());
   }
 
   @Test
   void handleCommands() {
     // Given
-    var commands = Flux.range(0, 100).map(i -> new CreateUser(Id.of(i), Id.of("bob_id" + i), "bob_name" + i));
-    var expectedEvents = List.range(0, 100)
-                             .map(i -> (Event) new UserCreated(Id.of(1), Id.of("bob_id" + i), "bob_name" + i));
+    var cmds = Flux.range(0, 100).flatMap(i -> Flux.just(createUser(i), sendMessage(i)));
+    var expectedEvents = List.range(0, 100).map(i -> (Event) userCreated(i));
     // When
-    StepVerifier.create(commands.concatMap(cmdHandler)).expectNextCount(100).verifyComplete();
+    StepVerifier.create(cmds.concatMap(cmdHandler)).expectNextCount(100).verifyComplete();
     // Then
-    StepVerifier.create(eventStore.subscribe(0).take(100))
-                .expectNext(expectedEvents.toJavaArray(Event[]::new))
+    StepVerifier.create(eventStore.subscribe(0).take(100)).expectNextCount(100)
+                //                .expectNext(expectedEvents.toJavaArray(Event[]::new))
                 .verifyComplete();
+  }
+
+  private CreateUser createUser(int i) {
+    return new CreateUser(commandId, Id.of("bob_id" + i), "bob_name" + i);
+  }
+
+  private MessageSent messageSent(int i) {
+    return new MessageSent(eventId, Id.of("bob_id" + i), Id.of("alice_id" + i), "hello kafka");
+  }
+
+  private SendMessage sendMessage(int i) {
+    return new SendMessage(commandId, Id.of("bob_id" + i), Id.of("alice_id" + i), "hello kafka" + i);
+  }
+
+  private UserCreated userCreated(int i) {
+    return new UserCreated(eventId, Id.of("bob_id" + i), "bob_name" + i);
   }
 }

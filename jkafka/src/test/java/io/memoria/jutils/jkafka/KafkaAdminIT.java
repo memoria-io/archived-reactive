@@ -11,7 +11,7 @@ import java.util.Random;
 import static io.memoria.jutils.jkafka.Tests.producerConf;
 
 class KafkaAdminIT {
-  private static final EventStoreAdmin admin = KafkaAdmin.create();
+  private static final EventStoreAdmin admin = KafkaAdmin.create("localhost:9091,localhost:9092,localhost:9093");
 
   @Test
   void check() {

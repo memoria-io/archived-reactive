@@ -13,19 +13,20 @@ public class Tests {
   static {
     // Producer configs
     var pConf = new java.util.HashMap<String, Object>();
-    pConf.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+    pConf.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9091,localhost:9092,localhost:9093");
     pConf.put(ProducerConfig.ACKS_CONFIG, "all");
     pConf.put(ProducerConfig.RETRIES_CONFIG, 2);
     pConf.put(ProducerConfig.BATCH_SIZE_CONFIG, 1);
     pConf.put(ProducerConfig.LINGER_MS_CONFIG, 1);
     pConf.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 3000);
+    pConf.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
     pConf.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
     pConf.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
     producerConf = ofAll(pConf);
 
     // Consumer configs
     var cConf = new java.util.HashMap<String, Object>();
-    cConf.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+    cConf.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9091,localhost:9092,localhost:9093");
     cConf.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
     cConf.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, 135);
     cConf.put(ConsumerConfig.GROUP_ID_CONFIG, "group_1");
