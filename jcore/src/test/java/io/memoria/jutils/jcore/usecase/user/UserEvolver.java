@@ -1,10 +1,10 @@
-package io.memoria.jutils.jcore.eventsourcing.data.user;
+package io.memoria.jutils.jcore.usecase.user;
 
 import io.memoria.jutils.jcore.eventsourcing.Event;
 import io.memoria.jutils.jcore.eventsourcing.Evolver;
-import io.memoria.jutils.jcore.eventsourcing.data.user.User.Account;
-import io.memoria.jutils.jcore.eventsourcing.data.user.User.Visitor;
-import io.memoria.jutils.jcore.eventsourcing.data.user.UserEvent.MessageSent;
+import io.memoria.jutils.jcore.usecase.user.User.Account;
+import io.memoria.jutils.jcore.usecase.user.User.Visitor;
+import io.memoria.jutils.jcore.usecase.user.UserEvent.MessageSent;
 
 public record UserEvolver() implements Evolver<User> {
   @Override

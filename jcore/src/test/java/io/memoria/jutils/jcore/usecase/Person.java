@@ -1,4 +1,4 @@
-package io.memoria.jutils.jcore.file;
+package io.memoria.jutils.jcore.usecase;
 
 import java.io.Serializable;
 

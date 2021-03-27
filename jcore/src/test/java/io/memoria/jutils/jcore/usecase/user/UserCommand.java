@@ -1,4 +1,4 @@
-package io.memoria.jutils.jcore.eventsourcing.data.user;
+package io.memoria.jutils.jcore.usecase.user;
 
 import io.memoria.jutils.jcore.eventsourcing.Command;
 import io.memoria.jutils.jcore.id.Id;

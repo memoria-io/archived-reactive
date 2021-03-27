@@ -3,7 +3,7 @@ package io.memoria.jutils.jcore.msgbus;
 import io.memoria.jutils.jcore.eventsourcing.Event;
 import io.memoria.jutils.jcore.eventsourcing.EventStoreAdmin;
 import io.memoria.jutils.jcore.eventsourcing.MemEventStoreAdmin;
-import io.memoria.jutils.jcore.eventsourcing.data.user.UserEvent.UserCreated;
+import io.memoria.jutils.jcore.usecase.user.UserEvent.UserCreated;
 import io.memoria.jutils.jcore.id.Id;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;

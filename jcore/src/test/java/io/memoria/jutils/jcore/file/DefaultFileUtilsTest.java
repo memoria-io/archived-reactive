@@ -1,5 +1,7 @@
 package io.memoria.jutils.jcore.file;
 
+import io.memoria.jutils.jcore.usecase.Location;
+import io.memoria.jutils.jcore.usecase.Person;
 import io.vavr.control.Option;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,7 +67,7 @@ class DefaultFileUtilsTest {
   }
 
   @Test
-  void serializationTest() {
+  void serializableTest() {
     var personObj = new Person("bob", 19, new Location(10, 20));
     StepVerifier.create(file.serialize(Path.of("target/person.data"), personObj)).expectNextCount(1).verifyComplete();
     StepVerifier.create(file.deserialize("person.data", Person.class)).expectNext(personObj).verifyComplete();

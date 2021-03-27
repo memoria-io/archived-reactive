@@ -3,8 +3,8 @@ package io.memoria.jutils.jkafka;
 import io.memoria.jutils.jcore.eventsourcing.Event;
 import io.memoria.jutils.jcore.eventsourcing.EventStore;
 import io.memoria.jutils.jcore.id.Id;
+import io.memoria.jutils.jcore.text.SerializableTransformer;
 import io.memoria.jutils.jkafka.data.user.UserEvent.UserCreated;
-import io.memoria.jutils.jkafka.data.user.UserTextTransformer;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -19,7 +19,7 @@ class KafkaEventStoreIT {
                                                                Tests.consumerConf,
                                                                topic,
                                                                0,
-                                                               new UserTextTransformer());
+                                                               new SerializableTransformer());
 
   @Test
   void pubSubLast() {

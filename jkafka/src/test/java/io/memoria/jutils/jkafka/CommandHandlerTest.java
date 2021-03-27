@@ -4,6 +4,7 @@ import io.memoria.jutils.jcore.eventsourcing.CommandHandler;
 import io.memoria.jutils.jcore.eventsourcing.Event;
 import io.memoria.jutils.jcore.eventsourcing.EventStore;
 import io.memoria.jutils.jcore.id.Id;
+import io.memoria.jutils.jcore.text.SerializableTransformer;
 import io.memoria.jutils.jkafka.data.user.User;
 import io.memoria.jutils.jkafka.data.user.User.Visitor;
 import io.memoria.jutils.jkafka.data.user.UserCommand;
@@ -11,7 +12,6 @@ import io.memoria.jutils.jkafka.data.user.UserCommand.CreateUser;
 import io.memoria.jutils.jkafka.data.user.UserDecider;
 import io.memoria.jutils.jkafka.data.user.UserEvent.UserCreated;
 import io.memoria.jutils.jkafka.data.user.UserEvolver;
-import io.memoria.jutils.jkafka.data.user.UserTextTransformer;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -31,7 +31,7 @@ class CommandHandlerTest {
                                              Tests.consumerConf,
                                              topic,
                                              0,
-                                             new UserTextTransformer());
+                                             new SerializableTransformer());
     cmdHandler = new CommandHandler<>(new Visitor(), eventStore, new UserDecider(() -> Id.of(1)), new UserEvolver());
   }
 
