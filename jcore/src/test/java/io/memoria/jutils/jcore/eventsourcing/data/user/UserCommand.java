@@ -11,4 +11,11 @@ public interface UserCommand extends Command {
       return userId;
     }
   }
+
+  record SendMessage(Id commandId, Id userId, Id receiverId, String message) implements UserCommand {
+    @Override
+    public Id aggId() {
+      return userId;
+    }
+  }
 }

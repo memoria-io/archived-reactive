@@ -5,6 +5,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
+import java.io.Serializable;
 import java.nio.file.Path;
 
 public interface FileUtils {
@@ -19,9 +20,13 @@ public interface FileUtils {
     return new DefaultFileUtils(nestingPrefix, resolveSystemEnv, scheduler);
   }
 
+  <T extends Serializable> Mono<T> deserialize(String path, Class<T> tClass);
+
   Mono<String> read(String resourcePath);
 
   Flux<String> readLines(String resourcePath);
 
-  Mono<Path> write(String path, String content);
+  <T extends Serializable> Mono<T> serialize(Path path, T t);
+
+  Mono<Path> write(Path path, String content);
 }

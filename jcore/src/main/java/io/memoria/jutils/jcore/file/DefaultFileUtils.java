@@ -9,7 +9,12 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,19 +42,39 @@ class DefaultFileUtils implements FileUtils {
     this.nestingPrefix = nestingPrefix;
   }
 
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T extends Serializable> Mono<T> deserialize(String path, Class<T> tClass) {
+    return Mono.fromCallable(() -> {
+      var is = (path.startsWith("/")) ? new FileInputStream(path) : ClassLoader.getSystemResourceAsStream(path);
+      try (var in = new ObjectInputStream(is)) {
+        return (T) in.readObject();
+      }
+    });
+  }
+
   @Override
   public Mono<String> read(String path) {
-    return readLines(path).reduce(joinLines);
+    return readLines(path).reduce(joinLines).subscribeOn(scheduler);
   }
 
   @Override
   public Flux<String> readLines(String path) {
-    return readPathLines(path).concatMap(l -> expand(path, l)).map(this::resolveLine);
+    return readPathLines(path).concatMap(l -> expand(path, l)).map(this::resolveLine).subscribeOn(scheduler);
   }
 
-  public Mono<Path> write(String path, String content) {
-    return Mono.fromCallable(() -> Files.writeString(Path.of(path), content, StandardOpenOption.CREATE))
-               .subscribeOn(scheduler);
+  @Override
+  public <T extends Serializable> Mono<T> serialize(Path path, T t) {
+    return Mono.fromCallable(() -> {
+      try (var out = new ObjectOutputStream(new FileOutputStream(path.toFile()))) {
+        out.writeObject(t);
+        return t;
+      }
+    });
+  }
+
+  public Mono<Path> write(Path path, String content) {
+    return Mono.fromCallable(() -> Files.writeString(path, content, StandardOpenOption.CREATE)).subscribeOn(scheduler);
   }
 
   private Flux<String> expand(String path, String line) {
@@ -68,9 +93,9 @@ class DefaultFileUtils implements FileUtils {
 
   private Flux<String> readPathLines(String path) {
     if (path.startsWith("/")) {
-      return Mono.fromCallable(() -> Files.lines(Path.of(path))).flatMapMany(Flux::fromStream).subscribeOn(scheduler);
+      return Mono.fromCallable(() -> Files.lines(Path.of(path))).flatMapMany(Flux::fromStream);
     } else {
-      return Mono.fromCallable(() -> readResource(path)).flatMapMany(Flux::fromIterable).subscribeOn(scheduler);
+      return Mono.fromCallable(() -> readResource(path)).flatMapMany(Flux::fromIterable);
     }
   }
 

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
+import java.nio.file.Path;
 import java.util.stream.Stream;
 
 class DefaultFileUtilsTest {
@@ -23,7 +24,7 @@ class DefaultFileUtilsTest {
   @DisplayName("Should append or create a file")
   void appendOrCreate() {
     // When
-    var writeFileMono = file.write("target/temp.txt", "hello world");
+    var writeFileMono = file.write(Path.of("target/temp.txt"), "hello world");
     var fileExistsMono = writeFileMono.map(h -> h.toFile().exists());
     // Then
     StepVerifier.create(writeFileMono).expectNextCount(1).expectComplete().verify();
@@ -61,6 +62,13 @@ class DefaultFileUtilsTest {
                 .expectNext("address: 15 bakerstreet")
                 .expectComplete()
                 .verify();
+  }
+
+  @Test
+  void serializationTest() {
+    var personObj = new Person("bob", 19, new Location(10, 20));
+    StepVerifier.create(file.serialize(Path.of("target/person.data"), personObj)).expectNextCount(1).verifyComplete();
+    StepVerifier.create(file.deserialize("person.data", Person.class)).expectNext(personObj).verifyComplete();
   }
 
   private static Stream<String> paths() {
