@@ -42,13 +42,13 @@ class CommandHandlerTest {
   @Test
   void handleCommands() {
     // Given
-    var cmds = Flux.range(0, 100).flatMap(i -> Flux.just(createUser(i), sendMessage(i)));
-    var expectedEvents = List.range(0, 100).map(i -> (Event) userCreated(i));
+    var cmds = Flux.range(0, 100).concatMap(i -> Flux.just(createUser(i), sendMessage(i)));
+    var expectedEvents = List.range(0, 100).flatMap(i -> List.<Event>of(userCreated(i), messageSent(i)));
     // When
-    StepVerifier.create(cmds.concatMap(cmdHandler)).expectNextCount(100).verifyComplete();
+    StepVerifier.create(cmds.concatMap(cmdHandler)).expectNextCount(200).verifyComplete();
     // Then
-    StepVerifier.create(eventStore.subscribe(0).take(100)).expectNextCount(100)
-                //                .expectNext(expectedEvents.toJavaArray(Event[]::new))
+    StepVerifier.create(eventStore.subscribe(0).take(200))
+                .expectNext(expectedEvents.toJavaArray(Event[]::new))
                 .verifyComplete();
   }
 
@@ -57,7 +57,7 @@ class CommandHandlerTest {
   }
 
   private MessageSent messageSent(int i) {
-    return new MessageSent(eventId, Id.of("bob_id" + i), Id.of("alice_id" + i), "hello kafka");
+    return new MessageSent(eventId, Id.of("bob_id" + i), Id.of("alice_id" + i), "hello kafka" + i);
   }
 
   private SendMessage sendMessage(int i) {
