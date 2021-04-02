@@ -1,5 +1,5 @@
 [![Release](https://github.com/memoria-io/jutils/workflows/Release/badge.svg)](https://github.com/memoria-io/jutils/actions?query=workflow%3ARelease)
-[![Release version](http://github-release-version.herokuapp.com/github/memoria-io/jutils/release.svg?style=flat)](https://github.com/memoria-io/jutils/releases/latest)
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/memoria-io/jutils?label=Package&logo=github)](https://github.com/orgs/memoria-io/packages?repo_name=jutils)
 [![Codecove](https://codecov.io/github/memoria-io/jutils/coverage.svg?precision=2)](https://codecov.io/gh/memoria-io/jutils)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=memoria-io_jutils&metric=coverage)](https://sonarcloud.io/dashboard?id=memoria-io_jutils)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=memoria-io_jutils&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=memoria-io_jutils)
