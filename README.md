@@ -1,6 +1,5 @@
 [![Release](https://github.com/memoria-io/jutils/workflows/Release/badge.svg)](https://github.com/memoria-io/jutils/actions?query=workflow%3ARelease)
 [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/memoria-io/jutils?label=Package&logo=github)](https://github.com/orgs/memoria-io/packages?repo_name=jutils)
-[![GitHub commits since tagged version](https://img.shields.io/github/commits-since/memoria-io/jutils/latest)](https://github.com/memoria-io/jutils/commits/master)
 [![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/memoria-io/jutils/latest?logoColor=github)](https://github.com/memoria-io/jutils/commits/master)
 
 
