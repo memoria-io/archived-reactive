@@ -5,11 +5,11 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jbom</artifactId>
-        <version>0.35.0</version>
+        <version>0.37.0</version>
     </parent>
 
     <artifactId>jutils</artifactId>
-    <version>0.238.0</version>
+    <version>0.239.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
@@ -46,6 +46,19 @@
             <url>https://maven.pkg.github.com/memoria-io/jutils</url>
         </repository>
     </distributionManagement>
+    <repositories>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/memoria-io/*</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
     <dependencyManagement>
         <dependencies>
             <!--======================================================================================== -->
