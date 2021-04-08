@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 class DefaultFileUtilsTest {
   private static final Logger log = LoggerFactory.getLogger(DefaultFileUtilsTest.class.getName());
 
-  private static final FileUtils file = FileUtils.createDefault(Option.some("include:"),
+  private static final FileUtils file = FileUtils.createDefault(Option.some("#{include}:"),
                                                                 true,
                                                                 Schedulers.boundedElastic());
 

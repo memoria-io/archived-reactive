@@ -53,7 +53,7 @@ class DefaultFileUtils implements FileUtils {
 
   private Flux<String> expand(String path, String line) {
     if (nestingPrefix.isDefined() && line.trim().startsWith(nestingPrefix.get())) {
-      var subFilePath = line.split(nestingPrefix.get())[1].trim();
+      var subFilePath = line.substring(nestingPrefix.get().length()).trim();
       var relativePath = parentPath(path) + subFilePath;
       return readLines(relativePath);
     } else {
