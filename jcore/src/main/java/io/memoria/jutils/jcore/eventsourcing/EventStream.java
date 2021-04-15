@@ -4,7 +4,7 @@ import io.vavr.collection.List;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface EventStore {
+public interface EventStream {
   Mono<Event> last();
 
   Mono<Long> publish(List<Event> msg);
@@ -14,7 +14,7 @@ public interface EventStore {
   /**
    * Used for initial state building
    *
-   * @return Flux which finishes when it meets the result of {@link EventStore#last()}
+   * @return Flux which finishes when it meets the result of {@link EventStream#last()}
    */
   default Flux<Event> subscribeToLast() {
     return last().flatMapMany(l -> subscribe(0).takeUntil(e -> e.eventId().equals(l.eventId())));

@@ -9,23 +9,27 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public class CommandHandler<S, C extends Command> implements Function1<C, Mono<S>> {
-  public static <S> Mono<ConcurrentHashMap<Id, S>> buildState(EventStore eventStore, Evolver<S> evolver) {
+  public static <S> Mono<ConcurrentHashMap<Id, S>> buildState(EventStream eventStream, Evolver<S> evolver) {
     ConcurrentHashMap<Id, S> db = new ConcurrentHashMap<>();
-    return eventStore.subscribeToLast()
-                     .map(event -> db.compute(event.aggId(), (k, oldValue) -> evolver.apply(oldValue, event)))
-                     .then(Mono.just(db));
+    return eventStream.subscribeToLast()
+                      .map(event -> db.compute(event.aggId(), (k, oldValue) -> evolver.apply(oldValue, event)))
+                      .then(Mono.just(db));
   }
 
   private final ConcurrentHashMap<Id, S> stateStore;
   private final S initState;
-  private final EventStore eventStore;
+  private final EventStream eventStream;
   private final Decider<S, C> decider;
   private final Evolver<S> evolver;
 
-  public CommandHandler(S initState, EventStore eventStore, Decider<S, C> decider, Evolver<S> evolver) {
-    this.stateStore = new ConcurrentHashMap<>();
+  public CommandHandler(S initState,
+                        ConcurrentHashMap<Id, S> initStateStore,
+                        EventStream eventStream,
+                        Decider<S, C> decider,
+                        Evolver<S> evolver) {
+    this.stateStore = initStateStore;
     this.initState = initState;
-    this.eventStore = eventStore;
+    this.eventStream = eventStream;
     this.decider = decider;
     this.evolver = evolver;
   }
@@ -49,6 +53,6 @@ public class CommandHandler<S, C extends Command> implements Function1<C, Mono<S
   }
 
   private Mono<Void> publish(List<Event> msgs) {
-    return eventStore.publish(msgs).then();
+    return eventStream.publish(msgs).then();
   }
 }

@@ -9,10 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static io.memoria.jutils.jcore.vavr.ReactorVavrUtils.toMono;
 
-public record MemEventStore(String topic,
-                            int partition,
-                            ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> store)
-        implements EventStore {
+public record MemEventStream(String topic,
+                             int partition,
+                             ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> store)
+        implements EventStream {
 
   @Override
   public Mono<Event> last() {

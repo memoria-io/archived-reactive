@@ -14,25 +14,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MemEventStoreAdminTest {
-  private final ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> store;
+  private final ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> db;
   private final EventStoreAdmin admin;
 
   MemEventStoreAdminTest() {
-    store = new ConcurrentHashMap<>();
-    admin = new MemEventStoreAdmin(store);
+    db = new ConcurrentHashMap<>();
+    admin = new MemEventStoreAdmin(db);
   }
 
   @Test
   void check() {
     // Given
     var topic = "topic";
+    var events = List.<Event>of(new UserCreated(Id.of("eventId"), Id.of(0), "name_0"),
+                                new UserCreated(Id.of("eventId"), Id.of(1), "name_1"));
     // When
     StepVerifier.create(admin.createTopic(topic, 2, 1)).verifyComplete();
-    store.get(topic).put(0, List.of(new UserCreated(Id.of("eventId"), Id.of(0), "name_0")));
-    store.get(topic)
-         .put(1,
-              List.of(new UserCreated(Id.of("eventId"), Id.of(0), "name_0"),
-                      new UserCreated(Id.of("eventId"), Id.of(1), "name_1")));
+    db.get(topic).put(0, List.of(new UserCreated(Id.of("eventId"), Id.of(0), "name_0")));
+    db.get(topic).put(1, events);
     // Then
     StepVerifier.create(admin.exists(topic, 0)).expectNext(true).expectComplete().verify();
     StepVerifier.create(admin.exists(topic, 1)).expectNext(true).expectComplete().verify();
@@ -50,6 +49,6 @@ class MemEventStoreAdminTest {
     StepVerifier.create(admin.increasePartitionsTo(topic, 5)).verifyComplete();
     // then
     StepVerifier.create(admin.nOfPartitions(topic)).expectNext(5).verifyComplete();
-    assertEquals(5, store.get(topic).size());
+    assertEquals(5, db.get(topic).size());
   }
 }

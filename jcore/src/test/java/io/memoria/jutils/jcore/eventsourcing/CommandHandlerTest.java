@@ -18,14 +18,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 class CommandHandlerTest {
   private final CommandHandler<User, UserCommand> cmdHandler;
-  private final EventStore eventStore;
+  private final EventStream eventStream;
 
   CommandHandlerTest() {
     // Setup
     String TOPIC = "Topic_" + new Random().nextInt(1000);
     int PARTITION = 0;
-    eventStore = new MemEventStore(TOPIC, PARTITION, new ConcurrentHashMap<>());
-    cmdHandler = new CommandHandler<>(new Visitor(), eventStore, new UserDecider(() -> Id.of(1)), new UserEvolver());
+    eventStream = new MemEventStream(TOPIC, PARTITION, new ConcurrentHashMap<>());
+    cmdHandler = new CommandHandler<>(new Visitor(),
+                                      new ConcurrentHashMap<>(),
+                                      eventStream,
+                                      new UserDecider(() -> Id.of(1)),
+                                      new UserEvolver());
   }
 
   @Test
@@ -37,6 +41,6 @@ class CommandHandlerTest {
     // When
     StepVerifier.create(commands.concatMap(cmdHandler)).expectNextCount(100).verifyComplete();
     // Then
-    StepVerifier.create(eventStore.subscribe(0)).expectNext(expectedEvents.toJavaArray(Event[]::new)).verifyComplete();
+    StepVerifier.create(eventStream.subscribe(0)).expectNext(expectedEvents.toJavaArray(Event[]::new)).verifyComplete();
   }
 }

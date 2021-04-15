@@ -1,8 +1,8 @@
 package io.memoria.jutils.jcore.msgbus;
 
 import io.memoria.jutils.jcore.eventsourcing.Event;
-import io.memoria.jutils.jcore.eventsourcing.EventStore;
-import io.memoria.jutils.jcore.eventsourcing.MemEventStore;
+import io.memoria.jutils.jcore.eventsourcing.EventStream;
+import io.memoria.jutils.jcore.eventsourcing.MemEventStream;
 import io.memoria.jutils.jcore.id.Id;
 import io.memoria.jutils.jcore.usecase.user.UserEvent.UserCreated;
 import io.vavr.collection.List;
@@ -15,16 +15,16 @@ import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class MemEventStoreTest {
+class MemEventStreamTest {
   private static final String TOPIC = "users_topic";
   private static final int PARTITION = 0;
 
-  private final EventStore eventStore;
+  private final EventStream eventStream;
   private final ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> esDB;
 
-  MemEventStoreTest() {
+  MemEventStreamTest() {
     this.esDB = new ConcurrentHashMap<>();
-    this.eventStore = new MemEventStore(TOPIC, PARTITION, esDB);
+    this.eventStream = new MemEventStream(TOPIC, PARTITION, esDB);
   }
 
   @Test
@@ -32,7 +32,7 @@ class MemEventStoreTest {
     // Given
     var batches = List.range(0, 100).map(i -> List.of((Event) new UserCreated(Id.of("eventId"), Id.of(i), "name" + i)));
     // When
-    batches.map(eventStore::publish).map(Mono::block);
+    batches.map(eventStream::publish).map(Mono::block);
     // Then
     assertEquals(batches.flatMap(Function.identity()), esDB.get(TOPIC).get(PARTITION));
   }
@@ -46,7 +46,7 @@ class MemEventStoreTest {
     esDB.put(TOPIC, new ConcurrentHashMap<>());
     esDB.get(TOPIC).put(PARTITION, events);
     // Then
-    StepVerifier.create(eventStore.subscribe(0)).expectNext(events.toJavaArray(Event[]::new)).verifyComplete();
-    StepVerifier.create(eventStore.last()).expectNext(expectedLastEvent);
+    StepVerifier.create(eventStream.subscribe(0)).expectNext(events.toJavaArray(Event[]::new)).verifyComplete();
+    StepVerifier.create(eventStream.last()).expectNext(expectedLastEvent);
   }
 }
