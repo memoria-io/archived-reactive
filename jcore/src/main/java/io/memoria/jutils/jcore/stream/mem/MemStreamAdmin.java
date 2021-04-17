@@ -1,5 +1,7 @@
-package io.memoria.jutils.jcore.eventsourcing;
+package io.memoria.jutils.jcore.stream.mem;
 
+import io.memoria.jutils.jcore.eventsourcing.ESException;
+import io.memoria.jutils.jcore.stream.StreamAdmin;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
@@ -8,8 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static io.memoria.jutils.jcore.vavr.ReactorVavrUtils.toMono;
 
-public record MemEventStoreAdmin(ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Event>>> store)
-        implements EventStoreAdmin {
+public record MemStreamAdmin(ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<String>>> store)
+        implements StreamAdmin {
 
   @Override
   public Mono<Void> createTopic(String topic, int partitions, int replicationFactor) {
@@ -42,7 +44,7 @@ public record MemEventStoreAdmin(ConcurrentHashMap<String, ConcurrentHashMap<Int
     if (store.containsKey(topic))
       throw ESException.create("Topic already exists");
     else {
-      var map = new ConcurrentHashMap<Integer, List<Event>>();
+      var map = new ConcurrentHashMap<Integer, List<String>>();
       List.range(0, partitions).forEach(i -> map.put(i, List.empty()));
       store.put(topic, map);
       return partitions;

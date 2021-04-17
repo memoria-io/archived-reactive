@@ -1,8 +1,8 @@
-package io.memoria.jutils.jcore.eventsourcing;
+package io.memoria.jutils.jcore.stream;
 
 import reactor.core.publisher.Mono;
 
-public interface EventStoreAdmin {
+public interface StreamAdmin {
   Mono<Void> createTopic(String topic, int partitions, int replicationFactor);
 
   Mono<Long> currentOffset(String topic, int partition);

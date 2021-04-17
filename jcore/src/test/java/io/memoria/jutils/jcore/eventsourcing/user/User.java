@@ -1,4 +1,4 @@
-package io.memoria.jutils.jcore.usecase.user;
+package io.memoria.jutils.jcore.eventsourcing.user;
 
 import io.memoria.jutils.jcore.id.Id;
 import io.vavr.collection.HashMap;

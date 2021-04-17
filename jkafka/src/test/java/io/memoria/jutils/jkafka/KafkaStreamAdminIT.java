@@ -1,6 +1,6 @@
 package io.memoria.jutils.jkafka;
 
-import io.memoria.jutils.jcore.eventsourcing.EventStoreAdmin;
+import io.memoria.jutils.jcore.stream.StreamAdmin;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
@@ -10,8 +10,8 @@ import java.util.Random;
 
 import static io.memoria.jutils.jkafka.Tests.producerConf;
 
-class KafkaAdminIT {
-  private static final EventStoreAdmin admin = KafkaAdmin.create("localhost:9091,localhost:9092,localhost:9093");
+class KafkaStreamAdminIT {
+  private static final StreamAdmin admin = KafkaStreamAdmin.create("localhost:9091,localhost:9092,localhost:9093");
 
   @Test
   void check() {
