@@ -22,6 +22,7 @@ import reactor.test.StepVerifier;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
+// TODO more tests
 class StreamCommandHandlerTest {
   private static final TextTransformer transformer = new SerializableTransformer();
   private static final IdGenerator idGenerator = () -> Id.of(1);
@@ -34,11 +35,11 @@ class StreamCommandHandlerTest {
     int PARTITION = 0;
 
     streamRepo = new MemStream(TOPIC, PARTITION, new ConcurrentHashMap<>());
-    cmdHandler = new StreamCommandHandler<>(new Visitor(),
-                                            streamRepo,
-                                            new UserDecider(idGenerator),
-                                            new UserEvolver(),
-                                            transformer);
+    cmdHandler = StreamCommandHandler.create(new Visitor(),
+                                             streamRepo,
+                                             new UserDecider(idGenerator),
+                                             new UserEvolver(),
+                                             transformer).block();
   }
 
   @Test
@@ -55,5 +56,4 @@ class StreamCommandHandlerTest {
   private static String createEventMessage(Integer i) {
     return transformer.serialize(new UserCreated(idGenerator.get(), Id.of("user_" + i), "name_" + i)).get();
   }
-
 }

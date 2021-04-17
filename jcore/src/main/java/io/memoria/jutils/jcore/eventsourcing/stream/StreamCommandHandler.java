@@ -15,7 +15,22 @@ import reactor.core.publisher.Mono;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
+@SuppressWarnings("ClassCanBeRecord")
 public class StreamCommandHandler<S, C extends Command> implements CommandHandler<S, C> {
+
+  public static <S, C extends Command> Mono<CommandHandler<S, C>> create(S defaultState,
+                                                                         StreamRepo streamRepo,
+                                                                         Decider<S, C> decider,
+                                                                         Evolver<S> evolver,
+                                                                         TextTransformer transformer) {
+    var stateStore = new ConcurrentHashMap<Id, S>();
+    var handler = new StreamCommandHandler<>(defaultState, stateStore, streamRepo, decider, evolver, transformer);
+    return streamRepo.subscribeToLast()
+                     .map(eventStr -> transformer.deserialize(eventStr, Event.class))
+                     .map(Try::get)
+                     .doOnNext(event -> stateStore.compute(event.aggId(), (k, oldV) -> evolver.apply(oldV, event)))
+                     .then(Mono.just(handler));
+  }
 
   private final ConcurrentHashMap<Id, S> stateStore;
   private final S defaultState;
@@ -24,12 +39,13 @@ public class StreamCommandHandler<S, C extends Command> implements CommandHandle
   private final Evolver<S> evolver;
   private final TextTransformer transformer;
 
-  public StreamCommandHandler(S defaultState,
-                              StreamRepo streamRepo,
-                              Decider<S, C> decider,
-                              Evolver<S> evolver,
-                              TextTransformer transformer) {
-    this.stateStore = new ConcurrentHashMap<>();
+  private StreamCommandHandler(S defaultState,
+                               ConcurrentHashMap<Id, S> stateStore,
+                               StreamRepo streamRepo,
+                               Decider<S, C> decider,
+                               Evolver<S> evolver,
+                               TextTransformer transformer) {
+    this.stateStore = stateStore;
     this.defaultState = defaultState;
     this.streamRepo = streamRepo;
     this.decider = decider;
@@ -49,11 +65,6 @@ public class StreamCommandHandler<S, C extends Command> implements CommandHandle
     }).flatMap(Function.identity());
   }
 
-  public Mono<Void> buildState() {
-    var buildFlux = streamRepo.subscribeToLast().map(this::update);
-    return Mono.fromRunnable(stateStore::clear).thenMany(buildFlux).then();
-  }
-
   private S persist(S currentState, C cmd, List<Event> events) {
     var newState = events.foldLeft(currentState, evolver);
     stateStore.put(cmd.aggId(), newState);
@@ -63,10 +74,5 @@ public class StreamCommandHandler<S, C extends Command> implements CommandHandle
   private Mono<Void> publish(List<Event> events) {
     var msgs = events.map(transformer::serialize).map(Try::get);
     return streamRepo.publish(msgs).then();
-  }
-
-  private S update(String eventStr) {
-    var event = transformer.deserialize(eventStr, Event.class).get();
-    return stateStore.compute(event.aggId(), (k, oldV) -> evolver.apply(oldV, event));
   }
 }
