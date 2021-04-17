@@ -39,7 +39,7 @@ public class StreamCommandHandler<S, C extends Command> implements CommandHandle
   private final Evolver<S> evolver;
   private final TextTransformer transformer;
 
-  private StreamCommandHandler(S defaultState,
+  public StreamCommandHandler(S defaultState,
                                ConcurrentHashMap<Id, S> stateStore,
                                StreamRepo streamRepo,
                                Decider<S, C> decider,
