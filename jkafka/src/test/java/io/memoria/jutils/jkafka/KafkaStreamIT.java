@@ -8,7 +8,7 @@ import reactor.test.StepVerifier;
 
 import java.util.Random;
 
-class KafkaStreamRepoIT {
+class KafkaStreamIT {
   private final String topic = "users_topic" + new Random().nextInt(1000);
   private final StreamRepo streamRepo = KafkaStream.create(Tests.producerConf, Tests.consumerConf, topic, 0);
 

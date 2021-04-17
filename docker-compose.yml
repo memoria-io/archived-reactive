@@ -85,12 +85,11 @@ services:
                   -Dcom.sun.management.jmxremote.ssl=false"
   kafka-manager:
     image: sheepkiller/kafka-manager
-    restart: unless-stopped
     depends_on:
       - kafka1
       - kafka2
       - kafka3
-    container_name: kafka-manager
+      - zookeeper
     ports:
       - "9001:9000"
     environment:
