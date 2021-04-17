@@ -18,11 +18,11 @@ import java.util.function.Function;
 @SuppressWarnings("ClassCanBeRecord")
 public class StreamCommandHandler<S, C extends Command> implements CommandHandler<S, C> {
 
-  public static <S, C extends Command> Mono<CommandHandler<S, C>> create(S defaultState,
-                                                                         StreamRepo streamRepo,
-                                                                         Decider<S, C> decider,
-                                                                         Evolver<S> evolver,
-                                                                         TextTransformer transformer) {
+  public static <S, C extends Command> Mono<StreamCommandHandler<S, C>> create(S defaultState,
+                                                                               StreamRepo streamRepo,
+                                                                               Decider<S, C> decider,
+                                                                               Evolver<S> evolver,
+                                                                               TextTransformer transformer) {
     var stateStore = new ConcurrentHashMap<Id, S>();
     var handler = new StreamCommandHandler<>(defaultState, stateStore, streamRepo, decider, evolver, transformer);
     return streamRepo.subscribeToLast()
@@ -40,11 +40,11 @@ public class StreamCommandHandler<S, C extends Command> implements CommandHandle
   private final TextTransformer transformer;
 
   public StreamCommandHandler(S defaultState,
-                               ConcurrentHashMap<Id, S> stateStore,
-                               StreamRepo streamRepo,
-                               Decider<S, C> decider,
-                               Evolver<S> evolver,
-                               TextTransformer transformer) {
+                              ConcurrentHashMap<Id, S> stateStore,
+                              StreamRepo streamRepo,
+                              Decider<S, C> decider,
+                              Evolver<S> evolver,
+                              TextTransformer transformer) {
     this.stateStore = stateStore;
     this.defaultState = defaultState;
     this.streamRepo = streamRepo;
