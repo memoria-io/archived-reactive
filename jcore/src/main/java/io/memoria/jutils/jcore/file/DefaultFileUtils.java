@@ -103,7 +103,7 @@ class DefaultFileUtils implements FileUtils {
 
   private String resolveLine(String line) {
     if (this.resolveSystemEnv) {
-      var p = Pattern.compile("\\$\\{[\\sa-zA-Z_0-9]+(:-)?[\\sa-zA-Z_0-9]+}");//NOSONAR
+      var p = Pattern.compile("\\$\\{[\\sa-zA-Z_0-9]+(:-)?.+}");//NOSONAR
       var f = p.matcher(line);
       var matches = new java.util.HashMap<String, String>();
       while (f.find()) {

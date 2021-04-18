@@ -37,10 +37,11 @@ class DefaultFileUtilsTest {
     if (javaHome != null && !javaHome.isEmpty()) {
       var fileMono = file.readLines("SystemEnv.yaml");
       StepVerifier.create(fileMono)
-                  .expectNextMatches(s -> s.startsWith("javaHomePath: ") && s.length() > 15)
+                  .expectNextMatches(s -> !s.contains("${"))
                   .expectNext("otherValue: defaultValue")
                   .expectComplete()
                   .verify();
+      System.out.println(fileMono.collectList().block());
     } else {
       log.warn("Test skipped, couldn't read the system environment variable JAVA_HOME");
     }
