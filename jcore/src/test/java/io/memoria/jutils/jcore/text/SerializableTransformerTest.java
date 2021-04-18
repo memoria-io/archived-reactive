@@ -1,7 +1,5 @@
 package io.memoria.jutils.jcore.text;
 
-import io.memoria.jutils.jcore.usecase.Location;
-import io.memoria.jutils.jcore.usecase.Person;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
