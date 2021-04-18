@@ -17,6 +17,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 
 import java.time.Duration;
 import java.util.NoSuchElementException;
@@ -147,7 +148,9 @@ public class KafkaUtils {
                              .get(topic)
                              .partitions()
                              .stream()
-                             .anyMatch(p -> p.partition() == partition));
+                             .anyMatch(p -> p.partition() == partition))
+              .recoverWith(ExecutionException.class, (a) -> Try.failure(a.getCause()))
+              .recoverWith(UnknownTopicOrPartitionException.class, Try.success(false));
   }
 
   private KafkaUtils() {}

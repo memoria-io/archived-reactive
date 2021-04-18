@@ -26,6 +26,7 @@ class KafkaStreamAdminIT {
     // Then
     StepVerifier.create(admin.exists(topic, 0)).expectNext(true).verifyComplete();
     StepVerifier.create(admin.exists(topic, 1)).expectNext(true).verifyComplete();
+    StepVerifier.create(admin.exists("some topic", 0)).expectNext(false).verifyComplete();
     StepVerifier.create(admin.nOfPartitions(topic)).expectNext(2).verifyComplete();
     StepVerifier.create(admin.currentOffset(topic, 0)).expectNext(2L).verifyComplete();
     StepVerifier.create(admin.currentOffset(topic, 1)).expectNext(2L).verifyComplete();
