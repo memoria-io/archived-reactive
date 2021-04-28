@@ -7,6 +7,8 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public interface FileUtils {
@@ -25,13 +27,13 @@ public interface FileUtils {
    * Convenient method to treat path as a resource path if it's not absolute
    *
    * @param path
-   * @return a try of file
+   * @return a try of inputstream
    */
-  static Try<File> file(String path) {
+  static Try<InputStream> inputStream(String path) {
     if (path.startsWith("/")) {
-      return Try.success(new File(path));
+      return Try.of(()-> Files.newInputStream(Path.of(path)));
     } else {
-      return Try.of(() -> new File(ClassLoader.getSystemResource(path).toURI()));
+      return Try.of(() -> ClassLoader.getSystemResourceAsStream(path));
     }
   }
 
