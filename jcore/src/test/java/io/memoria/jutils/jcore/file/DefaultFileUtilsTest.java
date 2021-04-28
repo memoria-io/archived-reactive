@@ -13,6 +13,8 @@ import reactor.test.StepVerifier;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class DefaultFileUtilsTest {
   private static final Logger log = LoggerFactory.getLogger(DefaultFileUtilsTest.class.getName());
 
@@ -29,6 +31,13 @@ class DefaultFileUtilsTest {
     // Then
     StepVerifier.create(writeFileMono).expectNextCount(1).expectComplete().verify();
     StepVerifier.create(fileExistsMono).expectNext(true).expectComplete().verify();
+  }
+
+  @Test
+  @DisplayName("Should read file as resources file if it's relative path")
+  void readFile() {
+    var f = FileUtils.file("Config.yaml").get();
+    assertTrue(f.exists());
   }
 
   @Test
