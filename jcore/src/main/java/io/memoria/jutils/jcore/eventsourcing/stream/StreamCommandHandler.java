@@ -13,6 +13,7 @@ import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 @SuppressWarnings("ClassCanBeRecord")
@@ -32,15 +33,15 @@ public class StreamCommandHandler<S, C extends Command> implements CommandHandle
                      .then(Mono.just(handler));
   }
 
-  private final ConcurrentHashMap<Id, S> stateStore;
-  private final S defaultState;
-  private final StreamRepo streamRepo;
+  private final transient ConcurrentMap<Id, S> stateStore;
+  private final transient S defaultState;
+  private final transient StreamRepo streamRepo;
   private final Decider<S, C> decider;
   private final Evolver<S> evolver;
-  private final TextTransformer transformer;
+  private final transient TextTransformer transformer;
 
   public StreamCommandHandler(S defaultState,
-                              ConcurrentHashMap<Id, S> stateStore,
+                              ConcurrentMap<Id, S> stateStore,
                               StreamRepo streamRepo,
                               Decider<S, C> decider,
                               Evolver<S> evolver,

@@ -8,7 +8,7 @@ import reactor.test.StepVerifier;
 import java.time.Duration;
 import java.util.Random;
 
-import static io.memoria.jutils.jkafka.Tests.producerConf;
+import static io.memoria.jutils.jkafka.TestConfigs.producerConf;
 
 class KafkaStreamAdminIT {
   private static final StreamAdmin admin = KafkaStreamAdmin.create("localhost:9091,localhost:9092,localhost:9093");

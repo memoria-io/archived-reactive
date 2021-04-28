@@ -6,7 +6,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 
 import static io.vavr.collection.HashMap.ofAll;
 
-public class Tests {
+public class TestConfigs {
   public static final Map<String, Object> producerConf;
   public static final Map<String, Object> consumerConf;
 

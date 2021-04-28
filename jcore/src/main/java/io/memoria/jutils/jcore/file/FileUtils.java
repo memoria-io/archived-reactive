@@ -6,7 +6,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
-import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,7 +30,7 @@ public interface FileUtils {
    */
   static Try<InputStream> inputStream(String path) {
     if (path.startsWith("/")) {
-      return Try.of(()-> Files.newInputStream(Path.of(path)));
+      return Try.of(() -> Files.newInputStream(Path.of(path)));
     } else {
       return Try.of(() -> ClassLoader.getSystemResourceAsStream(path));
     }

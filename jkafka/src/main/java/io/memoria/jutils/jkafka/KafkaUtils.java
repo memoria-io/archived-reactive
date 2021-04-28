@@ -88,18 +88,19 @@ public class KafkaUtils {
     // Create admin and consumer
     var url = consumerConfig.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG).get().toString();
     var admin = createAdmin(url);
-    var consumer = new KafkaConsumer<String, String>(consumerConfig.toJavaMap());
-    // Seek and Fetch
-    consumer.assign(List.of(tp).toJavaList());
-    return currentOffset(admin, topic, partition, timeout).flatMap(currentOffset -> {
-      if (currentOffset <= 0)
-        return Try.failure(new NoSuchElementException());
-      if (currentOffset == 1)
-        consumer.seek(tp, 0);
-      else
-        consumer.seek(tp, currentOffset - 2);
-      return Try.of(() -> pollOnce(consumer, topic, partition, timeout).last());
-    });
+    try (var consumer = new KafkaConsumer<String, String>(consumerConfig.toJavaMap())) {
+      // Seek and Fetch
+      consumer.assign(List.of(tp).toJavaList());
+      return currentOffset(admin, topic, partition, timeout).flatMap(currentOffset -> {
+        if (currentOffset <= 0)
+          return Try.failure(new NoSuchElementException());
+        if (currentOffset == 1)
+          consumer.seek(tp, 0);
+        else
+          consumer.seek(tp, currentOffset - 2);
+        return Try.of(() -> pollOnce(consumer, topic, partition, timeout).last());
+      });
+    }
   }
 
   public static Option<Integer> nPartitions(AdminClient admin, String topic, Duration timeout)
@@ -133,8 +134,12 @@ public class KafkaUtils {
         if (meta.hasOffset())
           offset = Option.some(meta.offset());
       }
-    } catch (ExecutionException | InterruptedException | TimeoutException e) {
+    } catch (ExecutionException | TimeoutException e) {
       producer.abortTransaction();
+      return Try.failure(e);
+    } catch (InterruptedException e) {
+      producer.abortTransaction();
+      Thread.currentThread().interrupt();
       return Try.failure(e);
     }
     producer.commitTransaction();
@@ -149,7 +154,7 @@ public class KafkaUtils {
                              .partitions()
                              .stream()
                              .anyMatch(p -> p.partition() == partition))
-              .recoverWith(ExecutionException.class, (a) -> Try.failure(a.getCause()))
+              .recoverWith(ExecutionException.class, a -> Try.failure(a.getCause()))
               .recoverWith(UnknownTopicOrPartitionException.class, Try.success(false));
   }
 
