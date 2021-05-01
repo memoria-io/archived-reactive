@@ -13,6 +13,16 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class NettyClientUtils {
+  public static Mono<Tuple2<HttpResponseStatus, String>> delete(String host, String... path) {
+    return HttpClient.create()
+                     .baseUrl(host)
+                     .delete()
+                     .uri(joinPath(path))
+                     .responseSingle((res, body) -> body.asString()
+                                                        .defaultIfEmpty("")
+                                                        .map(s -> Tuple.of(res.status(), s)));
+  }
+
   public static Mono<Tuple2<HttpResponseStatus, String>> get(String host, String... path) {
     return HttpClient.create()
                      .baseUrl(host)
@@ -55,6 +65,17 @@ public class NettyClientUtils {
                      .baseUrl(host)
                      .headers(httpHeaders)
                      .post()
+                     .uri(joinPath(path))
+                     .send(ByteBufFlux.fromString(Flux.just(payload)))
+                     .responseSingle((res, body) -> body.asString()
+                                                        .defaultIfEmpty("")
+                                                        .map(s -> Tuple.of(res.status(), s)));
+  }
+
+  public static Mono<Tuple2<HttpResponseStatus, String>> put(String payload, String host, String... path) {
+    return HttpClient.create()
+                     .baseUrl(host)
+                     .put()
                      .uri(joinPath(path))
                      .send(ByteBufFlux.fromString(Flux.just(payload)))
                      .responseSingle((res, body) -> body.asString()
