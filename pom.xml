@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>jutils</artifactId>
-    <version>0.248.0</version>
+    <version>0.250.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
@@ -22,6 +22,7 @@
         <jackson.version>2.12.2</jackson.version>
         <argon2.version>2.9.1</argon2.version>
         <jsonwebtoken.version>0.11.2</jsonwebtoken.version>
+        <r2dbc.version>0.9.0.M1</r2dbc.version>
     </properties>
     <organization>
         <name>memoria.io</name>
@@ -30,7 +31,6 @@
     <modules>
         <module>jcore</module>
         <module>jtext</module>
-        <module>jkafka</module>
         <module>jsec</module>
         <module>jweb</module>
     </modules>
@@ -83,17 +83,12 @@
                 <version>${vavr.version}</version>
             </dependency>
             <!--======================================================================================== -->
-            <!-- Streaming Dependencies -->
+            <!-- Reactive DBs Dependencies -->
             <!--======================================================================================== -->
             <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-clients</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-streams</artifactId>
-                <version>${kafka.version}</version>
+                <groupId>io.r2dbc</groupId>
+                <artifactId>r2dbc-spi</artifactId>
+                <version>${r2dbc.version}</version>
             </dependency>
             <!--======================================================================================== -->
             <!-- Json Dependencies -->
@@ -144,6 +139,10 @@
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.r2dbc</groupId>
+            <artifactId>r2dbc-spi</artifactId>
         </dependency>
         <!--======================================================================================== -->
         <!-- Functional Dependencies -->

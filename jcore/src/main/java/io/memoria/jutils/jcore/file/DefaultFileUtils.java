@@ -16,14 +16,14 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.regex.Pattern;
 
 import static io.vavr.control.Option.none;
 import static io.vavr.control.Option.some;
 
 class DefaultFileUtils implements FileUtils {
-  private static final BiFunction<String, String, String> joinLines = (a, b) -> a + System.lineSeparator() + b;
+  private static final BinaryOperator<String> joinLines = (a, b) -> a + System.lineSeparator() + b;
 
   private final Option<String> nestingPrefix;
   private final boolean resolveSystemEnv;
@@ -62,7 +62,7 @@ class DefaultFileUtils implements FileUtils {
   }
 
   private String parentPath(String filePath) {
-    return filePath.replaceFirst("[^/]+$", "");
+    return filePath.replaceFirst("[^/]+$", ""); //NOSONAR
   }
 
   private Flux<String> readPathLines(String path) {
