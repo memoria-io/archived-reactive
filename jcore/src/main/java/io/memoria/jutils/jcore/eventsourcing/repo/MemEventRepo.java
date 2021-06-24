@@ -15,15 +15,22 @@ public class MemEventRepo implements EventRepo {
   }
 
   @Override
-  public Mono<Void> add(String aggregate, List<Event> events) {
-    return Mono.fromRunnable(() -> {
-      this.db.computeIfPresent(aggregate, (k, v) -> v.appendAll(events));
-      this.db.computeIfAbsent(aggregate, key -> events);
+  public Mono<Void> createTopic(String topic) {
+    return Mono.fromRunnable(() -> this.db.put(topic, List.empty()));
+  }
+
+  @Override
+  public Mono<Integer> add(String topic, List<Event> events) {
+    return Mono.fromCallable(() -> {
+      this.db.computeIfPresent(topic, (k, v) -> v.appendAll(events));
+      if (this.db.get(topic) == null)
+        throw new NullPointerException();
+      return events.size();
     });
   }
 
   @Override
-  public Mono<List<Event>> find(String aggregate) {
-    return Mono.fromCallable(() -> db.get(aggregate));
+  public Mono<List<Event>> find(String topic) {
+    return Mono.fromCallable(() -> db.get(topic));
   }
 }

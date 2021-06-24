@@ -7,11 +7,7 @@ import java.time.LocalDateTime;
 
 public interface UserEvent extends Event {
 
-  record MessageSent(Id eventId, Id userId, Id receiverId, String message) implements Event {
-    @Override
-    public Id aggId() {
-      return userId;
-    }
+  record MessageSent(Id eventId, Id aggId, Id userId, Id receiverId, String message) implements Event {
 
     @Override
     public LocalDateTime createdAt() {
@@ -19,12 +15,7 @@ public interface UserEvent extends Event {
     }
   }
 
-  record UserCreated(Id eventId, Id userId, String name) implements Event {
-    @Override
-    public Id aggId() {
-      return Id.of("ignored");
-    }
-
+  record UserCreated(Id eventId, Id aggId, Id userId, String name) implements Event {
     @Override
     public LocalDateTime createdAt() {
       return LocalDateTime.of(2020, 1, 1, 1, 1);

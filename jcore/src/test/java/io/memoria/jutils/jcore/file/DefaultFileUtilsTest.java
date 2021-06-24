@@ -54,7 +54,6 @@ class DefaultFileUtilsTest {
                   .expectNext("otherValue: defaultValue")
                   .expectComplete()
                   .verify();
-      System.out.println(fileMono.collectList().block());
     } else {
       log.warn("Test skipped, couldn't read the system environment variable JAVA_HOME");
     }

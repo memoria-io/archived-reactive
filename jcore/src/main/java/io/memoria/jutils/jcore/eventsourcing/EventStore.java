@@ -12,20 +12,17 @@ import java.util.function.Function;
 @SuppressWarnings("ClassCanBeRecord")
 public class EventStore<S, C extends Command> implements Function1<C, Mono<S>> {
 
-  private final String aggregate;
   private final transient ConcurrentMap<Id, S> stateStore;
   private final transient S defaultState;
   private final transient EventRepo eventRepo;
   private final Decider<S, C> decider;
   private final Evolver<S> evolver;
 
-  public EventStore(String aggregate,
-                    S defaultState,
+  public EventStore(S defaultState,
                     ConcurrentMap<Id, S> stateStore,
                     EventRepo eventRepo,
                     Decider<S, C> decider,
                     Evolver<S> evolver) {
-    this.aggregate = aggregate;
     this.stateStore = stateStore;
     this.defaultState = defaultState;
     this.eventRepo = eventRepo;
@@ -40,7 +37,7 @@ public class EventStore<S, C extends Command> implements Function1<C, Mono<S>> {
     return Mono.fromCallable(() -> {
       var currentState = stateStore.getOrDefault(cmd.aggId(), defaultState);
       var events = decider.apply(currentState, cmd).get();
-      var add = eventRepo.add(aggregate, events);
+      var add = eventRepo.add(cmd.aggId().value(), events);
       var persist = Mono.fromCallable(() -> persist(currentState, cmd, events));
       return add.then(persist);
     }).flatMap(Function.identity());

@@ -5,7 +5,9 @@ import io.vavr.collection.List;
 import reactor.core.publisher.Mono;
 
 public interface EventRepo {
-  Mono<Void> add(String aggregate, List<Event> event);
+  Mono<Void> createTopic(String topic);
 
-  Mono<List<Event>> find(String aggregate);
+  Mono<Integer> add(String topic, List<Event> event);
+
+  Mono<List<Event>> find(String topic);
 }

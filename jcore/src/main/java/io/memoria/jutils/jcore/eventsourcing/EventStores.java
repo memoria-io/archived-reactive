@@ -14,7 +14,8 @@ public class EventStores {
                                                                      Decider<S, C> decider,
                                                                      Evolver<S> evolver) {
     var stateStore = new ConcurrentHashMap<Id, S>();
-    var handler = new EventStore<>(aggregate, defaultState, stateStore, eventRepo, decider, evolver);
+    var handler = new EventStore<>(defaultState, stateStore, eventRepo, decider, evolver);
+    
     return eventRepo.find(aggregate).doOnNext(events -> evolve(stateStore, evolver, events)).then(Mono.just(handler));
   }
 

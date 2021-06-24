@@ -9,20 +9,22 @@
     </parent>
 
     <artifactId>jutils</artifactId>
-    <version>0.250.0</version>
+    <version>0.251.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
     <description>Java utilities</description>
     <url>https://memoria.io</url>
     <properties>
+        <maven.compiler.source>16</maven.compiler.source>
+        <maven.compiler.target>16</maven.compiler.target>
         <reactor.version>2020.0.5</reactor.version>
         <vavr.version>0.10.3</vavr.version>
         <kafka.version>2.7.0</kafka.version>
         <jackson.version>2.12.2</jackson.version>
         <argon2.version>2.9.1</argon2.version>
         <jsonwebtoken.version>0.11.2</jsonwebtoken.version>
-        <r2dbc.version>0.9.0.M1</r2dbc.version>
+        <r2.version>0.8.4.RELEASE</r2.version>
     </properties>
     <organization>
         <name>memoria.io</name>
@@ -88,7 +90,12 @@
             <dependency>
                 <groupId>io.r2dbc</groupId>
                 <artifactId>r2dbc-spi</artifactId>
-                <version>${r2dbc.version}</version>
+                <version>${r2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.r2dbc</groupId>
+                <artifactId>r2dbc-h2</artifactId>
+                <version>${r2.version}</version>
             </dependency>
             <!--======================================================================================== -->
             <!-- Json Dependencies -->
@@ -143,6 +150,10 @@
         <dependency>
             <groupId>io.r2dbc</groupId>
             <artifactId>r2dbc-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.r2dbc</groupId>
+            <artifactId>r2dbc-h2</artifactId>
         </dependency>
         <!--======================================================================================== -->
         <!-- Functional Dependencies -->
