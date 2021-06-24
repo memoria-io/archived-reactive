@@ -22,16 +22,16 @@ public record MemStream(String topic,
   }
 
   @Override
-  public Mono<Long> publish(List<String> msgs) {
+  public Mono<Long> publish(String msg) {
     return Mono.fromCallable(() -> {
       store.computeIfPresent(topic, (topicKey, oldTopic) -> {
-        oldTopic.computeIfPresent(partition, (partitionKey, previousList) -> previousList.appendAll(msgs));
-        oldTopic.computeIfAbsent(partition, partitionKey -> msgs);
+        oldTopic.computeIfPresent(partition, (partitionKey, previousList) -> previousList.append(msg));
+        oldTopic.computeIfAbsent(partition, partitionKey -> List.of(msg));
         return oldTopic;
       });
       store.computeIfAbsent(topic, topicKey -> {
         var map = new ConcurrentHashMap<Integer, List<String>>();
-        map.put(partition, msgs);
+        map.put(partition, List.of(msg));
         return map;
       });
       return (long) store.get(topic).get(partition).size();

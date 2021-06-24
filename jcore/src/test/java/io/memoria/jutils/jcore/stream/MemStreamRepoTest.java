@@ -7,7 +7,6 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -26,12 +25,12 @@ class MemStreamRepoTest {
   @Test
   void publish() {
     // Given
-    var batches = List.range(0, 100).map(i -> "hello:" + i).map(List::of);
+    var batches = List.range(0, 100).map(i -> "hello:" + i);
     // When
 
     batches.map(streamRepo::publish).map(Mono::block);
     // Then
-    assertEquals(batches.flatMap(Function.identity()), esDB.get(TOPIC).get(PARTITION));
+    assertEquals(batches, esDB.get(TOPIC).get(PARTITION));
   }
 
   @Test
