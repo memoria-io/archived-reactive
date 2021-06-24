@@ -31,7 +31,6 @@ public class R2EventRepo implements EventRepo {
   @Override
   public Mono<Void> createTopic(String topic) {
     return Mono.from(connectionFactory.create()).flatMap(con -> {
-      // Configure Transaction
       con.setAutoCommit(true);
       var tableName = safeTableName(topic);
       var sql = """
