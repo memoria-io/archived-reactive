@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class ESHandler<S, C extends Command> implements Function1<C, Mono<S>> {
+public class ES<S, C extends Command> implements Function1<C, Mono<S>> {
   public static <S> Mono<ConcurrentHashMap<Id, S>> buildState(EventRepo eventRepo, Evolver<S> evolver) {
     var state = new ConcurrentHashMap<Id, S>();
     return eventRepo.find().doOnNext(events -> buildState(state, evolver, events)).then(Mono.just(state));
@@ -23,11 +23,11 @@ public class ESHandler<S, C extends Command> implements Function1<C, Mono<S>> {
   private final Decider<S, C> decider;
   private final Evolver<S> evolver;
 
-  public ESHandler(S defaultState,
-                   ConcurrentMap<Id, S> state,
-                   EventRepo eventRepo,
-                   Decider<S, C> decider,
-                   Evolver<S> evolver) {
+  public ES(S defaultState,
+            ConcurrentMap<Id, S> state,
+            EventRepo eventRepo,
+            Decider<S, C> decider,
+            Evolver<S> evolver) {
     this.state = state;
     this.defaultState = defaultState;
     this.eventRepo = eventRepo;

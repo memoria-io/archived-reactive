@@ -24,7 +24,7 @@ import reactor.test.StepVerifier;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-class ESHandlerTest {
+class ESTest {
   private static final IdGenerator idGenerator = () -> Id.of(1);
 
   @ParameterizedTest
@@ -50,9 +50,9 @@ class ESHandlerTest {
     return new UserCreated(idGenerator.get(), Id.of("user_" + i), "name_" + i);
   }
 
-  private static ESHandler<User, UserCommand> createEventStore(EventRepo eventRepo) {
-    var state = ESHandler.buildState(eventRepo, new UserEvolver()).block();
-    return new ESHandler<>(new Visitor(), state, eventRepo, new UserDecider(idGenerator), new UserEvolver());
+  private static ES<User, UserCommand> createEventStore(EventRepo eventRepo) {
+    var state = ES.buildState(eventRepo, new UserEvolver()).block();
+    return new ES<>(new Visitor(), state, eventRepo, new UserDecider(idGenerator), new UserEvolver());
   }
 
   private static R2ESRepo createR2ESRepo() {
