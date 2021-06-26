@@ -6,7 +6,7 @@ import io.vavr.collection.List;
 import reactor.core.publisher.Mono;
 
 public interface EventRepo {
-  Mono<Integer> add(List<Event> event);
+  Mono<Integer> add(List<Event> events);
 
   Mono<List<Event>> find();
 

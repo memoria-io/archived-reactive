@@ -53,6 +53,16 @@ public record R2ESRepo(ConnectionFactory connectionFactory, String tableName, Te
     });
   }
 
+  private Mono<List<Event>> extractResult(Publisher<? extends Result> result) {
+    return Flux.from(result)
+               .flatMap(r -> r.map((row, rowMetadata) -> row))
+               .map(row -> row.get(PAYLOAD_COL, String.class))
+               .map(row -> textTransformer.deserialize(row, Event.class))
+               .map(Try::get)
+               .collectList()
+               .map(List::ofAll);
+  }
+
   private Mono<Integer> insert(Connection connection, String tableName, List<Event> events) {
     var sql = "INSERT INTO %s (%s, %s, %s)".formatted(tableName, AGGREGATE_ID_COL, CREATED_AT_COL, PAYLOAD_COL)
               + " VALUES($1, $2, $3)";
@@ -63,15 +73,5 @@ public record R2ESRepo(ConnectionFactory connectionFactory, String tableName, Te
       st.add();
     }
     return Mono.from(st.execute()).map(Result::getRowsUpdated).flatMap(Mono::from);
-  }
-
-  private Mono<List<Event>> extractResult(Publisher<? extends Result> result) {
-    return Flux.from(result)
-               .flatMap(r -> r.map((row, rowMetadata) -> row))
-               .map(row -> row.get(PAYLOAD_COL, String.class))
-               .map(row -> textTransformer.deserialize(row, Event.class))
-               .map(Try::get)
-               .collectList()
-               .map(List::ofAll);
   }
 }
