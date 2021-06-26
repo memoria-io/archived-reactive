@@ -30,8 +30,4 @@ public class SqlUtils {
                .flatMapMany(c -> Flux.<Result>from(c.createStatement(sql).execute()))
                .flatMap(r -> Flux.from(r.map((row, rowMetadata) -> row)));
   }
-
-  public static String safeTableName(String value) {
-    return value.replace(" ", "").replaceAll("[^A-Za-z0-9_]", "");
-  }
 }

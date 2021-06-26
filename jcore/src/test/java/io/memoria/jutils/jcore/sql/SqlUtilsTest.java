@@ -1,7 +1,6 @@
 package io.memoria.jutils.jcore.sql;
 
 import io.r2dbc.spi.ConnectionFactories;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
@@ -29,10 +28,5 @@ public class SqlUtilsTest {
     StepVerifier.create(select).expectNextCount(3).expectComplete().verify();
     StepVerifier.create(SqlUtils.dropObjects(con)).expectComplete().verify();
     StepVerifier.create(select).expectError().verify();
-  }
-
-  @Test
-  void sqlTableName() {
-    Assertions.assertEquals("mytable232DA", SqlUtils.safeTableName("mytable232#% ! DA@#"));
   }
 }

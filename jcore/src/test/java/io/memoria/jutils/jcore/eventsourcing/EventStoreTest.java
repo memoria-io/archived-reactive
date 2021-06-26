@@ -1,8 +1,9 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
 import io.memoria.jutils.jcore.eventsourcing.repo.EventRepo;
-import io.memoria.jutils.jcore.eventsourcing.repo.MemEventRepo;
-import io.memoria.jutils.jcore.eventsourcing.repo.R2EventRepo;
+import io.memoria.jutils.jcore.eventsourcing.repo.MemESRepo;
+import io.memoria.jutils.jcore.eventsourcing.repo.R2ESAdmin;
+import io.memoria.jutils.jcore.eventsourcing.repo.R2ESRepo;
 import io.memoria.jutils.jcore.eventsourcing.user.User;
 import io.memoria.jutils.jcore.eventsourcing.user.User.Visitor;
 import io.memoria.jutils.jcore.eventsourcing.user.UserCommand;
@@ -20,13 +21,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 
 class EventStoreTest {
   private static final IdGenerator idGenerator = () -> Id.of(1);
-  private final String topic = "topic_" + new Random().nextInt(1000);
+  private static final Id USER_AGG = Id.of("UsersAggregate");
 
   @ParameterizedTest
   @MethodSource("eventRepo")
@@ -39,31 +39,30 @@ class EventStoreTest {
     // When
     StepVerifier.create(commands.concatMap(eventStore)).expectNextCount(count).verifyComplete();
     // Then
-    StepVerifier.create(eventRepo.find(topic)).expectNext(expectedEvents).verifyComplete();
-  }
-
-  private EventStore<User, UserCommand> createEventStore(EventRepo eventRepo) {
-    var createTopic = eventRepo.createTopic(topic);
-    var createEventStore = EventStores.create(topic,
-                                              new Visitor(),
-                                              eventRepo,
-                                              new UserDecider(idGenerator),
-                                              new UserEvolver());
-    return createTopic.then(createEventStore).block();
+    StepVerifier.create(eventRepo.find(USER_AGG)).expectNext(expectedEvents).verifyComplete();
   }
 
   private CreateUser createCommand(Integer i) {
-    return new CreateUser(idGenerator.get(), Id.of(topic), Id.of("user_" + i), "name_" + i);
+    return new CreateUser(idGenerator.get(), USER_AGG, Id.of("user_" + i), "name_" + i);
   }
 
   private Event createEvent(Integer i) {
-    return new UserCreated(idGenerator.get(), Id.of(topic), Id.of("user_" + i), "name_" + i);
+    return new UserCreated(idGenerator.get(), USER_AGG, Id.of("user_" + i), "name_" + i);
+  }
+
+  private static EventStore<User, UserCommand> createEventStore(EventRepo eventRepo) {
+    var state = EventStore.initStateStore(eventRepo, List.of(USER_AGG), new UserEvolver()).block();
+    return new EventStore<>(new Visitor(), state, eventRepo, new UserDecider(idGenerator), new UserEvolver());
+  }
+
+  private static R2ESRepo createR2ESRepo() {
+    var con = ConnectionFactories.get("r2dbc:h2:mem:///testDB");
+    var tableName = "USERS_TABLE";
+    R2ESAdmin.createTableIfNotExists(con, tableName).block();
+    return new R2ESRepo(con, tableName, new SerializableTransformer());
   }
 
   private static Stream<EventRepo> eventRepo() {
-    var mem = new MemEventRepo(new ConcurrentHashMap<>());
-    var con = ConnectionFactories.get("r2dbc:h2:mem:///testDB");
-    var r2 = new R2EventRepo(con, new SerializableTransformer());
-    return Stream.of(mem, r2);
+    return Stream.of(new MemESRepo(new ArrayList<>()), createR2ESRepo());
   }
 }
