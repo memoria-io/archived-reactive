@@ -5,11 +5,11 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jbom</artifactId>
-        <version>0.38.0</version>
+        <version>0.39.0</version>
     </parent>
 
     <artifactId>jutils</artifactId>
-    <version>0.254.0</version>
+    <version>0.255.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
@@ -18,11 +18,11 @@
     <properties>
         <maven.compiler.source>16</maven.compiler.source>
         <maven.compiler.target>16</maven.compiler.target>
-        <reactor.version>2020.0.5</reactor.version>
+        <reactor.version>2020.0.8</reactor.version>
         <vavr.version>0.10.3</vavr.version>
         <kafka.version>2.7.0</kafka.version>
-        <jackson.version>2.12.2</jackson.version>
-        <argon2.version>2.9.1</argon2.version>
+        <jackson.version>2.12.3</jackson.version>
+        <argon2.version>2.10.1</argon2.version>
         <jsonwebtoken.version>0.11.2</jsonwebtoken.version>
         <r2.version>0.8.4.RELEASE</r2.version>
     </properties>
