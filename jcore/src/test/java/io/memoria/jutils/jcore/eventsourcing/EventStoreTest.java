@@ -26,7 +26,6 @@ import java.util.stream.Stream;
 
 class EventStoreTest {
   private static final IdGenerator idGenerator = () -> Id.of(1);
-  private static final Id USER_AGG = Id.of("UsersAggregate");
 
   @ParameterizedTest
   @MethodSource("eventRepo")
@@ -39,19 +38,20 @@ class EventStoreTest {
     // When
     StepVerifier.create(commands.concatMap(eventStore)).expectNextCount(count).verifyComplete();
     // Then
-    StepVerifier.create(eventRepo.find(USER_AGG)).expectNext(expectedEvents).verifyComplete();
+    StepVerifier.create(eventRepo.find()).expectNext(expectedEvents).verifyComplete();
+    StepVerifier.create(eventRepo.find(Id.of("user_0"))).expectNext(List.of(expectedEvents.head())).verifyComplete();
   }
 
   private CreateUser createCommand(Integer i) {
-    return new CreateUser(idGenerator.get(), USER_AGG, Id.of("user_" + i), "name_" + i);
+    return new CreateUser(idGenerator.get(), Id.of("user_" + i), "name_" + i);
   }
 
   private Event createEvent(Integer i) {
-    return new UserCreated(idGenerator.get(), USER_AGG, Id.of("user_" + i), "name_" + i);
+    return new UserCreated(idGenerator.get(), Id.of("user_" + i), "name_" + i);
   }
 
   private static EventStore<User, UserCommand> createEventStore(EventRepo eventRepo) {
-    var state = EventStore.initStateStore(eventRepo, List.of(USER_AGG), new UserEvolver()).block();
+    var state = EventStore.initStateStore(eventRepo, new UserEvolver()).block();
     return new EventStore<>(new Visitor(), state, eventRepo, new UserDecider(idGenerator), new UserEvolver());
   }
 

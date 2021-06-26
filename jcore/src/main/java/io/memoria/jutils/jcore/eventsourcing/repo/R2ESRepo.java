@@ -9,6 +9,7 @@ import io.r2dbc.spi.IsolationLevel;
 import io.r2dbc.spi.Result;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -35,8 +36,21 @@ public record R2ESRepo(ConnectionFactory connectionFactory, String tableName, Te
   }
 
   @Override
-  public Mono<List<Event>> find(Id aggregate) {
-    return Mono.from(connectionFactory.create()).flatMap(con -> query(con, aggregate));
+  public Mono<List<Event>> find() {
+    return Mono.from(connectionFactory.create()).flatMap(con -> {
+      var sql = "SELECT %s FROM %s ORDER BY id".formatted(PAYLOAD_COL, tableName);
+      var execute = con.createStatement(sql).execute();
+      return extractResult(execute);
+    });
+  }
+
+  @Override
+  public Mono<List<Event>> find(Id aggId) {
+    return Mono.from(connectionFactory.create()).flatMap(con -> {
+      var sql = "SELECT %s FROM %s where %s=$1 ORDER BY id".formatted(PAYLOAD_COL, tableName, AGGREGATE_ID_COL);
+      var execute = con.createStatement(sql).bind("$1", aggId.value()).execute();
+      return extractResult(execute);
+    });
   }
 
   private Mono<Integer> insert(Connection connection, String tableName, List<Event> events) {
@@ -51,10 +65,8 @@ public record R2ESRepo(ConnectionFactory connectionFactory, String tableName, Te
     return Mono.from(st.execute()).map(Result::getRowsUpdated).flatMap(Mono::from);
   }
 
-  private Mono<List<Event>> query(Connection connection, Id aggregate) {
-    var sql = "SELECT %s FROM %s where %s=$1 ORDER BY id".formatted(PAYLOAD_COL, tableName, AGGREGATE_ID_COL);
-    var execute = connection.createStatement(sql).bind("$1", aggregate.value()).execute();
-    return Flux.<Result>from(execute)
+  private Mono<List<Event>> extractResult(Publisher<? extends Result> result) {
+    return Flux.from(result)
                .flatMap(r -> r.map((row, rowMetadata) -> row))
                .map(row -> row.get(PAYLOAD_COL, String.class))
                .map(row -> textTransformer.deserialize(row, Event.class))

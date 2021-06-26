@@ -4,7 +4,6 @@ import io.memoria.jutils.jcore.eventsourcing.repo.EventRepo;
 import io.memoria.jutils.jcore.id.Id;
 import io.vavr.Function1;
 import io.vavr.collection.List;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,13 +12,9 @@ import java.util.function.Function;
 
 @SuppressWarnings("ClassCanBeRecord")
 public class EventStore<S, C extends Command> implements Function1<C, Mono<S>> {
-  public static <S> Mono<ConcurrentHashMap<Id, S>> initStateStore(EventRepo eventRepo,
-                                                                  List<Id> aggregates,
-                                                                  Evolver<S> evolver) {
+  public static <S> Mono<ConcurrentHashMap<Id, S>> initStateStore(EventRepo eventRepo, Evolver<S> evolver) {
     var stateStore = new ConcurrentHashMap<Id, S>();
-    return Flux.fromIterable(aggregates)
-               .flatMap(agg -> eventRepo.find(agg).doOnNext(events -> initStateStore(stateStore, evolver, events)))
-               .then(Mono.just(stateStore));
+    return eventRepo.find().doOnNext(events -> initStateStore(stateStore, evolver, events)).then(Mono.just(stateStore));
   }
 
   private final transient ConcurrentMap<Id, S> stateStore;

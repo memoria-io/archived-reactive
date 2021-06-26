@@ -15,11 +15,10 @@ public record UserDecider(IdGenerator idGen) implements Decider<User, UserComman
   @Override
   public Try<List<Event>> apply(User user, UserCommand userCommand) {
     if (userCommand instanceof CreateUser cmd) {
-      return Try.success(List.of(new UserCreated(idGen.get(), cmd.aggId(), cmd.userId(), cmd.username())));
+      return Try.success(List.of(new UserCreated(idGen.get(), cmd.userId(), cmd.username())));
     }
     if (userCommand instanceof SendMessage cmd) {
-      return Try.success(List.of(new MessageSent(idGen.get(),
-                                                 cmd.aggId(),
+      return Try.success(List.of(new MessageSent(idGen.get(),                                                 
                                                  cmd.userId(),
                                                  cmd.receiverId(),
                                                  cmd.message())));

@@ -16,7 +16,12 @@ public record MemESRepo(java.util.List<Event> db) implements EventRepo {
   }
 
   @Override
-  public Mono<List<Event>> find(Id aggregate) {
-    return Mono.fromCallable(() -> List.ofAll(db).filter(e -> e.aggId().equals(aggregate)));
+  public Mono<List<Event>> find() {
+    return Mono.fromCallable(() -> List.ofAll(db));
+  }
+
+  @Override
+  public Mono<List<Event>> find(Id aggId) {
+    return Mono.fromCallable(() -> List.ofAll(db).filter(e -> e.aggId().equals(aggId)));
   }
 }

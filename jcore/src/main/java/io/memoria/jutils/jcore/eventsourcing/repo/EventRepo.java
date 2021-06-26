@@ -8,5 +8,7 @@ import reactor.core.publisher.Mono;
 public interface EventRepo {
   Mono<Integer> add(List<Event> event);
 
-  Mono<List<Event>> find(Id aggregate);
+  Mono<List<Event>> find();
+
+  Mono<List<Event>> find(Id aggId);
 }
