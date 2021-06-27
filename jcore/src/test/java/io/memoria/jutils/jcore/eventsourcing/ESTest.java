@@ -4,9 +4,7 @@ import io.memoria.jutils.jcore.eventsourcing.repo.EventRepo;
 import io.memoria.jutils.jcore.eventsourcing.repo.MemESRepo;
 import io.memoria.jutils.jcore.eventsourcing.repo.R2ESAdmin;
 import io.memoria.jutils.jcore.eventsourcing.repo.R2ESRepo;
-import io.memoria.jutils.jcore.eventsourcing.user.User;
 import io.memoria.jutils.jcore.eventsourcing.user.User.Visitor;
-import io.memoria.jutils.jcore.eventsourcing.user.UserCommand;
 import io.memoria.jutils.jcore.eventsourcing.user.UserCommand.CreateUser;
 import io.memoria.jutils.jcore.eventsourcing.user.UserDecider;
 import io.memoria.jutils.jcore.eventsourcing.user.UserEvent.UserCreated;
@@ -50,9 +48,9 @@ class ESTest {
     return new UserCreated(idGenerator.get(), Id.of("user_" + i), "name_" + i);
   }
 
-  private static ES<User, UserCommand> createEventStore(EventRepo eventRepo) {
+  private static ES createEventStore(EventRepo eventRepo) {
     var state = ES.buildState(eventRepo, new UserEvolver()).block();
-    return new ES<>(new Visitor(), state, eventRepo, new UserDecider(idGenerator), new UserEvolver());
+    return new ES(new Visitor(), state, eventRepo, new UserDecider(idGenerator), new UserEvolver());
   }
 
   private static R2ESRepo createR2ESRepo() {

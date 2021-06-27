@@ -11,23 +11,19 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class ES<S, C extends Command> implements Function1<C, Mono<S>> {
-  public static <S> Mono<ConcurrentHashMap<Id, S>> buildState(EventRepo eventRepo, Evolver<S> evolver) {
-    var state = new ConcurrentHashMap<Id, S>();
+public class ES implements Function1<Command, Mono<State>> {
+  public static Mono<ConcurrentHashMap<Id, State>> buildState(EventRepo eventRepo, Evolver evolver) {
+    var state = new ConcurrentHashMap<Id, State>();
     return eventRepo.find().doOnNext(events -> buildState(state, evolver, events)).then(Mono.just(state));
   }
 
-  private final transient ConcurrentMap<Id, S> state;
-  private final transient S defaultState;
+  private final transient ConcurrentMap<Id, State> state;
+  private final transient State defaultState;
   private final transient EventRepo eventRepo;
-  private final Decider<S, C> decider;
-  private final Evolver<S> evolver;
+  private final Decider decider;
+  private final Evolver evolver;
 
-  public ES(S defaultState,
-            ConcurrentMap<Id, S> state,
-            EventRepo eventRepo,
-            Decider<S, C> decider,
-            Evolver<S> evolver) {
+  public ES(State defaultState, ConcurrentMap<Id, State> state, EventRepo eventRepo, Decider decider, Evolver evolver) {
     this.state = state;
     this.defaultState = defaultState;
     this.eventRepo = eventRepo;
@@ -38,7 +34,7 @@ public class ES<S, C extends Command> implements Function1<C, Mono<S>> {
   /**
    * @return mono of the new State after applying such command on it.
    */
-  public Mono<S> apply(C cmd) {
+  public Mono<State> apply(Command cmd) {
     return Mono.fromCallable(() -> {
       var currentState = state.getOrDefault(cmd.aggId(), defaultState);
       var events = decider.apply(currentState, cmd).get();
@@ -48,13 +44,13 @@ public class ES<S, C extends Command> implements Function1<C, Mono<S>> {
     }).flatMap(Function.identity());
   }
 
-  private S persist(S currentState, C cmd, List<Event> events) {
+  private State persist(State currentState, Command cmd, List<Event> events) {
     var newState = events.foldLeft(currentState, evolver);
     state.put(cmd.aggId(), newState);
     return newState;
   }
 
-  private static <S> void buildState(ConcurrentHashMap<Id, S> stateStore, Evolver<S> evolver, List<Event> events) {
+  private static void buildState(ConcurrentHashMap<Id, State> stateStore, Evolver evolver, List<Event> events) {
     events.forEach(event -> stateStore.compute(event.aggId(), (k, oldV) -> evolver.apply(oldV, event)));
   }
 }
