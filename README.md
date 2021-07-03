@@ -8,6 +8,9 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=memoria-io_jutils&metric=security_rating)](https://sonarcloud.io/dashboard?id=memoria-io_jutils)
 
 # JUtils
+> هذا العلم والعمل وقف للّه تعالي اسأل اللّه ان يرزقنا الاخلاص فالقول والعمل
+> 
+> This work and knowledge is for the sake of Allah, may Allah grant us sincerity in what we say or do.
 
 `jutils` is a tool-box that makes it easier and faster to build reactive applications. It relies heavily
 on [Reactive Streams](https://www.reactive-streams.org/) and uses [Project-Reactor](https://projectreactor.io/),
