@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DefaultFileUtilsTest {
   private static final Logger log = LoggerFactory.getLogger(DefaultFileUtilsTest.class.getName());
 
-  private static final FileUtils file = FileUtils.createDefault(Option.some("#{include}:"),
+  private static final FileUtils file = FileUtils.createDefault("#{include}:",
                                                                 true,
                                                                 Schedulers.boundedElastic());
 

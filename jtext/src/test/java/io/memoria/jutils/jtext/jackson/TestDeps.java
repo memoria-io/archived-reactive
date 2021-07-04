@@ -8,8 +8,6 @@ import io.memoria.jutils.jtext.jackson.cases.company.Engineer;
 import io.memoria.jutils.jtext.jackson.cases.company.Manager;
 import reactor.core.scheduler.Schedulers;
 
-import static io.vavr.control.Option.some;
-
 public class TestDeps {
   public static final FileUtils fileUtils;
   public static final Json json;
@@ -17,7 +15,7 @@ public class TestDeps {
 
   static {
     // File utils
-    fileUtils = FileUtils.createDefault(some("include:"), false, Schedulers.boundedElastic());
+    fileUtils = FileUtils.createDefault("include:", false, Schedulers.boundedElastic());
     // Json
     var jsonMapper = JacksonUtils.mixinPropertyFormat(JacksonUtils.defaultJson(), Employee.class);
     jsonMapper.registerSubtypes(Manager.class, Engineer.class);

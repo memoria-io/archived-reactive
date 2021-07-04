@@ -18,8 +18,12 @@ public interface FileUtils {
    * @param scheduler
    * @return default instance implementing FileUtils
    */
-  static FileUtils createDefault(Option<String> nestingPrefix, boolean resolveSystemEnv, Scheduler scheduler) {
-    return new DefaultFileUtils(nestingPrefix, resolveSystemEnv, scheduler);
+  static FileUtils createDefault(String nestingPrefix, boolean resolveSystemEnv, Scheduler scheduler) {
+    return new DefaultFileUtils(Option.of(nestingPrefix), resolveSystemEnv, scheduler);
+  }
+
+  static FileUtils createDefault(boolean resolveSystemEnv, Scheduler scheduler) {
+    return new DefaultFileUtils(Option.none(), resolveSystemEnv, scheduler);
   }
 
   /**
