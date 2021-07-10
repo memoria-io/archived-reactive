@@ -4,18 +4,18 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface StreamRepo {
-  Mono<String> last();
+  Mono<Msg> last();
 
-  Mono<Long> publish(String msg);
+  Mono<Msg> publish(Msg msg);
 
-  Flux<String> subscribe(long offset);
+  Flux<Msg> subscribe(long offset);
 
   /**
    * Used for initial state building
    *
    * @return Flux which finishes when it meets the result of {@link StreamRepo#last()}
    */
-  default Flux<String> subscribeToLast() {
+  default Flux<Msg> subscribeToLast() {
     return last().flatMapMany(l -> subscribe(0).takeUntil(e -> e.equals(l)));
   }
 }

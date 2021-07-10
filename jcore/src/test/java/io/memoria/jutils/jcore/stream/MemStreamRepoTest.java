@@ -1,5 +1,6 @@
 package io.memoria.jutils.jcore.stream;
 
+import io.memoria.jutils.jcore.id.Id;
 import io.memoria.jutils.jcore.stream.mem.MemStream;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ class MemStreamRepoTest {
   private static final int PARTITION = 0;
 
   private final StreamRepo streamRepo;
-  private final ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<String>>> esDB;
+  private final ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Msg>>> esDB;
 
   MemStreamRepoTest() {
     this.esDB = new ConcurrentHashMap<>();
@@ -25,24 +26,24 @@ class MemStreamRepoTest {
   @Test
   void publish() {
     // Given
-    var batches = List.range(0, 100).map(i -> "hello:" + i);
+    var msgs = List.range(0, 100).map(i -> Msg.of(Id.of(i), "hello:" + i));
     // When
-
-    batches.map(streamRepo::publish).map(Mono::block);
+    msgs.map(streamRepo::publish).map(Mono::block);
     // Then
-    assertEquals(batches, esDB.get(TOPIC).get(PARTITION));
+    assertEquals(msgs, esDB.get(TOPIC).get(PARTITION));
   }
 
   @Test
   void subscribe() {
     // Given
-    var events = List.range(0, 100).map(i -> "hello:" + i);
-    var expectedLastEvent = "hello:99";
+    var msgs = List.range(0, 100).map(i -> Msg.of(Id.of(i), "hello:" + i));
+    var expectedEvents = msgs.toJavaArray(Msg[]::new);
+    var expectedLastEvent = Msg.of(Id.of(99), "hello:99");
     // When
     esDB.put(TOPIC, new ConcurrentHashMap<>());
-    esDB.get(TOPIC).put(PARTITION, events);
+    esDB.get(TOPIC).put(PARTITION, msgs);
     // Then
-    StepVerifier.create(streamRepo.subscribe(0)).expectNext(events.toJavaArray(String[]::new)).verifyComplete();
+    StepVerifier.create(streamRepo.subscribe(0)).expectNext(expectedEvents).verifyComplete();
     StepVerifier.create(streamRepo.last()).expectNext(expectedLastEvent);
   }
 

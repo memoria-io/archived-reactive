@@ -1,5 +1,6 @@
 package io.memoria.jutils.jcore.stream.mem;
 
+import io.memoria.jutils.jcore.stream.Msg;
 import io.memoria.jutils.jcore.stream.StreamRepo;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
@@ -12,17 +13,17 @@ import static io.memoria.jutils.jcore.vavr.ReactorVavrUtils.toMono;
 
 public record MemStream(String topic,
                         int partition,
-                        ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<String>>> store)
+                        ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Msg>>> store)
         implements StreamRepo {
 
   @Override
-  public Mono<String> last() {
+  public Mono<Msg> last() {
     return Mono.fromCallable(() -> store.get(topic).get(partition).last())
                .onErrorResume(NullPointerException.class, t -> Mono.empty());
   }
 
   @Override
-  public Mono<Long> publish(String msg) {
+  public Mono<Msg> publish(Msg msg) {
     return Mono.fromCallable(() -> {
       store.computeIfPresent(topic, (topicKey, oldTopic) -> {
         oldTopic.computeIfPresent(partition, (partitionKey, previousList) -> previousList.append(msg));
@@ -30,16 +31,16 @@ public record MemStream(String topic,
         return oldTopic;
       });
       store.computeIfAbsent(topic, topicKey -> {
-        var map = new ConcurrentHashMap<Integer, List<String>>();
+        var map = new ConcurrentHashMap<Integer, List<Msg>>();
         map.put(partition, List.of(msg));
         return map;
       });
-      return (long) store.get(topic).get(partition).size();
+      return msg;
     });
   }
 
   @Override
-  public Flux<String> subscribe(long offset) {
+  public Flux<Msg> subscribe(long offset) {
     return toMono(Try.of(() -> store.get(topic).get(partition))).flatMapMany(Flux::fromIterable).skip(offset);
   }
 }
