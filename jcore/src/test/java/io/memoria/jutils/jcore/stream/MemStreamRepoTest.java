@@ -2,49 +2,40 @@ package io.memoria.jutils.jcore.stream;
 
 import io.memoria.jutils.jcore.id.Id;
 import io.memoria.jutils.jcore.stream.mem.MemStream;
-import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-import java.util.concurrent.ConcurrentHashMap;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.ArrayList;
+import java.util.List;
 
 class MemStreamRepoTest {
-  private static final String TOPIC = "users_topic";
-  private static final int PARTITION = 0;
-
-  private final StreamRepo streamRepo;
-  private final ConcurrentHashMap<String, ConcurrentHashMap<Integer, List<Msg>>> esDB;
-
-  MemStreamRepoTest() {
-    this.esDB = new ConcurrentHashMap<>();
-    this.streamRepo = new MemStream(TOPIC, PARTITION, esDB);
-  }
 
   @Test
   void publish() {
     // Given
-    var msgs = List.range(0, 100).map(i -> Msg.of(Id.of(i), "hello:" + i));
+    var streamDB = new ArrayList<Msg>();
+    var streamRepo = new MemStream(streamDB);
+    var msgs = createMsgs();
     // When
-    msgs.map(streamRepo::publish).map(Mono::block);
+    var publish = streamRepo.publish(Flux.fromIterable(msgs));
     // Then
-    assertEquals(msgs, esDB.get(TOPIC).get(PARTITION));
+    StepVerifier.create(publish).expectNext(msgs.toArray(Msg[]::new)).verifyComplete();
   }
 
   @Test
   void subscribe() {
     // Given
-    var msgs = List.range(0, 100).map(i -> Msg.of(Id.of(i), "hello:" + i));
-    var expectedEvents = msgs.toJavaArray(Msg[]::new);
-    var expectedLastEvent = Msg.of(Id.of(99), "hello:99");
+    var msgs = createMsgs();
+    var streamRepo = new MemStream(msgs);
+    var expectedEvents = msgs.toArray(Msg[]::new);
     // When
-    esDB.put(TOPIC, new ConcurrentHashMap<>());
-    esDB.get(TOPIC).put(PARTITION, msgs);
+    var subscribe = streamRepo.subscribe(0);
     // Then
-    StepVerifier.create(streamRepo.subscribe(0)).expectNext(expectedEvents).verifyComplete();
-    StepVerifier.create(streamRepo.last()).expectNext(expectedLastEvent);
+    StepVerifier.create(subscribe).expectNext(expectedEvents).verifyComplete();
   }
 
+  private List<Msg> createMsgs() {
+    return io.vavr.collection.List.range(0, 100).map(i -> Msg.of(Id.of(i), "hello:" + i)).toJavaList();
+  }
 }
