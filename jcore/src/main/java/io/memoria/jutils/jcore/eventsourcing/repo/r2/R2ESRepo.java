@@ -1,6 +1,7 @@
-package io.memoria.jutils.jcore.eventsourcing.repo;
+package io.memoria.jutils.jcore.eventsourcing.repo.r2;
 
 import io.memoria.jutils.jcore.eventsourcing.Event;
+import io.memoria.jutils.jcore.eventsourcing.repo.EventRepo;
 import io.memoria.jutils.jcore.id.Id;
 import io.memoria.jutils.jcore.text.TextTransformer;
 import io.r2dbc.spi.Connection;
@@ -15,9 +16,9 @@ import reactor.core.publisher.Mono;
 
 import java.sql.Timestamp;
 
-import static io.memoria.jutils.jcore.eventsourcing.repo.R2ESAdmin.AGGREGATE_ID_COL;
-import static io.memoria.jutils.jcore.eventsourcing.repo.R2ESAdmin.CREATED_AT_COL;
-import static io.memoria.jutils.jcore.eventsourcing.repo.R2ESAdmin.PAYLOAD_COL;
+import static io.memoria.jutils.jcore.eventsourcing.repo.r2.R2ESAdmin.AGGREGATE_ID_COL;
+import static io.memoria.jutils.jcore.eventsourcing.repo.r2.R2ESAdmin.CREATED_AT_COL;
+import static io.memoria.jutils.jcore.eventsourcing.repo.r2.R2ESAdmin.PAYLOAD_COL;
 
 public record R2ESRepo(ConnectionFactory connectionFactory, String tableName, TextTransformer textTransformer)
         implements EventRepo {

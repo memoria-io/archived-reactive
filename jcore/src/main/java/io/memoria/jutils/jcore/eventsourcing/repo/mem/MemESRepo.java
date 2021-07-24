@@ -1,6 +1,7 @@
-package io.memoria.jutils.jcore.eventsourcing.repo;
+package io.memoria.jutils.jcore.eventsourcing.repo.mem;
 
 import io.memoria.jutils.jcore.eventsourcing.Event;
+import io.memoria.jutils.jcore.eventsourcing.repo.EventRepo;
 import io.memoria.jutils.jcore.id.Id;
 import io.vavr.collection.List;
 import reactor.core.publisher.Mono;

@@ -1,4 +1,4 @@
-package io.memoria.jutils.jcore.eventsourcing.repo;
+package io.memoria.jutils.jcore.eventsourcing.repo.r2;
 
 import io.memoria.jutils.jcore.sql.SqlUtils;
 import io.r2dbc.spi.ConnectionFactory;

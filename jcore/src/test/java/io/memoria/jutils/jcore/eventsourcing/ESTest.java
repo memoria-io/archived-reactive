@@ -1,9 +1,9 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
 import io.memoria.jutils.jcore.eventsourcing.repo.EventRepo;
-import io.memoria.jutils.jcore.eventsourcing.repo.MemESRepo;
-import io.memoria.jutils.jcore.eventsourcing.repo.R2ESAdmin;
-import io.memoria.jutils.jcore.eventsourcing.repo.R2ESRepo;
+import io.memoria.jutils.jcore.eventsourcing.repo.mem.MemESRepo;
+import io.memoria.jutils.jcore.eventsourcing.repo.r2.R2ESAdmin;
+import io.memoria.jutils.jcore.eventsourcing.repo.r2.R2ESRepo;
 import io.memoria.jutils.jcore.eventsourcing.user.User.Visitor;
 import io.memoria.jutils.jcore.eventsourcing.user.UserCommand.CreateUser;
 import io.memoria.jutils.jcore.eventsourcing.user.UserDecider;
