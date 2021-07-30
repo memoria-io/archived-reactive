@@ -22,7 +22,7 @@ import reactor.test.StepVerifier;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-class ESTest {
+class EventStoreTest {
   private static final IdGenerator idGenerator = () -> Id.of(1);
 
   @ParameterizedTest
@@ -48,9 +48,9 @@ class ESTest {
     return new UserCreated(idGenerator.get(), Id.of("user_" + i), "name_" + i);
   }
 
-  private static ES createEventStore(EventRepo eventRepo) {
-    var state = ES.buildState(eventRepo, new UserEvolver()).block();
-    return new ES(new Visitor(), state, eventRepo, new UserDecider(idGenerator), new UserEvolver());
+  private static EventStore createEventStore(EventRepo eventRepo) {
+    var state = EventStore.buildState(eventRepo, new UserEvolver()).block();
+    return new EventStore(new Visitor(), state, eventRepo, new UserDecider(idGenerator), new UserEvolver());
   }
 
   private static R2ESRepo createR2ESRepo() {

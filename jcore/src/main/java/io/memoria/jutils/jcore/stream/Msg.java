@@ -9,7 +9,7 @@ public interface Msg extends Serializable {
     return new DefaultMsg(id, body);
   }
 
-  Id id();
-
   String body();
+
+  Id id();
 }

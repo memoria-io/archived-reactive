@@ -1,6 +1,5 @@
 package io.memoria.jutils.jcore.file;
 
-import io.vavr.control.Option;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,9 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DefaultFileUtilsTest {
   private static final Logger log = LoggerFactory.getLogger(DefaultFileUtilsTest.class.getName());
 
-  private static final FileUtils file = FileUtils.createDefault("#{include}:",
-                                                                true,
-                                                                Schedulers.boundedElastic());
+  private static final FileUtils file = FileUtils.createDefault("#{include}:", true, Schedulers.boundedElastic());
 
   @Test
   @DisplayName("Should append or create a file")
