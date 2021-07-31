@@ -1,19 +1,19 @@
-[![Release](https://github.com/memoria-io/jutils/workflows/Release/badge.svg)](https://github.com/memoria-io/jutils/actions?query=workflow%3ARelease)
-[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/memoria-io/jutils?label=Version&logo=github)](https://github.com/orgs/memoria-io/packages?repo_name=jutils)
-[![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/memoria-io/jutils/latest?logoColor=github)](https://github.com/memoria-io/jutils/commits/master)
+[![Release](https://github.com/memoria-io/reactive/workflows/Release/badge.svg)](https://github.com/memoria-io/reactive/actions?query=workflow%3ARelease)
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/memoria-io/reactive?label=Version&logo=github)](https://github.com/orgs/memoria-io/packages?repo_name=reactive)
+[![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/memoria-io/reactive/latest?logoColor=github)](https://github.com/memoria-io/reactive/commits/master)
 
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=memoria-io_jutils&metric=coverage)](https://sonarcloud.io/dashboard?id=memoria-io_jutils)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=memoria-io_jutils&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=memoria-io_jutils)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=memoria-io_jutils&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=memoria-io_jutils)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=memoria-io_jutils&metric=security_rating)](https://sonarcloud.io/dashboard?id=memoria-io_jutils)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=memoria-io_reactive&metric=coverage)](https://sonarcloud.io/dashboard?id=memoria-io_reactive)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=memoria-io_reactive&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=memoria-io_reactive)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=memoria-io_reactive&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=memoria-io_reactive)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=memoria-io_reactive&metric=security_rating)](https://sonarcloud.io/dashboard?id=memoria-io_reactive)
 
-# JUtils
+# reactive
 
 > هذا العلم والعمل وقف للّه تعالي اسأل اللّه ان يرزقنا الاخلاص فالقول والعمل
 >
 > This work and knowledge is for the sake of Allah, may Allah grant us sincerity in what we say or do.
 
-`jutils` is a tool-box that makes it easier and faster to build reactive applications. It relies heavily
+`reactive` is a tool-box that makes it easier and faster to build reactive applications. It relies heavily
 on [Reactive Streams](https://www.reactive-streams.org/) and uses [Project-Reactor](https://projectreactor.io/),
 [Reactor Netty](https://github.com/reactor/reactor-netty), it also uses functional paradigms and collections
 from [Vavr](https://www.vavr.io/),
@@ -32,33 +32,33 @@ from [Vavr](https://www.vavr.io/),
     * Reading as a system property if not found as environment variable or else the default value if it was supplied:
         * `path: ${JAVA_HOME}`
         * `myVar: ${SOME_VAR:-defaultValue}`
-* jutils is up to date with the latest versions of JDK preview feature, currently `Java 15`.
+* reactive is up to date with the latest versions of JDK preview feature, currently `Java 15`.
 
 ## Usage
 
 All modules depend on Core. There are currently no other inter-dependencies between them.
 
 **Disclaimer:**
-> `jutils` is on edge, it's a work in progress and a pragmatic learning effort, so feel free to create issues or PRs.
+> `reactive` is on edge, it's a work in progress and a pragmatic learning effort, so feel free to create issues or PRs.
 
 ```xml
 
 <properties>
-    <jutils.version>0.9.82</jutils.version>
+    <reactive.version>0.9.82</reactive.version>
 </properties>
 
 <dependencies>
 <dependency>
-    <groupId>io.memoria.jutils</groupId>
+    <groupId>io.memoria.reactive</groupId>
     <artifactId>core</artifactId>
-    <version>${jutils.version}</version>
+    <version>${reactive.version}</version>
 </dependency>
 
 <dependency>
     <!-- replace module_name with your preferred module -->
-    <groupId>io.memoria.jutils</groupId>
+    <groupId>io.memoria.reactive</groupId>
     <artifactId>module_name</artifactId>
-    <version>${jutils.version}</version>
+    <version>${reactive.version}</version>
 </dependency>
 </dependencies>
 ```

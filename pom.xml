@@ -8,12 +8,12 @@
         <version>0.39.0</version>
     </parent>
 
-    <artifactId>jutils</artifactId>
-    <version>0.264.0</version>
+    <artifactId>reactive</artifactId>
+    <version>0.265.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
-    <description>Java utilities</description>
+    <description>Reactive Java utilities</description>
     <url>https://memoria.io</url>
     <properties>
         <maven.compiler.source>16</maven.compiler.source>
@@ -30,10 +30,10 @@
         <url>https://memoria.io</url>
     </organization>
     <modules>
-        <module>jcore</module>
-        <module>jtext</module>
-        <module>jsec</module>
-        <module>jweb</module>
+        <module>core</module>
+        <module>text</module>
+        <module>sec</module>
+        <module>web</module>
     </modules>
 
     <distributionManagement>
@@ -44,7 +44,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/memoria-io/jutils</url>
+            <url>https://maven.pkg.github.com/memoria-io/reactive</url>
         </repository>
     </distributionManagement>
     <repositories>
