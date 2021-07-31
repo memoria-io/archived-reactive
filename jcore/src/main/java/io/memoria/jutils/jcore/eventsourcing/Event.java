@@ -1,11 +1,11 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
 import io.memoria.jutils.jcore.id.Id;
-import io.memoria.jutils.jcore.stream.Msg;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public interface Event extends Msg {
+public interface Event extends Serializable {
   Id aggId();
 
   LocalDateTime createdAt();

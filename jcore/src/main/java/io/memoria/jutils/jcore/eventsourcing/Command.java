@@ -1,9 +1,10 @@
 package io.memoria.jutils.jcore.eventsourcing;
 
 import io.memoria.jutils.jcore.id.Id;
-import io.memoria.jutils.jcore.stream.Msg;
 
-public interface Command extends Msg {
+import java.io.Serializable;
+
+public interface Command extends Serializable {
   Id aggId();
 
   Id commandId();
