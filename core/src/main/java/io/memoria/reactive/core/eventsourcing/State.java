@@ -1,3 +1,5 @@
 package io.memoria.reactive.core.eventsourcing;
 
-public interface State {}
+import java.io.Serializable;
+
+public interface State extends Serializable {}
