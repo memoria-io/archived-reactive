@@ -6,16 +6,11 @@ import io.vavr.Function1;
 import io.vavr.collection.List;
 import reactor.core.publisher.Mono;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 @SuppressWarnings("ClassCanBeRecord")
 public class EventStore implements Function1<Command, Mono<State>> {
-  public static Mono<ConcurrentHashMap<Id, State>> buildState(EventRepo eventRepo, Evolver evolver) {
-    var state = new ConcurrentHashMap<Id, State>();
-    return eventRepo.find().doOnNext(events -> buildState(state, evolver, events)).then(Mono.just(state));
-  }
 
   private final transient ConcurrentMap<Id, State> state;
   private final transient State defaultState;
@@ -52,9 +47,5 @@ public class EventStore implements Function1<Command, Mono<State>> {
     var newState = events.foldLeft(currentState, evolver);
     state.put(cmd.aggId(), newState);
     return newState;
-  }
-
-  private static void buildState(ConcurrentHashMap<Id, State> stateStore, Evolver evolver, List<Event> events) {
-    events.forEach(event -> stateStore.compute(event.aggId(), (k, oldV) -> evolver.apply(oldV, event)));
   }
 }

@@ -49,7 +49,7 @@ class EventStoreTest {
   }
 
   private static EventStore createEventStore(EventRepo eventRepo) {
-    var state = EventStore.buildState(eventRepo, new UserEvolver()).block();
+    var state = ES.buildState(eventRepo, new UserEvolver()).block();
     return new EventStore(new Visitor(), state, eventRepo, new UserDecider(idGenerator), new UserEvolver());
   }
 
