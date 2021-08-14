@@ -1,15 +1,14 @@
 package io.memoria.reactive.core.stream.mem;
 
-import io.memoria.reactive.core.stream.Msg;
-import io.memoria.reactive.core.stream.MsgStream;
+import io.memoria.reactive.core.stream.StreamRepo;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
 
-public record MemMsgStream(List<Msg> store) implements MsgStream {
+public record MemStream<T>(List<T> store) implements StreamRepo<T> {
 
   @Override
-  public Flux<Msg> publish(Flux<Msg> msgs) {
+  public Flux<T> publish(Flux<T> msgs) {
     return msgs.map(msg -> {
       store.add(msg);
       return msg;
@@ -17,7 +16,7 @@ public record MemMsgStream(List<Msg> store) implements MsgStream {
   }
 
   @Override
-  public Flux<Msg> subscribe(long offset) {
+  public Flux<T> subscribe(long offset) {
     return Flux.fromIterable(store).skip(offset);
   }
 }

@@ -1,7 +1,6 @@
 package io.memoria.reactive.core.eventsourcing;
 
 import io.memoria.reactive.core.eventsourcing.repo.EventRepo;
-import io.memoria.reactive.core.eventsourcing.repo.mem.MemCommandStream;
 import io.memoria.reactive.core.eventsourcing.repo.mem.MemESRepo;
 import io.memoria.reactive.core.eventsourcing.repo.r2.R2ESAdmin;
 import io.memoria.reactive.core.eventsourcing.repo.r2.R2ESRepo;
@@ -13,6 +12,7 @@ import io.memoria.reactive.core.eventsourcing.user.UserEvent.UserCreated;
 import io.memoria.reactive.core.eventsourcing.user.UserEvolver;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.id.IdGenerator;
+import io.memoria.reactive.core.stream.mem.MemStream;
 import io.memoria.reactive.core.text.SerializableTransformer;
 import io.memoria.reactive.core.text.TextTransformer;
 import io.r2dbc.spi.ConnectionFactories;
@@ -36,7 +36,7 @@ class EventStoreTest {
     var eventStore = createEventStore(eventRepo);
     var count = 3;
     var commands = List.range(0, count).<Command>map(this::createCommand);
-    var cmdStream = new MemCommandStream(commands.asJava());
+    var cmdStream = new MemStream<>(commands.asJava());
     var expectedEvents = List.range(0, count).map(this::createEvent);
 
     // When

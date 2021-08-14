@@ -2,8 +2,8 @@ package io.memoria.reactive.core.stream;
 
 import reactor.core.publisher.Flux;
 
-public interface StreamRepo<E> {
-  Flux<E> publish(Flux<E> msg);
+public interface StreamRepo<T> {
+  Flux<T> publish(Flux<T> msg);
 
-  Flux<E> subscribe(long offset);
+  Flux<T> subscribe(long offset);
 }
