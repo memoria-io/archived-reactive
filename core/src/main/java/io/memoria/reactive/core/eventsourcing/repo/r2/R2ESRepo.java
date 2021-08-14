@@ -44,7 +44,9 @@ public record R2ESRepo(ConnectionFactory connectionFactory, String tableName, Te
   @Override
   public Mono<List<Event>> find(Id aggId) {
     return Mono.from(connectionFactory.create()).flatMap(con -> {
-      var sql = "SELECT %s FROM %s where %s=$1 ORDER BY id".formatted(R2ESAdmin.PAYLOAD_COL, tableName, R2ESAdmin.AGGREGATE_ID_COL);
+      var sql = "SELECT %s FROM %s where %s=$1 ORDER BY id".formatted(R2ESAdmin.PAYLOAD_COL,
+                                                                      tableName,
+                                                                      R2ESAdmin.AGGREGATE_ID_COL);
       var execute = con.createStatement(sql).bind("$1", aggId.value()).execute();
       return extractResult(execute);
     });
@@ -61,8 +63,10 @@ public record R2ESRepo(ConnectionFactory connectionFactory, String tableName, Te
   }
 
   private Mono<Integer> insert(Connection connection, String tableName, List<Event> events) {
-    var sql = "INSERT INTO %s (%s, %s, %s)".formatted(tableName, R2ESAdmin.AGGREGATE_ID_COL, R2ESAdmin.CREATED_AT_COL, R2ESAdmin.PAYLOAD_COL)
-              + " VALUES($1, $2, $3)";
+    var sql = "INSERT INTO %s (%s, %s, %s)".formatted(tableName,
+                                                      R2ESAdmin.AGGREGATE_ID_COL,
+                                                      R2ESAdmin.CREATED_AT_COL,
+                                                      R2ESAdmin.PAYLOAD_COL) + " VALUES($1, $2, $3)";
     var st = connection.createStatement(sql);
     for (Event e : events) {
       var eventPayload = textTransformer.serialize(e).get();

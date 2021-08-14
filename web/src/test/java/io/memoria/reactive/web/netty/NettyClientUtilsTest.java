@@ -11,8 +11,6 @@ import reactor.netty.http.server.HttpServerResponse;
 import reactor.netty.http.server.HttpServerRoutes;
 import reactor.test.StepVerifier;
 
-import static io.memoria.reactive.web.netty.NettyClientUtils.get;
-import static io.memoria.reactive.web.netty.NettyClientUtils.post;
 import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 

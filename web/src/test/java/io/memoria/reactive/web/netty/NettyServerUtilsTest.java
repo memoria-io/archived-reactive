@@ -8,7 +8,6 @@ import reactor.netty.http.server.HttpServer;
 import reactor.netty.http.server.HttpServerRoutes;
 import reactor.test.StepVerifier;
 
-import static io.memoria.reactive.web.netty.NettyClientUtils.get;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpResponseStatus.UNAUTHORIZED;
 
@@ -53,6 +52,8 @@ class NettyServerUtilsTest {
   private static void routes(HttpServerRoutes routes) {
     routes.get(statusReplyPath, (req, resp) -> NettyServerUtils.statusReply.apply(resp).apply(UNAUTHORIZED))
           .get(stringReplyPath, (req, resp) -> NettyServerUtils.stringReply.apply(resp).apply(OK, "Hello"))
-          .get(errorReplyPath, (req, resp) -> NettyServerUtils.stringReply.apply(resp).apply(UNAUTHORIZED, UNAUTHORIZED.reasonPhrase()));
+          .get(errorReplyPath,
+               (req, resp) -> NettyServerUtils.stringReply.apply(resp)
+                                                          .apply(UNAUTHORIZED, UNAUTHORIZED.reasonPhrase()));
   }
 }

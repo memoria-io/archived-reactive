@@ -14,7 +14,6 @@ class MsgTest {
   @Test
   @DisplayName("My message nested values should be deserialized correctly")
   void deserialize() {
-    // Given
     // When
     var msgObj = json.deserialize(MSG_JSON, Msg.class).get();
     // Then
@@ -25,7 +24,6 @@ class MsgTest {
   @Test
   @DisplayName("My message should be serialized to correct values")
   void serialize() {
-    // Given
     // When
     var myMessageString = json.serialize(Msg.of("msg_id", "hello world")).get();
     // Then

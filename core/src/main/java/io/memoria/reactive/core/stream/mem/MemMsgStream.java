@@ -1,12 +1,12 @@
 package io.memoria.reactive.core.stream.mem;
 
 import io.memoria.reactive.core.stream.Msg;
-import io.memoria.reactive.core.stream.StreamRepo;
+import io.memoria.reactive.core.stream.MsgStream;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
 
-public record MemStream(List<Msg> store) implements StreamRepo {
+public record MemMsgStream(List<Msg> store) implements MsgStream {
 
   @Override
   public Flux<Msg> publish(Flux<Msg> msgs) {

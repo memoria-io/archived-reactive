@@ -12,8 +12,6 @@ import reactor.test.StepVerifier;
 import java.util.Base64;
 import java.util.function.Consumer;
 
-import static io.memoria.reactive.web.netty.NettyClientUtils.get;
-import static io.memoria.reactive.web.netty.NettyClientUtils.post;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 
 class NettyAuthUtilsTest {
@@ -36,7 +34,10 @@ class NettyAuthUtilsTest {
   @DisplayName("Should deserialize Basic authorization header correctly")
   void basicFromTest() {
     var basic = Base64.getEncoder().encodeToString(("bob:password").getBytes());
-    var monoResp = NettyClientUtils.post("payload hello", b -> b.add("Authorization", "Basic " + basic), host, basicAuthPath);
+    var monoResp = NettyClientUtils.post("payload hello",
+                                         b -> b.add("Authorization", "Basic " + basic),
+                                         host,
+                                         basicAuthPath);
     StepVerifier.create(monoResp).expectNext(Tuple.of(OK, "(bob, password)")).expectComplete().verify();
   }
 
@@ -49,8 +50,14 @@ class NettyAuthUtilsTest {
   }
 
   private static Consumer<HttpServerRoutes> routes() {
-    return r -> r.get(tokenAuthPath, (req, resp) -> NettyServerUtils.stringReply.apply(resp).apply(OK, NettyAuthUtils.bearerToken(req).get()))
+    return r -> r.get(tokenAuthPath,
+                      (req, resp) -> NettyServerUtils.stringReply.apply(resp)
+                                                                 .apply(OK, NettyAuthUtils.bearerToken(req).get()))
                  .post(basicAuthPath,
-                       (req, resp) -> NettyServerUtils.stringReply.apply(resp).apply(OK, NettyAuthUtils.basicCredentials(req).get().toString()));
+                       (req, resp) -> NettyServerUtils.stringReply.apply(resp)
+                                                                  .apply(OK,
+                                                                         NettyAuthUtils.basicCredentials(req)
+                                                                                       .get()
+                                                                                       .toString()));
   }
 }

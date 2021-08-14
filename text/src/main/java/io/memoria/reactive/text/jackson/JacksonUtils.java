@@ -64,14 +64,6 @@ public class JacksonUtils {
     return resultMapper;
   }
 
-  public static SimpleModule reactiveModule() {
-    SimpleModule reactive = new SimpleModule();
-    // Id
-    reactive.addSerializer(Id.class, new IdSerializer());
-    reactive.addDeserializer(Id.class, new IdDeserializer());
-    return reactive;
-  }
-
   /**
    * Maps inheriting classes simple names written with format "As.PROPERTY" and property name is "@type" to this
    * baseClass argument
@@ -107,6 +99,14 @@ public class JacksonUtils {
       om.addMixIn(cls, WrapperObjectByClassName.class);
     }
     return om;
+  }
+
+  public static SimpleModule reactiveModule() {
+    SimpleModule reactive = new SimpleModule();
+    // Id
+    reactive.addSerializer(Id.class, new IdSerializer());
+    reactive.addDeserializer(Id.class, new IdDeserializer());
+    return reactive;
   }
 
   public static ObjectMapper setDateFormat(ObjectMapper om) {

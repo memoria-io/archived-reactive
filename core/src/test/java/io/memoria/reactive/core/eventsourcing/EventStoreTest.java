@@ -1,6 +1,7 @@
 package io.memoria.reactive.core.eventsourcing;
 
 import io.memoria.reactive.core.eventsourcing.repo.EventRepo;
+import io.memoria.reactive.core.eventsourcing.repo.mem.MemCommandStream;
 import io.memoria.reactive.core.eventsourcing.repo.mem.MemESRepo;
 import io.memoria.reactive.core.eventsourcing.repo.r2.R2ESAdmin;
 import io.memoria.reactive.core.eventsourcing.repo.r2.R2ESRepo;
@@ -12,13 +13,10 @@ import io.memoria.reactive.core.eventsourcing.user.UserEvent.UserCreated;
 import io.memoria.reactive.core.eventsourcing.user.UserEvolver;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.id.IdGenerator;
-import io.memoria.reactive.core.stream.Msg;
-import io.memoria.reactive.core.stream.mem.MemStream;
 import io.memoria.reactive.core.text.SerializableTransformer;
 import io.memoria.reactive.core.text.TextTransformer;
 import io.r2dbc.spi.ConnectionFactories;
 import io.vavr.collection.List;
-import io.vavr.control.Try;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import reactor.core.publisher.Flux;
@@ -38,7 +36,7 @@ class EventStoreTest {
     var eventStore = createEventStore(eventRepo);
     var count = 3;
     var commands = List.range(0, count).<Command>map(this::createCommand);
-    var cmdStream = new MemStream(toMsgs(commands).asJava());
+    var cmdStream = new MemCommandStream(commands.asJava());
     var expectedEvents = List.range(0, count).map(this::createEvent);
 
     // When
@@ -47,7 +45,7 @@ class EventStoreTest {
     StepVerifier.create(eventRepo.find()).expectNext(expectedEvents).verifyComplete();
     StepVerifier.create(eventRepo.find(Id.of("user_0"))).expectNext(List.of(expectedEvents.head())).verifyComplete();
     // When
-    var states = ES.pipeline(cmdStream, 0, transformer, eventStore);
+    var states = ES.pipeline(cmdStream, 0, eventStore);
     // Then
     StepVerifier.create(states)
                 .expectNext(new Account("name_0"))
@@ -79,9 +77,5 @@ class EventStoreTest {
 
   private static Stream<EventRepo> eventRepo() {
     return Stream.of(new MemESRepo(new ArrayList<>()), createR2ESRepo());
-  }
-
-  private static List<Msg> toMsgs(List<Command> cmds) {
-    return cmds.map(transformer::serialize).map(Try::get).map(msg -> new Msg(idGenerator.get(), msg));
   }
 }
