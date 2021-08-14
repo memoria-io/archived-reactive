@@ -1,0 +1,5 @@
+{
+  "$type":"Msg",
+  "id":"msg_id",
+  "body":"hello world"
+}

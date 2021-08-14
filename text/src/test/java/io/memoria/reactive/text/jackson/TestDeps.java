@@ -1,6 +1,7 @@
 package io.memoria.reactive.text.jackson;
 
 import io.memoria.reactive.core.file.FileUtils;
+import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.text.Json;
 import io.memoria.reactive.core.text.Yaml;
 import io.memoria.reactive.text.jackson.cases.company.Employee;
@@ -17,7 +18,7 @@ public class TestDeps {
     // File utils
     fileUtils = FileUtils.createDefault("include:", false, Schedulers.boundedElastic());
     // Json
-    var jsonMapper = JacksonUtils.mixinPropertyFormat(JacksonUtils.defaultJson(), Employee.class);
+    var jsonMapper = JacksonUtils.mixinPropertyFormat(JacksonUtils.defaultJson(), Employee.class, Msg.class);
     jsonMapper.registerSubtypes(Manager.class, Engineer.class);
     json = new JsonJackson(jsonMapper);
     // Yaml

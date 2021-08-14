@@ -1,6 +1,5 @@
 package io.memoria.reactive.core.stream;
 
-import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.mem.MemStream;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -36,6 +35,6 @@ class MemStreamRepoTest {
   }
 
   private List<Msg> createMsgs() {
-    return io.vavr.collection.List.range(0, 100).map(i -> Msg.of(Id.of(i), "hello:" + i)).toJavaList();
+    return io.vavr.collection.List.range(0, 100).map(i -> Msg.of(i, "hello:" + i)).toJavaList();
   }
 }

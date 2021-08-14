@@ -82,6 +82,6 @@ class EventStoreTest {
   }
 
   private static List<Msg> toMsgs(List<Command> cmds) {
-    return cmds.map(transformer::serialize).map(Try::get).map(msg -> Msg.of(idGenerator.get(), msg));
+    return cmds.map(transformer::serialize).map(Try::get).map(msg -> new Msg(idGenerator.get(), msg));
   }
 }

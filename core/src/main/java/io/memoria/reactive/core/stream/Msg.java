@@ -4,12 +4,12 @@ import io.memoria.reactive.core.id.Id;
 
 import java.io.Serializable;
 
-public interface Msg extends Serializable {
-  static Msg of(Id id, String body) {
-    return new DefaultMsg(id, body);
+public record Msg(Id id, String body) implements Serializable {
+  public static Msg of(long id, String body) {
+    return new Msg(Id.of(id), body);
   }
-
-  String body();
-
-  Id id();
+  
+  public static Msg of(String id, String body) {
+    return new Msg(Id.of(id), body);
+  }
 }
