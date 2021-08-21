@@ -9,10 +9,10 @@ import reactor.core.publisher.Mono;
 public record MemESRepo(java.util.List<Event> db) implements EventRepo {
 
   @Override
-  public Mono<Integer> add(List<Event> events) {
+  public Mono<List<Event>> add(List<Event> events) {
     return Mono.fromCallable(() -> {
       this.db.addAll(events.toJavaList());
-      return events.size();
+      return events;
     });
   }
 

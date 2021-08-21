@@ -5,5 +5,5 @@ import io.vavr.collection.List;
 import reactor.core.publisher.Mono;
 
 public interface EventWriteRepo {
-  Mono<Integer> add(List<Event> events);
+  Mono<List<Event>> add(List<Event> events);
 }

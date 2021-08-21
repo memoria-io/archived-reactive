@@ -20,7 +20,7 @@ public record R2ESRepo(ConnectionFactory connectionFactory, String tableName, Te
         implements EventRepo {
 
   @Override
-  public Mono<Integer> add(List<Event> events) {
+  public Mono<List<Event>> add(List<Event> events) {
     return Mono.from(connectionFactory.create()).flatMap(con -> {
       // Configure Transaction
       con.setAutoCommit(false);
@@ -28,7 +28,8 @@ public record R2ESRepo(ConnectionFactory connectionFactory, String tableName, Te
       con.setTransactionIsolationLevel(IsolationLevel.READ_COMMITTED);
       // Insert events
       return insert(con, tableName, events).doOnSuccess(s -> con.commitTransaction())
-                                           .doOnError(s -> con.rollbackTransaction());
+                                           .doOnError(s -> con.rollbackTransaction())
+                                           .thenReturn(events);
     });
   }
 
