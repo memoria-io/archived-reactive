@@ -16,11 +16,17 @@ class RFileTest {
   private static final Logger log = LoggerFactory.getLogger(RFileTest.class.getName());
 
   @Test
+  void watch() {
+    //    RFile.subscribe("/tmp/reactive", 22).subscribe(System.out::println);
+  }
+
+  @Test
   @DisplayName("Should append or create a file")
   void appendOrCreate() {
     // When
-    var writeFileMono = RFile.write(Path.of("target/temp.txt"), "hello world");
-    var fileExistsMono = writeFileMono.map(h -> h.toFile().exists());
+    var filePath = "target/temp.txt";
+    var writeFileMono = RFile.write(filePath, "hello world");
+    var fileExistsMono = writeFileMono.map(h -> Path.of(filePath).toFile().exists());
     // Then
     StepVerifier.create(writeFileMono).expectNextCount(1).expectComplete().verify();
     StepVerifier.create(fileExistsMono).expectNext(true).expectComplete().verify();
