@@ -6,8 +6,7 @@ import reactor.core.publisher.Mono;
 
 import static io.memoria.reactive.core.eventsourcing.ESException.UnknownCommand.create;
 
-public record EventStoreMapper(Map<Class<? extends Command>, EventStore> handlers)
-        implements Function1<Command, Mono<State>> {
+public record ESHandler(Map<Class<? extends Command>, EventStore> handlers) implements Function1<Command, Mono<State>> {
   @Override
   public Mono<State> apply(Command command) {
     return handlers.keySet()

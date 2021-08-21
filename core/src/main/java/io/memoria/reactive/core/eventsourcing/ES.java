@@ -1,8 +1,8 @@
 package io.memoria.reactive.core.eventsourcing;
 
-import io.memoria.reactive.core.eventsourcing.repo.EventRepo;
 import io.memoria.reactive.core.id.Id;
-import io.memoria.reactive.core.stream.StreamRepo;
+import io.memoria.reactive.core.stream.Read;
+import io.memoria.reactive.core.stream.Sub;
 import io.vavr.collection.List;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -10,12 +10,12 @@ import reactor.core.publisher.Mono;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ES {
-  public static Mono<ConcurrentHashMap<Id, State>> buildState(EventRepo eventRepo, Evolver evolver) {
+  public static Mono<ConcurrentHashMap<Id, State>> buildState(Read<Event> eventRepo, Evolver evolver) {
     var state = new ConcurrentHashMap<Id, State>();
-    return eventRepo.find().doOnNext(events -> buildState(state, evolver, events)).then(Mono.just(state));
+    return eventRepo.read(0).doOnNext(events -> buildState(state, evolver, events)).then(Mono.just(state));
   }
 
-  public static Flux<State> pipeline(StreamRepo<Command> cmdStream, long offset, EventStore eventStore) {
+  public static Flux<State> pipeline(Sub<Command> cmdStream, long offset, EventStore eventStore) {
     return cmdStream.subscribe(offset).flatMap(eventStore);
   }
 
