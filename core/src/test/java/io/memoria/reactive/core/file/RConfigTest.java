@@ -7,8 +7,8 @@ import reactor.test.StepVerifier;
 
 import java.util.stream.Stream;
 
-class ConfigUtilsTest {
-  private static final ConfigUtils file = new ConfigUtils("#{include}:", true);
+class RConfigTest {
+  private static final RConfig file = new RConfig("#{include}:", true);
 
   @ParameterizedTest
   @MethodSource("paths")

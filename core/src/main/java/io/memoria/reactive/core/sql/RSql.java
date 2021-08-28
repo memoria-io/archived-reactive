@@ -7,7 +7,7 @@ import io.r2dbc.spi.Statement;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public class SqlUtils {
+public class RSql {
   public static final String DROP_OBJECTS = "DROP ALL OBJECTS";
 
   public static Mono<Void> dropObjects(ConnectionFactory con) {

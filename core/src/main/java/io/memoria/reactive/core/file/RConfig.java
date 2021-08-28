@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 import static io.vavr.control.Option.none;
 import static io.vavr.control.Option.some;
 
-public class ConfigUtils {
+public class RConfig {
 
   private final Option<String> nestingPrefix;
   private final boolean resolveSystemEnv;
@@ -22,13 +22,13 @@ public class ConfigUtils {
    * @param resolveSystemEnv when true, any line which contains ${ENV_VALUE:-defaultValue} will be resolved from system
    *                         environment
    */
-  public ConfigUtils(String nestingPrefix, boolean resolveSystemEnv) {
+  public RConfig(String nestingPrefix, boolean resolveSystemEnv) {
     this.resolveSystemEnv = resolveSystemEnv;
     this.systemEnv = (resolveSystemEnv) ? HashMap.ofAll(System.getenv()) : HashMap.empty();
     this.nestingPrefix = Option.of(nestingPrefix).flatMap(s -> (s.isEmpty()) ? none() : some(s));
   }
 
-  public ConfigUtils(boolean resolveSystemEnv) {
+  public RConfig(boolean resolveSystemEnv) {
     this(null, resolveSystemEnv);
   }
 
