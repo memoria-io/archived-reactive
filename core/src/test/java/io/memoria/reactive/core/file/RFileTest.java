@@ -1,9 +1,12 @@
 package io.memoria.reactive.core.file;
 
+import io.vavr.Tuple;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.io.IOException;
@@ -14,10 +17,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RFileTest {
   private static final Logger log = LoggerFactory.getLogger(RFileTest.class.getName());
+  private static final String reactiveDir = "/tmp/reactive";
+
+  @BeforeEach
+  void beforeEach() {
+    RFile.clean(reactiveDir).subscribe();
+  }
 
   @Test
   void watch() {
-    //    RFile.subscribe("/tmp/reactive", 22).subscribe(System.out::println);
+    var pub = RFile.publish(reactiveDir,
+                            Flux.just(Tuple.of("f1", "hello"), Tuple.of("f2", "hi"), Tuple.of("f3", "bye")));
+    StepVerifier.create(pub).expectNextCount(3).verifyComplete();
+    var sub = RFile.subscribe("/tmp/reactive", 0).take(3).subscribe(System.out::println);
   }
 
   @Test

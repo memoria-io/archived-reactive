@@ -1,17 +1,22 @@
 package io.memoria.reactive.core.stream.mem;
 
+import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.StreamDB;
+import io.vavr.Tuple;
 import io.vavr.collection.List;
+import io.vavr.collection.Map;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.function.Function;
+
 public record MemStreamDB<T>(java.util.List<T> db) implements StreamDB<T> {
   @Override
-  public Flux<T> publish(Flux<T> msgs) {
+  public Flux<Id> publish(Flux<T> msgs) {
     return msgs.map(msg -> {
       db.add(msg);
-      return msg;
-    });
+      return db.size();
+    }).map(Id::of);
   }
 
   @Override
@@ -25,10 +30,11 @@ public record MemStreamDB<T>(java.util.List<T> db) implements StreamDB<T> {
   }
 
   @Override
-  public Mono<List<T>> write(List<T> msgs) {
+  public Mono<Map<Id, T>> write(List<T> msgs) {
     return Mono.fromCallable(() -> {
+      var start = db.size();
       db.addAll(msgs.toJavaList());
-      return msgs;
+      return msgs.zipWithIndex().map(t -> Tuple.of(Id.of(t._2 + start), t._1)).toMap(Function.identity());
     });
   }
 }

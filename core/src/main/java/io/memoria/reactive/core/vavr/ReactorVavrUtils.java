@@ -6,9 +6,12 @@ import io.vavr.collection.List;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+import reactor.core.Exceptions;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
@@ -16,6 +19,14 @@ import static java.lang.Boolean.TRUE;
 import static java.util.function.Function.identity;
 
 public final class ReactorVavrUtils {
+  public static void closeReader(Closeable closeable) {
+    try {
+      closeable.close();
+    } catch (IOException e) {
+      throw Exceptions.propagate(e);
+    }
+  }
+
   public static <T> Flux<T> toFlux(Try<List<T>> tr) {
     return Mono.fromCallable(() -> tr.isSuccess() ? Flux.fromIterable(tr.get()) : Flux.<T>error(tr.getCause()))
                .flatMapMany(identity());
