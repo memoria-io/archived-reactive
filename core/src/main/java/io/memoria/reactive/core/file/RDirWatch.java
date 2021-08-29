@@ -17,8 +17,8 @@ import static java.util.function.Function.identity;
 
 class RDirWatch {
 
-  public static Flux<String> watch(String dir) {
-    return Mono.fromCallable(() -> watchService(Path.of(dir))).flatMapMany(RDirWatch::watchService);
+  public static Flux<Path> watch(Path path) {
+    return Mono.fromCallable(() -> watchService(path)).flatMapMany(RDirWatch::watchService).map(path::resolve);
   }
 
   private RDirWatch() {}

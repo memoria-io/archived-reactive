@@ -13,8 +13,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -37,6 +35,14 @@ public class RFiles {
                .flatMapMany(Flux::fromIterable)
                .filter(f -> !f.isDirectory())
                .map(File::delete);
+  }
+
+  public static Mono<Path> createDirectory(Path path) {
+    return Mono.fromCallable(() -> path.toFile().mkdirs()).flatMap(b -> (b) ? Mono.just(path) : dirException(path));
+  }
+
+  private static Mono<Path> dirException(Path path) {
+    return Mono.error(new IllegalArgumentException("Couldn't create directories" + path));
   }
 
   public static Mono<Path> delete(Path path) {
@@ -62,21 +68,17 @@ public class RFiles {
     return files.concatMap(t -> write(t._1, t._2));
   }
 
-  public static Mono<String> read(String path) {
-    return Mono.fromCallable(() -> Files.lines(Path.of(path))).flatMapMany(Flux::fromStream).reduce(JOIN_LINES);
+  public static Mono<String> read(Path path) {
+    return Mono.fromCallable(() -> Files.lines(path)).flatMapMany(Flux::fromStream).reduce(JOIN_LINES);
   }
 
-  public static Mono<LinkedHashMap<String, String>> readDirectory(String path) {
-    return Flux.using(() -> readDirectoryStream(path), Flux::fromIterable, ReactorVavrUtils::closeReader)
-               .flatMap(p -> read(p.toString()).map(content -> Tuple.of(p.getFileName().toString(), content)))
+  public static Mono<LinkedHashMap<Path, String>> readDirectory(Path path) {
+    return Flux.using(() -> Files.newDirectoryStream(path), Flux::fromIterable, ReactorVavrUtils::closeReader)
+               .flatMap(p -> read(p).map(content -> Tuple.of(p, content)))
                .reduce(LinkedHashMap.empty(), LinkedHashMap::put);
   }
 
-  public static DirectoryStream<Path> readDirectoryStream(String path) throws IOException {
-    return Files.newDirectoryStream(Path.of(path));
-  }
-
-  public static Flux<Tuple2<String, String>> subscribe(String path, long offset) {
+  public static Flux<Tuple2<Path, String>> subscribe(Path path, long offset) {
     var existingFiles = readDirectory(path).flatMapMany(Flux::fromIterable);
     var newFiles = RDirWatch.watch(path).flatMap(file -> read(file).map(content -> Tuple.of(file, content)));
     return Flux.concat(existingFiles, newFiles).skip(offset);
@@ -96,7 +98,7 @@ public class RFiles {
                });
   }
 
-  static Path lastModified(Path p1, Path p2) {
+  public static Path lastModified(Path p1, Path p2) {
     return (p1.toFile().lastModified() > p2.toFile().lastModified()) ? p1 : p2;
   }
 
@@ -107,4 +109,5 @@ public class RFiles {
   static void logSevere(Throwable e) {
     log.error("Error while deletion:" + e.getMessage(), e);
   }
+
 }
