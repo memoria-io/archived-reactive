@@ -6,6 +6,8 @@ import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.StreamDB;
 import io.memoria.reactive.core.text.TextTransformer;
 import io.vavr.Tuple;
+import io.vavr.Tuple2;
+import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
 import io.vavr.control.Try;
@@ -24,20 +26,22 @@ public record RFileStreamDB<T>(String path, String topic, TextTransformer transf
   }
 
   @Override
-  public Mono<List<T>> read(long offset) {
-    var deserialize = transformer.deserialize(tClass);
-    return RFile.readDirectory(path).map(list -> list.map(deserialize).map(Try::get));
+  public Mono<LinkedHashMap<Id, T>> read(long offset) {
+    return RFile.readDirectory(path).map(mp -> mp.map(this::deserialize));
   }
 
   @Override
-  public Flux<T> subscribe(long offset) {
-    var deserialize = transformer.deserialize(tClass);
-    return RFile.subscribe(path, offset).map(deserialize).map(Try::get);
+  public Flux<Tuple2<Id, T>> subscribe(long offset) {
+    return RFile.subscribe(path, offset).map(mp -> mp.map(this::deserialize));
   }
 
   @Override
   public Mono<Map<Id, T>> write(List<T> events) {
     //    return RFile.write(path, ); 
     return null;
+  }
+
+  private Tuple2<Id, T> deserialize(String t1, String t2) {
+    return Tuple.of(Id.of(t1), transformer.deserialize(t2, tClass).get());
   }
 }

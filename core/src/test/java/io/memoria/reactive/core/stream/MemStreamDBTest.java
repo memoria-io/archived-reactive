@@ -1,6 +1,7 @@
 package io.memoria.reactive.core.stream;
 
 import io.memoria.reactive.core.stream.mem.MemStreamDB;
+import io.vavr.Tuple2;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
@@ -19,7 +20,7 @@ class MemStreamDBTest {
     // When
     var publish = streamRepo.publish(Flux.fromIterable(msgs));
     // Then
-//    StepVerifier.create(publish).expectNext(msgs.toArray(String[]::new)).verifyComplete();
+    //    StepVerifier.create(publish).expectNext(msgs.toArray(String[]::new)).verifyComplete();
   }
 
   @Test
@@ -29,7 +30,7 @@ class MemStreamDBTest {
     var streamRepo = new MemStreamDB<>(msgs);
     var expectedEvents = msgs.toArray(String[]::new);
     // When
-    var subscribe = streamRepo.subscribe(0);
+    var subscribe = streamRepo.subscribe(0).map(Tuple2::_2);
     // Then
     StepVerifier.create(subscribe).expectNext(expectedEvents).verifyComplete();
   }

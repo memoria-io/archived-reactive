@@ -1,8 +1,9 @@
 package io.memoria.reactive.core.stream;
 
-import io.vavr.collection.List;
+import io.memoria.reactive.core.id.Id;
+import io.vavr.collection.LinkedHashMap;
 import reactor.core.publisher.Mono;
 
 public interface Read<T> {
-  Mono<List<T>> read(long offset);
+  Mono<LinkedHashMap<Id, T>> read(long offset);
 }

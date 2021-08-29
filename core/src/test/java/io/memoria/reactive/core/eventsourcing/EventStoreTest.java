@@ -11,6 +11,7 @@ import io.memoria.reactive.core.id.IdGenerator;
 import io.memoria.reactive.core.stream.Read;
 import io.memoria.reactive.core.stream.Write;
 import io.memoria.reactive.core.stream.mem.MemStreamDB;
+import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -34,7 +35,7 @@ class EventStoreTest {
     // When
     StepVerifier.create(Flux.fromIterable(commands).concatMap(eventStore)).expectNextCount(count).verifyComplete();
     // Then
-    StepVerifier.create(eventStreamDB.read(0)).expectNext(expectedEvents).verifyComplete();
+    StepVerifier.create(eventStreamDB.read(0).map(LinkedHashMap::values)).expectNext(expectedEvents).verifyComplete();
     // When
     var states = ES.pipeline(cmdStream, 0, eventStore);
     // Then
