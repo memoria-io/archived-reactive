@@ -1,6 +1,6 @@
 package io.memoria.reactive.text.jackson;
 
-import io.memoria.reactive.core.file.RConfig;
+import io.memoria.reactive.core.config.RConfig;
 import io.memoria.reactive.core.text.Json;
 import io.memoria.reactive.core.text.Yaml;
 import io.memoria.reactive.text.jackson.cases.company.Employee;

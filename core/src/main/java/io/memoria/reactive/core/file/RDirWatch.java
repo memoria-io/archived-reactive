@@ -6,9 +6,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.SynchronousSink;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
@@ -17,16 +15,13 @@ import java.nio.file.WatchService;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.util.function.Function.identity;
 
-public class RFileUtils {
+class RDirWatch {
+
   public static Flux<String> watch(String dir) {
-    return Mono.fromCallable(() -> watchService(Path.of(dir))).flatMapMany(RFileUtils::watchService);
+    return Mono.fromCallable(() -> watchService(Path.of(dir))).flatMapMany(RDirWatch::watchService);
   }
 
-  private RFileUtils() {}
-
-  static DirectoryStream<Path> readDirectoryStream(String path) throws IOException {
-    return Files.newDirectoryStream(Path.of(path));
-  }
+  private RDirWatch() {}
 
   private static Flux<String> take(WatchService watchService) {
     return Mono.fromCallable(() -> {

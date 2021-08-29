@@ -1,6 +1,6 @@
 package io.memoria.reactive.core.stream.file;
 
-import io.memoria.reactive.core.file.RFile;
+import io.memoria.reactive.core.file.RFiles;
 import io.memoria.reactive.core.id.FileIdGenerator;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.StreamDB;
@@ -19,20 +19,20 @@ public record RFileStreamDB<T>(String path, String topic, TextTransformer transf
 
   @Override
   public Flux<Id> publish(Flux<T> msgs) {
-    var fileIdGeneratorMono = RFile.lastFileName(path).map(FileIdGenerator::startFrom);
+    var fileIdGeneratorMono = RFiles.lastFileName(path).map(FileIdGenerator::startFrom);
     var msgsStrFlux = msgs.map(transformer::serialize).map(Try::get);
     var files = fileIdGeneratorMono.flatMapMany(idGen -> msgsStrFlux.map(m -> Tuple.of(idGen.get().value(), m)));
-    return RFile.publish(path, files).map(Id::of);
+    return RFiles.publish(path, files).map(Id::of);
   }
 
   @Override
   public Mono<LinkedHashMap<Id, T>> read(long offset) {
-    return RFile.readDirectory(path).map(mp -> mp.map(this::deserialize));
+    return RFiles.readDirectory(path).map(mp -> mp.map(this::deserialize));
   }
 
   @Override
   public Flux<Tuple2<Id, T>> subscribe(long offset) {
-    return RFile.subscribe(path, offset).map(mp -> mp.map(this::deserialize));
+    return RFiles.subscribe(path, offset).map(mp -> mp.map(this::deserialize));
   }
 
   @Override
