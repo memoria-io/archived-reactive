@@ -45,7 +45,16 @@ public class RFiles {
     return Flux.fromIterable(files).flatMap(RFiles::delete).collectList().map(HashSet::ofAll);
   }
 
-  public static Mono<Path> lastFile(Path directoryPath) {
+  public static Mono<List<Path>> list(Path directoryPath) {
+    return Mono.fromCallable(() -> Files.list(directoryPath))
+               .flatMapMany(Flux::fromStream)
+               .filter(f -> !Files.isDirectory(f))
+               .collectList()
+               .map(List::ofAll);
+
+  }
+
+  public static Mono<Path> lastModified(Path directoryPath) {
     return Mono.fromCallable(() -> Files.list(directoryPath))
                .flatMapMany(Flux::fromStream)
                .filter(f -> !Files.isDirectory(f))
@@ -63,13 +72,12 @@ public class RFiles {
                .defaultIfEmpty("");
   }
 
-  public static Mono<LinkedHashMap<Path, String>> readDir(Path path) {
-    return Mono.fromCallable(() -> Files.list(path).sorted())
+  public static Mono<List<Tuple2<Path, String>>> readDir(Path path) {
+    return Mono.fromCallable(() -> Files.list(path))
                .flatMapMany(Flux::fromStream)
-               .sort()
                .flatMap(RFiles::readFn)
                .collectList()
-               .map(LinkedHashMap::ofEntries);
+               .map(List::ofAll);
   }
 
   public static Flux<Tuple2<Path, String>> subscribe(Path path, long offset) {
@@ -103,6 +111,8 @@ public class RFiles {
   private static void logSevere(Throwable e) {
     log.error("Error while deletion:" + e.getMessage(), e);
   }
+
+ 
 
   public static Mono<Tuple2<Path, String>> readFn(Path p) {
     return read(p).map(s -> Tuple.of(p, s));

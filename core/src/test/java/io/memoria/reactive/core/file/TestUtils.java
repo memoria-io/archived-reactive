@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-class Utils {
+class TestUtils {
   static final int START = 0;
   static final int END = 3;
   static final Path EMPTY_DIR = Path.of("/tmp/emptyDir");
@@ -17,7 +17,7 @@ class Utils {
   static final List<Path> FILES_LIST = FILES_TUPLE.map(Tuple2::_1);
   static final Path[] FILES_ARR = FILES_LIST.toJavaArray(Path[]::new);
 
-  private Utils() {}
+  private TestUtils() {}
 
   private static List<Tuple2<Path, String>> files() {
     return List.range(START, END)

@@ -5,22 +5,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
-import static io.memoria.reactive.core.file.Utils.END;
-import static io.memoria.reactive.core.file.Utils.FILES_ARR;
+import static io.memoria.reactive.core.file.TestUtils.END;
+import static io.memoria.reactive.core.file.TestUtils.FILES_ARR;
 
 class RDirWatchTest {
   @BeforeEach
   void beforeEach() {
-    RFiles.createDirectory(Utils.EMPTY_DIR).subscribe();
-    RFiles.clean(Utils.EMPTY_DIR).subscribe();
+    RFiles.createDirectory(TestUtils.EMPTY_DIR).subscribe();
+    RFiles.clean(TestUtils.EMPTY_DIR).subscribe();
   }
 
   @Test
   void watch() {
     // Given
-    new Thread(() -> Try.of(Utils::writeFiles).get()).start();
+    new Thread(() -> Try.of(TestUtils::writeFiles).get()).start();
     // When
-    var w = RDirWatch.watch(Utils.EMPTY_DIR).take(END);
+    var w = RDirWatch.watch(TestUtils.EMPTY_DIR).take(END);
     // Then
     StepVerifier.create(w).expectNext(FILES_ARR).verifyComplete();
   }
