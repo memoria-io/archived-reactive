@@ -1,4 +1,4 @@
-package io.memoria.reactive.core.stream;
+package io.memoria.reactive.core.stream.mem;
 
 import io.memoria.reactive.core.stream.mem.MemStreamDB;
 import io.vavr.Tuple2;
