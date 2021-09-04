@@ -35,10 +35,6 @@ public record MemStreamDB<T>(java.util.List<T> db) implements StreamDB<T> {
     return Flux.fromIterable(db).zipWith(Flux.range(0, db.size())).map(this::content).skip(offset);
   }
 
-  private Tuple2<Id, T> content(reactor.util.function.Tuple2<T, Integer> t) {
-    return Tuple.of(Id.of(t.getT2()), t.getT1());
-  }
-
   @Override
   public Mono<Map<Id, T>> write(List<T> msgs) {
     return Mono.fromCallable(() -> {
@@ -46,5 +42,9 @@ public record MemStreamDB<T>(java.util.List<T> db) implements StreamDB<T> {
       db.addAll(msgs.toJavaList());
       return msgs.zipWithIndex().map(t -> Tuple.of(Id.of(t._2 + start), t._1)).toMap(Function.identity());
     });
+  }
+
+  private Tuple2<Id, T> content(reactor.util.function.Tuple2<T, Integer> t) {
+    return Tuple.of(Id.of(t.getT2()), t.getT1());
   }
 }

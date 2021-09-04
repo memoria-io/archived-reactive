@@ -5,5 +5,5 @@ import io.vavr.Tuple2;
 import reactor.core.publisher.Flux;
 
 public interface Sub<T> {
-  Flux<Tuple2<Id,T>> subscribe(long offset);
+  Flux<Tuple2<Id, T>> subscribe(long offset);
 }

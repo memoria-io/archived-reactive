@@ -1,6 +1,5 @@
 package io.memoria.reactive.core.file;
 
-import io.memoria.reactive.core.vavr.ReactorVavrUtils;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.HashSet;
@@ -19,14 +18,11 @@ import java.util.Arrays;
 import java.util.function.BinaryOperator;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static java.nio.file.StandardOpenOption.WRITE;
 
 public class RFiles {
 
-  public static final BinaryOperator<String> JOIN_LINES = (a, b) -> a + System.lineSeparator() + b;
-  private static final String SEP = File.separator;
   private static final Logger log = LoggerFactory.getLogger(RFiles.class.getName());
+  private static final BinaryOperator<String> JOIN_LINES = (a, b) -> a + System.lineSeparator() + b;
 
   public static Flux<Boolean> clean(Path path) {
     return Mono.fromCallable(path::toFile)
@@ -38,11 +34,7 @@ public class RFiles {
   }
 
   public static Mono<Path> createDirectory(Path path) {
-    return Mono.fromCallable(() -> path.toFile().mkdirs()).flatMap(b -> (b) ? Mono.just(path) : dirException(path));
-  }
-
-  private static Mono<Path> dirException(Path path) {
-    return Mono.error(new IllegalArgumentException("Couldn't create directories" + path));
+    return Mono.fromCallable(() -> path.toFile().mkdirs()).thenReturn(path);
   }
 
   public static Mono<Path> delete(Path path) {
@@ -60,26 +52,28 @@ public class RFiles {
                .reduce(RFiles::lastModified);
   }
 
-  public static Mono<Path> overwrite(Path path, String content) {
-    return Mono.fromCallable(() -> Files.writeString(path, content, TRUNCATE_EXISTING, WRITE)).thenReturn(path);
-  }
-
   public static Flux<Path> publish(Flux<Tuple2<Path, String>> files) {
     return files.concatMap(t -> write(t._1, t._2));
   }
 
   public static Mono<String> read(Path path) {
-    return Mono.fromCallable(() -> Files.lines(path)).flatMapMany(Flux::fromStream).reduce(JOIN_LINES);
+    return Mono.fromCallable(() -> Files.lines(path))
+               .flatMapMany(Flux::fromStream)
+               .reduce(JOIN_LINES)
+               .defaultIfEmpty("");
   }
 
-  public static Mono<LinkedHashMap<Path, String>> readDirectory(Path path) {
-    return Flux.using(() -> Files.newDirectoryStream(path), Flux::fromIterable, ReactorVavrUtils::closeReader)
-               .flatMap(p -> read(p).map(content -> Tuple.of(p, content)))
-               .reduce(LinkedHashMap.empty(), LinkedHashMap::put);
+  public static Mono<LinkedHashMap<Path, String>> readDir(Path path) {
+    return Mono.fromCallable(() -> Files.list(path).sorted())
+               .flatMapMany(Flux::fromStream)
+               .sort()
+               .flatMap(RFiles::readFn)
+               .collectList()
+               .map(LinkedHashMap::ofEntries);
   }
 
   public static Flux<Tuple2<Path, String>> subscribe(Path path, long offset) {
-    var existingFiles = readDirectory(path).flatMapMany(Flux::fromIterable);
+    var existingFiles = readDir(path).flatMapMany(Flux::fromIterable);
     var newFiles = RDirWatch.watch(path).flatMap(file -> read(file).map(content -> Tuple.of(file, content)));
     return Flux.concat(existingFiles, newFiles).skip(offset);
   }
@@ -98,16 +92,19 @@ public class RFiles {
                });
   }
 
-  public static Path lastModified(Path p1, Path p2) {
+  private static Path lastModified(Path p1, Path p2) {
     return (p1.toFile().lastModified() > p2.toFile().lastModified()) ? p1 : p2;
   }
 
-  static void logDeletion(Set<Path> path) {
+  private static void logDeletion(Set<Path> path) {
     log.error("Fallback after error deleting: " + path);
   }
 
-  static void logSevere(Throwable e) {
+  private static void logSevere(Throwable e) {
     log.error("Error while deletion:" + e.getMessage(), e);
   }
 
+  public static Mono<Tuple2<Path, String>> readFn(Path p) {
+    return read(p).map(s -> Tuple.of(p, s));
+  }
 }
