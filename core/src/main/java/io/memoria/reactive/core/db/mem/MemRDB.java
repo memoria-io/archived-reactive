@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 
 public record MemRDB<T extends Msg>(java.util.List<T> db) implements RDB<T> {
   @Override
-  public Mono<Long> index() {
+  public Mono<Long> currentIndex() {
     return Mono.fromCallable(() -> db.size() - 1L);
   }
 
@@ -23,6 +23,11 @@ public record MemRDB<T extends Msg>(java.util.List<T> db) implements RDB<T> {
   @Override
   public Mono<List<T>> read(int offset) {
     return Mono.fromCallable(() -> List.ofAll(db).drop(offset));
+  }
+
+  @Override
+  public Mono<Integer> size() {
+    return Mono.fromCallable(db::size);
   }
 
   @Override

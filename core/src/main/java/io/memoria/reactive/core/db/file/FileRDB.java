@@ -22,7 +22,7 @@ public record FileRDB<T extends Msg>(String topic, Path path, TextTransformer tr
   private static final Logger log = LoggerFactory.getLogger(FileRDB.class.getName());
 
   @Override
-  public Mono<Long> index() {
+  public Mono<Long> currentIndex() {
     return sortedList(path).last()
                            .map(i -> i + 1)
                            .doOnError(NoSuchElementException.class, t -> emptyDirectory(path))
@@ -39,6 +39,11 @@ public record FileRDB<T extends Msg>(String topic, Path path, TextTransformer tr
   public Mono<List<T>> read(int offset) {
     var deserialize = transformer.deserialize(tClass);
     return RFiles.readDir(path).map(files -> files.map(RFile::content).map(deserialize).map(Try::get).drop(offset));
+  }
+
+  @Override
+  public Mono<Integer> size() {
+    return RFiles.list(path).map(List::size);
   }
 
   @Override
