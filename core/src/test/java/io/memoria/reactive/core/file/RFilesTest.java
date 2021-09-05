@@ -104,7 +104,7 @@ class RFilesTest {
     // Given
     new Thread(TestUtils::writeFiles).start();
     // When
-    var sub = RFiles.subscribe(TestUtils.EMPTY_DIR).map(RFile::path).doOnNext(System.out::println).take(TestUtils.END);
+    var sub = RFiles.subscribe(TestUtils.EMPTY_DIR).map(RFile::path).take(TestUtils.END);
     // Then
     StepVerifier.create(sub).expectNext(PATHS_ARR).verifyComplete();
   }
