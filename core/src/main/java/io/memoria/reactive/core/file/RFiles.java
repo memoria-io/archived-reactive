@@ -79,10 +79,8 @@ public class RFiles {
     return read(p).map(s -> new RFile(p, s));
   }
 
-  public static Flux<RFile> subscribe(Path path, int offset) {
-    var existingFiles = readDir(path).flatMapMany(Flux::fromIterable);
-    var newFiles = RDirWatch.watch(path).flatMap(file -> read(file).map(content -> new RFile(file, content)));
-    return Flux.concat(existingFiles, newFiles).skip(offset);
+  public static Flux<RFile> subscribe(Path path) {
+    return RDirWatch.watch(path).flatMap(file -> read(file).map(content -> new RFile(file, content)));
   }
 
   public static Mono<Path> write(RFile file) {

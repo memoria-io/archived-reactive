@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public interface UserEvent extends Event {
 
-  record MessageSent(Id eventId, Id userId, Id receiverId, String message) implements Event {
+  record MessageSent(long id, Id userId, Id receiverId, String message) implements Event {
     @Override
     public Id aggId() {
       return userId;
@@ -19,7 +19,7 @@ public interface UserEvent extends Event {
     }
   }
 
-  record UserCreated(Id eventId, Id userId, String name) implements Event {
+  record UserCreated(long id, Id userId, String name) implements Event {
     @Override
     public Id aggId() {
       return userId;

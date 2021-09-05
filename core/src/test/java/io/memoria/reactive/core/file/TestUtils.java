@@ -17,11 +17,15 @@ class TestUtils {
 
   private TestUtils() {}
 
-  static List<Path> writeFiles() throws IOException, InterruptedException {
+  static List<Path> writeFiles() {
     var files = files();
-    for (RFile f : files) {
-      Thread.sleep(100);
-      Files.writeString(f.path(), f.content());
+    try {
+      for (RFile f : files) {
+        Thread.sleep(100);
+        Files.writeString(f.path(), f.content());
+      }
+    } catch (IOException | InterruptedException e) {
+      e.printStackTrace();
     }
     return files.map(RFile::path);
   }

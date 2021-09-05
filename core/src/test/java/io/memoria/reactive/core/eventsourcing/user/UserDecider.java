@@ -9,18 +9,19 @@ import io.memoria.reactive.core.eventsourcing.user.UserCommand.CreateUser;
 import io.memoria.reactive.core.eventsourcing.user.UserCommand.SendMessage;
 import io.memoria.reactive.core.eventsourcing.user.UserEvent.MessageSent;
 import io.memoria.reactive.core.eventsourcing.user.UserEvent.UserCreated;
-import io.memoria.reactive.core.id.IdGenerator;
 import io.vavr.collection.List;
 import io.vavr.control.Try;
 
-public record UserDecider(IdGenerator idGen) implements Decider {
+import java.util.concurrent.atomic.AtomicLong;
+
+public record UserDecider(AtomicLong id) implements Decider {
   @Override
   public Try<List<Event>> apply(State state, Command userCommand) {
     if (userCommand instanceof CreateUser cmd) {
-      return Try.success(List.of(new UserCreated(idGen.get(), cmd.userId(), cmd.username())));
+      return Try.success(List.of(new UserCreated(id.getAndIncrement(), cmd.userId(), cmd.username())));
     }
     if (userCommand instanceof SendMessage cmd) {
-      return Try.success(List.of(new MessageSent(idGen.get(), cmd.userId(), cmd.receiverId(), cmd.message())));
+      return Try.success(List.of(new MessageSent(id.getAndIncrement(), cmd.userId(), cmd.receiverId(), cmd.message())));
     }
     return Try.failure(UnknownCommand.create(userCommand.getClass().getSimpleName()));
   }

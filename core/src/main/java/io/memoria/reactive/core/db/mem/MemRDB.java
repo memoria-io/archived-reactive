@@ -6,14 +6,14 @@ import io.vavr.collection.List;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public record MemRDB<T>(java.util.List<Msg<T>> db) implements RDB<T> {
+public record MemRDB<T extends Msg>(java.util.List<T> db) implements RDB<T> {
   @Override
   public Mono<Long> index() {
     return Mono.fromCallable(() -> db.size() - 1L);
   }
 
   @Override
-  public Flux<Long> publish(Flux<Msg<T>> msgs) {
+  public Flux<Long> publish(Flux<T> msgs) {
     return msgs.map(msg -> {
       db.add(msg);
       return msg;
@@ -21,17 +21,17 @@ public record MemRDB<T>(java.util.List<Msg<T>> db) implements RDB<T> {
   }
 
   @Override
-  public Mono<List<Msg<T>>> read(int offset) {
+  public Mono<List<T>> read(int offset) {
     return Mono.fromCallable(() -> List.ofAll(db).drop(offset));
   }
 
   @Override
-  public Flux<Msg<T>> subscribe(int offset) {
+  public Flux<T> subscribe(int offset) {
     return Flux.fromIterable(db).skip(offset);
   }
 
   @Override
-  public Mono<List<Long>> write(List<Msg<T>> msgs) {
+  public Mono<List<Long>> write(List<T> msgs) {
     return Mono.fromCallable(() -> {
       db.addAll(msgs.toJavaList());
       return msgs;

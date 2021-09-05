@@ -11,13 +11,13 @@ import io.memoria.reactive.core.eventsourcing.user.UserEvent.UserCreated;
 import io.memoria.reactive.core.eventsourcing.user.UserEvolver;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.id.IdGenerator;
-import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 
 class EventStoreTest {
   private static final IdGenerator idGenerator = () -> Id.of(1);
@@ -35,7 +35,7 @@ class EventStoreTest {
     // When
     StepVerifier.create(Flux.fromIterable(commands).concatMap(eventStore)).expectNextCount(count).verifyComplete();
     // Then
-    StepVerifier.create(eventStreamDB.read(0).map(LinkedHashMap::values)).expectNext(expectedEvents).verifyComplete();
+    StepVerifier.create(eventStreamDB.read(0)).expectNext(expectedEvents).verifyComplete();
     // When
     var states = ES.pipeline(cmdStream, 0, eventStore);
     // Then
@@ -48,15 +48,15 @@ class EventStoreTest {
   }
 
   private CreateUser createCommand(Integer i) {
-    return new CreateUser(idGenerator.get(), Id.of("user_" + i), "name_" + i);
+    return new CreateUser(i, Id.of("user_" + i), "name_" + i);
   }
 
   private Event createEvent(Integer i) {
-    return new UserCreated(idGenerator.get(), Id.of("user_" + i), "name_" + i);
+    return new UserCreated(i, Id.of("user_" + i), "name_" + i);
   }
 
   private static EventStore createEventStore(Read<Event> read, Write<Event> write) {
     var state = ES.buildState(read, new UserEvolver()).block();
-    return new EventStore(new Visitor(), state, write, new UserDecider(idGenerator), new UserEvolver());
+    return new EventStore(new Visitor(), state, write, new UserDecider(new AtomicLong(0)), new UserEvolver());
   }
 }

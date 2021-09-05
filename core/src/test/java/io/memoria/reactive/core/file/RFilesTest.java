@@ -45,17 +45,17 @@ class RFilesTest {
   }
 
   @Test
-  void deleteAll() throws IOException, InterruptedException {
+  void deleteAll() {
     // Given
     var files = TestUtils.writeFiles();
     // When
     var deleteFiles = RFiles.delete(files);
     // Then
-    StepVerifier.create(deleteFiles).expectNextCount(1).verifyComplete();
+    StepVerifier.create(deleteFiles).expectNextCount(files.length()).verifyComplete();
   }
 
   @Test
-  void lastFile() throws IOException, InterruptedException {
+  void lastFile() {
     // Given
     var files = TestUtils.writeFiles();
     // When
@@ -85,7 +85,7 @@ class RFilesTest {
   }
 
   @Test
-  void readDirectory() throws IOException, InterruptedException {
+  void readDirectory() {
     // Given
     TestUtils.writeFiles();
     // When
@@ -100,12 +100,11 @@ class RFilesTest {
   }
 
   @Test
-  void subscribe() throws IOException, InterruptedException {
+  void subscribe() {
     // Given
-    TestUtils.writeFiles();
+    new Thread(TestUtils::writeFiles).start();
     // When
-    RFiles.readDir(TestUtils.EMPTY_DIR);
-    var sub = RFiles.subscribe(TestUtils.EMPTY_DIR, TestUtils.START).map(RFile::path).take(TestUtils.END);
+    var sub = RFiles.subscribe(TestUtils.EMPTY_DIR).map(RFile::path).doOnNext(System.out::println).take(TestUtils.END);
     // Then
     StepVerifier.create(sub).expectNext(PATHS_ARR).verifyComplete();
   }
@@ -117,7 +116,7 @@ class RFilesTest {
     // Then
     StepVerifier.create(writeAll).expectNextCount(1).verifyComplete();
     // And
-    var expectedPaths = Files.list(TestUtils.EMPTY_DIR).sorted().toList();
+    var expectedPaths = List.ofAll(Files.list(TestUtils.EMPTY_DIR).sorted().toList());
     Assertions.assertEquals(expectedPaths, PATHS);
   }
 }

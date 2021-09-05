@@ -3,9 +3,7 @@ package io.memoria.reactive.core.db;
 import io.memoria.reactive.core.db.file.FileRDB;
 import io.memoria.reactive.core.db.mem.MemRDB;
 import io.memoria.reactive.core.file.RFiles;
-import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.text.SerializableTransformer;
-import io.vavr.collection.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -21,54 +19,51 @@ class RDBTest {
   private static final int TO = 100;
   private static final String TOPIC = "some_topic";
   private static final Path TOPIC_PATH = Path.of("/tmp/" + TOPIC);
-  // DATA
-  private static final List<MessageReceived> EVENT_LIST = MessageReceived.create(FROM, TO);
-  private static final Flux<MessageReceived> EVENT_FLUX = Flux.fromIterable(EVENT_LIST);
-  private static final MessageReceived[] EVENT_ARRAY = EVENT_LIST.toJavaArray(MessageReceived[]::new);
+
   // RDBs
-  private static final MemRDB<MessageReceived> memRDB;
-  private static final FileRDB<MessageReceived> fileRDB;
+  private static final MemRDB<MessageReceived> MEM_RDB;
+  private static final FileRDB<MessageReceived> FILE_RDB;
 
   static {
-    var db = new ArrayList<Msg<MessageReceived>>();
-    memRDB = new MemRDB<>(db);
-    fileRDB = new FileRDB<>(TOPIC, TOPIC_PATH, new SerializableTransformer(), MessageReceived.class);
+    var db = new ArrayList<MessageReceived>();
+    MEM_RDB = new MemRDB<>(db);
+    FILE_RDB = new FileRDB<>(TOPIC, TOPIC_PATH, new SerializableTransformer(), MessageReceived.class);
   }
 
   @BeforeEach
   void beforeEach() {
-    memRDB.db().clear();
-    RFiles.clean(fileRDB.path());
+    MEM_RDB.db().clear();
+    RFiles.createDirectory(TOPIC_PATH).subscribe();
+    RFiles.clean(FILE_RDB.path()).subscribe();
   }
 
   @ParameterizedTest
   @MethodSource("rdb")
   void publish(RDB<MessageReceived> repo) {
+    // Given
+    var eventList = MessageReceived.create(FROM, TO);
+    var expected = eventList.map(MessageReceived::id).toJavaArray(Long[]::new);
     // When
-    repo.index().map(i -> )
-    var publish = repo.publish(EVENT_FLUX);
+    var publish = repo.publish(Flux.fromIterable(eventList));
     // Then
-    StepVerifier.create(publish).expectNext(msgs.toArray(M[]::new)).verifyComplete();
+    StepVerifier.create(publish).expectNext(expected).verifyComplete();
   }
 
   @ParameterizedTest
   @MethodSource("rdb")
   void subscribe(RDB<MessageReceived> repo) {
     // Given
-    var msgs = createMsgs();
-    var rdb = new MemRDB<>(msgs.toJavaList());
-    var expectedEvents = msgs.toJavaArray(Msg[]::new);
+    var eventList = MessageReceived.create(FROM, TO);
+    MEM_RDB.db().addAll(eventList.toJavaList());
+    FILE_RDB.write(eventList).subscribe();
+    var expected = eventList.toJavaArray(MessageReceived[]::new);
     // When
-    var sub = rdb.subscribe(0);
+    var sub = repo.subscribe(0).take(TO);
     // Then
-    StepVerifier.create(sub).expectNext(expectedEvents).verifyComplete();
-  }
-
-  private List<Msg<MessageReceived>> createMsgs() {
-    return List.range(0, 100).map(i -> new Msg<>(i, new MessageReceived(Id.of(i), "hello:" + i)));
+    StepVerifier.create(sub).expectNext(expected).verifyComplete();
   }
 
   private static Stream<RDB<MessageReceived>> rdb() {
-    return Stream.of(memRDB, fileRDB);
+    return Stream.of(MEM_RDB, FILE_RDB);
   }
 }

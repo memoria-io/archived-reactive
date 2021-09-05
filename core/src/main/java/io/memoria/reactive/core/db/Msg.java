@@ -1,3 +1,11 @@
 package io.memoria.reactive.core.db;
 
-public record Msg<T>(long id, T body) {}
+import java.io.Serializable;
+
+public interface Msg extends Comparable<Msg>, Serializable {
+  default int compareTo(Msg o) {
+    return Long.compare(this.id(), o.id());
+  }
+
+  long id();
+}

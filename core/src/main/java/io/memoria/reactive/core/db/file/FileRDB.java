@@ -15,9 +15,9 @@ import reactor.core.publisher.Mono;
 
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
-import java.util.function.Function;
 
-public record FileRDB<T>(String topic, Path path, TextTransformer transformer, Class<T> tClass) implements RDB<T> {
+public record FileRDB<T extends Msg>(String topic, Path path, TextTransformer transformer, Class<T> tClass)
+        implements RDB<T> {
   public static final String FILE_EXT = ".json";
   private static final Logger log = LoggerFactory.getLogger(FileRDB.class.getName());
 
@@ -30,25 +30,32 @@ public record FileRDB<T>(String topic, Path path, TextTransformer transformer, C
   }
 
   @Override
-  public Flux<Long> publish(Flux<Msg<T>> msgs) {
+  public Flux<Long> publish(Flux<T> msgs) {
     var rFiles = msgs.map(m -> toRFile(path, m, transformer::serialize));
     return RFiles.publish(rFiles).map(FileRDB::toIndex);
   }
 
   @Override
-  public Mono<List<Msg<T>>> read(int offset) {
+  public Mono<List<T>> read(int offset) {
     var deserialize = transformer.deserialize(tClass);
-    return RFiles.readDir(path).map(map -> map.map(file -> toMsg(file, deserialize)).drop(offset));
+    return RFiles.readDir(path).map(files -> files.map(RFile::content).map(deserialize).map(Try::get).drop(offset));
   }
 
   @Override
-  public Flux<Msg<T>> subscribe(int offset) {
+  public Flux<T> subscribe(int offset) {
     var deserialize = transformer.deserialize(tClass);
-    return RFiles.subscribe(path, offset).map(file -> toMsg(file, deserialize));
+    var existingFiles = RFiles.readDir(path)
+                              .flatMapMany(Flux::fromIterable)
+                              .map(RFile::content)
+                              .map(deserialize)
+                              .map(Try::get)
+                              .sort();
+    var newFiles = RFiles.subscribe(path).map(RFile::content).map(deserialize).map(Try::get);
+    return Flux.concat(existingFiles, newFiles).skip(offset);
   }
 
   @Override
-  public Mono<List<Long>> write(List<Msg<T>> msgs) {
+  public Mono<List<Long>> write(List<T> msgs) {
     return RFiles.write(msgs.map(msg -> toRFile(path, msg, transformer::serialize))).map(l -> l.map(FileRDB::toIndex));
   }
 
@@ -65,19 +72,13 @@ public record FileRDB<T>(String topic, Path path, TextTransformer transformer, C
     return Long.parseLong(idxStr);
   }
 
-  static <T> Msg<T> toMsg(RFile file, Function<String, Try<T>> fn) {
-    var idx = toIndex(file.path());
-    var content = fn.apply(file.content()).get();
-    return new Msg<>(idx, content);
-  }
-
   static Path toPath(Path path, long index) {
     return path.resolve(index + FILE_EXT);
   }
 
-  static <T> RFile toRFile(Path path, Msg<T> msg, Function1<T, Try<String>> fn) {
+  private RFile toRFile(Path path, T msg, Function1<T, Try<String>> fn) {
     var p = toPath(path, msg.id());
-    var content = fn.apply(msg.body()).get();
+    var content = fn.apply(msg).get();
     return new RFile(p, content);
   }
 }
