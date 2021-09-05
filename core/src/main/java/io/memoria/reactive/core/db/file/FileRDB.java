@@ -16,8 +16,7 @@ import reactor.core.publisher.Mono;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 
-public record FileRDB<T extends Msg>(Path path, TextTransformer transformer, Class<T> tClass)
-        implements RDB<T> {
+public record FileRDB<T extends Msg>(Path path, TextTransformer transformer, Class<T> tClass) implements RDB<T> {
   public static final String FILE_EXT = ".json";
   private static final Logger log = LoggerFactory.getLogger(FileRDB.class.getName());
 
@@ -25,7 +24,7 @@ public record FileRDB<T extends Msg>(Path path, TextTransformer transformer, Cla
   public Mono<Long> currentIndex() {
     return sortedList(path).last()
                            .map(i -> i + 1)
-                           .doOnError(NoSuchElementException.class, t -> emptyDirectory(path))
+                           .doOnError(NoSuchElementException.class, t -> infoIndexZero(path))
                            .onErrorResume(NoSuchElementException.class, t -> Mono.just(0L));
   }
 
@@ -64,8 +63,8 @@ public record FileRDB<T extends Msg>(Path path, TextTransformer transformer, Cla
     return RFiles.write(msgs.map(msg -> toRFile(path, msg, transformer::serialize))).map(l -> l.map(FileRDB::toIndex));
   }
 
-  static void emptyDirectory(Path p) {
-    log.info("Empty directory" + p);
+  static void infoIndexZero(Path p) {
+    log.info("Directory %s was empty returning index = zero".formatted(p));
   }
 
   static Flux<Long> sortedList(Path path) {

@@ -65,6 +65,13 @@ class RFilesTest {
   }
 
   @Test
+  void list() {
+    var listMono = RFiles.list(TestUtils.EMPTY_DIR);
+    StepVerifier.create(listMono).expectNext(List.empty()).verifyComplete();
+    StepVerifier.create(listMono.map(List::size)).expectNext(0).verifyComplete();
+  }
+
+  @Test
   void publish() {
     // Given
     var files = Flux.fromIterable(FILES);
@@ -118,12 +125,5 @@ class RFilesTest {
     // And
     var expectedPaths = List.ofAll(Files.list(TestUtils.EMPTY_DIR).sorted().toList());
     Assertions.assertEquals(expectedPaths, PATHS);
-  }
-
-  @Test
-  void list() {
-    var listMono = RFiles.list(TestUtils.EMPTY_DIR);
-    StepVerifier.create(listMono).expectNext(List.empty()).verifyComplete();
-    StepVerifier.create(listMono.map(List::size)).expectNext(0).verifyComplete();
   }
 }
