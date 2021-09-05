@@ -27,7 +27,7 @@ class RDBTest {
   static {
     var db = new ArrayList<MessageReceived>();
     MEM_RDB = new MemRDB<>(db);
-    FILE_RDB = new FileRDB<>(TOPIC, TOPIC_PATH, new SerializableTransformer(), MessageReceived.class);
+    FILE_RDB = new FileRDB<>(TOPIC_PATH, new SerializableTransformer(), MessageReceived.class);
   }
 
   @BeforeEach

@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 
-public record FileRDB<T extends Msg>(String topic, Path path, TextTransformer transformer, Class<T> tClass)
+public record FileRDB<T extends Msg>(Path path, TextTransformer transformer, Class<T> tClass)
         implements RDB<T> {
   public static final String FILE_EXT = ".json";
   private static final Logger log = LoggerFactory.getLogger(FileRDB.class.getName());
