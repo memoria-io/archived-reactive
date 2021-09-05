@@ -1,8 +1,5 @@
 package io.memoria.reactive.core.file;
 
-import io.vavr.Tuple2;
-import io.vavr.collection.HashSet;
-import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,12 +10,10 @@ import reactor.test.StepVerifier;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.function.Function;
 
-import static io.memoria.reactive.core.file.TestUtils.FILES_ARR;
-import static io.memoria.reactive.core.file.TestUtils.FILES_LIST;
-import static io.memoria.reactive.core.file.TestUtils.FILES_TUPLE;
+import static io.memoria.reactive.core.file.TestUtils.FILES;
+import static io.memoria.reactive.core.file.TestUtils.PATHS;
+import static io.memoria.reactive.core.file.TestUtils.PATHS_ARR;
 
 class RFilesTest {
 
@@ -32,21 +27,21 @@ class RFilesTest {
   @DisplayName("Should append or create a file")
   void create() throws IOException {
     // When
-    var writeFileMono = RFiles.write(TestUtils.SOME_FILE, "hello world");
-    StepVerifier.create(writeFileMono).expectNext(TestUtils.SOME_FILE).verifyComplete();
+    var writeFileMono = RFiles.write(new RFile(TestUtils.EMPTY_DIR_FILE, "hello world"));
+    StepVerifier.create(writeFileMono).expectNext(TestUtils.EMPTY_DIR_FILE).verifyComplete();
     // Then
-    var str = new String(Files.readAllBytes(TestUtils.SOME_FILE));
+    var str = new String(Files.readAllBytes(TestUtils.EMPTY_DIR_FILE));
     Assertions.assertEquals(str, "hello world");
   }
 
   @Test
   void delete() throws IOException {
     // Given
-    Files.createFile(TestUtils.SOME_FILE);
+    Files.createFile(TestUtils.EMPTY_DIR_FILE);
     // When
-    var deleteFile = RFiles.delete(TestUtils.SOME_FILE);
+    var deleteFile = RFiles.delete(TestUtils.EMPTY_DIR_FILE);
     // Then
-    StepVerifier.create(deleteFile).expectNext(TestUtils.SOME_FILE).verifyComplete();
+    StepVerifier.create(deleteFile).expectNext(TestUtils.EMPTY_DIR_FILE).verifyComplete();
   }
 
   @Test
@@ -54,7 +49,7 @@ class RFilesTest {
     // Given
     var files = TestUtils.writeFiles();
     // When
-    var deleteFiles = RFiles.delete(HashSet.ofAll(files));
+    var deleteFiles = RFiles.delete(files);
     // Then
     StepVerifier.create(deleteFiles).expectNextCount(1).verifyComplete();
   }
@@ -70,11 +65,21 @@ class RFilesTest {
   }
 
   @Test
+  void publish() {
+    // Given
+    var files = Flux.fromIterable(FILES);
+    // When
+    var pub = RFiles.publish(files);
+    // Then
+    StepVerifier.create(pub).expectNext(PATHS_ARR).verifyComplete();
+  }
+
+  @Test
   void read() throws IOException {
     // Given
-    Files.writeString(TestUtils.SOME_FILE, "welcome");
+    Files.writeString(TestUtils.EMPTY_DIR_FILE, "welcome");
     // When
-    var read = RFiles.read(TestUtils.SOME_FILE);
+    var read = RFiles.read(TestUtils.EMPTY_DIR_FILE);
     // Then
     StepVerifier.create(read).expectNext("welcome").verifyComplete();
   }
@@ -86,12 +91,12 @@ class RFilesTest {
     // When
     var readDir = RFiles.readDir(TestUtils.EMPTY_DIR)
                         .flatMapMany(Flux::fromIterable)
-                        .map(Tuple2::_1)
+                        .map(RFile::path)
                         .collectList()
                         .map(List::ofAll)
                         .map(List::toSet);
     // Then
-    StepVerifier.create(readDir).expectNext(FILES_LIST.toSet()).verifyComplete();
+    StepVerifier.create(readDir).expectNext(PATHS.toSet()).verifyComplete();
   }
 
   @Test
@@ -100,31 +105,19 @@ class RFilesTest {
     TestUtils.writeFiles();
     // When
     RFiles.readDir(TestUtils.EMPTY_DIR);
-    var sub = RFiles.subscribe(TestUtils.EMPTY_DIR, TestUtils.START).map(Tuple2::_1).take(
-            TestUtils.END);
+    var sub = RFiles.subscribe(TestUtils.EMPTY_DIR, TestUtils.START).map(RFile::path).take(TestUtils.END);
     // Then
-    StepVerifier.create(sub).expectNext(FILES_ARR).verifyComplete();
-  }
-
-  @Test
-  void publish() {
-    // Given
-    var files = Flux.fromIterable(FILES_TUPLE);
-    // When
-    var pub = RFiles.publish(files);
-    // Then
-    StepVerifier.create(pub).expectNext(FILES_ARR).verifyComplete();
+    StepVerifier.create(sub).expectNext(PATHS_ARR).verifyComplete();
   }
 
   @Test
   void writeMany() throws IOException {
-    // Given
-    var lMap = FILES_TUPLE.toLinkedMap(Function.identity());
-    var expected = FILES_TUPLE.map(Tuple2::_1).toJavaList();
     // When
-    var writeAll = RFiles.write((LinkedHashMap<Path, String>) lMap);
+    var writeAll = RFiles.write(FILES);
     // Then
     StepVerifier.create(writeAll).expectNextCount(1).verifyComplete();
-    Assertions.assertEquals(Files.list(TestUtils.EMPTY_DIR).sorted().toList(), expected);
+    // And
+    var expectedPaths = Files.list(TestUtils.EMPTY_DIR).sorted().toList();
+    Assertions.assertEquals(expectedPaths, PATHS);
   }
 }

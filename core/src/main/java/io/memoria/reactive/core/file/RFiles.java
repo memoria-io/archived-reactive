@@ -1,11 +1,6 @@
 package io.memoria.reactive.core.file;
 
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
-import io.vavr.collection.HashSet;
-import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.List;
-import io.vavr.collection.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
@@ -41,8 +36,15 @@ public class RFiles {
     return Mono.fromCallable(() -> Files.deleteIfExists(path)).thenReturn(path);
   }
 
-  public static Mono<Set<Path>> delete(Set<Path> files) {
-    return Flux.fromIterable(files).flatMap(RFiles::delete).collectList().map(HashSet::ofAll);
+  public static Flux<Path> delete(List<Path> files) {
+    return Flux.fromIterable(files).concatMap(RFiles::delete);
+  }
+
+  public static Mono<Path> lastModified(Path directoryPath) {
+    return Mono.fromCallable(() -> Files.list(directoryPath))
+               .flatMapMany(Flux::fromStream)
+               .filter(f -> !Files.isDirectory(f))
+               .reduce(RFiles::lastModified);
   }
 
   public static Mono<List<Path>> list(Path directoryPath) {
@@ -54,15 +56,8 @@ public class RFiles {
 
   }
 
-  public static Mono<Path> lastModified(Path directoryPath) {
-    return Mono.fromCallable(() -> Files.list(directoryPath))
-               .flatMapMany(Flux::fromStream)
-               .filter(f -> !Files.isDirectory(f))
-               .reduce(RFiles::lastModified);
-  }
-
-  public static Flux<Path> publish(Flux<Tuple2<Path, String>> files) {
-    return files.concatMap(t -> write(t._1, t._2));
+  public static Flux<Path> publish(Flux<RFile> files) {
+    return files.concatMap(RFiles::write);
   }
 
   public static Mono<String> read(Path path) {
@@ -72,7 +67,7 @@ public class RFiles {
                .defaultIfEmpty("");
   }
 
-  public static Mono<List<Tuple2<Path, String>>> readDir(Path path) {
+  public static Mono<List<RFile>> readDir(Path path) {
     return Mono.fromCallable(() -> Files.list(path))
                .flatMapMany(Flux::fromStream)
                .flatMap(RFiles::readFn)
@@ -80,23 +75,27 @@ public class RFiles {
                .map(List::ofAll);
   }
 
-  public static Flux<Tuple2<Path, String>> subscribe(Path path, long offset) {
+  public static Mono<RFile> readFn(Path p) {
+    return read(p).map(s -> new RFile(p, s));
+  }
+
+  public static Flux<RFile> subscribe(Path path, int offset) {
     var existingFiles = readDir(path).flatMapMany(Flux::fromIterable);
-    var newFiles = RDirWatch.watch(path).flatMap(file -> read(file).map(content -> Tuple.of(file, content)));
+    var newFiles = RDirWatch.watch(path).flatMap(file -> read(file).map(content -> new RFile(file, content)));
     return Flux.concat(existingFiles, newFiles).skip(offset);
   }
 
-  public static Mono<Path> write(Path path, String content) {
-    return Mono.fromCallable(() -> Files.writeString(path, content, CREATE_NEW)).thenReturn(path);
+  public static Mono<Path> write(RFile file) {
+    return Mono.fromCallable(() -> Files.writeString(file.path(), file.content(), CREATE_NEW));
   }
 
-  public static Mono<List<Path>> write(LinkedHashMap<Path, String> files) {
-    return Mono.fromCallable(() -> Flux.fromIterable(files).concatMap(t -> write(t._1, t._2)))
+  public static Mono<List<Path>> write(List<RFile> files) {
+    return Mono.fromCallable(() -> Flux.fromIterable(files).concatMap(RFiles::write))
                .map(Flux::toIterable)
                .map(List::ofAll)
                .doOnError(e -> {
                  log.error(e.getMessage(), e);
-                 delete(files.keySet()).doOnError(RFiles::logSevere).subscribe(RFiles::logDeletion);
+                 delete(files.map(RFile::path)).doOnError(RFiles::logSevere).subscribe(RFiles::logDeletion);
                });
   }
 
@@ -104,17 +103,11 @@ public class RFiles {
     return (p1.toFile().lastModified() > p2.toFile().lastModified()) ? p1 : p2;
   }
 
-  private static void logDeletion(Set<Path> path) {
-    log.error("Fallback after error deleting: " + path);
+  private static void logDeletion(Path file) {
+    log.error("Fallback after error deleting: " + file);
   }
 
   private static void logSevere(Throwable e) {
-    log.error("Error while deletion:" + e.getMessage(), e);
-  }
-
- 
-
-  public static Mono<Tuple2<Path, String>> readFn(Path p) {
-    return read(p).map(s -> Tuple.of(p, s));
+    log.error("Severe Error while the fallback deletion:" + e.getMessage(), e);
   }
 }

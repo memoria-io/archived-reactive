@@ -1,7 +1,7 @@
 package io.memoria.reactive.core.eventsourcing;
 
+import io.memoria.reactive.core.db.Write;
 import io.memoria.reactive.core.id.Id;
-import io.memoria.reactive.core.stream.Write;
 import io.vavr.Function1;
 import io.vavr.collection.List;
 import reactor.core.publisher.Mono;

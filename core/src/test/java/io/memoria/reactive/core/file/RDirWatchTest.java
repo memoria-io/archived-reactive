@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
 import static io.memoria.reactive.core.file.TestUtils.END;
-import static io.memoria.reactive.core.file.TestUtils.FILES_ARR;
+import static io.memoria.reactive.core.file.TestUtils.PATHS_ARR;
 
 class RDirWatchTest {
   @BeforeEach
@@ -22,6 +22,6 @@ class RDirWatchTest {
     // When
     var w = RDirWatch.watch(TestUtils.EMPTY_DIR).take(END);
     // Then
-    StepVerifier.create(w).expectNext(FILES_ARR).verifyComplete();
+    StepVerifier.create(w).expectNext(PATHS_ARR).verifyComplete();
   }
 }

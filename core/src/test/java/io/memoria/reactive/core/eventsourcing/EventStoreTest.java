@@ -1,5 +1,8 @@
 package io.memoria.reactive.core.eventsourcing;
 
+import io.memoria.reactive.core.db.Read;
+import io.memoria.reactive.core.db.Write;
+import io.memoria.reactive.core.db.mem.MemRDB;
 import io.memoria.reactive.core.eventsourcing.user.User.Account;
 import io.memoria.reactive.core.eventsourcing.user.User.Visitor;
 import io.memoria.reactive.core.eventsourcing.user.UserCommand.CreateUser;
@@ -8,9 +11,6 @@ import io.memoria.reactive.core.eventsourcing.user.UserEvent.UserCreated;
 import io.memoria.reactive.core.eventsourcing.user.UserEvolver;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.id.IdGenerator;
-import io.memoria.reactive.core.stream.Read;
-import io.memoria.reactive.core.stream.Write;
-import io.memoria.reactive.core.stream.mem.MemStreamDB;
 import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
@@ -25,11 +25,11 @@ class EventStoreTest {
   @Test
   void handleCommands() {
     // Given
-    var eventStreamDB = new MemStreamDB<Event>(new ArrayList<>());
+    var eventStreamDB = new MemRDB<Event>(new ArrayList<>());
     var eventStore = createEventStore(eventStreamDB, eventStreamDB);
     var count = 3;
     var commands = List.range(0, count).<Command>map(this::createCommand);
-    var cmdStream = new MemStreamDB<>(commands.asJava());
+    var cmdStream = new MemRDB<>(commands.asJava());
     var expectedEvents = List.range(0, count).map(this::createEvent);
 
     // When

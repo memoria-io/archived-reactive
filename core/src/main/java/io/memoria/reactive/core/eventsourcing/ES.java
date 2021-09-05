@@ -1,8 +1,8 @@
 package io.memoria.reactive.core.eventsourcing;
 
+import io.memoria.reactive.core.db.Read;
+import io.memoria.reactive.core.db.Sub;
 import io.memoria.reactive.core.id.Id;
-import io.memoria.reactive.core.stream.Read;
-import io.memoria.reactive.core.stream.Sub;
 import io.vavr.Tuple2;
 import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.List;
