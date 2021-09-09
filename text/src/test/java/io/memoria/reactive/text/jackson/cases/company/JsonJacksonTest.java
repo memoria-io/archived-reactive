@@ -1,11 +1,10 @@
 package io.memoria.reactive.text.jackson.cases.company;
 
 import io.vavr.collection.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import reactor.test.StepVerifier;
 
 import static io.memoria.reactive.text.jackson.TestDeps.json;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class JsonJacksonTest {
 
@@ -16,59 +15,61 @@ class JsonJacksonTest {
                                                     CompanyData.BOB_ENGINEER,
                                                     CompanyData.ALEX_ENGINEER));
     // When
-    var actualDepartment = json.deserialize(CompanyData.DEPARTMENT_JSON, Department.class).get();
+    var actualDepartment = json.deserialize(CompanyData.DEPARTMENT_JSON, Department.class);
     // Then
-    assertEquals(expectedDepartment, actualDepartment);
+    StepVerifier.create(actualDepartment).expectNext(expectedDepartment).verifyComplete();
   }
 
   @Test
   void deserializeEngineer() {
     // When
-    var engineer = json.deserialize(CompanyData.BOB_ENGINEER_JSON, Engineer.class).get();
+    var engineerMono = json.deserialize(CompanyData.BOB_ENGINEER_JSON, Engineer.class);
     // Then
-    Assertions.assertEquals(CompanyData.BOB_ENGINEER.name(), engineer.name());
-    Assertions.assertTrue(engineer.birthday().isEqual(CompanyData.BOB_ENGINEER.birthday()));
-    Assertions.assertEquals(CompanyData.BOB_ENGINEER.tasks(), engineer.tasks());
+    StepVerifier.create(engineerMono).expectNext(CompanyData.BOB_ENGINEER).verifyComplete();
   }
 
   @Test
   void deserializeManager() {
     // When
-    var manager = json.deserialize(CompanyData.ANNIKA_MANAGER_JSON, Manager.class).get();
+    var managerMono = json.deserialize(CompanyData.ANNIKA_MANAGER_JSON, Manager.class);
     // Then
-    Assertions.assertEquals(CompanyData.ANNIKA_MANAGER.name(), manager.name());
-    Assertions.assertEquals(CompanyData.BOB_ENGINEER, manager.team().get(0));
+    StepVerifier.create(managerMono).expectNext(CompanyData.ANNIKA_MANAGER).verifyComplete();
+    StepVerifier.create(managerMono.map(Manager::team))
+                .expectNext(List.of(CompanyData.BOB_ENGINEER, CompanyData.ALEX_ENGINEER))
+                .verifyComplete();
   }
 
   @Test
   void deserializeNameCreated() {
     // When
-    var person = json.deserialize(CompanyData.NAME_CREATED_JSON, NameCreated.class).get();
+    var personMono = json.deserialize(CompanyData.NAME_CREATED_JSON, NameCreated.class);
     // Then
-    Assertions.assertEquals(CompanyData.NAME_CREATED, person);
+    StepVerifier.create(personMono).expectNext(CompanyData.NAME_CREATED).verifyComplete();
   }
 
   @Test
   void deserializePerson() {
     // When
-    var person = json.deserialize(CompanyData.BOB_PERSON_JSON, Person.class).get();
+    var personMono = json.deserialize(CompanyData.BOB_PERSON_JSON, Person.class);
     // Then
-    Assertions.assertEquals(CompanyData.BOB_PERSON, person);
+    StepVerifier.create(personMono).expectNext(CompanyData.BOB_PERSON).verifyComplete();
   }
 
   @Test
   void serializeNameCreated() {
     // When
-    var bob = json.serialize(CompanyData.NAME_CREATED).get();
+    var bobMono = json.serialize(CompanyData.NAME_CREATED);
     // Then
-    assertEquals(CompanyData.NAME_CREATED_JSON, bob);
+    assert CompanyData.NAME_CREATED_JSON != null;
+    StepVerifier.create(bobMono).expectNext(CompanyData.NAME_CREATED_JSON).verifyComplete();
   }
 
   @Test
   void serializePerson() {
     // When
-    var bob = json.serialize(CompanyData.BOB_PERSON).get();
+    var bobMono = json.serialize(CompanyData.BOB_PERSON);
     // Then
-    assertEquals(CompanyData.BOB_PERSON_JSON, bob);
+    assert CompanyData.BOB_PERSON_JSON != null;
+    StepVerifier.create(bobMono).expectNext(CompanyData.BOB_PERSON_JSON).verifyComplete();
   }
 }

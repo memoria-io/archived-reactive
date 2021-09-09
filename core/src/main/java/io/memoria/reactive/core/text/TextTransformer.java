@@ -2,13 +2,14 @@ package io.memoria.reactive.core.text;
 
 import io.vavr.Function1;
 import io.vavr.control.Try;
+import reactor.core.publisher.Mono;
 
 public interface TextTransformer {
-  <T> Try<T> deserialize(String str, Class<T> tClass);
+  <T> Mono<T> deserialize(String str, Class<T> tClass);
 
-  default <T> Function1<String, Try<T>> deserialize(Class<T> tClass) {
+  default <T> Function1<String, Mono<T>> deserialize(Class<T> tClass) {
     return t -> deserialize(t, tClass);
   }
 
-  <T> Try<String> serialize(T t);
+  <T> Mono<String> serialize(T t);
 }

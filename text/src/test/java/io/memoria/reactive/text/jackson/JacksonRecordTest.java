@@ -96,8 +96,9 @@ class JacksonRecordTest {
   @Test
   void toList() {
     // When
-    var list = json.deserialize(CompanyData.JSON_LIST, String[].class).get();
+    var list = json.deserialize(CompanyData.JSON_LIST, String[].class).block();
     // Then
+    assert list != null;
     assertEquals(List.of("mercedes", "chevy", "porsche"), List.of(list));
   }
 }

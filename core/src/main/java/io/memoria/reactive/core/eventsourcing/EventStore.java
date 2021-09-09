@@ -36,14 +36,14 @@ public class EventStore implements Function1<Command, Mono<State>> {
   public Mono<State> apply(Command cmd) {
     return Mono.fromCallable(() -> {
       var currentState = state.getOrDefault(cmd.aggId(), defaultState);
-      var events = decider.apply(currentState, cmd).get();
-      var add = eventRepo.write(events);
-      var persist = Mono.fromCallable(() -> persist(currentState, cmd, events));
-      return add.then(persist);
+      var eventsMono = decider.apply(currentState, cmd);
+      return eventsMono.map(events -> eventRepo.write(events).thenReturn(events))
+                       .flatMap(Function.identity())
+                       .map(events -> save(currentState, cmd, events));
     }).flatMap(Function.identity());
   }
 
-  private State persist(State currentState, Command cmd, List<Event> events) {
+  private State save(State currentState, Command cmd, List<Event> events) {
     var newState = events.foldLeft(currentState, evolver);
     state.put(cmd.aggId(), newState);
     return newState;

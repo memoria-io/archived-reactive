@@ -1,6 +1,6 @@
 package io.memoria.reactive.core.text;
 
-import io.vavr.control.Try;
+import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -11,8 +11,8 @@ import java.util.Base64;
 public class SerializableTransformer implements TextTransformer {
   @Override
   @SuppressWarnings("unchecked")
-  public <T> Try<T> deserialize(String str, Class<T> tClass) {
-    return Try.of(() -> {
+  public <T> Mono<T> deserialize(String str, Class<T> tClass) {
+    return Mono.fromCallable(() -> {
       var b64 = Base64.getDecoder().decode(str);
       var is = new ByteArrayInputStream(b64);
       try (var in = new ObjectInputStream(is)) {
@@ -22,8 +22,8 @@ public class SerializableTransformer implements TextTransformer {
   }
 
   @Override
-  public <T> Try<String> serialize(T t) {
-    return Try.of(() -> {
+  public <T> Mono<String> serialize(T t) {
+    return Mono.fromCallable(() -> {
       var os = new ByteArrayOutputStream();
       try (var out = new ObjectOutputStream(os)) {
         out.writeObject(t);

@@ -1,7 +1,7 @@
 package io.memoria.reactive.text.jackson.cases.company;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import reactor.test.StepVerifier;
 
 import static io.memoria.reactive.text.jackson.TestDeps.yaml;
 
@@ -9,31 +9,31 @@ class YamlJacksonTest {
 
   @Test
   void serializeEngineer() {
-    var yamlEngineer = yaml.serialize(CompanyData.BOB_ENGINEER).get();
-    Assertions.assertEquals(CompanyData.BOB_ENGINEER_YAML, yamlEngineer);
+    var yamlEngineerMono = yaml.serialize(CompanyData.BOB_ENGINEER);
+    assert CompanyData.BOB_ENGINEER_YAML != null;
+    StepVerifier.create(yamlEngineerMono).expectNext(CompanyData.BOB_ENGINEER_YAML).verifyComplete();
   }
 
   @Test
   void serializeManager() {
-    var yamlEngineer = yaml.serialize(CompanyData.ANNIKA_MANAGER).get();
-    Assertions.assertEquals(CompanyData.ANNIKA_MANAGER_YAML, yamlEngineer);
+    var yamlEngineerMono = yaml.serialize(CompanyData.ANNIKA_MANAGER);
+    assert CompanyData.ANNIKA_MANAGER_YAML != null;
+    StepVerifier.create(yamlEngineerMono).expectNext(CompanyData.ANNIKA_MANAGER_YAML).verifyComplete();
   }
 
   @Test
   void toEngineer() {
     // When
-    var engineer = yaml.deserialize(CompanyData.BOB_ENGINEER_YAML, Engineer.class).get();
+    var engineerMono = yaml.deserialize(CompanyData.BOB_ENGINEER_YAML, Engineer.class);
     // Then
-    Assertions.assertEquals(CompanyData.BOB_ENGINEER.name(), engineer.name());
-    Assertions.assertEquals(CompanyData.BOB_ENGINEER.tasks(), engineer.tasks());
+    StepVerifier.create(engineerMono).expectNext(CompanyData.BOB_ENGINEER).verifyComplete();
   }
 
   @Test
   void toManager() {
     // When
-    var manager = yaml.deserialize(CompanyData.ANNIKA_MANAGER_YAML, Manager.class).get();
+    var managerMono = yaml.deserialize(CompanyData.ANNIKA_MANAGER_YAML, Manager.class);
     // Then
-    Assertions.assertEquals(CompanyData.ANNIKA_MANAGER.name(), manager.name());
-    Assertions.assertEquals(CompanyData.BOB_ENGINEER, manager.team().get(0));
+    StepVerifier.create(managerMono).expectNext(CompanyData.ANNIKA_MANAGER).verifyComplete();
   }
 }

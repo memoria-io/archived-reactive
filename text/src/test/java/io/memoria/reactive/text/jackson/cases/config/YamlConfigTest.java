@@ -14,7 +14,8 @@ class YamlConfigTest {
   @DisplayName("App config nested values should be deserialized correctly")
   void appConfig() {
     String config = CONFIG_UTILS.read("cases/config/yaml/AppConfigs.yaml").block();
-    var appConfig = yaml.deserialize(config, AppConfig.class).get();
+    var appConfig = yaml.deserialize(config, AppConfig.class).block();
+    assert appConfig != null;
     assertEquals("hello world", appConfig.subName());
     assertEquals(List.of("hi", "hello", "bye"), appConfig.subList());
   }
