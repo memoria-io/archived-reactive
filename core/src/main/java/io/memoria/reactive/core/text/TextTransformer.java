@@ -1,7 +1,6 @@
 package io.memoria.reactive.core.text;
 
 import io.vavr.Function1;
-import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 
 public interface TextTransformer {
