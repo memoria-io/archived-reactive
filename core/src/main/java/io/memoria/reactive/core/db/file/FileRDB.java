@@ -20,16 +20,17 @@ public record FileRDB<T extends Msg>(Path path, TextTransformer transformer, Cla
 
   @Override
   public Mono<Long> currentIndex() {
-    return sortedList(path).last()
-                           .map(i -> i + 1)
-                           .doOnError(NoSuchElementException.class, t -> infoIndexZero(path))
-                           .onErrorResume(NoSuchElementException.class, t -> Mono.just(0L));
+    return FileRDBUtils.sortedList(path)
+                       .last()
+                       .map(i -> i + 1)
+                       .doOnError(NoSuchElementException.class, t -> infoIndexZero(path))
+                       .onErrorResume(NoSuchElementException.class, t -> Mono.just(0L));
   }
 
   @Override
   public Flux<Long> publish(Flux<T> msgs) {
     var rFiles = msgs.concatMap(m -> toRFile(path, m));
-    return RFiles.publish(rFiles).map(FileRDB::toIndex);
+    return RFiles.publish(rFiles).map(FileRDBUtils::toIndex);
   }
 
   @Override
@@ -68,28 +69,15 @@ public record FileRDB<T extends Msg>(Path path, TextTransformer transformer, Cla
                .collectList()
                .map(List::ofAll)
                .flatMap(RFiles::write)
-               .map(l -> l.map(FileRDB::toIndex));
-  }
-
-  static void infoIndexZero(Path p) {
-    log.info("Directory %s was empty returning index = zero".formatted(p));
-  }
-
-  static Flux<Long> sortedList(Path path) {
-    return RFiles.list(path).flatMapMany(Flux::fromIterable).map(FileRDB::toIndex).sort();
-  }
-
-  static long toIndex(Path path) {
-    var idxStr = path.getFileName().toString().replace(FILE_EXT, "");
-    return Long.parseLong(idxStr);
-  }
-
-  static Path toPath(Path path, long index) {
-    return path.resolve(index + FILE_EXT);
+               .map(l -> l.map(FileRDBUtils::toIndex));
   }
 
   private Mono<RFile> toRFile(Path path, T msg) {
-    var p = toPath(path, msg.id());
+    var p = FileRDBUtils.toPath(path, msg.id());
     return transformer.serialize(msg).map(content -> new RFile(p, content));
+  }
+
+  private static void infoIndexZero(Path p) {
+    log.info("Directory %s was empty returning index = zero".formatted(p));
   }
 }
