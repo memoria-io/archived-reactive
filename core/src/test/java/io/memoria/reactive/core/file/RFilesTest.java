@@ -10,10 +10,15 @@ import reactor.test.StepVerifier;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.util.ArrayList;
 
 import static io.memoria.reactive.core.file.TestUtils.FILES;
-import static io.memoria.reactive.core.file.TestUtils.PATHS;
-import static io.memoria.reactive.core.file.TestUtils.PATHS_ARR;
+import static io.memoria.reactive.core.file.TestUtils.FILES_ARR;
+import static io.memoria.reactive.core.file.TestUtils.FILES_COUNT;
+import static io.memoria.reactive.core.file.TestUtils.SOME_FILE_PATH;
+import static io.memoria.reactive.core.file.TestUtils.createSomeFilesDelayed;
+import static org.awaitility.Awaitility.await;
 
 class RFilesTest {
 
@@ -26,28 +31,29 @@ class RFilesTest {
   @Test
   @DisplayName("Should append or create a file")
   void create() throws IOException {
+    // Given
+    var helloWorldFile = new RFile(SOME_FILE_PATH, "hello world");
     // When
-    var writeFileMono = RFiles.write(new RFile(TestUtils.EMPTY_DIR_FILE, "hello world"));
-    StepVerifier.create(writeFileMono).expectNext(TestUtils.EMPTY_DIR_FILE).verifyComplete();
+    StepVerifier.create(RFiles.write(helloWorldFile)).expectNext(helloWorldFile).verifyComplete();
     // Then
-    var str = new String(Files.readAllBytes(TestUtils.EMPTY_DIR_FILE));
-    Assertions.assertEquals(str, "hello world");
+    var str = new String(Files.readAllBytes(SOME_FILE_PATH));
+    Assertions.assertEquals("hello world", str);
   }
 
   @Test
   void delete() throws IOException {
     // Given
-    Files.createFile(TestUtils.EMPTY_DIR_FILE);
+    Files.createFile(SOME_FILE_PATH);
     // When
-    var deleteFile = RFiles.delete(TestUtils.EMPTY_DIR_FILE);
+    var deleteFile = RFiles.delete(SOME_FILE_PATH);
     // Then
-    StepVerifier.create(deleteFile).expectNext(TestUtils.EMPTY_DIR_FILE).verifyComplete();
+    StepVerifier.create(deleteFile).expectNext(SOME_FILE_PATH).verifyComplete();
   }
 
   @Test
   void deleteAll() {
     // Given
-    var files = TestUtils.writeFiles();
+    var files = TestUtils.createSomeFiles();
     // When
     var deleteFiles = RFiles.delete(files);
     // Then
@@ -57,7 +63,7 @@ class RFilesTest {
   @Test
   void lastFile() {
     // Given
-    var files = TestUtils.writeFiles();
+    var files = TestUtils.createSomeFiles();
     // When
     var lastFile = RFiles.lastModified(TestUtils.EMPTY_DIR);
     // Then
@@ -66,9 +72,11 @@ class RFilesTest {
 
   @Test
   void list() {
-    var listMono = RFiles.list(TestUtils.EMPTY_DIR);
-    StepVerifier.create(listMono).expectNext(List.empty()).verifyComplete();
-    StepVerifier.create(listMono.map(List::size)).expectNext(0).verifyComplete();
+    // Given
+    var listFlux = RFiles.list(TestUtils.EMPTY_DIR);
+    // Then
+    StepVerifier.create(listFlux).expectNext().verifyComplete();
+    StepVerifier.create(listFlux.count()).expectNext(0L).verifyComplete();
   }
 
   @Test
@@ -78,15 +86,15 @@ class RFilesTest {
     // When
     var pub = RFiles.publish(files);
     // Then
-    StepVerifier.create(pub).expectNext(PATHS_ARR).verifyComplete();
+    StepVerifier.create(pub).expectNext(FILES_ARR).verifyComplete();
   }
 
   @Test
   void read() throws IOException {
     // Given
-    Files.writeString(TestUtils.EMPTY_DIR_FILE, "welcome");
+    Files.writeString(SOME_FILE_PATH, "welcome");
     // When
-    var read = RFiles.read(TestUtils.EMPTY_DIR_FILE);
+    var read = RFiles.read(SOME_FILE_PATH);
     // Then
     StepVerifier.create(read).expectNext("welcome").verifyComplete();
   }
@@ -94,7 +102,7 @@ class RFilesTest {
   @Test
   void readDirectory() {
     // Given
-    TestUtils.writeFiles();
+    var writtenPaths = TestUtils.createSomeFiles().toSet();
     // When
     var readDir = RFiles.readDir(TestUtils.EMPTY_DIR)
                         .flatMapMany(Flux::fromIterable)
@@ -103,27 +111,31 @@ class RFilesTest {
                         .map(List::ofAll)
                         .map(List::toSet);
     // Then
-    StepVerifier.create(readDir).expectNext(PATHS.toSet()).verifyComplete();
+    StepVerifier.create(readDir).expectNext(writtenPaths).verifyComplete();
   }
 
   @Test
   void subscribe() {
     // Given
-    new Thread(TestUtils::writeFiles).start();
+    var expected = new ArrayList<RFile>();
     // When
-    var sub = RFiles.subscribe(TestUtils.EMPTY_DIR).map(RFile::path).take(TestUtils.END);
+    new Thread(() -> RFiles.subscribe(TestUtils.EMPTY_DIR)
+                           .take(TestUtils.FILES_COUNT)
+                           .subscribe(expected::add)).start();
+    createSomeFilesDelayed(Duration.ofMillis(200)).block();
     // Then
-    StepVerifier.create(sub).expectNext(PATHS_ARR).verifyComplete();
+    await().atMost(Duration.ofSeconds(2)).until(() -> expected.size() == FILES_COUNT);
   }
 
   @Test
   void writeMany() throws IOException {
     // When
-    var writeAll = RFiles.write(FILES);
+    var writeAllMono = RFiles.write(FILES);
     // Then
-    StepVerifier.create(writeAll).expectNextCount(1).verifyComplete();
+    StepVerifier.create(writeAllMono).expectNext(FILES).verifyComplete();
     // And
-    var expectedPaths = List.ofAll(Files.list(TestUtils.EMPTY_DIR).sorted().toList());
-    Assertions.assertEquals(expectedPaths, PATHS);
+    var writtenPaths = List.ofAll(Files.list(TestUtils.EMPTY_DIR).sorted().toList());
+    var expectedWrittenFiles = FILES.map(RFile::path);
+    Assertions.assertEquals(expectedWrittenFiles, writtenPaths);
   }
 }

@@ -99,7 +99,7 @@ public class RConfig {
   private static List<String> readResource(String path) throws IOException {
     try (var inputStream = Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(path))) {
       var result = new ByteArrayOutputStream();
-      byte[] buffer = new byte[1024];
+      var buffer = new byte[1024];
       int length;
       while ((length = inputStream.read(buffer)) != -1) {
         result.write(buffer, 0, length);

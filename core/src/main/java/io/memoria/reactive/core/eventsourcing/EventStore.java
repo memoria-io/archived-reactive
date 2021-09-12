@@ -34,15 +34,16 @@ public class EventStore implements Function1<Command, Mono<State>> {
    * @return mono of the new State after applying such command on it.
    */
   public Mono<State> apply(Command cmd) {
-    return Mono.fromCallable(() -> {
-      var currentState = state.getOrDefault(cmd.aggId(), defaultState);
-      var eventsMono = decider.apply(currentState, cmd);
-      return eventsMono.flatMap(events -> eventRepo.write(events).thenReturn(events))
-                       .map(events -> save(currentState, events, cmd.aggId()));
-    }).flatMap(Function.identity());
+    return Mono.fromCallable(() -> pipeline(cmd)).flatMap(Function.identity());
   }
 
-  private State save(State currentState, List<Event> events, Id aggId) {
+  private Mono<State> pipeline(Command cmd) {
+    var aggId = cmd.aggId();
+    var currentState = state.getOrDefault(aggId, defaultState);
+    return decider.apply(currentState, cmd).flatMap(eventRepo::write).map(events -> save(aggId, currentState, events));
+  }
+
+  private State save(Id aggId, State currentState, List<Event> events) {
     var newState = events.foldLeft(currentState, evolver);
     state.put(aggId, newState);
     return newState;

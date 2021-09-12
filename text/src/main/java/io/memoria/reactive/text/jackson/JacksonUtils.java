@@ -46,7 +46,7 @@ public class JacksonUtils {
   public static ObjectMapper defaultYaml() {
     var yfb = new YAMLFactoryBuilder(YAMLFactory.builder().build());
     yfb.configure(YAMLGenerator.Feature.INDENT_ARRAYS_WITH_INDICATOR, true);
-    ObjectMapper om = new ObjectMapper(yfb.build());
+    var om = new ObjectMapper(yfb.build());
     om = setDateFormat(om);
     om = addJ8Modules(om);
     om = addVavrModule(om);
@@ -102,7 +102,7 @@ public class JacksonUtils {
   }
 
   public static SimpleModule reactiveModule() {
-    SimpleModule reactive = new SimpleModule();
+    var reactive = new SimpleModule();
     // Id
     reactive.addSerializer(Id.class, new IdSerializer());
     reactive.addDeserializer(Id.class, new IdDeserializer());

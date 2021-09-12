@@ -11,14 +11,14 @@ public final class TextGenerator {
   }
 
   public String alphanumeric(int length) {
-    StringBuilder sb = new StringBuilder(length);
+    var sb = new StringBuilder(length);
     while (sb.length() < length)
       sb.append(ALPHANUMERICS.charAt(random.nextInt(ALPHANUMERICS.length())));
     return sb.toString();
   }
 
   public String hex(int length) {
-    StringBuilder sb = new StringBuilder();
+    var sb = new StringBuilder();
     while (sb.length() < length) {
       sb.append(Integer.toHexString(random.nextInt()));
     }

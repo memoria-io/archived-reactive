@@ -20,17 +20,17 @@ public record FileRDB<T extends Msg>(Path path, TextTransformer transformer, Cla
 
   @Override
   public Mono<Long> currentIndex() {
-    return FileRDBUtils.sortedList(path)
-                       .last()
-                       .map(i -> i + 1)
-                       .doOnError(NoSuchElementException.class, t -> infoIndexZero(path))
-                       .onErrorResume(NoSuchElementException.class, t -> Mono.just(0L));
+    return RFiles.list(path)
+                 .last()
+                 .map(FileRDBUtils::toIndex)
+                 .map(i -> i + 1)
+                 .doOnError(NoSuchElementException.class, t -> infoIndexZero(path))
+                 .onErrorResume(NoSuchElementException.class, t -> Mono.just(0L));
   }
 
   @Override
-  public Flux<Long> publish(Flux<T> msgs) {
-    var rFiles = msgs.concatMap(m -> toRFile(path, m));
-    return RFiles.publish(rFiles).map(FileRDBUtils::toIndex);
+  public Flux<T> publish(Flux<T> msgs) {
+    return msgs.concatMap(this::write);
   }
 
   @Override
@@ -47,34 +47,25 @@ public record FileRDB<T extends Msg>(Path path, TextTransformer transformer, Cla
 
   @Override
   public Mono<Integer> size() {
-    return RFiles.list(path).map(List::size);
+    return RFiles.list(path).count().map(Long::intValue);
   }
 
   @Override
   public Flux<T> subscribe(int offset) {
     var deserialize = transformer.deserialize(tClass);
-    var existingFiles = RFiles.readDir(path)
-                              .flatMapMany(Flux::fromIterable)
-                              .map(RFile::content)
-                              .concatMap(deserialize)
-                              .sort();
+    var existingFiles = RFiles.readDir(path).flatMapMany(Flux::fromIterable).map(RFile::content).concatMap(deserialize);
     var newFiles = RFiles.subscribe(path).map(RFile::content).concatMap(deserialize);
     return Flux.concat(existingFiles, newFiles).skip(offset);
   }
 
   @Override
-  public Mono<List<Long>> write(List<T> msgs) {
-    return Flux.fromIterable(msgs)
-               .concatMap(msg -> toRFile(path, msg))
-               .collectList()
-               .map(List::ofAll)
-               .flatMap(RFiles::write)
-               .map(l -> l.map(FileRDBUtils::toIndex));
+  public Mono<List<T>> write(List<T> msgs) {
+    return Flux.fromIterable(msgs).concatMap(this::write).collectList().map(List::ofAll);
   }
 
-  private Mono<RFile> toRFile(Path path, T msg) {
+  private Mono<T> write(T msg) {
     var p = FileRDBUtils.toPath(path, msg.id());
-    return transformer.serialize(msg).map(content -> new RFile(p, content));
+    return transformer.serialize(msg).map(content -> new RFile(p, content)).flatMap(RFiles::write).thenReturn(msg);
   }
 
   private static void infoIndexZero(Path p) {

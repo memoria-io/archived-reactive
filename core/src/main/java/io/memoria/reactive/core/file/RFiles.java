@@ -13,12 +13,11 @@ import java.util.function.BinaryOperator;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 public class RFiles {
-
   private static final Logger log = LoggerFactory.getLogger(RFiles.class.getName());
   private static final BinaryOperator<String> JOIN_LINES = (a, b) -> a + System.lineSeparator() + b;
 
   public static Flux<Path> clean(Path path) {
-    return listFiles(path).flatMap(RFiles::delete);
+    return list(path).flatMap(RFiles::delete);
   }
 
   public static Mono<Path> createDirectory(Path path) {
@@ -34,18 +33,17 @@ public class RFiles {
   }
 
   public static Mono<Path> lastModified(Path path) {
-    return listFiles(path).reduce(RFiles::lastModified);
+    return list(path).reduce(RFiles::lastModified);
   }
 
-  public static Mono<List<Path>> list(Path path) {
-    return listFiles(path).collectList().map(List::ofAll);
+  public static Flux<Path> list(Path path) {
+    return Mono.fromCallable(() -> Files.list(path))
+               .flatMapMany(Flux::fromStream)
+               .filter(f -> !Files.isDirectory(f))
+               .sort();
   }
 
-  public static Flux<Path> listFiles(Path path) {
-    return Mono.fromCallable(() -> Files.list(path)).flatMapMany(Flux::fromStream).filter(f -> !Files.isDirectory(f));
-  }
-
-  public static Flux<Path> publish(Flux<RFile> files) {
+  public static Flux<RFile> publish(Flux<RFile> files) {
     return files.concatMap(RFiles::write);
   }
 
@@ -57,7 +55,7 @@ public class RFiles {
   }
 
   public static Mono<List<RFile>> readDir(Path path) {
-    return listFiles(path).flatMap(RFiles::readFn).collectList().map(List::ofAll);
+    return list(path).concatMap(RFiles::readFn).collectList().map(List::ofAll);
   }
 
   public static Mono<RFile> readFn(Path p) {
@@ -68,11 +66,11 @@ public class RFiles {
     return RDirWatch.watch(path).flatMap(file -> read(file).map(content -> new RFile(file, content)));
   }
 
-  public static Mono<Path> write(RFile file) {
-    return Mono.fromCallable(() -> Files.writeString(file.path(), file.content(), CREATE_NEW));
+  public static Mono<RFile> write(RFile file) {
+    return Mono.fromCallable(() -> Files.writeString(file.path(), file.content(), CREATE_NEW)).thenReturn(file);
   }
 
-  public static Mono<List<Path>> write(List<RFile> files) {
+  public static Mono<List<RFile>> write(List<RFile> files) {
     return Mono.fromCallable(() -> Flux.fromIterable(files).concatMap(RFiles::write))
                .map(Flux::toIterable)
                .map(List::ofAll)
@@ -82,15 +80,17 @@ public class RFiles {
                });
   }
 
+  private RFiles() {}
+
   private static Path lastModified(Path p1, Path p2) {
     return (p1.toFile().lastModified() > p2.toFile().lastModified()) ? p1 : p2;
   }
 
   private static void logDeletion(Path file) {
-    log.error("Fallback after error deleting: " + file);
+    log.error("Fallback after error deleting: {} ", file);
   }
 
   private static void logSevere(Throwable e) {
-    log.error("Severe Error while the fallback deletion:" + e.getMessage(), e);
+    log.error("Severe Error while the fallback deletion", e);
   }
 }

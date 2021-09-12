@@ -19,6 +19,8 @@ public class ES {
     return cmdStream.subscribe(offset).flatMap(eventStore);
   }
 
+  private ES() {}
+
   private static void buildState(ConcurrentHashMap<Id, State> stateStore, Evolver evolver, List<Event> events) {
     events.forEach(event -> stateStore.compute(event.aggId(), (k, oldV) -> evolver.apply(oldV, event)));
   }

@@ -30,4 +30,6 @@ public class RSql {
                .flatMapMany(c -> Flux.<Result>from(c.createStatement(sql).execute()))
                .flatMap(r -> Flux.from(r.map((row, rowMetadata) -> row)));
   }
+
+  private RSql() {}
 }

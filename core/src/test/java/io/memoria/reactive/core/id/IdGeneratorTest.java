@@ -22,4 +22,10 @@ class IdGeneratorTest {
     Assertions.assertEquals(36, idGen.get().value().length());
     Assertions.assertEquals(5, idGen.get().value().split("-").length);
   }
+
+  @Test
+  void idTest() {
+    Assertions.assertThrows(IllegalArgumentException.class, () -> new Id(null));
+    Assertions.assertThrows(IllegalArgumentException.class, () -> new Id(""));
+  }
 }

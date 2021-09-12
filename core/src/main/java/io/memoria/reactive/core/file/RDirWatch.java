@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
@@ -25,7 +24,7 @@ class RDirWatch {
 
   private static Flux<String> take(WatchService watchService) {
     return Mono.fromCallable(() -> {
-      WatchKey key = watchService.take();
+      var key = watchService.take();
       var l = List.ofAll(key.pollEvents()).map(WatchEvent::context).map(Object::toString);
       key.reset();
       return l;
@@ -37,7 +36,7 @@ class RDirWatch {
   }
 
   private static WatchService watchService(Path dir) throws IOException {
-    WatchService watchService = FileSystems.getDefault().newWatchService();
+    var watchService = FileSystems.getDefault().newWatchService();
     dir.register(watchService, ENTRY_CREATE);
     return watchService;
   }

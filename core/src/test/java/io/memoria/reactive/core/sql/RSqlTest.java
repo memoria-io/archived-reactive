@@ -4,7 +4,7 @@ import io.r2dbc.spi.ConnectionFactories;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
-public class RSqlTest {
+class RSqlTest {
 
   @Test
   void drop() {

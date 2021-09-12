@@ -1,6 +1,5 @@
 package io.memoria.reactive.core.vavr;
 
-import io.memoria.reactive.core.text.TextException;
 import io.vavr.collection.List;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
@@ -13,7 +12,6 @@ import reactor.test.StepVerifier;
 import java.io.IOException;
 import java.util.function.Function;
 
-import static io.memoria.reactive.core.text.TextException.notFound;
 import static io.memoria.reactive.core.vavr.ReactorVavrUtils.toFlux;
 import static io.memoria.reactive.core.vavr.ReactorVavrUtils.toMono;
 import static io.memoria.reactive.core.vavr.ReactorVavrUtils.toVoidMono;
@@ -81,11 +79,11 @@ class ReactorVavrUtilsTest {
     var som = Option.some(20);
     var non = Option.none();
     // When
-    var somMono = toMono(som, notFound("not found"));
-    var nonMono = toMono(non, notFound("not found"));
+    var somMono = toMono(som, new IllegalArgumentException("not found"));
+    var nonMono = toMono(non, new IllegalArgumentException("not found"));
     // Then
     StepVerifier.create(somMono).expectNext(20).expectComplete().verify();
-    StepVerifier.create(nonMono).expectError(TextException.class).verify();
+    StepVerifier.create(nonMono).expectError(IllegalArgumentException.class).verify();
   }
 
   @Test

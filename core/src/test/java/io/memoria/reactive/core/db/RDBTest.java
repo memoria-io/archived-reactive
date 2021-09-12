@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 class RDBTest {
   private static final int FROM = 0;
-  private static final int TO = 100;
+  private static final int TO = 1000;
   private static final String TOPIC = "some_topic";
   private static final Path TOPIC_PATH = Path.of("/tmp/" + TOPIC);
 
@@ -42,11 +42,26 @@ class RDBTest {
   void publish(RDB<MessageReceived> repo) {
     // Given
     var eventList = MessageReceived.create(FROM, TO);
-    var expected = eventList.map(MessageReceived::id).toJavaArray(Long[]::new);
+    var expected = eventList.toJavaArray(MessageReceived[]::new);
     // When
     var publish = repo.publish(Flux.fromIterable(eventList));
     // Then
     StepVerifier.create(publish).expectNext(expected).verifyComplete();
+  }
+
+  @ParameterizedTest
+  @MethodSource("rdb")
+  void read(RDB<MessageReceived> repo) {
+    // Given
+    var eventList = MessageReceived.create(FROM, TO);
+    MEM_RDB.db().addAll(eventList.toJavaList());
+    FILE_RDB.write(eventList).subscribe();
+    // When
+    var read = repo.read(0);
+    // Then
+    StepVerifier.create(read).expectNext(eventList).verifyComplete();
+    StepVerifier.create(repo.size()).expectNext(eventList.size()).verifyComplete();
+    StepVerifier.create(repo.currentIndex()).expectNext((long) eventList.size()).verifyComplete();
   }
 
   @ParameterizedTest
@@ -61,6 +76,17 @@ class RDBTest {
     var sub = repo.subscribe(0).take(TO);
     // Then
     StepVerifier.create(sub).expectNext(expected).verifyComplete();
+  }
+
+  @ParameterizedTest
+  @MethodSource("rdb")
+  void write(RDB<MessageReceived> repo) {
+    // Given
+    var eventList = MessageReceived.create(FROM, TO);
+    // When
+    var write = repo.write(eventList);
+    // Then
+    StepVerifier.create(write).expectNext(eventList).verifyComplete();
   }
 
   private static Stream<RDB<MessageReceived>> rdb() {
