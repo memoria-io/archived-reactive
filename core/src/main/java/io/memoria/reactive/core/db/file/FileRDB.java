@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public final class FileRDB<T> implements RDB<T> {
 
   private static final Logger log = LoggerFactory.getLogger(FileRDB.class.getName());
+
   private final Path path;
   private final TextTransformer transformer;
   private final Class<T> tClass;
@@ -26,6 +27,11 @@ public final class FileRDB<T> implements RDB<T> {
     this.transformer = transformer;
     this.tClass = tClass;
     this.idx = new AtomicLong(idx);
+  }
+
+  @Override
+  public Mono<Long> index() {
+    return RFiles.index(path);
   }
 
   @Override
@@ -65,8 +71,9 @@ public final class FileRDB<T> implements RDB<T> {
 
   private Mono<T> write(T msg) {
     return transformer.serialize(msg)
-                      .map(content -> new RFile(FileRDBs.toPath(path, idx.getAndIncrement()), content))
+                      .map(content -> new RFile(RFiles.toPath(path, idx.getAndIncrement()), content))
                       .flatMap(RFiles::write)
                       .thenReturn(msg);
   }
+
 }

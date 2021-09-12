@@ -5,7 +5,7 @@ import io.memoria.reactive.core.id.Id;
 import java.io.Serializable;
 
 public interface Command extends Serializable {
-  Id id();
-
   Id aggId();
+
+  Id id();
 }

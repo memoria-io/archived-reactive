@@ -6,9 +6,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public interface Event extends Serializable {
-  Id id();
-
   Id aggId();
 
   LocalDateTime createdAt();
+
+  Id id();
 }

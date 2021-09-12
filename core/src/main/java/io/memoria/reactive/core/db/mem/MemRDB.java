@@ -6,6 +6,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public record MemRDB<T>(java.util.List<T> db) implements RDB<T> {
+  @Override
+  public Mono<Long> index() {
+    return Mono.fromCallable(() -> (long) db.size());
+  }
 
   @Override
   public Flux<T> publish(Flux<T> msgs) {

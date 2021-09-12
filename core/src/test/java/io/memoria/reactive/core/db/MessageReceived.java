@@ -8,11 +8,6 @@ import java.time.LocalDateTime;
 
 record MessageReceived(String msg) implements Event {
   @Override
-  public Id id() {
-    return Id.of(0);
-  }
-
-  @Override
   public Id aggId() {
     return Id.of("aggId");
   }
@@ -20,6 +15,11 @@ record MessageReceived(String msg) implements Event {
   @Override
   public LocalDateTime createdAt() {
     return LocalDateTime.of(2111, 1, 1, 1, 1);
+  }
+
+  @Override
+  public Id id() {
+    return Id.of(0);
   }
 
   static List<MessageReceived> create(int from, int to) {

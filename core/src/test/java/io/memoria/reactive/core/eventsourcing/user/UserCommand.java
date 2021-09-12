@@ -4,11 +4,6 @@ import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.id.Id;
 
 public interface UserCommand extends Command {
-  @Override
-  default Id id(){
-    return Id.of(0);
-  }
-
   record CreateUser(Id userId, String username) implements UserCommand {
     @Override
     public Id aggId() {
@@ -21,5 +16,10 @@ public interface UserCommand extends Command {
     public Id aggId() {
       return userId;
     }
+  }
+
+  @Override
+  default Id id() {
+    return Id.of(0);
   }
 }

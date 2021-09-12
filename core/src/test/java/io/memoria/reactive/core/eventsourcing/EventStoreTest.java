@@ -48,7 +48,7 @@ class EventStoreTest {
   }
 
   private CreateUser createCommand(Integer i) {
-    return new CreateUser( Id.of("user_" + i), "name_" + i);
+    return new CreateUser(Id.of("user_" + i), "name_" + i);
   }
 
   private Event createEvent(Integer i) {
