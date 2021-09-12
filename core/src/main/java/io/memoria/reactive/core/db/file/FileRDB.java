@@ -75,5 +75,4 @@ public final class FileRDB<T> implements RDB<T> {
                       .flatMap(RFiles::write)
                       .thenReturn(msg);
   }
-
 }
