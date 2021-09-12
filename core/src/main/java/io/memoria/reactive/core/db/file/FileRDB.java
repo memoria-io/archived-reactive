@@ -15,14 +15,14 @@ import java.nio.file.Path;
 import java.util.NoSuchElementException;
 
 public record FileRDB<T extends Msg>(Path path, TextTransformer transformer, Class<T> tClass) implements RDB<T> {
-  public static final String FILE_EXT = ".json";
+
   private static final Logger log = LoggerFactory.getLogger(FileRDB.class.getName());
 
   @Override
   public Mono<Long> currentIndex() {
     return RFiles.list(path)
                  .last()
-                 .map(FileRDBUtils::toIndex)
+                 .map(FileRDBs::toIndex)
                  .map(i -> i + 1)
                  .doOnError(NoSuchElementException.class, t -> infoIndexZero(path))
                  .onErrorResume(NoSuchElementException.class, t -> Mono.just(0L));
@@ -64,7 +64,7 @@ public record FileRDB<T extends Msg>(Path path, TextTransformer transformer, Cla
   }
 
   private Mono<T> write(T msg) {
-    var p = FileRDBUtils.toPath(path, msg.id());
+    var p = FileRDBs.toPath(path, msg.id());
     return transformer.serialize(msg).map(content -> new RFile(p, content)).flatMap(RFiles::write).thenReturn(msg);
   }
 
