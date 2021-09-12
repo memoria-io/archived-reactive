@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
@@ -100,13 +101,10 @@ public class RFiles {
   }
 
   public static Mono<List<RFile>> write(List<RFile> files) {
-    return Mono.fromCallable(() -> Flux.fromIterable(files).concatMap(RFiles::write))
-               .map(Flux::toIterable)
-               .map(List::ofAll)
-               .doOnError(e -> {
-                 log.error(e.getMessage(), e);
-                 delete(files.map(RFile::path)).doOnError(RFiles::logSevere).subscribe(RFiles::logDeletion);
-               });
+    return Mono.fromCallable(() -> writeMany(files)).doOnError(e -> {
+      log.error(e.getMessage(), e);
+      delete(files.map(RFile::path)).doOnError(RFiles::logSevere).subscribe(RFiles::logDeletion);
+    });
   }
 
   private RFiles() {}
@@ -125,5 +123,12 @@ public class RFiles {
 
   private static void logSevere(Throwable e) {
     log.error("Severe Error while the fallback deletion", e);
+  }
+
+  private static List<RFile> writeMany(List<RFile> files) throws IOException {
+    for (RFile file : files) {
+      Files.writeString(file.path(), file.content(), CREATE_NEW);
+    }
+    return files;
   }
 }

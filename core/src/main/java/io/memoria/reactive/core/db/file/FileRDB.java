@@ -66,7 +66,13 @@ public final class FileRDB<T> implements RDB<T> {
 
   @Override
   public Mono<List<T>> write(List<T> msgs) {
-    return Flux.fromIterable(msgs).concatMap(this::write).collectList().map(List::ofAll);
+    return Flux.fromIterable(msgs)
+               .concatMap(transformer::serialize)
+               .map(content -> new RFile(RFiles.toPath(path, idx.getAndIncrement()), content))
+               .collectList()
+               .map(List::ofAll)
+               .flatMap(RFiles::write)
+               .thenReturn(msgs);
   }
 
   private Mono<T> write(T msg) {
