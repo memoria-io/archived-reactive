@@ -1,6 +1,5 @@
 package io.memoria.reactive.core.db.file;
 
-import io.memoria.reactive.core.db.Msg;
 import io.memoria.reactive.core.db.RDB;
 import io.memoria.reactive.core.file.RFile;
 import io.memoria.reactive.core.file.RFiles;
@@ -12,20 +11,21 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.nio.file.Path;
-import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicLong;
 
-public record FileRDB<T extends Msg>(Path path, TextTransformer transformer, Class<T> tClass) implements RDB<T> {
+public final class FileRDB<T> implements RDB<T> {
 
   private static final Logger log = LoggerFactory.getLogger(FileRDB.class.getName());
+  private final Path path;
+  private final TextTransformer transformer;
+  private final Class<T> tClass;
+  private final AtomicLong idx;
 
-  @Override
-  public Mono<Long> currentIndex() {
-    return RFiles.list(path)
-                 .last()
-                 .map(FileRDBs::toIndex)
-                 .map(i -> i + 1)
-                 .doOnError(NoSuchElementException.class, t -> infoIndexZero(path))
-                 .onErrorResume(NoSuchElementException.class, t -> Mono.just(0L));
+  public FileRDB(long idx, Path path, TextTransformer transformer, Class<T> tClass) {
+    this.path = path;
+    this.transformer = transformer;
+    this.tClass = tClass;
+    this.idx = new AtomicLong(idx);
   }
 
   @Override
@@ -64,11 +64,9 @@ public record FileRDB<T extends Msg>(Path path, TextTransformer transformer, Cla
   }
 
   private Mono<T> write(T msg) {
-    var p = FileRDBs.toPath(path, msg.id());
-    return transformer.serialize(msg).map(content -> new RFile(p, content)).flatMap(RFiles::write).thenReturn(msg);
-  }
-
-  private static void infoIndexZero(Path p) {
-    log.info("Directory %s was empty returning index = zero".formatted(p));
+    return transformer.serialize(msg)
+                      .map(content -> new RFile(FileRDBs.toPath(path, idx.getAndIncrement()), content))
+                      .flatMap(RFiles::write)
+                      .thenReturn(msg);
   }
 }

@@ -6,8 +6,12 @@ import io.memoria.reactive.core.id.Id;
 import java.time.LocalDateTime;
 
 public interface UserEvent extends Event {
+  @Override
+  default Id eventId() {
+    return Id.of(0);
+  }
 
-  record MessageSent(long id, Id userId, Id receiverId, String message) implements Event {
+  record MessageSent(long id, Id userId, Id receiverId, String message) implements UserEvent {
     @Override
     public Id aggId() {
       return userId;
@@ -19,7 +23,7 @@ public interface UserEvent extends Event {
     }
   }
 
-  record UserCreated(long id, Id userId, String name) implements Event {
+  record UserCreated(long id, Id userId, String name) implements UserEvent {
     @Override
     public Id aggId() {
       return userId;

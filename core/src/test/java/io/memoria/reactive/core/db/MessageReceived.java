@@ -7,6 +7,10 @@ import io.vavr.collection.List;
 import java.time.LocalDateTime;
 
 record MessageReceived(long id, String msg) implements Event {
+  @Override
+  public Id eventId() {
+    return Id.of(0);
+  }
 
   @Override
   public Id aggId() {

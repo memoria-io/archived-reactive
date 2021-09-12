@@ -1,16 +1,11 @@
 package io.memoria.reactive.core.db.mem;
 
-import io.memoria.reactive.core.db.Msg;
 import io.memoria.reactive.core.db.RDB;
 import io.vavr.collection.List;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public record MemRDB<T extends Msg>(java.util.List<T> db) implements RDB<T> {
-  @Override
-  public Mono<Long> currentIndex() {
-    return Mono.fromCallable(() -> (long) db.size());
-  }
+public record MemRDB<T>(java.util.List<T> db) implements RDB<T> {
 
   @Override
   public Flux<T> publish(Flux<T> msgs) {

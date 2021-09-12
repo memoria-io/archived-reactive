@@ -27,14 +27,14 @@ class RDBTest {
   static {
     var db = new ArrayList<MessageReceived>();
     MEM_RDB = new MemRDB<>(db);
-    FILE_RDB = new FileRDB<>(TOPIC_PATH, new SerializableTransformer(), MessageReceived.class);
+    FILE_RDB = new FileRDB<>(0, TOPIC_PATH, new SerializableTransformer(), MessageReceived.class);
   }
 
   @BeforeEach
   void beforeEach() {
     MEM_RDB.db().clear();
     RFiles.createDirectory(TOPIC_PATH).subscribe();
-    RFiles.clean(FILE_RDB.path()).subscribe();
+    RFiles.clean(TOPIC_PATH).subscribe();
   }
 
   @ParameterizedTest
@@ -61,7 +61,6 @@ class RDBTest {
     // Then
     StepVerifier.create(read).expectNext(eventList).verifyComplete();
     StepVerifier.create(repo.size()).expectNext(eventList.size()).verifyComplete();
-    StepVerifier.create(repo.currentIndex()).expectNext((long) eventList.size()).verifyComplete();
   }
 
   @ParameterizedTest

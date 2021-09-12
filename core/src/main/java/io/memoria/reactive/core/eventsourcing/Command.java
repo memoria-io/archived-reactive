@@ -1,8 +1,11 @@
 package io.memoria.reactive.core.eventsourcing;
 
-import io.memoria.reactive.core.db.Msg;
 import io.memoria.reactive.core.id.Id;
 
-public interface Command extends Msg {
+import java.io.Serializable;
+
+public interface Command extends Serializable {
+  Id commandId();
+
   Id aggId();
 }
