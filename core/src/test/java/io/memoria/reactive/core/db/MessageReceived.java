@@ -6,9 +6,9 @@ import io.vavr.collection.List;
 
 import java.time.LocalDateTime;
 
-record MessageReceived(long id, String msg) implements Event {
+record MessageReceived(String msg) implements Event {
   @Override
-  public Id eventId() {
+  public Id id() {
     return Id.of(0);
   }
 
@@ -23,6 +23,6 @@ record MessageReceived(long id, String msg) implements Event {
   }
 
   static List<MessageReceived> create(int from, int to) {
-    return List.range(from, to).map(i -> new MessageReceived(i, "hello" + i));
+    return List.range(from, to).map(i -> new MessageReceived("hello" + i));
   }
 }

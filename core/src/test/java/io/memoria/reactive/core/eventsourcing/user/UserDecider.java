@@ -18,10 +18,10 @@ public record UserDecider(AtomicLong id) implements Decider {
   @Override
   public Mono<List<Event>> apply(State state, Command userCommand) {
     if (userCommand instanceof CreateUser cmd) {
-      return Mono.just(List.of(new UserCreated(id.getAndIncrement(), cmd.userId(), cmd.username())));
+      return Mono.just(List.of(new UserCreated(cmd.userId(), cmd.username())));
     }
     if (userCommand instanceof SendMessage cmd) {
-      return Mono.just(List.of(new MessageSent(id.getAndIncrement(), cmd.userId(), cmd.receiverId(), cmd.message())));
+      return Mono.just(List.of(new MessageSent(cmd.userId(), cmd.receiverId(), cmd.message())));
     }
     return Mono.error(UnknownCommand.create(userCommand.getClass().getSimpleName()));
   }

@@ -7,11 +7,11 @@ import java.time.LocalDateTime;
 
 public interface UserEvent extends Event {
   @Override
-  default Id eventId() {
+  default Id id() {
     return Id.of(0);
   }
 
-  record MessageSent(long id, Id userId, Id receiverId, String message) implements UserEvent {
+  record MessageSent(Id userId, Id receiverId, String message) implements UserEvent {
     @Override
     public Id aggId() {
       return userId;
@@ -23,7 +23,7 @@ public interface UserEvent extends Event {
     }
   }
 
-  record UserCreated(long id, Id userId, String name) implements UserEvent {
+  record UserCreated(Id userId, String name) implements UserEvent {
     @Override
     public Id aggId() {
       return userId;

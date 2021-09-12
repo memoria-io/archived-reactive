@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public record NameCreated(Id aggId, String name, LocalDateTime createdAt) implements Event {
   @Override
-  public Id eventId() {
+  public Id id() {
     return Id.of(0);
   }
 }
