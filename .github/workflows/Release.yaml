@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - uses: actions/setup-java@v1
         with:
-          java-version: '16'
+          java-version: '17'
       - name: External Dependencies
         run: docker-compose up -d
       - name: Wait
