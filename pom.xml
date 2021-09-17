@@ -5,19 +5,19 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jbom</artifactId>
-        <version>0.39.0</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>reactive</artifactId>
-    <version>0.310.0</version>
+    <version>0.312.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
     <description>Reactive Java utilities</description>
     <url>https://memoria.io</url>
     <properties>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <reactor.version>2020.0.8</reactor.version>
         <vavr.version>0.10.3</vavr.version>
         <jackson.version>2.12.3</jackson.version>

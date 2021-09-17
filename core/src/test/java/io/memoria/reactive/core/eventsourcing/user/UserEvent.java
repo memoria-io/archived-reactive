@@ -6,8 +6,7 @@ import io.memoria.reactive.core.id.Id;
 import java.time.LocalDateTime;
 
 public interface UserEvent extends Event {
-
-  record MessageSent(long id, Id userId, Id receiverId, String message) implements Event {
+  record MessageSent(Id userId, Id receiverId, String message) implements UserEvent {
     @Override
     public Id aggId() {
       return userId;
@@ -19,7 +18,7 @@ public interface UserEvent extends Event {
     }
   }
 
-  record UserCreated(long id, Id userId, String name) implements Event {
+  record UserCreated(Id userId, String name) implements UserEvent {
     @Override
     public Id aggId() {
       return userId;
@@ -29,5 +28,10 @@ public interface UserEvent extends Event {
     public LocalDateTime createdAt() {
       return LocalDateTime.of(2020, 1, 1, 1, 1);
     }
+  }
+
+  @Override
+  default Id id() {
+    return Id.of(0);
   }
 }

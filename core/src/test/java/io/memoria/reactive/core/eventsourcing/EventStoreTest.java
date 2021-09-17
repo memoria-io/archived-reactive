@@ -48,11 +48,11 @@ class EventStoreTest {
   }
 
   private CreateUser createCommand(Integer i) {
-    return new CreateUser(i, Id.of("user_" + i), "name_" + i);
+    return new CreateUser(Id.of("user_" + i), "name_" + i);
   }
 
   private Event createEvent(Integer i) {
-    return new UserCreated(i, Id.of("user_" + i), "name_" + i);
+    return new UserCreated(Id.of("user_" + i), "name_" + i);
   }
 
   private static EventStore createEventStore(Read<Event> read, Write<Event> write) {

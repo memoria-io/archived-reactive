@@ -11,6 +11,10 @@ public record Id(String value) implements Serializable {
     return new Id(id);
   }
 
+  public Id(long id) {
+    this(id + "");
+  }
+
   public Id {
     if (value == null || value.isEmpty())
       throw new IllegalArgumentException("Id value is null or empty.");
