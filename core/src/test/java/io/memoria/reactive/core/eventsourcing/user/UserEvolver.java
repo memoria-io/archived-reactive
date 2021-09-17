@@ -6,11 +6,12 @@ import io.memoria.reactive.core.eventsourcing.State;
 import io.memoria.reactive.core.eventsourcing.user.User.Account;
 import io.memoria.reactive.core.eventsourcing.user.User.Visitor;
 import io.memoria.reactive.core.eventsourcing.user.UserEvent.MessageSent;
+import io.memoria.reactive.core.eventsourcing.user.UserEvent.UserCreated;
 
 public record UserEvolver() implements Evolver {
   @Override
   public State apply(State user, Event event) {
-    if (user instanceof Visitor && event instanceof UserEvent.UserCreated e) {
+    if (user instanceof Visitor && event instanceof UserCreated e) {
       return new Account(e.name());
     }
     if (user instanceof Account acc && event instanceof MessageSent e) {
