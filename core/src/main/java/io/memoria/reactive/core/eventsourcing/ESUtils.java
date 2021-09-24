@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ESUtils {
-  private static Logger log = LoggerFactory.getLogger(ESUtils.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(ESUtils.class.getName());
 
   public static Mono<ConcurrentHashMap<Id, State>> buildState(Read<Event> eventRepo, Evolver evolver) {
     var state = new ConcurrentHashMap<Id, State>();
