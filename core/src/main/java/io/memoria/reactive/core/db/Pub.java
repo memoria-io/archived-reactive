@@ -1,7 +1,7 @@
 package io.memoria.reactive.core.db;
 
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface Pub<T> {
-  Flux<T> publish(Flux<T> msgs);
+  Mono<T> publish(T msg);
 }

@@ -44,7 +44,7 @@ class RDBTest {
     var eventList = MessageReceived.create(FROM, TO);
     var expected = eventList.toJavaArray(MessageReceived[]::new);
     // When
-    var publish = repo.publish(Flux.fromIterable(eventList));
+    var publish = Flux.fromIterable(eventList).concatMap(repo::publish);
     // Then
     StepVerifier.create(publish).expectNext(expected).verifyComplete();
   }
@@ -55,7 +55,7 @@ class RDBTest {
     // Given
     var eventList = MessageReceived.create(FROM, TO);
     MEM_RDB.db().addAll(eventList.toJavaList());
-    FILE_RDB.write(eventList).subscribe();
+    Flux.fromIterable(eventList).concatMap(FILE_RDB::publish).subscribe();
     // When
     var read = repo.read(0);
     // Then
@@ -69,23 +69,12 @@ class RDBTest {
     // Given
     var eventList = MessageReceived.create(FROM, TO);
     MEM_RDB.db().addAll(eventList.toJavaList());
-    FILE_RDB.write(eventList).subscribe();
+    Flux.fromIterable(eventList).concatMap(FILE_RDB::publish).subscribe();
     var expected = eventList.toJavaArray(MessageReceived[]::new);
     // When
     var sub = repo.subscribe(0).take(TO);
     // Then
     StepVerifier.create(sub).expectNext(expected).verifyComplete();
-  }
-
-  @ParameterizedTest
-  @MethodSource("rdb")
-  void write(RDB<MessageReceived> repo) {
-    // Given
-    var eventList = MessageReceived.create(FROM, TO);
-    // When
-    var write = repo.write(eventList);
-    // Then
-    StepVerifier.create(write).expectNext(eventList).verifyComplete();
   }
 
   private static Stream<RDB<MessageReceived>> rdb() {

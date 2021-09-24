@@ -30,13 +30,11 @@ public final class FileRDB<T> implements RDB<T> {
   }
 
   @Override
-  public Mono<Long> index() {
-    return RFiles.index(path);
-  }
-
-  @Override
-  public Flux<T> publish(Flux<T> msgs) {
-    return msgs.concatMap(this::write);
+  public Mono<T> publish(T msg) {
+    return transformer.serialize(msg)
+                      .map(content -> new RFile(RFiles.toPath(path, idx.getAndIncrement()), content))
+                      .flatMap(RFiles::write)
+                      .thenReturn(msg);
   }
 
   @Override
@@ -62,23 +60,5 @@ public final class FileRDB<T> implements RDB<T> {
     var existingFiles = RFiles.readDir(path).flatMapMany(Flux::fromIterable).map(RFile::content).concatMap(deserialize);
     var newFiles = RFiles.subscribe(path).map(RFile::content).concatMap(deserialize);
     return Flux.concat(existingFiles, newFiles).skip(offset);
-  }
-
-  @Override
-  public Mono<List<T>> write(List<T> msgs) {
-    return Flux.fromIterable(msgs)
-               .concatMap(transformer::serialize)
-               .map(content -> new RFile(RFiles.toPath(path, idx.getAndIncrement()), content))
-               .collectList()
-               .map(List::ofAll)
-               .flatMap(RFiles::write)
-               .thenReturn(msgs);
-  }
-
-  private Mono<T> write(T msg) {
-    return transformer.serialize(msg)
-                      .map(content -> new RFile(RFiles.toPath(path, idx.getAndIncrement()), content))
-                      .flatMap(RFiles::write)
-                      .thenReturn(msg);
   }
 }

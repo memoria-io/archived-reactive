@@ -1,7 +1,7 @@
 package io.memoria.reactive.core.eventsourcing;
 
+import io.memoria.reactive.core.db.Pub;
 import io.memoria.reactive.core.db.Read;
-import io.memoria.reactive.core.db.Write;
 import io.memoria.reactive.core.db.mem.MemRDB;
 import io.memoria.reactive.core.eventsourcing.user.User.Account;
 import io.memoria.reactive.core.eventsourcing.user.User.Visitor;
@@ -55,8 +55,8 @@ class EventStoreTest {
     return new UserCreated(Id.of("user_" + i), "name_" + i);
   }
 
-  private static EventStore createEventStore(Read<Event> read, Write<Event> write) {
+  private static EventStore createEventStore(Read<Event> read, Pub<Event> pub) {
     var state = ES.buildState(read, new UserEvolver()).block();
-    return new EventStore(new Visitor(), state, write, new UserDecider(new AtomicLong(0)), new UserEvolver());
+    return new EventStore(new Visitor(), state, pub, new UserDecider(new AtomicLong(0)), new UserEvolver());
   }
 }

@@ -6,14 +6,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public record MemRDB<T>(java.util.List<T> db) implements RDB<T> {
-  @Override
-  public Mono<Long> index() {
-    return Mono.fromCallable(() -> (long) db.size());
-  }
 
   @Override
-  public Flux<T> publish(Flux<T> msgs) {
-    return msgs.map(msg -> {
+  public Mono<T> publish(T msg) {
+    return Mono.fromCallable(() -> {
       db.add(msg);
       return msg;
     });
@@ -32,13 +28,5 @@ public record MemRDB<T>(java.util.List<T> db) implements RDB<T> {
   @Override
   public Flux<T> subscribe(int offset) {
     return Flux.fromIterable(db).skip(offset);
-  }
-
-  @Override
-  public Mono<List<T>> write(List<T> msgs) {
-    return Mono.fromCallable(() -> {
-      db.addAll(msgs.toJavaList());
-      return msgs;
-    });
   }
 }
