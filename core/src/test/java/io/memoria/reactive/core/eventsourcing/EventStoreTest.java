@@ -37,7 +37,7 @@ class EventStoreTest {
     // Then
     StepVerifier.create(eventStreamDB.read(0)).expectNext(expectedEvents).verifyComplete();
     // When
-    var states = ES.pipeline(cmdStream, 0, eventStore);
+    var states = cmdStream.subscribe(0).concatMap(eventStore);
     // Then
     StepVerifier.create(states)
                 .expectNext(new Account("name_0"))
@@ -56,7 +56,7 @@ class EventStoreTest {
   }
 
   private static EventStore createEventStore(Read<Event> read, Pub<Event> pub) {
-    var state = ES.buildState(read, new UserEvolver()).block();
+    var state = ESUtils.buildState(read, new UserEvolver()).block();
     return new EventStore(new Visitor(), state, pub, new UserDecider(new AtomicLong(0)), new UserEvolver());
   }
 }
