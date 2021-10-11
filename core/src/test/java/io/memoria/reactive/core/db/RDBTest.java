@@ -27,7 +27,8 @@ class RDBTest {
   static {
     var db = new ArrayList<MessageReceived>();
     MEM_RDB = new MemRDB<>(db);
-    FILE_RDB = new FileRDB<>(0, TOPIC_PATH, new SerializableTransformer(), MessageReceived.class);
+    var serDes = new SerializableTransformer();
+    FILE_RDB = new FileRDB<>(0, TOPIC_PATH, serDes::serialize, serDes.deserialize(MessageReceived.class));
   }
 
   @BeforeEach

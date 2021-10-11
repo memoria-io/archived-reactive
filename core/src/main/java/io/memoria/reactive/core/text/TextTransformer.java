@@ -10,5 +10,9 @@ public interface TextTransformer {
     return t -> deserialize(t, tClass);
   }
 
+  default <T> Function1<T, Mono<String>> serialize() {
+    return this::serialize;
+  }
+
   <T> Mono<String> serialize(T t);
 }
