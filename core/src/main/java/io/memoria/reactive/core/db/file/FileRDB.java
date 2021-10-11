@@ -50,11 +50,6 @@ public final class FileRDB<T> implements RDB<T> {
   }
 
   @Override
-  public Mono<Integer> size() {
-    return RFiles.list(path).count().map(Long::intValue);
-  }
-
-  @Override
   public Flux<T> subscribe(int offset) {
     var deserialize = transformer.deserialize(tClass);
     var existingFiles = RFiles.readDir(path).flatMapMany(Flux::fromIterable).map(RFile::content).concatMap(deserialize);

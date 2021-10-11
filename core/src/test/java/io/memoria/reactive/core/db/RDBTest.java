@@ -60,7 +60,6 @@ class RDBTest {
     var read = repo.read(0);
     // Then
     StepVerifier.create(read).expectNext(eventList).verifyComplete();
-    StepVerifier.create(repo.size()).expectNext(eventList.size()).verifyComplete();
   }
 
   @ParameterizedTest

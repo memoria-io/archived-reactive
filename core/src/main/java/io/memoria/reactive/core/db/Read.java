@@ -5,6 +5,4 @@ import reactor.core.publisher.Mono;
 
 public interface Read<T> {
   Mono<List<T>> read(int offset);
-
-  Mono<Integer> size();
 }

@@ -21,11 +21,6 @@ public record MemRDB<T>(java.util.List<T> db) implements RDB<T> {
   }
 
   @Override
-  public Mono<Integer> size() {
-    return Mono.fromCallable(db::size);
-  }
-
-  @Override
   public Flux<T> subscribe(int offset) {
     return Flux.fromIterable(db).skip(offset);
   }
