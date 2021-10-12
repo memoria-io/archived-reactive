@@ -27,15 +27,15 @@ public class CompanyData {
 
   static {
     // Json Resources
-    JSON_LIST = CONFIG_UTILS.read("cases/company/json/List.json").block();
-    BOB_ENGINEER_JSON = CONFIG_UTILS.read("cases/company/json/Engineer.json").block();
-    ANNIKA_MANAGER_JSON = CONFIG_UTILS.read("cases/company/json/Manager.json").block();
-    DEPARTMENT_JSON = CONFIG_UTILS.read("cases/company/json/Department.json").block();
-    BOB_PERSON_JSON = CONFIG_UTILS.read("cases/company/json/Person.json").block();
-    NAME_CREATED_JSON = CONFIG_UTILS.read("cases/company/json/NameCreated.json").block();
+    JSON_LIST = CONFIG_UTILS.read("cases/company/json/List.json").get();
+    BOB_ENGINEER_JSON = CONFIG_UTILS.read("cases/company/json/Engineer.json").get();
+    ANNIKA_MANAGER_JSON = CONFIG_UTILS.read("cases/company/json/Manager.json").get();
+    DEPARTMENT_JSON = CONFIG_UTILS.read("cases/company/json/Department.json").get();
+    BOB_PERSON_JSON = CONFIG_UTILS.read("cases/company/json/Person.json").get();
+    NAME_CREATED_JSON = CONFIG_UTILS.read("cases/company/json/NameCreated.json").get();
 
-    BOB_ENGINEER_YAML = CONFIG_UTILS.read("cases/company/yaml/Engineer.yaml").block();
-    ANNIKA_MANAGER_YAML = CONFIG_UTILS.read("cases/company/yaml/Manager.yaml").block();
+    BOB_ENGINEER_YAML = CONFIG_UTILS.read("cases/company/yaml/Engineer.yaml").get();
+    ANNIKA_MANAGER_YAML = CONFIG_UTILS.read("cases/company/yaml/Manager.yaml").get();
     // Objects
     BOB_ENGINEER = new Engineer("bob", LocalDate.of(2000, 1, 1), List.of("fix issue 1", "Fix issue 2"));
     ALEX_ENGINEER = new Engineer("alex", LocalDate.of(2000, 1, 1), List.of("fix issue 3", "Fix issue 4"));

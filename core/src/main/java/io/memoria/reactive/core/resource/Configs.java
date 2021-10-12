@@ -1,11 +1,10 @@
-package io.memoria.reactive.core.config;
+package io.memoria.reactive.core.resource;
 
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
 import io.vavr.control.Option;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import io.vavr.control.Try;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,7 +19,7 @@ import java.util.regex.Pattern;
 import static io.vavr.control.Option.none;
 import static io.vavr.control.Option.some;
 
-public class RConfig {
+public class Configs {
   private static final BinaryOperator<String> JOIN_LINES = (a, b) -> a + System.lineSeparator() + b;
   private final Option<String> nestingPrefix;
   private final boolean resolveSystemEnv;
@@ -30,35 +29,41 @@ public class RConfig {
    * @param resolveSystemEnv when true, any line which contains ${ENV_VALUE:-defaultValue} will be resolved from system
    *                         environment
    */
-  public RConfig(String nestingPrefix, boolean resolveSystemEnv) {
+  public Configs(String nestingPrefix, boolean resolveSystemEnv) {
     this.resolveSystemEnv = resolveSystemEnv;
     this.systemEnv = (resolveSystemEnv) ? HashMap.ofAll(System.getenv()) : HashMap.empty();
     this.nestingPrefix = Option.of(nestingPrefix).flatMap(s -> (s.isEmpty()) ? none() : some(s));
   }
 
-  public RConfig(boolean resolveSystemEnv) {
+  public Configs(boolean resolveSystemEnv) {
     this(null, resolveSystemEnv);
   }
 
   /**
    * if the path parameter doesn't start with "/" it's considered a file under the resources directory
    */
-  public Mono<String> read(String path) {
-    return readLines(path).reduce(JOIN_LINES);
+  public Try<String> read(String path) {
+    return Try.of(() -> readLines(path).reduce(JOIN_LINES));
   }
 
-  private Flux<String> expand(String path, String line) {
+  private List<String> expand(String path, String line) throws IOException {
     if (nestingPrefix.isDefined() && line.trim().startsWith(nestingPrefix.get())) {
       var subFilePath = line.substring(nestingPrefix.get().length()).trim();
       var relativePath = parentPath(path) + subFilePath;
       return readLines(relativePath);
     } else {
-      return Flux.just(line);
+      return List.of(line);
     }
   }
 
-  private Flux<String> readLines(String path) {
-    return readResourceOrFile(path).concatMap(l -> expand(path, l)).map(this::resolveLine);
+  private List<String> readLines(String path) throws IOException {
+    var result = List.<String>empty();
+    var fileLines = readResourceOrFile(path);
+    for (String line : fileLines) {
+      var lines = expand(path, line).map(this::resolveLine);
+      result = result.appendAll(lines);
+    }
+    return result;
   }
 
   private Option<String> resolveExpression(String expression) {
@@ -109,11 +114,11 @@ public class RConfig {
     }
   }
 
-  private static Flux<String> readResourceOrFile(String path) {
+  private static List<String> readResourceOrFile(String path) throws IOException {
     if (path.startsWith("/")) {
-      return Mono.fromCallable(() -> Files.lines(Path.of(path))).flatMapMany(Flux::fromStream);
+      return List.ofAll(Files.lines(Path.of(path)).toList());
     } else {
-      return Mono.fromCallable(() -> readResource(path)).flatMapMany(Flux::fromIterable);
+      return readResource(path);
     }
   }
 }
