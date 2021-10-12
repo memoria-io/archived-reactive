@@ -8,13 +8,13 @@ import io.memoria.reactive.text.jackson.cases.company.Engineer;
 import io.memoria.reactive.text.jackson.cases.company.Manager;
 
 public class TestDeps {
-  public static final Configs CONFIG_UTILS;
+  public static final Configs configs;
   public static final Json json;
   public static final Yaml yaml;
 
   static {
     // File utils
-    CONFIG_UTILS = new Configs("include:", false);
+    configs = new Configs("include:", false);
     // Json
     var jsonMapper = JacksonUtils.mixinPropertyFormat(JacksonUtils.defaultJson(), Employee.class);
     jsonMapper.registerSubtypes(Manager.class, Engineer.class);

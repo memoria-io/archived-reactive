@@ -4,18 +4,22 @@ import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.memoria.reactive.core.text.Json;
 import io.memoria.reactive.core.text.TextException;
-import reactor.core.publisher.Mono;
+import io.vavr.API;
+import io.vavr.Predicates;
+import io.vavr.control.Try;
 
 public record JsonJackson(ObjectMapper mapper) implements Json {
 
   @Override
-  public <T> Mono<T> deserialize(String str, Class<T> tClass) {
-    return Mono.fromCallable(() -> mapper.readValue(str, tClass))
-               .onErrorMap(JacksonException.class, e -> new TextException(e.getMessage()));
+  @SuppressWarnings("unchecked")
+  public <T> Try<T> blockingDeserialize(String str, Class<T> tClass) {
+    return Try.of(() -> mapper.readValue(str, tClass))
+              .mapFailure(API.Case(API.$(Predicates.instanceOf(JacksonException.class)),
+                                   e -> new TextException(e.getMessage())));
   }
 
   @Override
-  public <T> Mono<String> serialize(T t) {
-    return Mono.fromCallable(() -> mapper.writeValueAsString(t));
+  public <T> Try<String> blockingSerialize(T t) {
+    return Try.of(() -> mapper.writeValueAsString(t));
   }
 }

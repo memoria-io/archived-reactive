@@ -2,6 +2,7 @@ package io.memoria.reactive.core.text;
 
 import java.util.Random;
 
+@SuppressWarnings("ClassCanBeRecord")
 public final class TextGenerator {
   public static final String ALPHANUMERICS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   private final Random random;
