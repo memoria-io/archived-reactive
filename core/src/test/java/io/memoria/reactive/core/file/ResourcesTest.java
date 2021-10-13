@@ -1,5 +1,6 @@
-package io.memoria.reactive.core.resource;
+package io.memoria.reactive.core.file;
 
+import io.memoria.reactive.core.file.Resources;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

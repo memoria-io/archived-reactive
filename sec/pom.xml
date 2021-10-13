@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>reactive</artifactId>
-        <version>0.321.0</version>
+        <version>0.322.0</version>
     </parent>
 
     <groupId>io.memoria.reactive</groupId>
     <artifactId>sec</artifactId>
-    <version>0.321.0</version>
+    <version>0.322.0</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>

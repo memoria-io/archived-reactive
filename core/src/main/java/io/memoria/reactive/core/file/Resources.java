@@ -1,4 +1,4 @@
-package io.memoria.reactive.core.resource;
+package io.memoria.reactive.core.file;
 
 import io.vavr.control.Try;
 
