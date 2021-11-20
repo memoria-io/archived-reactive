@@ -9,6 +9,8 @@ import io.vavr.control.Try;
 import java.util.function.BiFunction;
 
 public final class VavrUtils {
+  private VavrUtils() {}
+
   public static <V> BiFunction<V, Throwable, Try<V>> handle() {
     return (v, t) -> (t == null) ? Try.success(v) : Try.failure(t);
   }
@@ -34,6 +36,4 @@ public final class VavrUtils {
     else
       return List.of(Try.failure(tt.getCause()));
   }
-
-  private VavrUtils() {}
 }

@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class NettyClientUtils {
+  private NettyClientUtils() {}
+
   public static Mono<Tuple2<HttpResponseStatus, String>> delete(String host, String... path) {
     return HttpClient.create()
                      .baseUrl(host)
@@ -82,8 +84,6 @@ public class NettyClientUtils {
                                                         .defaultIfEmpty("")
                                                         .map(s -> Tuple.of(res.status(), s)));
   }
-
-  private NettyClientUtils() {}
 
   private static String joinPath(String... path) {
     return Arrays.stream(path).reduce("", (a, b) -> a + "/" + b).replace("//", "/");

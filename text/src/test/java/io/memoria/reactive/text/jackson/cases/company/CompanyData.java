@@ -1,7 +1,7 @@
 package io.memoria.reactive.text.jackson.cases.company;
 
-import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.file.Resources;
+import io.memoria.reactive.core.id.Id;
 import io.vavr.collection.List;
 
 import java.time.LocalDate;

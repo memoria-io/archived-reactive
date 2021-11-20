@@ -19,6 +19,8 @@ import static java.lang.Boolean.TRUE;
 import static java.util.function.Function.identity;
 
 public final class ReactorVavrUtils {
+  private ReactorVavrUtils() {}
+
   public static void closeReader(Closeable closeable) {
     try {
       closeable.close();
@@ -88,6 +90,4 @@ public final class ReactorVavrUtils {
                                                             Function<Throwable, Mono<Void>> f2) {
     return a -> API.Match(a).of(API.Case(Patterns.$Success(API.$()), f), API.Case(Patterns.$Failure(API.$()), f2));
   }
-
-  private ReactorVavrUtils() {}
 }

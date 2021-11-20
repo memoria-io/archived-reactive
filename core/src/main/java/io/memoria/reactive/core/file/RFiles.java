@@ -19,6 +19,8 @@ public class RFiles {
   private static final BinaryOperator<String> JOIN_LINES = (a, b) -> a + System.lineSeparator() + b;
   public static final String JSON_FILE_EXT = ".json";
 
+  private RFiles() {}
+
   public static Flux<Path> clean(Path path) {
     return list(path).flatMap(RFiles::delete);
   }
@@ -106,8 +108,6 @@ public class RFiles {
       delete(files.map(RFile::path)).doOnError(RFiles::logSevere).subscribe(RFiles::logDeletion);
     });
   }
-
-  private RFiles() {}
 
   private static String infoIndexZero(Path p) {
     return "Directory %s was empty returning index = zero".formatted(p);

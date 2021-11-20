@@ -21,18 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class JacksonRecordTest {
 
-  record JsonIgnoreRecord(int id, @JsonIgnore String name) {}
-
-  record RecordOfRecord(SimpleRecord record) {}
-
-  record RecordWithConstructor(int id, String name) {
-    public RecordWithConstructor(int id) {
-      this(id, "name");
-    }
-  }
-
-  record SimpleRecord(int id, String name) {}
-
   private static JsonMapper jsonMapper;
 
   public String asYaml(String jsonString) throws IOException {
@@ -101,4 +89,16 @@ class JacksonRecordTest {
     assert list != null;
     assertEquals(List.of("mercedes", "chevy", "porsche"), List.of(list));
   }
+
+  record JsonIgnoreRecord(int id, @JsonIgnore String name) {}
+
+  record RecordOfRecord(SimpleRecord record) {}
+
+  record RecordWithConstructor(int id, String name) {
+    public RecordWithConstructor(int id) {
+      this(id, "name");
+    }
+  }
+
+  record SimpleRecord(int id, String name) {}
 }

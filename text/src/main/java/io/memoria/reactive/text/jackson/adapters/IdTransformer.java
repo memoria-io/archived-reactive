@@ -12,6 +12,8 @@ import java.io.IOException;
 
 public final class IdTransformer {
 
+  private IdTransformer() {}
+
   public static class IdDeserializer extends JsonDeserializer<Id> {
     @Override
     public Id deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
@@ -25,6 +27,4 @@ public final class IdTransformer {
       gen.writeString(value.value());
     }
   }
-
-  private IdTransformer() {}
 }

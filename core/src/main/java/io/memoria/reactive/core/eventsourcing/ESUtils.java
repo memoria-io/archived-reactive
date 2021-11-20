@@ -15,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ESUtils {
   private static final Logger log = LoggerFactory.getLogger(ESUtils.class.getName());
 
+  private ESUtils() {}
+
   public static Mono<ConcurrentHashMap<Id, State>> buildState(Read<Event> eventRepo, Evolver evolver) {
     var state = new ConcurrentHashMap<Id, State>();
     return eventRepo.read(0).doOnNext(events -> buildState(state, evolver, events)).then(Mono.just(state));
@@ -31,8 +33,6 @@ public class ESUtils {
                   .flatMapMany(eventStore -> cmdSub.subscribe(cmdOffset).flatMap(eventStore))
                   .onErrorContinue(ESException.class, (t, o) -> log.error("An error occurred", t));
   }
-
-  private ESUtils() {}
 
   private static void buildState(ConcurrentHashMap<Id, State> stateStore, Evolver evolver, List<Event> events) {
     events.forEach(event -> stateStore.compute(event.aggId(), (k, oldV) -> evolver.apply(oldV, event)));

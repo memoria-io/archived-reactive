@@ -11,6 +11,8 @@ import static io.vavr.control.Option.some;
 
 public final class HttpUtils {
 
+  private HttpUtils() {}
+
   public static Option<Tuple2<String, String>> basicCredentials(String header) {
     header = header.trim();
     if (header.contains("Basic")) {
@@ -30,6 +32,4 @@ public final class HttpUtils {
       return none();
     }
   }
-
-  private HttpUtils() {}
 }

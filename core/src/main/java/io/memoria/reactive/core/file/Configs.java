@@ -56,6 +56,10 @@ public class Configs {
     }
   }
 
+  private static String parentPath(String filePath) {
+    return filePath.replaceFirst("[^/]+$", ""); //NOSONAR
+  }
+
   private List<String> readLines(String path) throws IOException {
     var result = List.<String>empty();
     var fileLines = readResourceOrFile(path);
@@ -64,6 +68,27 @@ public class Configs {
       result = result.appendAll(lines);
     }
     return result;
+  }
+
+  private static List<String> readResource(String path) throws IOException {
+    try (var inputStream = Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(path))) {
+      var result = new ByteArrayOutputStream();
+      var buffer = new byte[1024];
+      int length;
+      while ((length = inputStream.read(buffer)) != -1) {
+        result.write(buffer, 0, length);
+      }
+      var file = result.toString(StandardCharsets.UTF_8);
+      return List.of(file.split("\\r?\\n"));
+    }
+  }
+
+  private static List<String> readResourceOrFile(String path) throws IOException {
+    if (path.startsWith("/")) {
+      return List.ofAll(Files.lines(Path.of(path)).toList());
+    } else {
+      return readResource(path);
+    }
   }
 
   private Option<String> resolveExpression(String expression) {
@@ -95,30 +120,5 @@ public class Configs {
       }
     }
     return line;
-  }
-
-  private static String parentPath(String filePath) {
-    return filePath.replaceFirst("[^/]+$", ""); //NOSONAR
-  }
-
-  private static List<String> readResource(String path) throws IOException {
-    try (var inputStream = Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(path))) {
-      var result = new ByteArrayOutputStream();
-      var buffer = new byte[1024];
-      int length;
-      while ((length = inputStream.read(buffer)) != -1) {
-        result.write(buffer, 0, length);
-      }
-      var file = result.toString(StandardCharsets.UTF_8);
-      return List.of(file.split("\\r?\\n"));
-    }
-  }
-
-  private static List<String> readResourceOrFile(String path) throws IOException {
-    if (path.startsWith("/")) {
-      return List.ofAll(Files.lines(Path.of(path)).toList());
-    } else {
-      return readResource(path);
-    }
   }
 }

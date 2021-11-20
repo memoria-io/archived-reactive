@@ -22,6 +22,8 @@ import io.vavr.jackson.datatype.VavrModule;
 import java.text.SimpleDateFormat;
 
 public class JacksonUtils {
+  private JacksonUtils() {}
+
   public static ObjectMapper addJ8Modules(ObjectMapper om) {
     return om.registerModule(new ParameterNamesModule())
              .registerModule(new Jdk8Module())
@@ -112,6 +114,4 @@ public class JacksonUtils {
   public static ObjectMapper setDateFormat(ObjectMapper om) {
     return om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd" + "'T'" + "HH:mm:ss"));
   }
-
-  private JacksonUtils() {}
 }

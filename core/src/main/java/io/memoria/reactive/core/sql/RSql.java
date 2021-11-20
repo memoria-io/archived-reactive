@@ -10,6 +10,8 @@ import reactor.core.publisher.Mono;
 public class RSql {
   public static final String DROP_OBJECTS = "DROP ALL OBJECTS";
 
+  private RSql() {}
+
   public static Mono<Void> dropObjects(ConnectionFactory con) {
     return exec(con, DROP_OBJECTS).then();
   }
@@ -30,6 +32,4 @@ public class RSql {
                .flatMapMany(c -> Flux.<Result>from(c.createStatement(sql).execute()))
                .flatMap(r -> Flux.from(r.map((row, rowMetadata) -> row)));
   }
-
-  private RSql() {}
 }

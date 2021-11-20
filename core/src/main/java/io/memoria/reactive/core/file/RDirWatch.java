@@ -16,11 +16,11 @@ import static java.util.function.Function.identity;
 
 class RDirWatch {
 
+  private RDirWatch() {}
+
   public static Flux<Path> watch(Path path) {
     return Mono.fromCallable(() -> watchService(path)).flatMapMany(RDirWatch::watchService).map(path::resolve);
   }
-
-  private RDirWatch() {}
 
   private static Flux<String> take(WatchService watchService) {
     return Mono.fromCallable(() -> {
