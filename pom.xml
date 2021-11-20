@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>reactive</artifactId>
-    <version>0.322.0</version>
+    <version>0.323.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
@@ -18,10 +18,10 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <reactor.version>2020.0.11</reactor.version>
+        <reactor.version>2020.0.13</reactor.version>
         <vavr.version>0.10.3</vavr.version>
-        <jackson.version>2.13.0-rc2</jackson.version>
-        <argon2.version>2.10.1</argon2.version>
+        <jackson.version>2.13.0</jackson.version>
+        <argon2.version>2.11</argon2.version>
         <jsonwebtoken.version>0.11.2</jsonwebtoken.version>
         <r2.version>0.8.4.RELEASE</r2.version>
     </properties>
