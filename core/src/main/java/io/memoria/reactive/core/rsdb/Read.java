@@ -1,4 +1,4 @@
-package io.memoria.reactive.core.db;
+package io.memoria.reactive.core.rsdb;
 
 import io.vavr.collection.List;
 import reactor.core.publisher.Mono;

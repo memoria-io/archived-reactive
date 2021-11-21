@@ -1,4 +1,4 @@
-package io.memoria.reactive.core.db;
+package io.memoria.reactive.core.rsdb;
 
 import io.memoria.reactive.core.eventsourcing.Event;
 import io.memoria.reactive.core.id.Id;

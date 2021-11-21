@@ -1,7 +1,7 @@
-package io.memoria.reactive.core.db;
+package io.memoria.reactive.core.rsdb;
 
-import io.memoria.reactive.core.db.file.FileRDB;
-import io.memoria.reactive.core.db.mem.MemRDB;
+import io.memoria.reactive.core.rsdb.file.FileRSDB;
+import io.memoria.reactive.core.rsdb.mem.MemRSDB;
 import io.memoria.reactive.core.file.RFiles;
 import io.memoria.reactive.core.text.SerializableTransformer;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,21 +14,21 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-class RDBTest {
+class RSDBTest {
   private static final int FROM = 0;
   private static final int TO = 1000;
   private static final String TOPIC = "some_topic";
   private static final Path TOPIC_PATH = Path.of("/tmp/" + TOPIC);
 
   // RDBs
-  private static final MemRDB<MessageReceived> MEM_RDB;
-  private static final FileRDB<MessageReceived> FILE_RDB;
+  private static final MemRSDB<MessageReceived> MEM_RDB;
+  private static final FileRSDB<MessageReceived> FILE_RDB;
 
   static {
     var db = new ArrayList<MessageReceived>();
-    MEM_RDB = new MemRDB<>(db);
+    MEM_RDB = new MemRSDB<>(db);
     var serDes = new SerializableTransformer();
-    FILE_RDB = new FileRDB<>(0, TOPIC_PATH, serDes::serialize, serDes.deserialize(MessageReceived.class));
+    FILE_RDB = new FileRSDB<>(0, TOPIC_PATH, serDes::serialize, serDes.deserialize(MessageReceived.class));
   }
 
   @BeforeEach
@@ -40,7 +40,7 @@ class RDBTest {
 
   @ParameterizedTest
   @MethodSource("rdb")
-  void publish(RDB<MessageReceived> repo) {
+  void publish(RSDB<MessageReceived> repo) {
     // Given
     var eventList = MessageReceived.create(FROM, TO);
     var expected = eventList.toJavaArray(MessageReceived[]::new);
@@ -52,7 +52,7 @@ class RDBTest {
 
   @ParameterizedTest
   @MethodSource("rdb")
-  void read(RDB<MessageReceived> repo) {
+  void read(RSDB<MessageReceived> repo) {
     // Given
     var eventList = MessageReceived.create(FROM, TO);
     MEM_RDB.db().addAll(eventList.toJavaList());
@@ -65,7 +65,7 @@ class RDBTest {
 
   @ParameterizedTest
   @MethodSource("rdb")
-  void subscribe(RDB<MessageReceived> repo) {
+  void subscribe(RSDB<MessageReceived> repo) {
     // Given
     var eventList = MessageReceived.create(FROM, TO);
     MEM_RDB.db().addAll(eventList.toJavaList());
@@ -77,7 +77,7 @@ class RDBTest {
     StepVerifier.create(sub).expectNext(expected).verifyComplete();
   }
 
-  private static Stream<RDB<MessageReceived>> rdb() {
+  private static Stream<RSDB<MessageReceived>> rdb() {
     return Stream.of(MEM_RDB, FILE_RDB);
   }
 }

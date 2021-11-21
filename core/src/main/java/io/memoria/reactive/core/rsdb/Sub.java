@@ -1,4 +1,4 @@
-package io.memoria.reactive.core.db;
+package io.memoria.reactive.core.rsdb;
 
 import reactor.core.publisher.Flux;
 

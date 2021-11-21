@@ -1,8 +1,8 @@
 package io.memoria.reactive.core.eventsourcing;
 
-import io.memoria.reactive.core.db.Pub;
-import io.memoria.reactive.core.db.Read;
-import io.memoria.reactive.core.db.mem.MemRDB;
+import io.memoria.reactive.core.rsdb.Pub;
+import io.memoria.reactive.core.rsdb.Read;
+import io.memoria.reactive.core.rsdb.mem.MemRSDB;
 import io.memoria.reactive.core.eventsourcing.user.User.Account;
 import io.memoria.reactive.core.eventsourcing.user.User.Visitor;
 import io.memoria.reactive.core.eventsourcing.user.UserCommand.CreateUser;
@@ -25,11 +25,11 @@ class EventStoreTest {
   @Test
   void handleCommands() {
     // Given
-    var eventStreamDB = new MemRDB<Event>(new ArrayList<>());
+    var eventStreamDB = new MemRSDB<Event>(new ArrayList<>());
     var eventStore = createEventStore(eventStreamDB, eventStreamDB);
     var count = 3;
     var commands = List.range(0, count).<Command>map(this::createCommand);
-    var cmdStream = new MemRDB<>(commands.asJava());
+    var cmdStream = new MemRSDB<>(commands.asJava());
     var expectedEvents = List.range(0, count).map(this::createEvent);
 
     // When

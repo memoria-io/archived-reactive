@@ -1,11 +1,11 @@
-package io.memoria.reactive.core.db.mem;
+package io.memoria.reactive.core.rsdb.mem;
 
-import io.memoria.reactive.core.db.RDB;
+import io.memoria.reactive.core.rsdb.RSDB;
 import io.vavr.collection.List;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public record MemRDB<T>(java.util.List<T> db) implements RDB<T> {
+public record MemRSDB<T>(java.util.List<T> db) implements RSDB<T> {
 
   @Override
   public Mono<T> publish(T msg) {

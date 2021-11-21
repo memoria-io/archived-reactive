@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>reactive</artifactId>
-    <version>0.323.0</version>
+    <version>0.324.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
@@ -23,7 +23,6 @@
         <jackson.version>2.13.0</jackson.version>
         <argon2.version>2.11</argon2.version>
         <jsonwebtoken.version>0.11.2</jsonwebtoken.version>
-        <r2.version>0.8.4.RELEASE</r2.version>
     </properties>
     <organization>
         <name>memoria.io</name>
@@ -84,19 +83,6 @@
                 <version>${vavr.version}</version>
             </dependency>
             <!--======================================================================================== -->
-            <!-- Reactive DBs Dependencies -->
-            <!--======================================================================================== -->
-            <dependency>
-                <groupId>io.r2dbc</groupId>
-                <artifactId>r2dbc-spi</artifactId>
-                <version>${r2.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.r2dbc</groupId>
-                <artifactId>r2dbc-h2</artifactId>
-                <version>${r2.version}</version>
-            </dependency>
-            <!--======================================================================================== -->
             <!-- Json Dependencies -->
             <!--======================================================================================== -->
             <dependency>
@@ -145,14 +131,6 @@
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.r2dbc</groupId>
-            <artifactId>r2dbc-spi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.r2dbc</groupId>
-            <artifactId>r2dbc-h2</artifactId>
         </dependency>
         <!--======================================================================================== -->
         <!-- Functional Dependencies -->

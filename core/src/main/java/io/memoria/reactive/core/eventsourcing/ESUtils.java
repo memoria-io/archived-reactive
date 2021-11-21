@@ -1,8 +1,8 @@
 package io.memoria.reactive.core.eventsourcing;
 
-import io.memoria.reactive.core.db.RDB;
-import io.memoria.reactive.core.db.Read;
-import io.memoria.reactive.core.db.Sub;
+import io.memoria.reactive.core.rsdb.RSDB;
+import io.memoria.reactive.core.rsdb.Read;
+import io.memoria.reactive.core.rsdb.Sub;
 import io.memoria.reactive.core.id.Id;
 import io.vavr.collection.List;
 import org.slf4j.Logger;
@@ -23,13 +23,13 @@ public class ESUtils {
   }
 
   public static Flux<State> pipeline(State initState,
-                                     RDB<Event> eventRDB,
+                                     RSDB<Event> eventRSDB,
                                      Evolver evolver,
                                      Sub<Command> cmdSub,
                                      int cmdOffset,
                                      Decider decider) {
-    return ESUtils.buildState(eventRDB, evolver)
-                  .map(ns -> new EventStore(initState, ns, eventRDB, decider, evolver))
+    return ESUtils.buildState(eventRSDB, evolver)
+                  .map(ns -> new EventStore(initState, ns, eventRSDB, decider, evolver))
                   .flatMapMany(eventStore -> cmdSub.subscribe(cmdOffset).flatMap(eventStore))
                   .onErrorContinue(ESException.class, (t, o) -> log.error("An error occurred", t));
   }

@@ -1,6 +1,6 @@
-package io.memoria.reactive.core.db.file;
+package io.memoria.reactive.core.rsdb.file;
 
-import io.memoria.reactive.core.db.RDB;
+import io.memoria.reactive.core.rsdb.RSDB;
 import io.memoria.reactive.core.file.RFile;
 import io.memoria.reactive.core.file.RFiles;
 import io.vavr.Function1;
@@ -13,16 +13,16 @@ import reactor.core.publisher.Mono;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicLong;
 
-public final class FileRDB<T> implements RDB<T> {
+public final class FileRSDB<T> implements RSDB<T> {
 
-  private static final Logger log = LoggerFactory.getLogger(FileRDB.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(FileRSDB.class.getName());
 
   private final Path path;
   private final Function1<T, Mono<String>> serialize;
   private final Function1<String, Mono<T>> deserialize;
   private final AtomicLong idx;
 
-  public FileRDB(long idx, Path path, Function1<T, Mono<String>> serialize, Function1<String, Mono<T>> deserialize) {
+  public FileRSDB(long idx, Path path, Function1<T, Mono<String>> serialize, Function1<String, Mono<T>> deserialize) {
     this.path = path;
     this.idx = new AtomicLong(idx);
     this.serialize = serialize;
