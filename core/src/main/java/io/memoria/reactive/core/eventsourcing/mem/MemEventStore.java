@@ -15,6 +15,11 @@ public record MemEventStore(List<Event> db) implements EventStore {
   }
 
   @Override
+  public Mono<Long> last() {
+    return Mono.fromCallable(() -> (long) db.size());
+  }
+
+  @Override
   public Mono<Event> publish(Event event) {
     return Mono.fromRunnable(() -> db.add(event)).thenReturn(event);
   }
