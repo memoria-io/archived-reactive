@@ -1,7 +1,7 @@
 package io.memoria.reactive.core.eventsourcing;
 
-import io.memoria.reactive.core.rsdb.Pub;
 import io.memoria.reactive.core.id.Id;
+import io.memoria.reactive.core.rsdb.Pub;
 import io.vavr.Function1;
 import reactor.core.publisher.Mono;
 

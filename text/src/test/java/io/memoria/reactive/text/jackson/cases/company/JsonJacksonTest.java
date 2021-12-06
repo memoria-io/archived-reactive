@@ -72,6 +72,5 @@ class JsonJacksonTest {
     assert CompanyData.BOB_PERSON_JSON != null;
     StepVerifier.create(bobMono).expectNext(CompanyData.BOB_PERSON_JSON).verifyComplete();
   }
-  
-  
+
 }

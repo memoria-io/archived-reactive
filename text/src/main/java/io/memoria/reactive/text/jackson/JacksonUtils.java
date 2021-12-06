@@ -44,22 +44,6 @@ public class JacksonUtils {
     return om;
   }
 
-  public static ObjectMapper prettyJson(){
-    return jsonPrettyPrinting(json());
-  }
-  
-  public static ObjectMapper yaml() {
-    var yfb = new YAMLFactoryBuilder(YAMLFactory.builder().build());
-    yfb.configure(YAMLGenerator.Feature.INDENT_ARRAYS_WITH_INDICATOR, true);
-    var om = new ObjectMapper(yfb.build());
-    om = setDateFormat(om);
-    om = addJ8Modules(om);
-    om = addVavrModule(om);
-    om.registerModule(reactiveModule());
-    om.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
-    return om;
-  }
-
   public static ObjectMapper jsonPrettyPrinting(ObjectMapper om) {
     var printer = new DefaultPrettyPrinter().withoutSpacesInObjectEntries();
     printer.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
@@ -106,6 +90,10 @@ public class JacksonUtils {
     return om;
   }
 
+  public static ObjectMapper prettyJson() {
+    return jsonPrettyPrinting(json());
+  }
+
   public static SimpleModule reactiveModule() {
     var reactive = new SimpleModule();
     // Id
@@ -116,5 +104,17 @@ public class JacksonUtils {
 
   public static ObjectMapper setDateFormat(ObjectMapper om) {
     return om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd" + "'T'" + "HH:mm:ss"));
+  }
+
+  public static ObjectMapper yaml() {
+    var yfb = new YAMLFactoryBuilder(YAMLFactory.builder().build());
+    yfb.configure(YAMLGenerator.Feature.INDENT_ARRAYS_WITH_INDICATOR, true);
+    var om = new ObjectMapper(yfb.build());
+    om = setDateFormat(om);
+    om = addJ8Modules(om);
+    om = addVavrModule(om);
+    om.registerModule(reactiveModule());
+    om.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
+    return om;
   }
 }

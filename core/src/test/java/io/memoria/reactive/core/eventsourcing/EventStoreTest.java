@@ -1,8 +1,5 @@
 package io.memoria.reactive.core.eventsourcing;
 
-import io.memoria.reactive.core.rsdb.Pub;
-import io.memoria.reactive.core.rsdb.Read;
-import io.memoria.reactive.core.rsdb.mem.MemRSDB;
 import io.memoria.reactive.core.eventsourcing.user.User.Account;
 import io.memoria.reactive.core.eventsourcing.user.User.Visitor;
 import io.memoria.reactive.core.eventsourcing.user.UserCommand.CreateUser;
@@ -11,6 +8,9 @@ import io.memoria.reactive.core.eventsourcing.user.UserEvent.UserCreated;
 import io.memoria.reactive.core.eventsourcing.user.UserEvolver;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.id.IdGenerator;
+import io.memoria.reactive.core.rsdb.Pub;
+import io.memoria.reactive.core.rsdb.Read;
+import io.memoria.reactive.core.rsdb.mem.MemRSDB;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;

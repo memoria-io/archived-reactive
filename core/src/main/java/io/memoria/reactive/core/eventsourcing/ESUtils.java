@@ -1,9 +1,9 @@
 package io.memoria.reactive.core.eventsourcing;
 
+import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.rsdb.RSDB;
 import io.memoria.reactive.core.rsdb.Read;
 import io.memoria.reactive.core.rsdb.Sub;
-import io.memoria.reactive.core.id.Id;
 import io.vavr.collection.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
