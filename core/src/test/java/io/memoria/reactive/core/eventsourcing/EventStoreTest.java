@@ -9,7 +9,6 @@ import io.memoria.reactive.core.eventsourcing.user.UserDecider;
 import io.memoria.reactive.core.eventsourcing.user.UserEvent.UserCreated;
 import io.memoria.reactive.core.eventsourcing.user.UserEvolver;
 import io.memoria.reactive.core.id.Id;
-import io.memoria.reactive.core.id.IdGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 class EventStoreTest {
-  private static final IdGenerator idGenerator = () -> Id.of(1);
   private static final ConcurrentHashMap<Id, State> stateDB = new ConcurrentHashMap<>();
   private static final List<Event> eventDB = new ArrayList<>();
 
