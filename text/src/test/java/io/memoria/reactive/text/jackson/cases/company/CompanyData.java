@@ -14,7 +14,6 @@ public class CompanyData {
   public static final String ANNIKA_MANAGER_JSON;
   public static final String DEPARTMENT_JSON;
   public static final String BOB_PERSON_JSON;
-  public static final String COMPACT_BOB_PERSON_JSON;
   public static final String NAME_CREATED_JSON;
   // Yaml Resources
   public static final String BOB_ENGINEER_YAML;
@@ -32,7 +31,6 @@ public class CompanyData {
     ANNIKA_MANAGER_JSON = Resources.read("cases/company/json/Manager.json").get();
     DEPARTMENT_JSON = Resources.read("cases/company/json/Department.json").get();
     BOB_PERSON_JSON = Resources.read("cases/company/json/Person.json").get();
-    COMPACT_BOB_PERSON_JSON = Resources.read("cases/company/json/CompactPerson.json").get();
     NAME_CREATED_JSON = Resources.read("cases/company/json/NameCreated.json").get();
 
     BOB_ENGINEER_YAML = Resources.read("cases/company/yaml/Engineer.yaml").get();

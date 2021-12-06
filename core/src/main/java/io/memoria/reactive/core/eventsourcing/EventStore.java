@@ -1,7 +1,6 @@
 package io.memoria.reactive.core.eventsourcing;
 
 import io.memoria.reactive.core.id.Id;
-import io.memoria.reactive.core.rsdb.Pub;
 import io.vavr.Function1;
 import reactor.core.publisher.Mono;
 
@@ -15,13 +14,13 @@ public class EventStore implements Function1<Command, Mono<State>> {
 
   private final transient ConcurrentMap<Id, State> state;
   private final transient State defaultState;
-  private final transient Pub<Event> pub;
+  private final transient Publisher<Event> pub;
   private final Decider decider;
   private final Evolver evolver;
 
   public EventStore(State defaultState,
                     ConcurrentMap<Id, State> state,
-                    Pub<Event> pub,
+                    Publisher<Event> pub,
                     Decider decider,
                     Evolver evolver) {
     this.state = state;
@@ -42,7 +41,7 @@ public class EventStore implements Function1<Command, Mono<State>> {
     var aggId = cmd.aggId();
     var currentState = state.getOrDefault(aggId, defaultState);
     var eventMono = toMono(decider.apply(currentState, cmd));
-    return eventMono.flatMap(pub::publish).map(e -> save(aggId, currentState, e));
+    return eventMono.flatMap(pub::pub).map(e -> save(aggId, currentState, e));
   }
 
   private State save(Id aggId, State currentState, Event event) {
