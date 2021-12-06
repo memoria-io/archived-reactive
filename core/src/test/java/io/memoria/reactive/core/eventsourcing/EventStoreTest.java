@@ -56,11 +56,11 @@ class EventStoreTest {
     return new CreateUser(Id.of("user_" + i), "name_" + i);
   }
 
-  private Event userCreatedEvent(Integer i) {
-    return new UserCreated(Id.of("user_" + i), "name_" + i);
-  }
-
   private static Pipeline pipeline(EventStore eventStore, StateStore stateStore) {
     return new Pipeline(new Visitor(), stateStore, eventStore, new UserDecider(), new UserEvolver());
+  }
+
+  private Event userCreatedEvent(Integer i) {
+    return new UserCreated(Id.of("user_" + i), "name_" + i);
   }
 }
