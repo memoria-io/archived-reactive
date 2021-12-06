@@ -34,18 +34,21 @@ public class JacksonUtils {
     return om.registerModule(new VavrModule());
   }
 
-  public static ObjectMapper defaultJson() {
+  public static ObjectMapper json() {
     ObjectMapper om = JsonMapper.builder().build();
     om = setDateFormat(om);
     om = addJ8Modules(om);
     om = addVavrModule(om);
-    om = jsonPrettyPrinting(om);
     om.registerModule(reactiveModule());
     om.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
     return om;
   }
 
-  public static ObjectMapper defaultYaml() {
+  public static ObjectMapper prettyJson(){
+    return jsonPrettyPrinting(json());
+  }
+  
+  public static ObjectMapper yaml() {
     var yfb = new YAMLFactoryBuilder(YAMLFactory.builder().build());
     yfb.configure(YAMLGenerator.Feature.INDENT_ARRAYS_WITH_INDICATOR, true);
     var om = new ObjectMapper(yfb.build());

@@ -4,7 +4,7 @@ import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
-import static io.memoria.reactive.text.jackson.TestDeps.json;
+import static io.memoria.reactive.text.jackson.TestDeps.prettyJson;
 
 class JsonJacksonTest {
 
@@ -15,7 +15,7 @@ class JsonJacksonTest {
                                                     CompanyData.BOB_ENGINEER,
                                                     CompanyData.ALEX_ENGINEER));
     // When
-    var actualDepartment = json.deserialize(CompanyData.DEPARTMENT_JSON, Department.class);
+    var actualDepartment = prettyJson.deserialize(CompanyData.DEPARTMENT_JSON, Department.class);
     // Then
     StepVerifier.create(actualDepartment).expectNext(expectedDepartment).verifyComplete();
   }
@@ -23,7 +23,7 @@ class JsonJacksonTest {
   @Test
   void deserializeEngineer() {
     // When
-    var engineerMono = json.deserialize(CompanyData.BOB_ENGINEER_JSON, Engineer.class);
+    var engineerMono = prettyJson.deserialize(CompanyData.BOB_ENGINEER_JSON, Engineer.class);
     // Then
     StepVerifier.create(engineerMono).expectNext(CompanyData.BOB_ENGINEER).verifyComplete();
   }
@@ -31,7 +31,7 @@ class JsonJacksonTest {
   @Test
   void deserializeManager() {
     // When
-    var managerMono = json.deserialize(CompanyData.ANNIKA_MANAGER_JSON, Manager.class);
+    var managerMono = prettyJson.deserialize(CompanyData.ANNIKA_MANAGER_JSON, Manager.class);
     // Then
     StepVerifier.create(managerMono).expectNext(CompanyData.ANNIKA_MANAGER).verifyComplete();
     StepVerifier.create(managerMono.map(Manager::team))
@@ -42,7 +42,7 @@ class JsonJacksonTest {
   @Test
   void deserializeNameCreated() {
     // When
-    var personMono = json.deserialize(CompanyData.NAME_CREATED_JSON, NameCreated.class);
+    var personMono = prettyJson.deserialize(CompanyData.NAME_CREATED_JSON, NameCreated.class);
     // Then
     StepVerifier.create(personMono).expectNext(CompanyData.NAME_CREATED).verifyComplete();
   }
@@ -50,7 +50,7 @@ class JsonJacksonTest {
   @Test
   void deserializePerson() {
     // When
-    var personMono = json.deserialize(CompanyData.BOB_PERSON_JSON, Person.class);
+    var personMono = prettyJson.deserialize(CompanyData.BOB_PERSON_JSON, Person.class);
     // Then
     StepVerifier.create(personMono).expectNext(CompanyData.BOB_PERSON).verifyComplete();
   }
@@ -58,7 +58,7 @@ class JsonJacksonTest {
   @Test
   void serializeNameCreated() {
     // When
-    var bobMono = json.serialize(CompanyData.NAME_CREATED);
+    var bobMono = prettyJson.serialize(CompanyData.NAME_CREATED);
     // Then
     assert CompanyData.NAME_CREATED_JSON != null;
     StepVerifier.create(bobMono).expectNext(CompanyData.NAME_CREATED_JSON).verifyComplete();
@@ -67,9 +67,11 @@ class JsonJacksonTest {
   @Test
   void serializePerson() {
     // When
-    var bobMono = json.serialize(CompanyData.BOB_PERSON);
+    var bobMono = prettyJson.serialize(CompanyData.BOB_PERSON);
     // Then
     assert CompanyData.BOB_PERSON_JSON != null;
     StepVerifier.create(bobMono).expectNext(CompanyData.BOB_PERSON_JSON).verifyComplete();
   }
+  
+  
 }
