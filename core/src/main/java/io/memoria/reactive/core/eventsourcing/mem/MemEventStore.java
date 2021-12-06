@@ -10,12 +10,12 @@ import java.util.List;
 public record MemEventStore(List<Event> db) implements EventStore {
 
   @Override
-  public Mono<Event> publish(Event event) {
-    return Mono.fromRunnable(() -> db.add(event)).thenReturn(event);
+  public Flux<Event> subscribe(long offset) {
+    return Flux.fromIterable(db).skip(offset);
   }
 
   @Override
-  public Flux<Event> subscribe(long offset) {
-    return Flux.fromIterable(db).skip(offset);
+  public Mono<Event> publish(Event event) {
+    return Mono.fromRunnable(() -> db.add(event)).thenReturn(event);
   }
 }

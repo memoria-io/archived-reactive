@@ -1,3 +1,10 @@
 package io.memoria.reactive.core.eventsourcing;
 
-public interface EventStore extends Subscriber, Publisher {}
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+public interface EventStore {
+  Mono<Event> publish(Event event);
+
+  Flux<Event> subscribe(long offset);
+}
