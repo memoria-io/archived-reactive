@@ -1,4 +1,4 @@
-package io.memoria.reactive.core.eventsourcing;//package io.memoria.mars.model.eventsourcing;
+package io.memoria.reactive.core.eventsourcing;
 
 import io.memoria.reactive.core.eventsourcing.mem.MemEventStore;
 import io.memoria.reactive.core.eventsourcing.mem.MemStateStore;
