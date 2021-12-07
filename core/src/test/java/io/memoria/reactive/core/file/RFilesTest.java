@@ -6,29 +6,28 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.io.IOException;
 import java.nio.file.Files;
-
-import static io.memoria.reactive.core.file.TestUtils.FILES;
-import static io.memoria.reactive.core.file.TestUtils.SOME_FILE_PATH;
+import java.nio.file.Path;
 
 class RFilesTest {
+  private static final Path EMPTY_DIR = Path.of("/tmp/emptyDir");
+  private static final Path SOME_FILE_PATH = EMPTY_DIR.resolve("file.txt");
 
   @BeforeEach
   void beforeEach() {
-    RFiles.createDirectory(TestUtils.EMPTY_DIR).subscribe();
-    RFiles.clean(TestUtils.EMPTY_DIR).subscribe();
+    RFiles.createDirectory(EMPTY_DIR).subscribe();
+    RFiles.clean(EMPTY_DIR).subscribe();
   }
 
   @Test
   @DisplayName("Should append or create a file")
   void create() throws IOException {
-    // Given
-    var helloWorldFile = new RFile(SOME_FILE_PATH, "hello world");
     // When
-    StepVerifier.create(RFiles.write(helloWorldFile)).expectNext(helloWorldFile).verifyComplete();
+    StepVerifier.create(RFiles.write(SOME_FILE_PATH, "hello world")).expectNext(SOME_FILE_PATH).verifyComplete();
     // Then
     var str = new String(Files.readAllBytes(SOME_FILE_PATH));
     Assertions.assertEquals("hello world", str);
@@ -47,27 +46,29 @@ class RFilesTest {
   @Test
   void deleteAll() {
     // Given
-    var files = TestUtils.createSomeFiles();
+    var files = createSomeFiles(10).block();
     // When
     var deleteFiles = RFiles.delete(files);
     // Then
+    assert files != null;
     StepVerifier.create(deleteFiles).expectNextCount(files.length()).verifyComplete();
   }
 
   @Test
   void lastFile() {
     // Given
-    var files = TestUtils.createSomeFiles();
+    var files = createSomeFiles(10).block();
     // When
-    var lastFile = RFiles.lastModified(TestUtils.EMPTY_DIR);
+    var lastFile = RFiles.lastModified(EMPTY_DIR);
     // Then
+    assert files != null;
     StepVerifier.create(lastFile).expectNext(files.last()).verifyComplete();
   }
 
   @Test
   void list() {
     // Given
-    var listFlux = RFiles.list(TestUtils.EMPTY_DIR);
+    var listFlux = RFiles.list(EMPTY_DIR);
     // Then
     StepVerifier.create(listFlux).expectNext().verifyComplete();
     StepVerifier.create(listFlux.count()).expectNext(0L).verifyComplete();
@@ -83,30 +84,10 @@ class RFilesTest {
     StepVerifier.create(read).expectNext("welcome").verifyComplete();
   }
 
-  @Test
-  void readDirectory() {
-    // Given
-    var writtenPaths = TestUtils.createSomeFiles().toSet();
-    // When
-    var readDir = RFiles.readDir(TestUtils.EMPTY_DIR)
-                        .flatMapMany(Flux::fromIterable)
-                        .map(RFile::path)
-                        .collectList()
-                        .map(List::ofAll)
-                        .map(List::toSet);
-    // Then
-    StepVerifier.create(readDir).expectNext(writtenPaths).verifyComplete();
-  }
-
-  @Test
-  void writeMany() throws IOException {
-    // When
-    var writeAllMono = RFiles.write(FILES);
-    // Then
-    StepVerifier.create(writeAllMono).expectNext(FILES).verifyComplete();
-    // And
-    var writtenPaths = List.ofAll(Files.list(TestUtils.EMPTY_DIR).sorted().toList());
-    var expectedWrittenFiles = FILES.map(RFile::path);
-    Assertions.assertEquals(expectedWrittenFiles, writtenPaths);
+  private Mono<List<Path>> createSomeFiles(int count) {
+    return Flux.range(0, count)
+               .concatMap(i -> RFiles.write(EMPTY_DIR.resolve(i + ".json"), "hi" + i))
+               .collectList()
+               .map(List::ofAll);
   }
 }
