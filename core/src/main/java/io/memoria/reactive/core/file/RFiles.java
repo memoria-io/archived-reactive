@@ -9,7 +9,6 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.NoSuchElementException;
 import java.util.function.BinaryOperator;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
@@ -17,7 +16,6 @@ import static java.nio.file.StandardOpenOption.CREATE_NEW;
 public class RFiles {
   private static final Logger log = LoggerFactory.getLogger(RFiles.class.getName());
   private static final BinaryOperator<String> JOIN_LINES = (a, b) -> a + System.lineSeparator() + b;
-  public static final String JSON_FILE_EXT = ".json";
 
   private RFiles() {}
 
@@ -37,15 +35,6 @@ public class RFiles {
     return Flux.fromIterable(files).concatMap(RFiles::delete);
   }
 
-  public static Mono<Long> index(Path path) {
-    return RFiles.list(path)
-                 .last()
-                 .map(RFiles::toIndex)
-                 .map(i -> i + 1)
-                 .doOnError(NoSuchElementException.class, t -> log.info(RFiles.infoIndexZero(path)))
-                 .onErrorResume(NoSuchElementException.class, t -> Mono.just(0L));
-  }
-
   public static Mono<Path> lastModified(Path path) {
     return list(path).reduce(RFiles::lastModified);
   }
@@ -55,10 +44,6 @@ public class RFiles {
                .flatMapMany(Flux::fromStream)
                .filter(f -> !Files.isDirectory(f))
                .sort();
-  }
-
-  public static Flux<RFile> publish(Flux<RFile> files) {
-    return files.concatMap(RFiles::write);
   }
 
   public static Mono<String> read(Path path) {
@@ -72,32 +57,6 @@ public class RFiles {
     return list(path).concatMap(RFiles::readFn).collectList().map(List::ofAll);
   }
 
-  public static Mono<RFile> readFn(Path p) {
-    return read(p).map(s -> new RFile(p, s));
-  }
-
-  public static Flux<RFile> subscribe(Path path) {
-    return RDirWatch.watch(path).flatMap(file -> read(file).map(content -> new RFile(file, content)));
-  }
-
-  public static long toIndex(Path path) {
-    return toIndex(path, JSON_FILE_EXT);
-  }
-
-  public static long toIndex(Path path, String fileExt) {
-    var idxStr = path.getFileName().toString().replace(fileExt, "");
-    return Long.parseLong(idxStr);
-  }
-
-  public static Path toPath(Path path, long index) {
-    return toPath(path, index, JSON_FILE_EXT);
-  }
-
-  public static Path toPath(Path path, long index, String fileExt) {
-    var fileName = String.format("%019d%s", index, fileExt);
-    return path.resolve(fileName);
-  }
-
   public static Mono<RFile> write(RFile file) {
     return Mono.fromCallable(() -> Files.writeString(file.path(), file.content(), CREATE_NEW)).thenReturn(file);
   }
@@ -107,10 +66,6 @@ public class RFiles {
       log.error(e.getMessage(), e);
       delete(files.map(RFile::path)).doOnError(RFiles::logSevere).subscribe(RFiles::logDeletion);
     });
-  }
-
-  private static String infoIndexZero(Path p) {
-    return "Directory %s was empty returning index = zero".formatted(p);
   }
 
   private static Path lastModified(Path p1, Path p2) {
@@ -123,6 +78,10 @@ public class RFiles {
 
   private static void logSevere(Throwable e) {
     log.error("Severe Error while the fallback deletion", e);
+  }
+
+  private static Mono<RFile> readFn(Path p) {
+    return read(p).map(s -> new RFile(p, s));
   }
 
   private static List<RFile> writeMany(List<RFile> files) throws IOException {

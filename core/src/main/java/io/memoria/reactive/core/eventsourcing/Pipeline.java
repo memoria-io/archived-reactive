@@ -27,7 +27,7 @@ public class Pipeline implements Function1<Command, Mono<State>> {
   public Mono<State> apply(Command cmd) {
     return stateStore.get(cmd.aggId(), initState).flatMap(state -> applyCommand(state, cmd));
   }
-  
+
   public Flux<State> rebuildStateStore(long until) {
     return eventStore.subscribe(0).take(until).flatMap(this::evolveState);
   }

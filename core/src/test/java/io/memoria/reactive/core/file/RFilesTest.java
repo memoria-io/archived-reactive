@@ -10,15 +10,9 @@ import reactor.test.StepVerifier;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.time.Duration;
-import java.util.ArrayList;
 
 import static io.memoria.reactive.core.file.TestUtils.FILES;
-import static io.memoria.reactive.core.file.TestUtils.FILES_ARR;
-import static io.memoria.reactive.core.file.TestUtils.FILES_COUNT;
 import static io.memoria.reactive.core.file.TestUtils.SOME_FILE_PATH;
-import static io.memoria.reactive.core.file.TestUtils.createSomeFilesDelayed;
-import static org.awaitility.Awaitility.await;
 
 class RFilesTest {
 
@@ -80,16 +74,6 @@ class RFilesTest {
   }
 
   @Test
-  void publish() {
-    // Given
-    var files = Flux.fromIterable(FILES);
-    // When
-    var pub = RFiles.publish(files);
-    // Then
-    StepVerifier.create(pub).expectNext(FILES_ARR).verifyComplete();
-  }
-
-  @Test
   void read() throws IOException {
     // Given
     Files.writeString(SOME_FILE_PATH, "welcome");
@@ -112,19 +96,6 @@ class RFilesTest {
                         .map(List::toSet);
     // Then
     StepVerifier.create(readDir).expectNext(writtenPaths).verifyComplete();
-  }
-
-  @Test
-  void subscribe() {
-    // Given
-    var expected = new ArrayList<RFile>();
-    // When
-    new Thread(() -> RFiles.subscribe(TestUtils.EMPTY_DIR)
-                           .take(TestUtils.FILES_COUNT)
-                           .subscribe(expected::add)).start();
-    createSomeFilesDelayed(Duration.ofMillis(200)).block();
-    // Then
-    await().atMost(Duration.ofSeconds(2)).until(() -> expected.size() == FILES_COUNT);
   }
 
   @Test

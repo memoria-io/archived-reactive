@@ -14,12 +14,12 @@ import java.nio.file.WatchService;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.util.function.Function.identity;
 
-class RDirWatch {
+class DirWatcher {
 
-  private RDirWatch() {}
+  private DirWatcher() {}
 
   public static Flux<Path> watch(Path path) {
-    return Mono.fromCallable(() -> watchService(path)).flatMapMany(RDirWatch::watchService).map(path::resolve);
+    return Mono.fromCallable(() -> watchService(path)).flatMapMany(DirWatcher::watchService).map(path::resolve);
   }
 
   private static Flux<String> take(WatchService watchService) {

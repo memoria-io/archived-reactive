@@ -25,6 +25,10 @@ public class Configs {
   private final boolean resolveSystemEnv;
   private final Map<String, String> systemEnv;
 
+  public Configs(boolean resolveSystemEnv) {
+    this(null, resolveSystemEnv);
+  }
+
   /**
    * @param resolveSystemEnv when true, any line which contains ${ENV_VALUE:-defaultValue} will be resolved from system
    *                         environment
@@ -33,10 +37,6 @@ public class Configs {
     this.resolveSystemEnv = resolveSystemEnv;
     this.systemEnv = (resolveSystemEnv) ? HashMap.ofAll(System.getenv()) : HashMap.empty();
     this.nestingPrefix = Option.of(nestingPrefix).flatMap(s -> (s.isEmpty()) ? none() : some(s));
-  }
-
-  public Configs(boolean resolveSystemEnv) {
-    this(null, resolveSystemEnv);
   }
 
   /**
