@@ -16,7 +16,7 @@ public class FileOps {
 
   private FileOps() {}
 
-  public static Mono<Path> createDirectory(Path path) {
+  public static Mono<Path> createDir(Path path) {
     return Mono.fromCallable(() -> path.toFile().mkdirs()).thenReturn(path);
   }
 

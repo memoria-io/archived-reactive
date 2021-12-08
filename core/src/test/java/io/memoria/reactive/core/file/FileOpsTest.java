@@ -60,7 +60,7 @@ class FileOpsTest {
   @Test
   void deleteOneFile() throws IOException {
     // Given
-    FileOps.createDirectory(TEST_DIR).subscribe();
+    FileOps.createDir(TEST_DIR).subscribe();
     Files.createFile(SOME_FILE_PATH);
     // When
     var deleteFile = FileOps.deleteFile(SOME_FILE_PATH);
@@ -82,7 +82,7 @@ class FileOpsTest {
   @Test
   void list() {
     // Given
-    FileOps.createDirectory(TEST_DIR).subscribe();
+    FileOps.createDir(TEST_DIR).subscribe();
     var listFlux = FileOps.list(TEST_DIR);
     // Then
     StepVerifier.create(listFlux).expectNext().verifyComplete();
@@ -92,7 +92,7 @@ class FileOpsTest {
   @Test
   void read() throws IOException {
     // Given
-    FileOps.createDirectory(TEST_DIR).subscribe();
+    FileOps.createDir(TEST_DIR).subscribe();
     Files.writeString(SOME_FILE_PATH, "welcome");
     // When
     var read = FileOps.read(SOME_FILE_PATH);
