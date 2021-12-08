@@ -20,7 +20,7 @@ public record MemEventStore(List<Event> db) implements EventStore {
       if (db.size() == idx)
         db.add(event);
       else
-        throw new IndexOutOfBoundsException(db.size());
+        throw new IndexOutOfBoundsException(idx);
     }).thenReturn(db.size());
   }
 
