@@ -15,8 +15,13 @@ public record MemEventStore(List<Event> db) implements EventStore {
   }
 
   @Override
-  public Mono<Event> publish(Event event) {
-    return Mono.fromRunnable(() -> db.add(event)).thenReturn(event);
+  public Mono<Integer> publish(int idx, Event event) {
+    return Mono.fromRunnable(() -> {
+      if (db.size() == idx)
+        db.add(event);
+      else
+        throw new IndexOutOfBoundsException(db.size());
+    }).thenReturn(db.size());
   }
 
   @Override

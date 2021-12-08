@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 public interface EventStore {
   Mono<Integer> index();
 
-  Mono<Event> publish(Event event);
+  Mono<Integer> publish(int index, Event event);
 
   Flux<Event> subscribe(int offset);
 }

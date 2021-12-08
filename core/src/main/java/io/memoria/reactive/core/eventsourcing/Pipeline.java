@@ -34,10 +34,12 @@ public class Pipeline implements Function1<Command, Mono<State>> {
 
   private Mono<State> applyCommand(State state, Command cmd) {
     var decision = decider.apply(state, cmd);
-    if (decision.isFailure())
+    if (decision.isFailure()) {
       return Mono.error(decision.getCause());
-    else
-      return eventStore.publish(decision.get()).flatMap(event -> evolveState(state, event));
+    } else {
+      var event = decision.get();
+      return eventStore.index().flatMap(idx -> eventStore.publish(idx, event)).then(evolveState(state, event));
+    }
   }
 
   private Mono<State> evolveState(Event event) {

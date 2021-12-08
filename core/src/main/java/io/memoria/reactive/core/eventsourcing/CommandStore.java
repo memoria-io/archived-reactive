@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 public interface CommandStore {
   Mono<Integer> index();
 
-  Mono<Command> publish(Command command);
+  Mono<Integer> publish(int idx, Command command);
 
   Flux<Command> subscribe(int offset);
 }
