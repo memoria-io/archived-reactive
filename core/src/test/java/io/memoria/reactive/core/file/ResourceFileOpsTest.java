@@ -3,10 +3,10 @@ package io.memoria.reactive.core.file;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class ResourcesTest {
+class ResourceFileOpsTest {
   @Test
   void readResource() {
-    var str = Resources.read("subconfig.yaml").get();
+    var str = ResourceFileOps.read("subconfig.yaml").get();
     Assertions.assertEquals("age: 20", str);
   }
 }

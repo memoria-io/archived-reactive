@@ -19,13 +19,13 @@ import java.util.regex.Pattern;
 import static io.vavr.control.Option.none;
 import static io.vavr.control.Option.some;
 
-public class Configs {
+public class ConfigFileOps {
   private static final BinaryOperator<String> JOIN_LINES = (a, b) -> a + System.lineSeparator() + b;
   private final Option<String> nestingPrefix;
   private final boolean resolveSystemEnv;
   private final Map<String, String> systemEnv;
 
-  public Configs(boolean resolveSystemEnv) {
+  public ConfigFileOps(boolean resolveSystemEnv) {
     this(null, resolveSystemEnv);
   }
 
@@ -33,7 +33,7 @@ public class Configs {
    * @param resolveSystemEnv when true, any line which contains ${ENV_VALUE:-defaultValue} will be resolved from system
    *                         environment
    */
-  public Configs(String nestingPrefix, boolean resolveSystemEnv) {
+  public ConfigFileOps(String nestingPrefix, boolean resolveSystemEnv) {
     this.resolveSystemEnv = resolveSystemEnv;
     this.systemEnv = (resolveSystemEnv) ? HashMap.ofAll(System.getenv()) : HashMap.empty();
     this.nestingPrefix = Option.of(nestingPrefix).flatMap(s -> (s.isEmpty()) ? none() : some(s));

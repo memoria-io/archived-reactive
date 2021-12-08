@@ -1,6 +1,6 @@
 package io.memoria.reactive.text.jackson.cases.company;
 
-import io.memoria.reactive.core.file.Resources;
+import io.memoria.reactive.core.file.ResourceFileOps;
 import io.memoria.reactive.core.id.Id;
 import io.vavr.collection.List;
 
@@ -26,15 +26,15 @@ public class CompanyData {
 
   static {
     // Json Resources
-    JSON_LIST = Resources.read("cases/company/json/List.json").get();
-    BOB_ENGINEER_JSON = Resources.read("cases/company/json/Engineer.json").get();
-    ANNIKA_MANAGER_JSON = Resources.read("cases/company/json/Manager.json").get();
-    DEPARTMENT_JSON = Resources.read("cases/company/json/Department.json").get();
-    BOB_PERSON_JSON = Resources.read("cases/company/json/Person.json").get();
-    NAME_CREATED_JSON = Resources.read("cases/company/json/NameCreated.json").get();
+    JSON_LIST = ResourceFileOps.read("cases/company/json/List.json").get();
+    BOB_ENGINEER_JSON = ResourceFileOps.read("cases/company/json/Engineer.json").get();
+    ANNIKA_MANAGER_JSON = ResourceFileOps.read("cases/company/json/Manager.json").get();
+    DEPARTMENT_JSON = ResourceFileOps.read("cases/company/json/Department.json").get();
+    BOB_PERSON_JSON = ResourceFileOps.read("cases/company/json/Person.json").get();
+    NAME_CREATED_JSON = ResourceFileOps.read("cases/company/json/NameCreated.json").get();
 
-    BOB_ENGINEER_YAML = Resources.read("cases/company/yaml/Engineer.yaml").get();
-    ANNIKA_MANAGER_YAML = Resources.read("cases/company/yaml/Manager.yaml").get();
+    BOB_ENGINEER_YAML = ResourceFileOps.read("cases/company/yaml/Engineer.yaml").get();
+    ANNIKA_MANAGER_YAML = ResourceFileOps.read("cases/company/yaml/Manager.yaml").get();
     // Objects
     BOB_ENGINEER = new Engineer("bob", LocalDate.of(2000, 1, 1), List.of("fix issue 1", "Fix issue 2"));
     ALEX_ENGINEER = new Engineer("alex", LocalDate.of(2000, 1, 1), List.of("fix issue 3", "Fix issue 4"));

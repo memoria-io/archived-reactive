@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-public class Resources {
-  private Resources() {}
+public class ResourceFileOps {
+  private ResourceFileOps() {}
 
   public static Try<String> read(String path) {
     return Try.of(() -> resource(path));

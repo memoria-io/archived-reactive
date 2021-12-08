@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static io.memoria.reactive.text.jackson.TestDeps.configs;
+import static io.memoria.reactive.text.jackson.TestDeps.CONFIG_FILE_OPS;
 import static io.memoria.reactive.text.jackson.TestDeps.yaml;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -13,7 +13,7 @@ class YamlConfigTest {
   @Test
   @DisplayName("App config nested values should be deserialized correctly")
   void appConfig() {
-    String config = configs.read("cases/config/yaml/AppConfigs.yaml").get();
+    String config = CONFIG_FILE_OPS.read("cases/config/yaml/AppConfigs.yaml").get();
     var appConfig = yaml.deserialize(config, AppConfig.class).block();
     assert appConfig != null;
     assertEquals("hello world", appConfig.subName());
