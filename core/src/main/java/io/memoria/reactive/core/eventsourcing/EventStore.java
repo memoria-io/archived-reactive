@@ -4,9 +4,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface EventStore {
-  Mono<Long> last();
+  Mono<Integer> index();
 
   Mono<Event> publish(Event event);
 
-  Flux<Event> subscribe(long offset);
+  Flux<Event> subscribe(int offset);
 }

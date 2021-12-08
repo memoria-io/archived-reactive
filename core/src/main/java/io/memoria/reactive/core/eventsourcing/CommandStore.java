@@ -4,9 +4,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface CommandStore {
-  Mono<Long> last();
+  Mono<Integer> index();
 
   Mono<Command> publish(Command command);
 
-  Flux<Command> subscribe(long offset);
+  Flux<Command> subscribe(int offset);
 }

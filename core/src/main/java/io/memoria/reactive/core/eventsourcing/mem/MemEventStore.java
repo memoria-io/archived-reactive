@@ -10,8 +10,8 @@ import java.util.List;
 public record MemEventStore(List<Event> db) implements EventStore {
 
   @Override
-  public Mono<Long> last() {
-    return Mono.fromCallable(() -> (long) db.size());
+  public Mono<Integer> index() {
+    return Mono.fromCallable(db::size);
   }
 
   @Override
@@ -20,7 +20,7 @@ public record MemEventStore(List<Event> db) implements EventStore {
   }
 
   @Override
-  public Flux<Event> subscribe(long offset) {
+  public Flux<Event> subscribe(int offset) {
     return Flux.fromIterable(db).skip(offset);
   }
 }

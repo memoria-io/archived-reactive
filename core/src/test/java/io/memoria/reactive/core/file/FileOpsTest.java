@@ -22,16 +22,6 @@ class FileOpsTest {
   }
 
   @Test
-  @DisplayName("Should create a new file")
-  void create() throws IOException {
-    // When
-    StepVerifier.create(FileOps.write(SOME_FILE_PATH, "hello world")).expectNext(SOME_FILE_PATH).verifyComplete();
-    // Then
-    var str = new String(Files.readAllBytes(SOME_FILE_PATH));
-    Assertions.assertEquals("hello world", str);
-  }
-
-  @Test
   @DisplayName("Should create parent dirs")
   void createParents() throws IOException {
     // Given
@@ -98,6 +88,27 @@ class FileOpsTest {
     var read = FileOps.read(SOME_FILE_PATH);
     // Then
     StepVerifier.create(read).expectNext("welcome").verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Should create a new file")
+  void rewrite() throws IOException {
+    // When
+    StepVerifier.create(FileOps.rewrite(SOME_FILE_PATH, "hello world")).expectNext(SOME_FILE_PATH).verifyComplete();
+    StepVerifier.create(FileOps.rewrite(SOME_FILE_PATH, "hi world")).expectNext(SOME_FILE_PATH).verifyComplete();
+    // Then
+    var str = new String(Files.readAllBytes(SOME_FILE_PATH));
+    Assertions.assertEquals("hi world", str);
+  }
+
+  @Test
+  @DisplayName("Should create a new file")
+  void write() throws IOException {
+    // When
+    StepVerifier.create(FileOps.write(SOME_FILE_PATH, "hello world")).expectNext(SOME_FILE_PATH).verifyComplete();
+    // Then
+    var str = new String(Files.readAllBytes(SOME_FILE_PATH));
+    Assertions.assertEquals("hello world", str);
   }
 
   private Flux<Path> createSomeFiles(Path path, int count) {

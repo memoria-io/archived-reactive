@@ -52,6 +52,13 @@ public class FileOps {
                .defaultIfEmpty("");
   }
 
+  public static Mono<Path> rewrite(Path path, String content) {
+    return Mono.fromCallable(() -> {
+      Files.createDirectories(path.getParent());
+      return Files.writeString(path, content);
+    }).thenReturn(path);
+  }
+
   public static Mono<Path> write(Path path, String content) {
     return Mono.fromCallable(() -> {
       Files.createDirectories(path.getParent());
