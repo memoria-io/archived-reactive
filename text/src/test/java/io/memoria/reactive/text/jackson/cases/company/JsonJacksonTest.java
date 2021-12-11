@@ -40,28 +40,11 @@ class JsonJacksonTest {
   }
 
   @Test
-  void deserializeNameCreated() {
-    // When
-    var personMono = prettyJson.deserialize(CompanyData.NAME_CREATED_JSON, NameCreated.class);
-    // Then
-    StepVerifier.create(personMono).expectNext(CompanyData.NAME_CREATED).verifyComplete();
-  }
-
-  @Test
   void deserializePerson() {
     // When
     var personMono = prettyJson.deserialize(CompanyData.BOB_PERSON_JSON, Person.class);
     // Then
     StepVerifier.create(personMono).expectNext(CompanyData.BOB_PERSON).verifyComplete();
-  }
-
-  @Test
-  void serializeNameCreated() {
-    // When
-    var bobMono = prettyJson.serialize(CompanyData.NAME_CREATED);
-    // Then
-    assert CompanyData.NAME_CREATED_JSON != null;
-    StepVerifier.create(bobMono).expectNext(CompanyData.NAME_CREATED_JSON).verifyComplete();
   }
 
   @Test

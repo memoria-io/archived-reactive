@@ -5,7 +5,6 @@ import io.memoria.reactive.core.id.Id;
 import io.vavr.collection.List;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class CompanyData {
   // Json Resources
@@ -22,7 +21,6 @@ public class CompanyData {
   public static final Engineer ALEX_ENGINEER;
   public static final Manager ANNIKA_MANAGER;
   public static final Person BOB_PERSON;
-  public static final NameCreated NAME_CREATED;
 
   static {
     // Json Resources
@@ -40,7 +38,6 @@ public class CompanyData {
     ALEX_ENGINEER = new Engineer("alex", LocalDate.of(2000, 1, 1), List.of("fix issue 3", "Fix issue 4"));
     ANNIKA_MANAGER = new Manager("Annika", List.of(BOB_ENGINEER, ALEX_ENGINEER));
     BOB_PERSON = new Person("bob", List.of("1", "2", "3").map(Id::of));
-    NAME_CREATED = new NameCreated(Id.of(2), "bob", LocalDateTime.of(2020, 12, 1, 11, 0));
   }
 
   private CompanyData() {}
