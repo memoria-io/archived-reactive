@@ -5,11 +5,11 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jbom</artifactId>
-        <version>17.0.0</version>
+        <version>18.0.0</version>
     </parent>
 
     <artifactId>reactive</artifactId>
-    <version>0.328.0</version>
+    <version>0.330.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
@@ -18,7 +18,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <reactor.version>2020.0.13</reactor.version>
+        <reactor.version>2020.0.14</reactor.version>
         <vavr.version>0.10.3</vavr.version>
         <jackson.version>2.13.0</jackson.version>
         <argon2.version>2.11</argon2.version>
