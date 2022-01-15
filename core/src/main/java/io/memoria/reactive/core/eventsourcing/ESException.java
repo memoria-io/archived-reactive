@@ -17,6 +17,10 @@ public class ESException extends Exception {
       super("Invalid operation: %s on current state: %s".formatted(commandName, stateName));
     }
 
+    public static InvalidOperation create(State state, Command command) {
+      return new InvalidOperation(state.getClass().getSimpleName(), command.getClass().getSimpleName());
+    }
+
     public static InvalidOperation create(String state, String command) {
       return new InvalidOperation(state, command);
     }
@@ -25,6 +29,10 @@ public class ESException extends Exception {
   public static class UnknownCommand extends ESException {
     private UnknownCommand(String command) {
       super("No handler available for the command: %s ".formatted(command));
+    }
+
+    public static UnknownCommand create(Command command) {
+      return new UnknownCommand(command.getClass().getSimpleName());
     }
 
     public static UnknownCommand create(String command) {

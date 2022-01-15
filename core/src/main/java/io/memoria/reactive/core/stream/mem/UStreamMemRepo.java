@@ -25,6 +25,11 @@ public record UStreamMemRepo(Map<String, Many<UMsg>> topicStreams, Map<String, A
   }
 
   @Override
+  public Mono<Integer> size(String topic) {
+    return Mono.fromCallable(() -> topicSizes.getOrDefault(topic, new AtomicInteger(0)).get());
+  }
+
+  @Override
   public Mono<UMsg> publish(String topic, UMsg uMsg) {
     return Mono.fromCallable(() -> {
       var topicSize = this.topicSizes.get(topic);
@@ -32,11 +37,6 @@ public record UStreamMemRepo(Map<String, Many<UMsg>> topicStreams, Map<String, A
       topicSize.incrementAndGet();
       return uMsg;
     });
-  }
-
-  @Override
-  public Mono<Integer> size(String topic) {
-    return Mono.fromCallable(() -> topicSizes.getOrDefault(topic, new AtomicInteger(0)).get());
   }
 
   @Override

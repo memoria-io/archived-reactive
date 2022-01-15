@@ -16,13 +16,13 @@ record DefaultCommandStream(String topic, UStreamRepo uStreamRepo, IdGenerator i
   }
 
   @Override
-  public Mono<Integer> size() {
-    return uStreamRepo.size(topic);
+  public Mono<Command> publish(Command command) {
+    return toCommandMsg(idGenerator.get(), command).flatMap(msg -> uStreamRepo.publish(topic, msg)).thenReturn(command);
   }
 
   @Override
-  public Mono<Command> publish(Command command) {
-    return toCommandMsg(idGenerator.get(), command).flatMap(msg -> uStreamRepo.publish(topic, msg)).thenReturn(command);
+  public Mono<Integer> size() {
+    return uStreamRepo.size(topic);
   }
 
   @Override

@@ -7,27 +7,27 @@ import io.memoria.reactive.core.id.SerialIdGenerator;
 public sealed interface UserEvent extends Event {
   // For simplicity
   IdGenerator gen = new SerialIdGenerator();
-  
+
   @Override
   default Id id() {
     return gen.get();
   }
 
-  record OutboundMessageCreated(Id from, Id to, String message) implements UserEvent {
+  record InboundMsgCreated(Id userId, Id from, String message) implements UserEvent {
     @Override
     public Id stateId() {
-      return from;
+      return userId;
     }
   }
 
-  record InboundMessageCreated(Id from, Id to, String message) implements UserEvent {
+  record OutboundMsgCreated(Id userId, Id to, String message) implements UserEvent {
     @Override
     public Id stateId() {
-      return to;
+      return userId;
     }
   }
 
-  record OutboundMessageWasSeen(Id userId) implements UserEvent {
+  record OutboundSeen(Id userId, Id seenBy) implements UserEvent {
     @Override
     public Id stateId() {
       return userId;

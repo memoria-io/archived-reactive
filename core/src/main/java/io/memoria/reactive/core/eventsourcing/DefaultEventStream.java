@@ -13,15 +13,15 @@ record DefaultEventStream(String topic, OStreamRepo oStreamRepo, TextTransformer
   }
 
   @Override
-  public Mono<Integer> size() {
-    return oStreamRepo.size(topic);
-  }
-
-  @Override
   public Mono<Event> publish(Event event) {
     return size().flatMap(idx -> toEventMsg(idx, event))
                  .flatMap(msg -> oStreamRepo.publish(topic, msg))
                  .thenReturn(event);
+  }
+
+  @Override
+  public Mono<Integer> size() {
+    return oStreamRepo.size(topic);
   }
 
   @Override

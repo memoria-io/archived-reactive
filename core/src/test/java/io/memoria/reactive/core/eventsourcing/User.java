@@ -5,18 +5,26 @@ import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
 
-public interface User extends State {
-  record Account(Id id, String name, Map<Id, List<String>> inbox) implements User {
+public sealed interface User extends State {
+  record Account(Id id, String name, Map<Id, List<String>> inbox, Map<Id, Boolean> isSeen) implements User {
     public Account(Id id, String name) {
-      this(id, name, HashMap.empty());
-    }
-
-    public Account withOutboundMessage(Id to, String message) {
-      return new Account(id, name, inbox.put(to, inbox.getOrElse(to, List.empty()).append(to + ":" + message)));
+      this(id, name, HashMap.empty(), HashMap.empty());
     }
 
     public Account withInboundMessage(Id from, String message) {
-      return new Account(id, name, inbox.put(from, inbox.getOrElse(from, List.empty()).append(from + ":" + message)));
+      return new Account(id, name, updateInbox(from, message), isSeen);
+    }
+
+    public Account withMsgSeenBy(Id seenBy) {
+      return new Account(id, name, inbox, isSeen.put(seenBy, true));
+    }
+
+    public Account withOutboundMessage(Id to, String message) {
+      return new Account(id, name, updateInbox(to, message), isSeen);
+    }
+
+    private Map<Id, List<String>> updateInbox(Id id, String message) {
+      return inbox.put(id, inbox.getOrElse(id, List.empty()).append(message));
     }
   }
 

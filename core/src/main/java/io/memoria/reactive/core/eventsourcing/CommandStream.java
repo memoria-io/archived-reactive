@@ -8,6 +8,8 @@ import reactor.core.publisher.Mono;
 
 public interface CommandStream {
 
+  Mono<Void> createTopic();
+
   static CommandStream defaultCommandStream(String topic,
                                             UStreamRepo uStreamRepo,
                                             IdGenerator idGenerator,
@@ -15,11 +17,9 @@ public interface CommandStream {
     return new DefaultCommandStream(topic, uStreamRepo, idGenerator, transformer);
   }
 
-  Mono<Void> createTopic();
+  Mono<Command> publish(Command command);
 
   Mono<Integer> size();
-
-  Mono<Command> publish(Command command);
 
   Flux<Command> subscribe(int skipped);
 }
