@@ -1,6 +1,6 @@
 package io.memoria.reactive.core.stream.mem;
 
-import io.memoria.reactive.core.stream.Msg;
+import io.memoria.reactive.core.stream.OMsg;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,11 +15,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MemStreamRepoTest {
+public class OStreamMemRepoTest {
   private static final int N_ELEMENTS = 100000;
-  private static final Map<String, Many<Msg>> db = new ConcurrentHashMap<>();
+  private static final Map<String, Many<OMsg>> db = new ConcurrentHashMap<>();
   private static final Map<String, AtomicInteger> sizes = new HashMap<>();
-  private static final MemStreamRepo streamRepo = new MemStreamRepo(db, sizes, 1000);
+  private static final OStreamMemRepo streamRepo = new OStreamMemRepo(db, sizes, 1000);
   private static final String SOME_TOPIC = "NODE_TOPIC";
 
   @BeforeEach
@@ -32,11 +32,11 @@ public class MemStreamRepoTest {
   @Test
   void publish() {
     // Given
-    var msgs = Flux.range(0, N_ELEMENTS).map(i -> new Msg(i, "hello" + i));
+    var msgs = List.range(0, N_ELEMENTS).map(i -> new OMsg(i, "hello" + i));
     // When
-    var pub = msgs.flatMap(msg -> streamRepo.publish(SOME_TOPIC, msg));
+    var pub = Flux.fromIterable(msgs).flatMap(msg -> streamRepo.publish(SOME_TOPIC, msg));
     // Then
-    var expected = List.range(0, N_ELEMENTS).map(i -> i + 1).toJavaArray(Integer[]::new);
+    var expected = msgs.toJavaArray(OMsg[]::new);
     StepVerifier.create(pub).expectNext(expected).verifyComplete();
     StepVerifier.create(streamRepo.size(SOME_TOPIC)).expectNext(N_ELEMENTS).verifyComplete();
   }
@@ -47,7 +47,7 @@ public class MemStreamRepoTest {
     Flux.range(0, N_ELEMENTS).concatMap(this::publish).subscribe();
     Flux.range(N_ELEMENTS, N_ELEMENTS).concatMap(this::publish).delaySubscription(Duration.ofMillis(10)).subscribe();
     // When
-    var sub = streamRepo.subscribe(SOME_TOPIC, 0).map(Msg::sKey).take(2 * N_ELEMENTS);
+    var sub = streamRepo.subscribe(SOME_TOPIC, 0).map(OMsg::sKey).take(2 * N_ELEMENTS);
     var expected = List.range(0, 2 * N_ELEMENTS).toJavaArray(Integer[]::new);
     // Then
     StepVerifier.create(sub).expectNext(expected).verifyComplete();
@@ -56,7 +56,7 @@ public class MemStreamRepoTest {
     StepVerifier.create(sub).expectNext(expected).verifyComplete();
   }
 
-  private Mono<Integer> publish(Integer i) {
-    return streamRepo.publish(SOME_TOPIC, new Msg(i, "hello" + i));
+  private Mono<OMsg> publish(Integer i) {
+    return streamRepo.publish(SOME_TOPIC, new OMsg(i, "hello" + i));
   }
 }

@@ -12,9 +12,13 @@ public interface User extends State {
     }
 
     public Account withOutboundMessage(Id to, String message) {
-      return new Account(id, name, inbox.put(to, inbox.getOrElse(to, List.empty()).append(message)));
+      return new Account(id, name, inbox.put(to, inbox.getOrElse(to, List.empty()).append(to + ":" + message)));
+    }
+
+    public Account withInboundMessage(Id from, String message) {
+      return new Account(id, name, inbox.put(from, inbox.getOrElse(from, List.empty()).append(from + ":" + message)));
     }
   }
 
-  record Visitor(Id id) implements User {}
+  record Visitor() implements User {}
 }

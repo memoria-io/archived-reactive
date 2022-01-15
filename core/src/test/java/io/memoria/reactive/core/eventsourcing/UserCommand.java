@@ -15,10 +15,17 @@ public interface UserCommand extends Command {
     }
   }
 
-  record SendMessage(Id from, Id to, String message) implements UserCommand {
+  record CreateOutboundMessage(Id userId, Id to, String message) implements UserCommand {
     @Override
     public Id stateId() {
-      return from;
+      return userId;
+    }
+  }
+
+  record CreateInboundMessage(Id userId, Id from, String message) implements UserCommand {
+    @Override
+    public Id stateId() {
+      return userId;
     }
   }
 }
