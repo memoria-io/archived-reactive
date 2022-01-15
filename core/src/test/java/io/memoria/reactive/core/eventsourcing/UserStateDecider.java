@@ -1,4 +1,4 @@
-package io.memoria.reactive.core.eventsourcing.state;
+package io.memoria.reactive.core.eventsourcing;
 
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.ESException.UnknownCommand;
@@ -9,9 +9,10 @@ import io.memoria.reactive.core.eventsourcing.User.Visitor;
 import io.memoria.reactive.core.eventsourcing.UserCommand.CreateInboundMessage;
 import io.memoria.reactive.core.eventsourcing.UserCommand.CreateOutboundMessage;
 import io.memoria.reactive.core.eventsourcing.UserCommand.CreateUser;
-import io.memoria.reactive.core.eventsourcing.UserEvent.MessageReceived;
-import io.memoria.reactive.core.eventsourcing.UserEvent.MessageSent;
+import io.memoria.reactive.core.eventsourcing.UserEvent.InboundMessageCreated;
+import io.memoria.reactive.core.eventsourcing.UserEvent.OutboundMessageCreated;
 import io.memoria.reactive.core.eventsourcing.UserEvent.UserCreated;
+import io.memoria.reactive.core.eventsourcing.state.StateDecider;
 import io.vavr.control.Try;
 
 public record UserStateDecider() implements StateDecider {
@@ -26,8 +27,8 @@ public record UserStateDecider() implements StateDecider {
 
   private Try<Event> handleAccount(Account account, Command userCommand) {
     return switch (userCommand) {
-      case CreateOutboundMessage cmd -> Try.success(new MessageSent(cmd.userId(), cmd.to(), cmd.message()));
-      case CreateInboundMessage cmd -> Try.success(new MessageReceived(cmd.userId(), cmd.from(), cmd.message()));
+      case CreateOutboundMessage cmd -> Try.success(new OutboundMessageCreated(cmd.userId(), cmd.to(), cmd.message()));
+      case CreateInboundMessage cmd -> Try.success(new InboundMessageCreated(cmd.userId(), cmd.from(), cmd.message()));
       default -> Try.failure(UnknownCommand.create(userCommand.getClass().getSimpleName()));
     };
   }

@@ -6,11 +6,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface EventStream {
-  default EventStream defaultEventStream(String topic, OStreamRepo oStreamRepo, TextTransformer transformer) {
+  static EventStream defaultEventStream(String topic, OStreamRepo oStreamRepo, TextTransformer transformer) {
     return new DefaultEventStream(topic, oStreamRepo, transformer);
   }
 
-  Mono<Void> create();
+  Mono<Void> createTopic();
 
   Mono<Integer> size();
 

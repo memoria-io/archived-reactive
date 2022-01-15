@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 record DefaultCommandStream(String topic, UStreamRepo uStreamRepo, IdGenerator idGenerator, TextTransformer transformer)
         implements CommandStream {
   @Override
-  public Mono<Void> create() {
+  public Mono<Void> createTopic() {
     return uStreamRepo.create(topic);
   }
 

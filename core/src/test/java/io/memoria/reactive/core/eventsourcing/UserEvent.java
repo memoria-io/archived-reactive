@@ -13,21 +13,21 @@ public sealed interface UserEvent extends Event {
     return gen.get();
   }
 
-  record MessageSent(Id from, Id to, String message) implements UserEvent {
+  record OutboundMessageCreated(Id from, Id to, String message) implements UserEvent {
     @Override
     public Id stateId() {
       return from;
     }
   }
 
-  record MessageReceived(Id from, Id to, String message) implements UserEvent {
+  record InboundMessageCreated(Id from, Id to, String message) implements UserEvent {
     @Override
     public Id stateId() {
       return to;
     }
   }
 
-  record NotificationReceived(Id userId) implements UserEvent {
+  record OutboundMessageWasSeen(Id userId) implements UserEvent {
     @Override
     public Id stateId() {
       return userId;

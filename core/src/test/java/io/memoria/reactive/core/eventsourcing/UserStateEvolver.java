@@ -1,12 +1,13 @@
-package io.memoria.reactive.core.eventsourcing.state;
+package io.memoria.reactive.core.eventsourcing;
 
 import io.memoria.reactive.core.eventsourcing.Event;
 import io.memoria.reactive.core.eventsourcing.State;
 import io.memoria.reactive.core.eventsourcing.User.Account;
 import io.memoria.reactive.core.eventsourcing.User.Visitor;
-import io.memoria.reactive.core.eventsourcing.UserEvent.MessageReceived;
-import io.memoria.reactive.core.eventsourcing.UserEvent.MessageSent;
+import io.memoria.reactive.core.eventsourcing.UserEvent.InboundMessageCreated;
+import io.memoria.reactive.core.eventsourcing.UserEvent.OutboundMessageCreated;
 import io.memoria.reactive.core.eventsourcing.UserEvent.UserCreated;
+import io.memoria.reactive.core.eventsourcing.state.StateEvolver;
 
 public record UserStateEvolver() implements StateEvolver {
   @Override
@@ -20,8 +21,8 @@ public record UserStateEvolver() implements StateEvolver {
 
   private State handleAccount(Account user, Event event) {
     return switch (event) {
-      case MessageSent e -> user.withOutboundMessage(e.to(), e.message());
-      case MessageReceived e -> user.withInboundMessage(e.from(), e.message());
+      case OutboundMessageCreated e -> user.withOutboundMessage(e.to(), e.message());
+      case InboundMessageCreated e -> user.withInboundMessage(e.from(), e.message());
       default -> user;
     };
   }

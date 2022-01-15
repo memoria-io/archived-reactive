@@ -28,4 +28,11 @@ public interface UserCommand extends Command {
       return userId;
     }
   }
+
+  record MarkMessageAsSeen(Id userId, Id from) implements UserCommand {
+    @Override
+    public Id stateId() {
+      return userId;
+    }
+  }
 }

@@ -8,14 +8,14 @@ import reactor.core.publisher.Mono;
 
 public interface CommandStream {
 
-  default CommandStream defaultCommandStream(String topic,
-                                             UStreamRepo uStreamRepo,
-                                             IdGenerator idGenerator,
-                                             TextTransformer transformer) {
+  static CommandStream defaultCommandStream(String topic,
+                                            UStreamRepo uStreamRepo,
+                                            IdGenerator idGenerator,
+                                            TextTransformer transformer) {
     return new DefaultCommandStream(topic, uStreamRepo, idGenerator, transformer);
   }
 
-  Mono<Void> create();
+  Mono<Void> createTopic();
 
   Mono<Integer> size();
 
