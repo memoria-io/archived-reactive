@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
 
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,10 +63,12 @@ class PipelineTest {
     commandStream.subscribe(0).concatMap(statePipeline).subscribe(debug("[State]:"));
     eventStream.subscribe(0).concatMap(sagaPipeline).subscribe(debug("[Command]:"));
     eventStream.subscribe(0).subscribe(debug("[Event]:"));
+    StepVerifier.create(commandStream.subscribe(0).take(5)).expectNextCount(5).verifyComplete();
+    StepVerifier.create(eventStream.subscribe(0).take(5)).expectNextCount(5).verifyComplete();
   }
 
   private Consumer<Object> debug(String prefix) {
-    //    return obj -> log.info(prefix + obj);
-    return obj -> System.out.println(prefix + obj);
+    return obj -> log.debug(prefix + obj);
+    //        return obj -> System.out.println(prefix + obj);
   }
 }
