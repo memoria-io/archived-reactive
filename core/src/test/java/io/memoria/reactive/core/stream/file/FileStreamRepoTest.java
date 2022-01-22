@@ -31,7 +31,7 @@ class FileStreamRepoTest {
     // When
     var pub = Flux.fromIterable(msgs).flatMap(msg -> streamRepo.publish(SOME_TOPIC, msg));
     // Then
-    var expected = msgs.toJavaArray(OMsg[]::new);
+    var expected = msgs.map(OMsg::sKey).toJavaArray(Integer[]::new);
     StepVerifier.create(pub).expectNext(expected).verifyComplete();
   }
 

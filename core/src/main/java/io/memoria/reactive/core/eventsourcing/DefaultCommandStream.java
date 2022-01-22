@@ -21,11 +21,6 @@ record DefaultCommandStream(String topic, UStreamRepo uStreamRepo, IdGenerator i
   }
 
   @Override
-  public Mono<Integer> size() {
-    return uStreamRepo.size(topic);
-  }
-
-  @Override
   public Flux<Command> subscribe(int skipped) {
     return uStreamRepo.subscribe(topic, skipped).flatMap(this::toCommand);
   }

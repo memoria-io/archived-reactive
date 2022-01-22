@@ -19,7 +19,5 @@ public interface CommandStream {
 
   Mono<Command> publish(Command command);
 
-  Mono<Integer> size();
-
   Flux<Command> subscribe(int skipped);
 }

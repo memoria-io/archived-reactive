@@ -31,7 +31,7 @@ class PipelineTest {
   static {
     var transformer = new SerializableTransformer();
     var oStreamRepo = new OStreamMemRepo(new HashMap<>(), new HashMap<>(), 1000);
-    var uStreamRepo = new UStreamMemRepo(new HashMap<>(), new HashMap<>(), 1000);
+    var uStreamRepo = new UStreamMemRepo(new HashMap<>(), 1000);
     eventStream = EventStream.defaultEventStream(TOPIC, oStreamRepo, transformer);
     commandStream = CommandStream.defaultCommandStream(TOPIC, uStreamRepo, new SerialIdGenerator(), transformer);
   }

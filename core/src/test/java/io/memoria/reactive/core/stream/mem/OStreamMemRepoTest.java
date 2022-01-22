@@ -36,7 +36,7 @@ public class OStreamMemRepoTest {
     // When
     var pub = Flux.fromIterable(msgs).flatMap(msg -> streamRepo.publish(SOME_TOPIC, msg));
     // Then
-    var expected = msgs.toJavaArray(OMsg[]::new);
+    var expected = msgs.map(OMsg::sKey).toJavaArray(Integer[]::new);
     StepVerifier.create(pub).expectNext(expected).verifyComplete();
     StepVerifier.create(streamRepo.size(SOME_TOPIC)).expectNext(N_ELEMENTS).verifyComplete();
   }
@@ -56,7 +56,7 @@ public class OStreamMemRepoTest {
     StepVerifier.create(sub).expectNext(expected).verifyComplete();
   }
 
-  private Mono<OMsg> publish(Integer i) {
+  private Mono<Integer> publish(Integer i) {
     return streamRepo.publish(SOME_TOPIC, new OMsg(i, "hello" + i));
   }
 }

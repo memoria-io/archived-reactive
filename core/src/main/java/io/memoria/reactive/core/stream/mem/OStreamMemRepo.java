@@ -30,13 +30,12 @@ public record OStreamMemRepo(Map<String, Many<OMsg>> topicStreams, Map<String, A
   }
 
   @Override
-  public Mono<OMsg> publish(String topic, OMsg oMsg) {
+  public Mono<Integer> publish(String topic, OMsg oMsg) {
     return Mono.fromCallable(() -> {
       var topicSize = this.topicSizes.get(topic);
       if (oMsg.sKey() == topicSize.get()) {
         this.topicStreams.get(topic).tryEmitNext(oMsg);
-        topicSize.incrementAndGet();
-        return oMsg;
+        return topicSize.getAndIncrement();
       } else {
         var errorMsg = "Sequence key: %s doesn't match current index: %s".formatted(oMsg.sKey(), topicSize.get());
         throw new IllegalArgumentException(errorMsg);

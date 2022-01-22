@@ -11,22 +11,18 @@ import reactor.core.publisher.Sinks.Many;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class UStreamMemRepoTest {
   private static final int N_ELEMENTS = 100000;
   private static final Map<String, Many<UMsg>> db = new ConcurrentHashMap<>();
-  private static final Map<String, AtomicInteger> sizes = new HashMap<>();
-  private static final UStreamMemRepo streamRepo = new UStreamMemRepo(db, sizes, 1000);
+  private static final UStreamMemRepo streamRepo = new UStreamMemRepo(db, 1000);
   private static final String SOME_TOPIC = "NODE_TOPIC";
 
   @BeforeEach
   void beforeEach() {
     db.clear();
-    sizes.clear();
     streamRepo.create(SOME_TOPIC).subscribe();
   }
 
@@ -35,11 +31,9 @@ public class UStreamMemRepoTest {
     // Given
     var msgs = List.range(0, N_ELEMENTS).map(i -> new UMsg(Id.of(i), "hello" + i));
     // When
-    var pub = Flux.fromIterable(msgs).flatMap(msg -> streamRepo.publish(SOME_TOPIC, msg));
+    var pub = Flux.fromIterable(msgs).concatMap(msg -> streamRepo.publish(SOME_TOPIC, msg));
     // Then
-    var expected = msgs.toJavaArray(UMsg[]::new);
-    StepVerifier.create(pub).expectNext(expected).verifyComplete();
-    StepVerifier.create(streamRepo.size(SOME_TOPIC)).expectNext(N_ELEMENTS).verifyComplete();
+    StepVerifier.create(pub).expectNextCount(N_ELEMENTS).verifyComplete();
   }
 
   @Test
@@ -52,12 +46,11 @@ public class UStreamMemRepoTest {
     var expected = List.range(0, 2 * N_ELEMENTS).map(Id::of).toJavaArray(Id[]::new);
     // Then
     StepVerifier.create(sub).expectNext(expected).verifyComplete();
-    StepVerifier.create(streamRepo.size(SOME_TOPIC)).expectNext(2 * N_ELEMENTS).verifyComplete();
     // And resubscribing works   
     StepVerifier.create(sub).expectNext(expected).verifyComplete();
   }
 
-  private Mono<UMsg> publish(Integer i) {
+  private Mono<Id> publish(Integer i) {
     return streamRepo.publish(SOME_TOPIC, new UMsg(Id.of(i), "hello" + i));
   }
 }

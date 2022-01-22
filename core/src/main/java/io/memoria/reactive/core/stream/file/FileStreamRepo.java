@@ -22,9 +22,9 @@ public record FileStreamRepo(Path rootPath) implements OStreamRepo {
   }
 
   @Override
-  public Mono<OMsg> publish(String topic, OMsg msg) {
+  public Mono<Integer> publish(String topic, OMsg msg) {
     var topicPath = this.rootPath.resolve(topic);
-    return TopicDirOps.write(topicPath, msg.sKey(), msg.value()).thenReturn(msg);
+    return TopicDirOps.write(topicPath, msg.sKey(), msg.value()).thenReturn(msg.sKey());
   }
 
   @Override
