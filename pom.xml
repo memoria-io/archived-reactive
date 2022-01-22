@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>reactive</artifactId>
-    <version>0.335.0</version>
+    <version>0.336.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
@@ -138,6 +138,15 @@
         <dependency>
             <groupId>io.vavr</groupId>
             <artifactId>vavr</artifactId>
+        </dependency>
+        <!--======================================================================================== -->
+        <!-- Testing Dependencies -->
+        <!--======================================================================================== -->
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.1.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
