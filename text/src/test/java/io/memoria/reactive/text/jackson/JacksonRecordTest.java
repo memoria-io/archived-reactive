@@ -35,11 +35,6 @@ class JacksonRecordTest {
 
   }
 
-  @BeforeAll
-  static void setUp() {
-    jsonMapper = new JsonMapper();
-  }
-
   @Test
   void testDeserializeRecordWithConstructor() throws IOException {
     RecordWithConstructor value = jsonMapper.readValue("{\"id\":123,\"name\":\"Bob\"}", RecordWithConstructor.class);
@@ -88,6 +83,11 @@ class JacksonRecordTest {
     // Then
     assert list != null;
     assertEquals(List.of("mercedes", "chevy", "porsche"), List.of(list));
+  }
+
+  @BeforeAll
+  static void setUp() {
+    jsonMapper = new JsonMapper();
   }
 
   record JsonIgnoreRecord(int id, @JsonIgnore String name) {}

@@ -8,13 +8,13 @@ import reactor.core.publisher.Mono;
 public interface EventStream {
   Mono<Void> createTopic();
 
-  static EventStream defaultEventStream(String topic, OStreamRepo oStreamRepo, TextTransformer transformer) {
-    return new DefaultEventStream(topic, oStreamRepo, transformer);
-  }
-
   Mono<Event> publish(Event event);
 
   Mono<Integer> size();
 
   Flux<Event> subscribe(int skipped);
+
+  static EventStream defaultEventStream(String topic, OStreamRepo oStreamRepo, TextTransformer transformer) {
+    return new DefaultEventStream(topic, oStreamRepo, transformer);
+  }
 }

@@ -10,14 +10,14 @@ public interface CommandStream {
 
   Mono<Void> createTopic();
 
+  Mono<Command> publish(Command command);
+
+  Flux<Command> subscribe(int skipped);
+
   static CommandStream defaultCommandStream(String topic,
                                             UStreamRepo uStreamRepo,
                                             IdGenerator idGenerator,
                                             TextTransformer transformer) {
     return new DefaultCommandStream(topic, uStreamRepo, idGenerator, transformer);
   }
-
-  Mono<Command> publish(Command command);
-
-  Flux<Command> subscribe(int skipped);
 }

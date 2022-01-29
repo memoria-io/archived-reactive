@@ -25,11 +25,6 @@ public record OStreamMemRepo(Map<String, Many<OMsg>> topicStreams, Map<String, A
   }
 
   @Override
-  public Mono<Integer> size(String topic) {
-    return Mono.fromCallable(() -> topicSizes.getOrDefault(topic, new AtomicInteger(0)).get());
-  }
-
-  @Override
   public Mono<Integer> publish(String topic, OMsg oMsg) {
     return Mono.fromCallable(() -> {
       var topicSize = this.topicSizes.get(topic);
@@ -41,6 +36,11 @@ public record OStreamMemRepo(Map<String, Many<OMsg>> topicStreams, Map<String, A
         throw new IllegalArgumentException(errorMsg);
       }
     });
+  }
+
+  @Override
+  public Mono<Integer> size(String topic) {
+    return Mono.fromCallable(() -> topicSizes.getOrDefault(topic, new AtomicInteger(0)).get());
   }
 
   @Override
