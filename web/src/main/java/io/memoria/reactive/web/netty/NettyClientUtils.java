@@ -1,5 +1,6 @@
 package io.memoria.reactive.web.netty;
 
+import io.memoria.reactive.web.http.HttpUtils;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vavr.Tuple;
@@ -9,7 +10,6 @@ import reactor.core.publisher.Mono;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.client.HttpClient;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class NettyClientUtils {
@@ -19,7 +19,7 @@ public class NettyClientUtils {
     return HttpClient.create()
                      .baseUrl(host)
                      .delete()
-                     .uri(joinPath(path))
+                     .uri(HttpUtils.joinPath(path))
                      .responseSingle((res, body) -> body.asString()
                                                         .defaultIfEmpty("")
                                                         .map(s -> Tuple.of(res.status(), s)));
@@ -29,7 +29,7 @@ public class NettyClientUtils {
     return HttpClient.create()
                      .baseUrl(host)
                      .get()
-                     .uri(joinPath(path))
+                     .uri(HttpUtils.joinPath(path))
                      .responseSingle((res, body) -> body.asString()
                                                         .defaultIfEmpty("")
                                                         .map(s -> Tuple.of(res.status(), s)));
@@ -42,7 +42,7 @@ public class NettyClientUtils {
                      .baseUrl(host)
                      .headers(httpHeaders)
                      .get()
-                     .uri(joinPath(path))
+                     .uri(HttpUtils.joinPath(path))
                      .responseSingle((res, body) -> body.asString()
                                                         .defaultIfEmpty("")
                                                         .map(s -> Tuple.of(res.status(), s)));
@@ -52,7 +52,7 @@ public class NettyClientUtils {
     return HttpClient.create()
                      .baseUrl(host)
                      .post()
-                     .uri(joinPath(path))
+                     .uri(HttpUtils.joinPath(path))
                      .send(ByteBufFlux.fromString(Flux.just(payload)))
                      .responseSingle((res, body) -> body.asString()
                                                         .defaultIfEmpty("")
@@ -67,7 +67,7 @@ public class NettyClientUtils {
                      .baseUrl(host)
                      .headers(httpHeaders)
                      .post()
-                     .uri(joinPath(path))
+                     .uri(HttpUtils.joinPath(path))
                      .send(ByteBufFlux.fromString(Flux.just(payload)))
                      .responseSingle((res, body) -> body.asString()
                                                         .defaultIfEmpty("")
@@ -78,14 +78,10 @@ public class NettyClientUtils {
     return HttpClient.create()
                      .baseUrl(host)
                      .put()
-                     .uri(joinPath(path))
+                     .uri(HttpUtils.joinPath(path))
                      .send(ByteBufFlux.fromString(Flux.just(payload)))
                      .responseSingle((res, body) -> body.asString()
                                                         .defaultIfEmpty("")
                                                         .map(s -> Tuple.of(res.status(), s)));
-  }
-
-  private static String joinPath(String... path) {
-    return Arrays.stream(path).reduce("", (a, b) -> a + "/" + b).replace("//", "/");
   }
 }

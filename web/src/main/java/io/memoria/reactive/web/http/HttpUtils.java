@@ -4,6 +4,7 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
 
+import java.util.Arrays;
 import java.util.Base64;
 
 import static io.vavr.control.Option.none;
@@ -31,5 +32,9 @@ public final class HttpUtils {
     } else {
       return none();
     }
+  }
+
+  public static String joinPath(String... path) {
+    return Arrays.stream(path).reduce("", (a, b) -> a + "/" + b).replace("//", "/");
   }
 }
