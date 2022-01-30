@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 
 public interface CommandStream {
 
-  Mono<Void> createTopic();
+  Mono<String> createTopic();
 
   Mono<Command> publish(Command command);
 

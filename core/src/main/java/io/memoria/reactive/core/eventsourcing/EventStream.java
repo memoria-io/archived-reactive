@@ -6,7 +6,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface EventStream {
-  Mono<Void> createTopic();
+  Mono<String> createTopic();
 
   Mono<Event> publish(Event event);
 

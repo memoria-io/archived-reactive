@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
  * Ordered Stream Repo
  */
 public interface OStreamRepo {
-  Mono<Void> create(String topic);
+  Mono<String> create(String topic);
 
   Mono<Integer> publish(String topic, OMsg oMsg);
 

@@ -7,12 +7,12 @@ import reactor.core.publisher.Mono;
 
 import java.nio.file.Path;
 
-public record FileStreamRepo(Path rootPath) implements OStreamRepo {
+public record OStreamFileRepo(Path rootPath) implements OStreamRepo {
 
   @Override
-  public Mono<Void> create(String topic) {
+  public Mono<String> create(String topic) {
     var topicPath = this.rootPath.resolve(topic);
-    return TopicDirOps.createIndex(topicPath).then();
+    return TopicDirOps.createIndex(topicPath).thenReturn(topic);
   }
 
   @Override

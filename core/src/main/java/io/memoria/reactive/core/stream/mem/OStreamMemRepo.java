@@ -14,13 +14,14 @@ public record OStreamMemRepo(Map<String, Many<OMsg>> topicStreams, Map<String, A
         implements OStreamRepo {
 
   @Override
-  public Mono<Void> create(String topic) {
-    return Mono.fromRunnable(() -> {
+  public Mono<String> create(String topic) {
+    return Mono.fromCallable(() -> {
       if (topicStreams.get(topic) == null) {
         var flux = Sinks.many().replay().<OMsg>all(batchSize);
         topicStreams.put(topic, flux);
         topicSizes.put(topic, new AtomicInteger(0));
       }
+      return topic;
     });
   }
 

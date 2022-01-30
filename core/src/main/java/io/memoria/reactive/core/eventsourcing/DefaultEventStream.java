@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 
 record DefaultEventStream(String topic, OStreamRepo oStreamRepo, TextTransformer transformer) implements EventStream {
   @Override
-  public Mono<Void> createTopic() {
+  public Mono<String> createTopic() {
     return oStreamRepo.create(topic);
   }
 

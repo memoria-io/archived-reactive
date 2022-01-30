@@ -12,9 +12,9 @@ import reactor.test.StepVerifier;
 import java.nio.file.Path;
 import java.time.Duration;
 
-class FileStreamRepoTest {
+class OStreamFileRepoTest {
   private static final Path TEST_DIR = Path.of("/tmp/rFilesTest");
-  private static final OStreamRepo streamRepo = new FileStreamRepo(TEST_DIR);
+  private static final OStreamRepo streamRepo = new OStreamFileRepo(TEST_DIR);
   private static final String SOME_TOPIC = "node";
 
   @BeforeEach

@@ -1,3 +1,5 @@
 package io.memoria.reactive.core.stream;
 
-public record OMsg(int sKey, String value) {}
+import java.io.Serializable;
+
+public record OMsg(int sKey, String value) implements Serializable {}

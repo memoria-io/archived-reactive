@@ -13,12 +13,13 @@ import java.util.Map;
 public record UStreamMemRepo(Map<String, Many<UMsg>> topicStreams, int batchSize) implements UStreamRepo {
 
   @Override
-  public Mono<Void> create(String topic) {
-    return Mono.fromRunnable(() -> {
+  public Mono<String> create(String topic) {
+    return Mono.fromCallable(() -> {
       if (topicStreams.get(topic) == null) {
         var flux = Sinks.many().replay().<UMsg>all(batchSize);
         topicStreams.put(topic, flux);
       }
+      return topic;
     });
   }
 
