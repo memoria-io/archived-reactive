@@ -12,6 +12,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
@@ -42,6 +43,7 @@ class TopicDirOps {
                .map(TopicDirOps::toFileName)
                .map(path::resolve)
                .takeWhile(Files::exists)
+               .log("Stream")
                .concatWith(watch(path));
   }
 
@@ -60,7 +62,10 @@ class TopicDirOps {
   }
 
   public static Flux<Path> watch(Path dir) {
-    return Mono.fromCallable(() -> createWatchService(dir)).flatMapMany(TopicDirOps::entriesCreated).map(dir::resolve);
+    return Mono.fromCallable(() -> createWatchService(dir))
+               .flatMapMany(TopicDirOps::keepWatching)
+               .map(dir::resolve)
+               .log("watch");
   }
 
   public static Mono<Path> write(Path topicDirPath, int expectedIndex, String msg) {
@@ -88,16 +93,21 @@ class TopicDirOps {
     return watchService;
   }
 
-  private static Flux<String> entriesCreated(WatchService ws) {
-    return Flux.generate((SynchronousSink<Flux<String>> s) -> s.next(take(ws))).concatMap(identity());
+  private static Flux<String> keepWatching(WatchService ws) {
+    return Flux.generate((SynchronousSink<List<String>> s) -> s.next(watchOnce(ws)))
+               .concatMap(Flux::fromIterable)
+               .log("KeepWatching");
   }
 
-  private static Flux<String> take(WatchService watchService) {
-    return Mono.fromCallable(() -> {
-      var key = watchService.take();
+  private static List<String> watchOnce(WatchService ws) {
+    try {
+      WatchKey key = ws.take();
       var l = List.ofAll(key.pollEvents()).map(WatchEvent::context).map(Object::toString);
       key.reset();
       return l;
-    }).flatMapMany(Flux::fromIterable);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+      return List.empty();
+    }
   }
 }

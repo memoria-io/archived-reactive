@@ -16,6 +16,7 @@ class OStreamFileRepoTest {
   private static final Path TEST_DIR = Path.of("/tmp/rFilesTest");
   private static final OStreamRepo streamRepo = new OStreamFileRepo(TEST_DIR);
   private static final String SOME_TOPIC = "node";
+  private static final int COUNT = 1000;
 
   @BeforeEach
   void beforeEach() {
@@ -27,7 +28,7 @@ class OStreamFileRepoTest {
   @Test
   void publish() {
     // Given
-    var msgs = List.range(0, 100).map(i -> new OMsg(i, "hello" + i));
+    var msgs = List.range(0, COUNT).map(i -> new OMsg(i, "hello" + i));
     // When
     var pub = Flux.fromIterable(msgs).flatMap(msg -> streamRepo.publish(SOME_TOPIC, msg));
     // Then
@@ -38,15 +39,15 @@ class OStreamFileRepoTest {
   @Test
   void subscribe() {
     // Given
-    createSomeFiles(TEST_DIR.resolve(SOME_TOPIC), 0, 100).subscribe();
-    createSomeFiles(TEST_DIR.resolve(SOME_TOPIC), 100, 100).delaySubscription(Duration.ofMillis(100)).subscribe();
+    createSomeFiles(TEST_DIR.resolve(SOME_TOPIC), 0).subscribe();
+    createSomeFiles(TEST_DIR.resolve(SOME_TOPIC), COUNT).delaySubscription(Duration.ofMillis(COUNT)).subscribe();
     // When
-    var sub = streamRepo.subscribe(SOME_TOPIC, 0).map(OMsg::sKey).take(200);
-    var expected = List.range(0, 200).toJavaArray(Integer[]::new);
+    var sub = streamRepo.subscribe(SOME_TOPIC, 0).map(OMsg::sKey).log().take(COUNT * 2);
+    var expected = List.range(0, COUNT * 2).toJavaArray(Integer[]::new);
     StepVerifier.create(sub).expectNext(expected).verifyComplete();
   }
 
-  private static Flux<Path> createSomeFiles(Path dir, int start, int count) {
-    return Flux.range(start, count).concatMap(i -> TopicDirOps.write(dir, i, "hello world"));
+  private static Flux<Path> createSomeFiles(Path dir, int start) {
+    return Flux.range(start, COUNT).concatMap(i -> TopicDirOps.write(dir, i, "hello world"));
   }
 }
