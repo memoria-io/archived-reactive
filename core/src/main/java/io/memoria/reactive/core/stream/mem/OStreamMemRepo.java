@@ -15,28 +15,12 @@ public record OStreamMemRepo(Map<String, Many<OMsg>> topicStreams, Map<String, A
 
   @Override
   public Mono<String> create(String topic) {
-    return Mono.fromCallable(() -> {
-      if (topicStreams.get(topic) == null) {
-        var flux = Sinks.many().replay().<OMsg>all(batchSize);
-        topicStreams.put(topic, flux);
-        topicSizes.put(topic, new AtomicInteger(0));
-      }
-      return topic;
-    });
+    return Mono.fromCallable(() -> createFn(topic));
   }
 
   @Override
   public Mono<Integer> publish(String topic, OMsg oMsg) {
-    return Mono.fromCallable(() -> {
-      var topicSize = this.topicSizes.get(topic);
-      if (oMsg.sKey() == topicSize.get()) {
-        this.topicStreams.get(topic).tryEmitNext(oMsg);
-        return topicSize.getAndIncrement();
-      } else {
-        var errorMsg = "Sequence key: %s doesn't match current index: %s".formatted(oMsg.sKey(), topicSize.get());
-        throw new IllegalArgumentException(errorMsg);
-      }
-    });
+    return Mono.fromCallable(() -> publishFn(topic, oMsg));
   }
 
   @Override
@@ -47,5 +31,35 @@ public record OStreamMemRepo(Map<String, Many<OMsg>> topicStreams, Map<String, A
   @Override
   public Flux<OMsg> subscribe(String topic, int skipped) {
     return topicStreams.get(topic).asFlux().skip(skipped);
+  }
+
+  private String createFn(String topic) {
+    if (topicStreams.get(topic) == null) {
+      var flux = Sinks.many().replay().<OMsg>all(batchSize);
+      topicStreams.put(topic, flux);
+      topicSizes.put(topic, new AtomicInteger(0));
+    }
+    return topic;
+  }
+
+  private int publishFn(String topic, OMsg oMsg) {
+    var topicSize = topicSizes.get(topic);
+    if (topicSize == null)
+      throw unknownTopicException(topic);
+    if (oMsg.sKey() == topicSize.get()) {
+      this.topicStreams.get(topic).tryEmitNext(oMsg);
+      return topicSize.getAndIncrement();
+    } else {
+      throw wrongSequenceKeyException(oMsg, topicSize.get());
+    }
+  }
+
+  private IllegalArgumentException wrongSequenceKeyException(OMsg oMsg, long currentIdx) {
+    var errorMsg = "Sequence key: %s doesn't match current index: %s".formatted(oMsg.sKey(), currentIdx);
+    return new IllegalArgumentException(errorMsg);
+  }
+
+  private static IllegalArgumentException unknownTopicException(String topic) {
+    return new IllegalArgumentException("Unknown topic: " + topic);
   }
 }
