@@ -91,6 +91,17 @@ class FileOpsTest {
   }
 
   @Test
+  void readLines() throws IOException {
+    // Given
+    FileOps.createDir(TEST_DIR).subscribe();
+    Files.writeString(SOME_FILE_PATH, "welcome\nhello");
+    // When
+    var read = FileOps.readLines(SOME_FILE_PATH);
+    // Then
+    StepVerifier.create(read).expectNext("welcome", "hello").verifyComplete();
+  }
+
+  @Test
   @DisplayName("Should create a new file")
   void rewrite() throws IOException {
     // When

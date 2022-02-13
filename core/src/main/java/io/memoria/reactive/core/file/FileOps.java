@@ -46,10 +46,11 @@ public class FileOps {
   }
 
   public static Mono<String> read(Path path) {
-    return Mono.fromCallable(() -> Files.lines(path))
-               .flatMapMany(Flux::fromStream)
-               .reduce(JOIN_LINES)
-               .defaultIfEmpty("");
+    return Mono.fromCallable(() -> Files.readString(path));
+  }
+
+  public static Flux<String> readLines(Path path) {
+    return Mono.fromCallable(() -> Files.lines(path)).flatMapMany(Flux::fromStream);
   }
 
   public static Mono<Path> rewrite(Path path, String content) {
