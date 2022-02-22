@@ -8,20 +8,22 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 class ConfigFileOpsTest {
-  private static final ConfigFileOps file = new ConfigFileOps("#{include}:", true);
+  private static final String TEST_DIR = "file/configFileOps/";
+  private static final ConfigFileOps fileOps = new ConfigFileOps("#{include}:", true);
 
   @ParameterizedTest
   @MethodSource("paths")
   @DisplayName("should read the nested files")
   void readNestedFile(String path) {
     // When
-    var file = ConfigFileOpsTest.file.read(path).get();
+    var file = ConfigFileOpsTest.fileOps.read(path).get();
     // Then
-    Assertions.assertEquals("name: bob\nage: 20\naddress: 15 bakerstreet", file);
+    var expected = ResourceFileOps.readResourceOrFile(TEST_DIR + "configResult.yaml").reduce(ConfigFileOps.JOIN_LINES);
+    Assertions.assertEquals(expected, file);
   }
 
   private static Stream<String> paths() {
-    var path = "Config.yaml";
+    var path = TEST_DIR + "Config.yaml";
     var rootPath = ClassLoader.getSystemResource(path).getPath();
     return Stream.of(path, rootPath);
   }

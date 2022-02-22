@@ -6,13 +6,7 @@ import io.vavr.collection.Map;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.function.BinaryOperator;
 import java.util.regex.Pattern;
 
@@ -20,7 +14,7 @@ import static io.vavr.control.Option.none;
 import static io.vavr.control.Option.some;
 
 public class ConfigFileOps {
-  private static final BinaryOperator<String> JOIN_LINES = (a, b) -> a + System.lineSeparator() + b;
+  public static final BinaryOperator<String> JOIN_LINES = (a, b) -> a + System.lineSeparator() + b;
   private final Option<String> nestingPrefix;
   private final boolean resolveSystemEnv;
   private final Map<String, String> systemEnv;
@@ -43,27 +37,19 @@ public class ConfigFileOps {
    * if the path parameter doesn't start with "/" it's considered a file under the resources directory
    */
   public Try<String> read(String path) {
-    return Try.of(() -> readLines(path).reduce(JOIN_LINES));
+    return Try.of(() -> expand(path, null).reduce(JOIN_LINES));
   }
 
-  private List<String> expand(String path, String line) throws IOException {
+  private List<String> expand(String path, String line) {
+    if (line == null)
+      return ResourceFileOps.readResourceOrFile(path).flatMap(l -> expand(path, l)).map(this::resolveLineExpression);
     if (nestingPrefix.isDefined() && line.trim().startsWith(nestingPrefix.get())) {
       var subFilePath = line.substring(nestingPrefix.get().length()).trim();
       var relativePath = parentPath(path) + subFilePath;
-      return readLines(relativePath);
+      return expand(relativePath, null);
     } else {
       return List.of(line);
     }
-  }
-
-  private List<String> readLines(String path) throws IOException {
-    var result = List.<String>empty();
-    var fileLines = readResourceOrFile(path);
-    for (String line : fileLines) {
-      var lines = expand(path, line).map(this::resolveLine);
-      result = result.appendAll(lines);
-    }
-    return result;
   }
 
   private Option<String> resolveExpression(String expression) {
@@ -81,7 +67,7 @@ public class ConfigFileOps {
     return none();
   }
 
-  private String resolveLine(String line) {
+  private String resolveLineExpression(String line) {
     if (this.resolveSystemEnv) {
       var p = Pattern.compile("\\$\\{[\\sa-zA-Z_0-9]+(:-)?.+}");//NOSONAR
       var f = p.matcher(line);
@@ -101,24 +87,4 @@ public class ConfigFileOps {
     return filePath.replaceFirst("[^/]+$", ""); //NOSONAR
   }
 
-  private static List<String> readResource(String path) throws IOException {
-    try (var inputStream = Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(path))) {
-      var result = new ByteArrayOutputStream();
-      var buffer = new byte[1024];
-      int length;
-      while ((length = inputStream.read(buffer)) != -1) {
-        result.write(buffer, 0, length);
-      }
-      var file = result.toString(StandardCharsets.UTF_8);
-      return List.of(file.split("\\r?\\n"));
-    }
-  }
-
-  private static List<String> readResourceOrFile(String path) throws IOException {
-    if (path.startsWith("/")) {
-      return List.ofAll(Files.lines(Path.of(path)).toList());
-    } else {
-      return readResource(path);
-    }
-  }
 }

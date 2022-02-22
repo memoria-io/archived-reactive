@@ -4,9 +4,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class ResourceFileOpsTest {
+  private static final String TEST_DIR = "file/resourceFileOps/";
+
   @Test
   void readResource() {
-    var str = ResourceFileOps.read("subconfig.yaml").get();
-    Assertions.assertEquals("age: 20", str);
+    var str = ResourceFileOps.read(TEST_DIR + "resourceFile.yaml").get();
+    Assertions.assertEquals("hello world\nbye bye", str);
   }
 }
