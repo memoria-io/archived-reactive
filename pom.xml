@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>reactive</artifactId>
-    <version>0.342.0</version>
+    <version>0.343.0</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>

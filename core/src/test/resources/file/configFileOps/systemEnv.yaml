@@ -1,0 +1,4 @@
+javaHomePath: ${JAVA_HOME:-/hello/java}
+otherValue: ${NON_EXISTENT_LAFDAFS:-defaultValue}
+routeValue: ${ROUTE_VALUE:-/defaultValue/{paramName}}/someOther
+routeValueWithSpace: ${ROUTE_VALUE:-/defaultValue/{paramName} }/someOther

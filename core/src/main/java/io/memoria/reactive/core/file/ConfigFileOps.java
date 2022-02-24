@@ -15,6 +15,9 @@ import static io.vavr.control.Option.some;
 
 public class ConfigFileOps {
   public static final BinaryOperator<String> JOIN_LINES = (a, b) -> a + System.lineSeparator() + b;
+  public static final String VAR_PREFIX = "${";
+  public static final String VAR_POSTFIX = "}";
+  
   private final Option<String> nestingPrefix;
   private final boolean resolveSystemEnv;
   private final Map<String, String> systemEnv;
@@ -52,9 +55,18 @@ public class ConfigFileOps {
     }
   }
 
+  private String removeBraces(String line) {
+    StringBuilder stringBuilder = new StringBuilder(line);
+    var openingIdx = stringBuilder.indexOf(VAR_PREFIX);
+    stringBuilder.replace(openingIdx, openingIdx + 1, "");
+    var closingIdx = stringBuilder.lastIndexOf(VAR_POSTFIX);
+    stringBuilder.replace(closingIdx, closingIdx + 1, "");
+    return stringBuilder.toString().trim();
+  }
+
   private Option<String> resolveExpression(String expression) {
-    var exp = expression.replace("${", "").replace("}", "").trim();
-    var split = exp.split(":-");
+    expression = removeBraces(expression);
+    var split = expression.split(":-");
     if (split.length == 1) {
       var key = split[0];
       return this.systemEnv.get(key).orElse(none());
@@ -86,5 +98,4 @@ public class ConfigFileOps {
   private static String parentPath(String filePath) {
     return filePath.replaceFirst("[^/]+$", ""); //NOSONAR
   }
-
 }
