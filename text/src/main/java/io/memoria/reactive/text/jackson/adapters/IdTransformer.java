@@ -23,8 +23,8 @@ public final class IdTransformer {
 
   public static class IdSerializer extends JsonSerializer<Id> {
     @Override
-    public void serialize(Id value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-      gen.writeString(value.id());
+    public void serialize(Id id, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+      gen.writeString(id.value());
     }
   }
 }
