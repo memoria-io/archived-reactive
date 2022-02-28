@@ -8,9 +8,9 @@ import reactor.core.publisher.Sinks;
 import reactor.core.publisher.Sinks.Many;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
-public record OStreamMemRepo(Map<String, Many<OMsg>> topicStreams, Map<String, AtomicInteger> topicSizes, int batchSize)
+public record OStreamMemRepo(Map<String, Many<OMsg>> topicStreams, Map<String, AtomicLong> topicSizes, int batchSize)
         implements OStreamRepo {
 
   @Override
@@ -19,17 +19,17 @@ public record OStreamMemRepo(Map<String, Many<OMsg>> topicStreams, Map<String, A
   }
 
   @Override
-  public Mono<Integer> publish(String topic, OMsg oMsg) {
+  public Mono<Long> publish(String topic, OMsg oMsg) {
     return Mono.fromCallable(() -> publishFn(topic, oMsg));
   }
 
   @Override
-  public Mono<Integer> size(String topic) {
-    return Mono.fromCallable(() -> topicSizes.getOrDefault(topic, new AtomicInteger(0)).get());
+  public Mono<Long> size(String topic) {
+    return Mono.fromCallable(() -> topicSizes.getOrDefault(topic, new AtomicLong(0)).get());
   }
 
   @Override
-  public Flux<OMsg> subscribe(String topic, int skipped) {
+  public Flux<OMsg> subscribe(String topic, long skipped) {
     return topicStreams.get(topic).asFlux().skip(skipped);
   }
 
@@ -37,12 +37,12 @@ public record OStreamMemRepo(Map<String, Many<OMsg>> topicStreams, Map<String, A
     if (topicStreams.get(topic) == null) {
       var flux = Sinks.many().replay().<OMsg>all(batchSize);
       topicStreams.put(topic, flux);
-      topicSizes.put(topic, new AtomicInteger(0));
+      topicSizes.put(topic, new AtomicLong(0));
     }
     return topic;
   }
 
-  private int publishFn(String topic, OMsg oMsg) {
+  private long publishFn(String topic, OMsg oMsg) {
     var topicSize = topicSizes.get(topic);
     if (topicSize == null)
       throw unknownTopicException(topic);

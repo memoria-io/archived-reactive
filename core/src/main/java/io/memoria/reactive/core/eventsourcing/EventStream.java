@@ -10,7 +10,7 @@ public interface EventStream {
 
   Mono<Event> publish(Event event);
 
-  Mono<Integer> size();
+  Mono<Long> size();
 
   Flux<Event> subscribe(int skipped);
 

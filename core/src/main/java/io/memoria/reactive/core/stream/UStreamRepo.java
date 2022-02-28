@@ -12,5 +12,5 @@ public interface UStreamRepo {
 
   Mono<Id> publish(String topic, UMsg msg);
 
-  Flux<UMsg> subscribe(String topic, int skipped);
+  Flux<UMsg> subscribe(String topic, long skipped);
 }

@@ -20,7 +20,7 @@ record DefaultEventStream(String topic, OStreamRepo oStreamRepo, TextTransformer
   }
 
   @Override
-  public Mono<Integer> size() {
+  public Mono<Long> size() {
     return oStreamRepo.size(topic);
   }
 
@@ -33,7 +33,7 @@ record DefaultEventStream(String topic, OStreamRepo oStreamRepo, TextTransformer
     return transformer.deserialize(oMsg.value(), Event.class);
   }
 
-  private Mono<OMsg> toEventMsg(int sKey, Event event) {
+  private Mono<OMsg> toEventMsg(long sKey, Event event) {
     return transformer.serialize(event).map(body -> new OMsg(sKey, body));
   }
 }

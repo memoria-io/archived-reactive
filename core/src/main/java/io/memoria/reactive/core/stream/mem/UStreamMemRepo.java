@@ -29,7 +29,7 @@ public record UStreamMemRepo(Map<String, Many<UMsg>> topicStreams, int batchSize
   }
 
   @Override
-  public Flux<UMsg> subscribe(String topic, int skipped) {
+  public Flux<UMsg> subscribe(String topic, long skipped) {
     return topicStreams.get(topic).asFlux().skip(skipped);
   }
 }
