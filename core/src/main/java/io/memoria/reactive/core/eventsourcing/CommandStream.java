@@ -8,14 +8,15 @@ import reactor.core.publisher.Mono;
 
 public interface CommandStream {
 
-  Mono<String> createTopic();
-
   Mono<Command> publish(Command command);
 
   Flux<Command> subscribe(long skipped);
 
-  static CommandStream defaultCommandStream(String topic, UStreamRepo uStreamRepo, TextTransformer transformer) {
-    return new DefaultCommandStream(topic, uStreamRepo, transformer);
+  static CommandStream defaultCommandStream(String topic,
+                                            int partition,
+                                            UStreamRepo uStreamRepo,
+                                            TextTransformer transformer) {
+    return new DefaultCommandStream(topic, partition, uStreamRepo, transformer);
   }
 
   static Mono<Command> toCommand(UMsg uMsg, TextTransformer transformer) {
@@ -23,6 +24,6 @@ public interface CommandStream {
   }
 
   static Mono<UMsg> toUMsg(Command command, TextTransformer transformer) {
-    return transformer.serialize(command).map(body -> new UMsg(command.id(), command.stateId(), body));
+    return transformer.serialize(command).map(body -> new UMsg(command.id(), body));
   }
 }

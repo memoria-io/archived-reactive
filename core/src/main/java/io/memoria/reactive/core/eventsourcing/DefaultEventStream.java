@@ -5,27 +5,27 @@ import io.memoria.reactive.core.text.TextTransformer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-record DefaultEventStream(String topic, OStreamRepo oStreamRepo, TextTransformer transformer)
+record DefaultEventStream(String topic, int partition, OStreamRepo oStreamRepo, TextTransformer transformer)
         implements EventStream {
-  @Override
-  public Mono<String> createTopic() {
-    return oStreamRepo.create(topic);
+  public DefaultEventStream {
+    if (partition < 1)
+      throw new IllegalArgumentException("Partition value can't be less than 0");
   }
 
   @Override
   public Mono<Event> publish(Event event) {
     return EventStream.toEventMsg(event, transformer)
-                      .flatMap(msg -> oStreamRepo.publish(topic, msg))
+                      .flatMap(msg -> oStreamRepo.publish(topic, partition, msg))
                       .thenReturn(event);
   }
 
   @Override
   public Mono<Long> size() {
-    return oStreamRepo.size(topic);
+    return oStreamRepo.size(topic, partition);
   }
 
   @Override
   public Flux<Event> subscribe(long skipped) {
-    return oStreamRepo.subscribe(topic, skipped).flatMap(msg -> EventStream.toEvent(msg, transformer));
+    return oStreamRepo.subscribe(topic, partition, skipped).flatMap(msg -> EventStream.toEvent(msg, transformer));
   }
 }

@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 class PipelineTest {
   private static final Logger log = LoggerFactory.getLogger(PipelineTest.class.getName());
   private static final String TOPIC = "SOME_TOPIC";
+  private static final int nPartitions = 1;
   // Streams
   private static final EventStream STATE_EVENT_STREAM;
   private static final CommandStream commandStream;
@@ -31,15 +32,12 @@ class PipelineTest {
     var transformer = new SerializableTransformer();
     var oStreamRepo = new OStreamMemRepo(new HashMap<>(), new HashMap<>(), 1000);
     var uStreamRepo = new UStreamMemRepo(new HashMap<>(), 1000);
-    STATE_EVENT_STREAM = EventStream.defaultEventStream(TOPIC, oStreamRepo, transformer);
-    commandStream = CommandStream.defaultCommandStream(TOPIC, uStreamRepo, transformer);
+    STATE_EVENT_STREAM = EventStream.defaultEventStream(TOPIC, nPartitions, oStreamRepo, transformer);
+    commandStream = CommandStream.defaultCommandStream(TOPIC, nPartitions, uStreamRepo, transformer);
   }
 
   @BeforeEach
-  void beforeEach() {
-    STATE_EVENT_STREAM.createTopic().block();
-    commandStream.createTopic().block();
-  }
+  void beforeEach() {}
 
   @Test
   void pipeline() {

@@ -14,23 +14,23 @@ public record OStreamMemRepo(Map<String, Many<OMsg>> topicStreams, Map<String, A
         implements OStreamRepo {
 
   @Override
-  public Mono<String> create(String topic) {
-    return Mono.fromCallable(() -> createFn(topic));
+  public Mono<Long> publish(String topic, int partition, OMsg oMsg) {
+    var pub = Mono.fromCallable(() -> publishFn(topic, oMsg));
+    return create(topic).then(pub);
   }
 
   @Override
-  public Mono<Long> publish(String topic, OMsg oMsg) {
-    return Mono.fromCallable(() -> publishFn(topic, oMsg));
-  }
-
-  @Override
-  public Mono<Long> size(String topic) {
+  public Mono<Long> size(String topic, int partition) {
     return Mono.fromCallable(() -> topicSizes.getOrDefault(topic, new AtomicLong(0)).get());
   }
 
   @Override
-  public Flux<OMsg> subscribe(String topic, long skipped) {
+  public Flux<OMsg> subscribe(String topic, int partition, long skipped) {
     return topicStreams.get(topic).asFlux().skip(skipped);
+  }
+
+  private Mono<String> create(String topic) {
+    return Mono.fromCallable(() -> createFn(topic));
   }
 
   private String createFn(String topic) {

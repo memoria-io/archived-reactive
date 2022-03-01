@@ -18,21 +18,20 @@ public class UStreamMemRepoTest {
   private static final int N_ELEMENTS = 100000;
   private static final Map<String, Many<UMsg>> db = new ConcurrentHashMap<>();
   private static final UStreamMemRepo streamRepo = new UStreamMemRepo(db, 1000);
-  private static final Id stateId = Id.of("0");
   private static final String SOME_TOPIC = "NODE_TOPIC";
+  private static final int partition = 0;
 
   @BeforeEach
   void beforeEach() {
     db.clear();
-    streamRepo.create(SOME_TOPIC).subscribe();
   }
 
   @Test
   void publish() {
     // Given
-    var msgs = List.range(0, N_ELEMENTS).map(i -> new UMsg(Id.of(i), stateId, "hello" + i));
+    var msgs = List.range(0, N_ELEMENTS).map(i -> new UMsg(Id.of(i), "hello" + i));
     // When
-    var pub = Flux.fromIterable(msgs).concatMap(msg -> streamRepo.publish(SOME_TOPIC, msg));
+    var pub = Flux.fromIterable(msgs).concatMap(msg -> streamRepo.publish(SOME_TOPIC, partition, msg));
     // Then
     StepVerifier.create(pub).expectNextCount(N_ELEMENTS).verifyComplete();
   }
@@ -43,7 +42,7 @@ public class UStreamMemRepoTest {
     Flux.range(0, N_ELEMENTS).concatMap(this::publish).subscribe();
     Flux.range(N_ELEMENTS, N_ELEMENTS).concatMap(this::publish).delaySubscription(Duration.ofMillis(10)).subscribe();
     // When
-    var sub = streamRepo.subscribe(SOME_TOPIC, 0).map(UMsg::id).take(2 * N_ELEMENTS);
+    var sub = streamRepo.subscribe(SOME_TOPIC, partition, 0).map(UMsg::id).take(2 * N_ELEMENTS);
     var expected = List.range(0, 2 * N_ELEMENTS).map(Id::of).toJavaArray(Id[]::new);
     // Then
     StepVerifier.create(sub).expectNext(expected).verifyComplete();
@@ -52,6 +51,7 @@ public class UStreamMemRepoTest {
   }
 
   private Mono<Id> publish(Integer i) {
-    return streamRepo.publish(SOME_TOPIC, new UMsg(Id.of(i), stateId, "hello" + i));
+    var uMsg = new UMsg(Id.of(i), "hello" + i);
+    return streamRepo.publish(SOME_TOPIC, partition, uMsg);
   }
 }

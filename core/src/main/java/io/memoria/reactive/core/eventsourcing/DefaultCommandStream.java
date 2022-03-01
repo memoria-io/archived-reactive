@@ -5,23 +5,22 @@ import io.memoria.reactive.core.text.TextTransformer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-record DefaultCommandStream(String topic, UStreamRepo uStreamRepo, TextTransformer transformer)
+record DefaultCommandStream(String topic, int partition, UStreamRepo uStreamRepo, TextTransformer transformer)
         implements CommandStream {
-  @Override
-  public Mono<String> createTopic() {
-    return uStreamRepo.create(topic);
+  public DefaultCommandStream {
+    if (partition < 0)
+      throw new IllegalArgumentException("Partition value can't be less than 0");
   }
 
   @Override
   public Mono<Command> publish(Command command) {
     return CommandStream.toUMsg(command, transformer)
-                        .flatMap(msg -> uStreamRepo.publish(topic, msg))
+                        .flatMap(msg -> uStreamRepo.publish(topic, partition, msg))
                         .thenReturn(command);
   }
 
   @Override
   public Flux<Command> subscribe(long skipped) {
-    return uStreamRepo.subscribe(topic, skipped).flatMap(msg -> CommandStream.toCommand(msg, transformer));
+    return uStreamRepo.subscribe(topic, partition, skipped).flatMap(msg -> CommandStream.toCommand(msg, transformer));
   }
-
 }

@@ -7,11 +7,9 @@ import reactor.core.publisher.Mono;
  * Ordered Stream Repo
  */
 public interface OStreamRepo {
-  Mono<String> create(String topic);
+  Mono<Long> publish(String topic, int partition, OMsg oMsg);
 
-  Mono<Long> publish(String topic, OMsg oMsg);
+  Mono<Long> size(String topic, int partition);
 
-  Mono<Long> size(String topic);
-
-  Flux<OMsg> subscribe(String topic, long skipped);
+  Flux<OMsg> subscribe(String topic, int partition, long skipped);
 }

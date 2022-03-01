@@ -8,9 +8,7 @@ import reactor.core.publisher.Mono;
  * Un ordered Stream repo
  */
 public interface UStreamRepo {
-  Mono<String> create(String topic);
+  Mono<Id> publish(String topic, int partition, UMsg msg);
 
-  Mono<Id> publish(String topic, UMsg msg);
-
-  Flux<UMsg> subscribe(String topic, long skipped);
+  Flux<UMsg> subscribe(String topic, int partition, long skipped);
 }

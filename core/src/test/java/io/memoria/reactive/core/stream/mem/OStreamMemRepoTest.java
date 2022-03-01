@@ -1,6 +1,5 @@
 package io.memoria.reactive.core.stream.mem;
 
-import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.OMsg;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,26 +20,25 @@ public class OStreamMemRepoTest {
   private static final Map<String, Many<OMsg>> db = new ConcurrentHashMap<>();
   private static final Map<String, AtomicLong> sizes = new HashMap<>();
   private static final OStreamMemRepo streamRepo = new OStreamMemRepo(db, sizes, 1000);
-  private static final Id stateId = Id.of("0");
   private static final String SOME_TOPIC = "NODE_TOPIC";
+  private static final int partition = 0;
 
   @BeforeEach
   void beforeEach() {
     db.clear();
     sizes.clear();
-    streamRepo.create(SOME_TOPIC).subscribe();
   }
 
   @Test
   void publish() {
     // Given
-    var msgs = List.range(0, N_ELEMENTS).map(i -> new OMsg(i, stateId, "hello" + i));
+    var msgs = List.range(0, N_ELEMENTS).map(i -> new OMsg(i, "hello" + i));
     // When
-    var pub = Flux.fromIterable(msgs).flatMap(msg -> streamRepo.publish(SOME_TOPIC, msg));
+    var pub = Flux.fromIterable(msgs).flatMap(msg -> streamRepo.publish(SOME_TOPIC, partition, msg));
     // Then
     var expected = msgs.map(OMsg::sKey).toJavaArray(Long[]::new);
     StepVerifier.create(pub).expectNext(expected).verifyComplete();
-    StepVerifier.create(streamRepo.size(SOME_TOPIC)).expectNext(N_ELEMENTS).verifyComplete();
+    StepVerifier.create(streamRepo.size(SOME_TOPIC, partition)).expectNext(N_ELEMENTS).verifyComplete();
   }
 
   @Test
@@ -52,16 +50,17 @@ public class OStreamMemRepoTest {
         .delaySubscription(Duration.ofMillis(10))
         .subscribe();
     // When
-    var sub = streamRepo.subscribe(SOME_TOPIC, 0).map(OMsg::sKey).take(2 * N_ELEMENTS);
+    var sub = streamRepo.subscribe(SOME_TOPIC, partition, 0).map(OMsg::sKey).take(2 * N_ELEMENTS);
     var expected = List.range(0, 2 * N_ELEMENTS).toJavaArray(Long[]::new);
     // Then
     StepVerifier.create(sub).expectNext(expected).verifyComplete();
-    StepVerifier.create(streamRepo.size(SOME_TOPIC)).expectNext(2 * N_ELEMENTS).verifyComplete();
+    StepVerifier.create(streamRepo.size(SOME_TOPIC, partition)).expectNext(2 * N_ELEMENTS).verifyComplete();
     // And resubscribing works   
     StepVerifier.create(sub).expectNext(expected).verifyComplete();
   }
 
   private Mono<Long> publish(long i) {
-    return streamRepo.publish(SOME_TOPIC, new OMsg(i, stateId, "hello" + i));
+    var oMsg = new OMsg(i, "hello" + i);
+    return streamRepo.publish(SOME_TOPIC, partition, oMsg);
   }
 }
