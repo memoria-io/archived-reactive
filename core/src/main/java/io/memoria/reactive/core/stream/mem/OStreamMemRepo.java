@@ -15,8 +15,12 @@ public record OStreamMemRepo(Map<String, Many<OMsg>> topicStreams, Map<String, A
 
   @Override
   public Mono<Long> publish(String topic, int partition, OMsg oMsg) {
-    var pub = Mono.fromCallable(() -> publishFn(topic, oMsg));
-    return create(topic).then(pub);
+    return createFn(topic).map(tp -> publishFn(topic, oMsg));
+  }
+
+  @Override
+  public Flux<Long> publish(String topic, int partition, Flux<OMsg> msgs) {
+    return createFn(topic).flatMapMany(tp -> msgs).map(msg -> publishFn(topic, msg));
   }
 
   @Override
@@ -29,17 +33,15 @@ public record OStreamMemRepo(Map<String, Many<OMsg>> topicStreams, Map<String, A
     return topicStreams.get(topic).asFlux().skip(skipped);
   }
 
-  private Mono<String> create(String topic) {
-    return Mono.fromCallable(() -> createFn(topic));
-  }
-
-  private String createFn(String topic) {
-    if (topicStreams.get(topic) == null) {
-      var flux = Sinks.many().replay().<OMsg>all(batchSize);
-      topicStreams.put(topic, flux);
-      topicSizes.put(topic, new AtomicLong(0));
-    }
-    return topic;
+  private Mono<String> createFn(String topic) {
+    return Mono.fromCallable(() -> {
+      if (topicStreams.get(topic) == null) {
+        var flux = Sinks.many().replay().<OMsg>all(batchSize);
+        topicStreams.put(topic, flux);
+        topicSizes.put(topic, new AtomicLong(0));
+      }
+      return topic;
+    });
   }
 
   private long publishFn(String topic, OMsg oMsg) {

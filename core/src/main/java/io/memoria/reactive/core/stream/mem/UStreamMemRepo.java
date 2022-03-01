@@ -14,8 +14,15 @@ public record UStreamMemRepo(Map<String, Many<UMsg>> topicStreams, int batchSize
 
   @Override
   public Mono<Id> publish(String topic, int partition, UMsg uMsg) {
-    var pub = Mono.fromCallable(() -> this.topicStreams.get(topic).tryEmitNext(uMsg)).thenReturn(uMsg.id());
-    return create(topic).then(pub);
+    return createFn(topic).map(tp -> {
+      this.topicStreams.get(topic).tryEmitNext(uMsg);
+      return uMsg.id();
+    });
+  }
+
+  @Override
+  public Flux<Id> publish(String topic, int partition, Flux<UMsg> msgs) {
+    return createFn(topic).flatMapMany(tp -> msgs).map(msg -> tryEmit(topic, msg));
   }
 
   @Override
@@ -23,7 +30,7 @@ public record UStreamMemRepo(Map<String, Many<UMsg>> topicStreams, int batchSize
     return topicStreams.get(topic).asFlux().skip(skipped);
   }
 
-  private Mono<String> create(String topic) {
+  private Mono<String> createFn(String topic) {
     return Mono.fromCallable(() -> {
       if (topicStreams.get(topic) == null) {
         var flux = Sinks.many().replay().<UMsg>all(batchSize);
@@ -31,5 +38,10 @@ public record UStreamMemRepo(Map<String, Many<UMsg>> topicStreams, int batchSize
       }
       return topic;
     });
+  }
+
+  private Id tryEmit(String topic, UMsg msg) {
+    this.topicStreams.get(topic).tryEmitNext(msg);
+    return msg.id();
   }
 }
