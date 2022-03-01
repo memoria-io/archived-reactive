@@ -6,7 +6,6 @@ import io.memoria.reactive.core.eventsourcing.UserCommand.CreateUser;
 import io.memoria.reactive.core.eventsourcing.saga.SagaPipeline;
 import io.memoria.reactive.core.eventsourcing.state.StatePipeline;
 import io.memoria.reactive.core.id.Id;
-import io.memoria.reactive.core.id.SerialIdGenerator;
 import io.memoria.reactive.core.stream.mem.OStreamMemRepo;
 import io.memoria.reactive.core.stream.mem.UStreamMemRepo;
 import io.memoria.reactive.core.text.SerializableTransformer;
@@ -25,20 +24,20 @@ class PipelineTest {
   private static final Logger log = LoggerFactory.getLogger(PipelineTest.class.getName());
   private static final String TOPIC = "SOME_TOPIC";
   // Streams
-  private static final EventStream eventStream;
+  private static final EventStream STATE_EVENT_STREAM;
   private static final CommandStream commandStream;
 
   static {
     var transformer = new SerializableTransformer();
     var oStreamRepo = new OStreamMemRepo(new HashMap<>(), new HashMap<>(), 1000);
     var uStreamRepo = new UStreamMemRepo(new HashMap<>(), 1000);
-    eventStream = EventStream.defaultEventStream(TOPIC, oStreamRepo, transformer);
-    commandStream = CommandStream.defaultCommandStream(TOPIC, uStreamRepo, new SerialIdGenerator(), transformer);
+    STATE_EVENT_STREAM = EventStream.defaultEventStream(TOPIC, oStreamRepo, transformer);
+    commandStream = CommandStream.defaultCommandStream(TOPIC, uStreamRepo, transformer);
   }
 
   @BeforeEach
   void beforeEach() {
-    eventStream.createTopic().block();
+    STATE_EVENT_STREAM.createTopic().block();
     commandStream.createTopic().block();
   }
 
@@ -46,7 +45,7 @@ class PipelineTest {
   void pipeline() {
     var statePipeline = new StatePipeline(new Visitor(),
                                           new ConcurrentHashMap<>(),
-                                          eventStream,
+                                          STATE_EVENT_STREAM,
                                           new UserStateDecider(),
                                           new UserStateEvolver());
     var sagaPipeline = new SagaPipeline(commandStream, new UserSagaDecider());
@@ -61,10 +60,10 @@ class PipelineTest {
         .concatMap(commandStream::publish)
         .subscribe(debug("[Command]:"));
     commandStream.subscribe(0).concatMap(statePipeline).subscribe(debug("[State]:"));
-    eventStream.subscribe(0).concatMap(sagaPipeline).subscribe(debug("[Command]:"));
-    eventStream.subscribe(0).subscribe(debug("[Event]:"));
+    STATE_EVENT_STREAM.subscribe(0).concatMap(sagaPipeline).subscribe(debug("[Command]:"));
+    STATE_EVENT_STREAM.subscribe(0).subscribe(debug("[Event]:"));
     StepVerifier.create(commandStream.subscribe(0).take(5)).expectNextCount(5).verifyComplete();
-    StepVerifier.create(eventStream.subscribe(0).take(5)).expectNextCount(5).verifyComplete();
+    StepVerifier.create(STATE_EVENT_STREAM.subscribe(0).take(5)).expectNextCount(5).verifyComplete();
   }
 
   private Consumer<Object> debug(String prefix) {

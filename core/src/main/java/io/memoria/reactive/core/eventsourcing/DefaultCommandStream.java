@@ -1,14 +1,11 @@
 package io.memoria.reactive.core.eventsourcing;
 
-import io.memoria.reactive.core.id.Id;
-import io.memoria.reactive.core.id.IdGenerator;
-import io.memoria.reactive.core.stream.UMsg;
 import io.memoria.reactive.core.stream.UStreamRepo;
 import io.memoria.reactive.core.text.TextTransformer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-record DefaultCommandStream(String topic, UStreamRepo uStreamRepo, IdGenerator idGenerator, TextTransformer transformer)
+record DefaultCommandStream(String topic, UStreamRepo uStreamRepo, TextTransformer transformer)
         implements CommandStream {
   @Override
   public Mono<String> createTopic() {
@@ -17,19 +14,14 @@ record DefaultCommandStream(String topic, UStreamRepo uStreamRepo, IdGenerator i
 
   @Override
   public Mono<Command> publish(Command command) {
-    return toCommandMsg(idGenerator.get(), command).flatMap(msg -> uStreamRepo.publish(topic, msg)).thenReturn(command);
+    return CommandStream.toUMsg(command, transformer)
+                        .flatMap(msg -> uStreamRepo.publish(topic, msg))
+                        .thenReturn(command);
   }
 
   @Override
-  public Flux<Command> subscribe(int skipped) {
-    return uStreamRepo.subscribe(topic, skipped).flatMap(this::toCommand);
+  public Flux<Command> subscribe(long skipped) {
+    return uStreamRepo.subscribe(topic, skipped).flatMap(msg -> CommandStream.toCommand(msg, transformer));
   }
 
-  private Mono<Command> toCommand(UMsg msg) {
-    return transformer.deserialize(msg.value(), Command.class);
-  }
-
-  private Mono<UMsg> toCommandMsg(Id id, Command command) {
-    return transformer.serialize(command).map(body -> new UMsg(id, body));
-  }
 }

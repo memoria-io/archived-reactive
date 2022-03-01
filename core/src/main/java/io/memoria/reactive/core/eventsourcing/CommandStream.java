@@ -1,6 +1,6 @@
 package io.memoria.reactive.core.eventsourcing;
 
-import io.memoria.reactive.core.id.IdGenerator;
+import io.memoria.reactive.core.stream.UMsg;
 import io.memoria.reactive.core.stream.UStreamRepo;
 import io.memoria.reactive.core.text.TextTransformer;
 import reactor.core.publisher.Flux;
@@ -12,12 +12,17 @@ public interface CommandStream {
 
   Mono<Command> publish(Command command);
 
-  Flux<Command> subscribe(int skipped);
+  Flux<Command> subscribe(long skipped);
 
-  static CommandStream defaultCommandStream(String topic,
-                                            UStreamRepo uStreamRepo,
-                                            IdGenerator idGenerator,
-                                            TextTransformer transformer) {
-    return new DefaultCommandStream(topic, uStreamRepo, idGenerator, transformer);
+  static CommandStream defaultCommandStream(String topic, UStreamRepo uStreamRepo, TextTransformer transformer) {
+    return new DefaultCommandStream(topic, uStreamRepo, transformer);
+  }
+
+  static Mono<Command> toCommand(UMsg uMsg, TextTransformer transformer) {
+    return transformer.deserialize(uMsg.value(), Command.class);
+  }
+
+  static Mono<UMsg> toUMsg(Command command, TextTransformer transformer) {
+    return transformer.serialize(command).map(body -> new UMsg(command.id(), command.stateId(), body));
   }
 }

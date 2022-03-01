@@ -18,6 +18,7 @@ public class UStreamMemRepoTest {
   private static final int N_ELEMENTS = 100000;
   private static final Map<String, Many<UMsg>> db = new ConcurrentHashMap<>();
   private static final UStreamMemRepo streamRepo = new UStreamMemRepo(db, 1000);
+  private static final Id stateId = Id.of("0");
   private static final String SOME_TOPIC = "NODE_TOPIC";
 
   @BeforeEach
@@ -29,7 +30,7 @@ public class UStreamMemRepoTest {
   @Test
   void publish() {
     // Given
-    var msgs = List.range(0, N_ELEMENTS).map(i -> new UMsg(Id.of(i), "hello" + i));
+    var msgs = List.range(0, N_ELEMENTS).map(i -> new UMsg(Id.of(i), stateId, "hello" + i));
     // When
     var pub = Flux.fromIterable(msgs).concatMap(msg -> streamRepo.publish(SOME_TOPIC, msg));
     // Then
@@ -51,6 +52,6 @@ public class UStreamMemRepoTest {
   }
 
   private Mono<Id> publish(Integer i) {
-    return streamRepo.publish(SOME_TOPIC, new UMsg(Id.of(i), "hello" + i));
+    return streamRepo.publish(SOME_TOPIC, new UMsg(Id.of(i), stateId, "hello" + i));
   }
 }

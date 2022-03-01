@@ -1,5 +1,6 @@
 package io.memoria.reactive.core.stream.mem;
 
+import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.OMsg;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,7 @@ public class OStreamMemRepoTest {
   private static final Map<String, Many<OMsg>> db = new ConcurrentHashMap<>();
   private static final Map<String, AtomicLong> sizes = new HashMap<>();
   private static final OStreamMemRepo streamRepo = new OStreamMemRepo(db, sizes, 1000);
+  private static final Id stateId = Id.of("0");
   private static final String SOME_TOPIC = "NODE_TOPIC";
 
   @BeforeEach
@@ -32,7 +34,7 @@ public class OStreamMemRepoTest {
   @Test
   void publish() {
     // Given
-    var msgs = List.range(0, N_ELEMENTS).map(i -> new OMsg(i, "hello" + i));
+    var msgs = List.range(0, N_ELEMENTS).map(i -> new OMsg(i, stateId, "hello" + i));
     // When
     var pub = Flux.fromIterable(msgs).flatMap(msg -> streamRepo.publish(SOME_TOPIC, msg));
     // Then
@@ -60,6 +62,6 @@ public class OStreamMemRepoTest {
   }
 
   private Mono<Long> publish(long i) {
-    return streamRepo.publish(SOME_TOPIC, new OMsg(i, "hello" + i));
+    return streamRepo.publish(SOME_TOPIC, new OMsg(i, stateId, "hello" + i));
   }
 }

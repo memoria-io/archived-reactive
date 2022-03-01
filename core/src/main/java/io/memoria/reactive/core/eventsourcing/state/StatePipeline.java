@@ -2,8 +2,8 @@ package io.memoria.reactive.core.eventsourcing.state;
 
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.Event;
-import io.memoria.reactive.core.eventsourcing.EventStream;
 import io.memoria.reactive.core.eventsourcing.State;
+import io.memoria.reactive.core.eventsourcing.EventStream;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.vavr.ReactorVavrUtils;
 import io.vavr.Function1;
@@ -47,7 +47,9 @@ public class StatePipeline implements Function1<Command, Mono<State>> {
    * @return a flux of all states evolutions
    */
   public Flux<State> rebuildStates(int skip) {
-    return eventStream.size().flatMapMany(idxSize -> eventStream.subscribe(skip).take(idxSize)).map(this::evolve);
+    return eventStream.size()
+                      .flatMapMany(idxSize -> eventStream.subscribe(skip).take(idxSize))
+                      .map(this::evolve);
   }
 
   private State evolve(Event event) {

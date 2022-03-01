@@ -17,7 +17,7 @@ public class ConfigFileOps {
   public static final BinaryOperator<String> JOIN_LINES = (a, b) -> a + System.lineSeparator() + b;
   public static final String VAR_PREFIX = "${";
   public static final String VAR_POSTFIX = "}";
-  
+
   private final Option<String> nestingPrefix;
   private final boolean resolveSystemEnv;
   private final Map<String, String> systemEnv;
