@@ -14,12 +14,10 @@ public interface EventStream {
   Flux<Event> subscribe(long skipped);
 
   /**
-   * 
    * @param topic
-   * @param partition a specific partition which event stream can only publish/subscribe to. 
+   * @param partition   a specific partition which event stream can only publish/subscribe to.
    * @param oStreamRepo
    * @param transformer
-   * 
    * @return a default implementation of the eventStream API
    */
   static EventStream defaultEventStream(String topic,
