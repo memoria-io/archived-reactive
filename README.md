@@ -19,17 +19,18 @@ from [Vavr](https://www.vavr.io/),
 
 * Vavr + Reactor Functional utilities
 * Reactor Netty utility functions
-* Reactive CQRS and Eventsourcing utilities (alpha stage)
+* Reactive CQRS and Eventsourcing utilities (beta stage)
 * Reactive functional in-memory generic cruds (for tests, not for production)
 * Jackson Adapter (Json & Yaml) utilities
-* File reader utility
-* jconf is a module for reading yaml configuration files (depends on Jackson Adapter)
+* FileOps reader utility
+* ResourceFileOps utility
+* ConfigFileOps is a module for reading yaml configuration files (depends on Jackson Adapter)
     * Allows nesting of files using a marker e.g `include: sub_file.yaml` would replace this line with content
       of `sub_file.yaml`
     * Reading as a system property if not found as environment variable or else the default value if it was supplied:
         * `path: ${JAVA_HOME}`
         * `myVar: ${SOME_VAR:-defaultValue}`
-* reactive is up to date with the latest versions of JDK preview feature, currently `Java 15`.
+* reactive is up to date with the latest versions of JDK preview feature, currently `Java 17`.
 
 ## Usage
 
@@ -41,7 +42,7 @@ All modules depend on Core. There are currently no other inter-dependencies betw
 ```xml
 
 <properties>
-    <reactive.version>0.9.82</reactive.version>
+    <reactive.version>...</reactive.version>
 </properties>
 
 <dependencies>
@@ -71,6 +72,4 @@ You can just do pull requests, and I will check them asap.
 
 ## TODOs
 
-* CommandHandler with eventbus as eventstore
-* Pulsar as streaming bus
-* Eventstore testing suite
+* Increase test coverage to >85%
