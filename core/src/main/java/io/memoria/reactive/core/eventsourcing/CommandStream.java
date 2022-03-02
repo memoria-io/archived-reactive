@@ -1,39 +1,30 @@
 package io.memoria.reactive.core.eventsourcing;
 
-import io.memoria.reactive.core.stream.UMsg;
-import io.memoria.reactive.core.stream.UStreamRepo;
+import io.memoria.reactive.core.id.Id;
+import io.memoria.reactive.core.stream.Stream;
 import io.memoria.reactive.core.text.TextTransformer;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 public interface CommandStream {
 
-  Mono<Command> publish(Command command);
+  Flux<Id> publish(Flux<Command> commands);
 
-  Flux<Command> subscribe(long skipped);
+  Flux<Command> subscribe(long offset);
 
   /**
    * Command StateId is used to route the command to the relevant partition
    *
    * @param topic
    * @param nPartitions number of partitions
-   * @param uStreamRepo
+   * @param stream
    * @param transformer
    * @return a default implementation of the CommandStream API
    */
   static CommandStream defaultCommandStream(String topic,
                                             int nPartitions,
                                             int subscriptionPartition,
-                                            UStreamRepo uStreamRepo,
+                                            Stream stream,
                                             TextTransformer transformer) {
-    return new DefaultCommandStream(topic, nPartitions, subscriptionPartition, uStreamRepo, transformer);
-  }
-
-  static Mono<Command> toCommand(UMsg uMsg, TextTransformer transformer) {
-    return transformer.deserialize(uMsg.value(), Command.class);
-  }
-
-  static Mono<UMsg> toUMsg(Command command, TextTransformer transformer) {
-    return transformer.serialize(command).map(body -> new UMsg(command.id(), body));
+    return new DefaultCommandStream(topic, nPartitions, subscriptionPartition, stream, transformer);
   }
 }

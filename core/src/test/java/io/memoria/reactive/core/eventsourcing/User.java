@@ -5,6 +5,8 @@ import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
 
+import java.util.UUID;
+
 public sealed interface User extends State {
   record Account(Id id, String name, Map<Id, List<String>> inbox, Map<Id, Boolean> isSeen) implements User {
     public Account(Id id, String name) {
@@ -28,5 +30,9 @@ public sealed interface User extends State {
     }
   }
 
-  record Visitor() implements User {}
+  record Visitor(Id id) implements User {
+    public Visitor() {
+      this(Id.of(UUID.randomUUID()));
+    }
+  }
 }

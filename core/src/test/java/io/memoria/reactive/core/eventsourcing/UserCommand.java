@@ -8,6 +8,11 @@ public sealed interface UserCommand extends Command {
     return Id.of(0);
   }
 
+  @Override
+  default long timestamp() {
+    return 0;
+  }
+
   record CreateInboundMsg(Id userId, Id from, String message) implements UserCommand {
     @Override
     public Id stateId() {

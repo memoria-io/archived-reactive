@@ -8,4 +8,6 @@ public interface Command extends Serializable {
   Id id();
 
   Id stateId();
+
+  long timestamp();
 }

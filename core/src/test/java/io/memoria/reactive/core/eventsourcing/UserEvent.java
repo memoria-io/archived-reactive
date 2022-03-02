@@ -1,15 +1,20 @@
 package io.memoria.reactive.core.eventsourcing;
 
 import io.memoria.reactive.core.id.Id;
-
-import java.util.concurrent.atomic.AtomicLong;
+import io.memoria.reactive.core.id.IdGenerator;
+import io.memoria.reactive.core.id.SerialIdGenerator;
 
 public sealed interface UserEvent extends Event {
-  AtomicLong sKeyGen = new AtomicLong(0);
+  IdGenerator idGen = new SerialIdGenerator();
 
   @Override
-  default long sKey() {
-    return sKeyGen.getAndIncrement();
+  default Id id() {
+    return idGen.get();
+  }
+
+  @Override
+  default long timestamp() {
+    return 0;
   }
 
   record InboundMsgCreated(Id userId, Id from, String message) implements UserEvent {

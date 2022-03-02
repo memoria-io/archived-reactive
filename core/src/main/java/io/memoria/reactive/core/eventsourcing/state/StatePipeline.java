@@ -6,12 +6,13 @@ import io.memoria.reactive.core.eventsourcing.Event;
 import io.memoria.reactive.core.eventsourcing.EventStream;
 import io.memoria.reactive.core.eventsourcing.State;
 import io.memoria.reactive.core.id.Id;
-import io.memoria.reactive.core.vavr.ReactorVavrUtils;
 import io.vavr.control.Option;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+
+import static io.memoria.reactive.core.vavr.ReactorVavrUtils.toMono;
 
 public class StatePipeline {
   private final State initState;
@@ -37,31 +38,28 @@ public class StatePipeline {
 
   /**
    * @param commandsOffset the offset when reading commands
-   * @return all states evolutions concatenated with any new commands
+   * @return Events Ids Flux
    */
-  public Flux<State> run(long commandsOffset) {
-    var cmds = commandStream.subscribe(commandsOffset).concatMap(this::apply);
-    return buildStates().concatWith(cmds);
+  public Flux<Id> run(long commandsOffset) {
+    var events = commandStream.subscribe(commandsOffset).concatMap(this::decide).map(this::evolveState);
+    var pubEvents = eventStream.publish(events);
+    return buildStates().map(Event::id).concatWith(pubEvents);
   }
 
-  private Mono<State> apply(Command cmd) {
-    return Mono.fromCallable(() -> stateOrInit(cmd.stateId()))
-               .map(state -> stateDecider.apply(state, cmd))
-               .flatMap(ReactorVavrUtils::toMono)
-               .flatMap(eventStream::publish)
-               .map(this::evolve);
+  private Flux<Event> buildStates() {
+    return eventStream.size().flatMapMany(this::readEvents).map(this::evolveState);
   }
 
-  private Flux<State> buildStates() {
-    return eventStream.size().flatMapMany(this::readEvents).map(this::evolve);
+  private Mono<Event> decide(Command cmd) {
+    return toMono(stateDecider.apply(stateOrInit(cmd.stateId()), cmd));
   }
 
-  private State evolve(Event event) {
+  private Event evolveState(Event event) {
     Id stateId = event.stateId();
     var currentState = stateOrInit(stateId);
     var newState = evolver.apply(currentState, event);
     stateMap.put(stateId, newState);
-    return newState;
+    return event;
   }
 
   private Flux<Event> readEvents(long idxSize) {

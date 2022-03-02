@@ -1,6 +1,8 @@
 package io.memoria.reactive.core.eventsourcing;
 
-import io.memoria.reactive.core.stream.UStreamRepo;
+import io.memoria.reactive.core.id.Id;
+import io.memoria.reactive.core.stream.Msg;
+import io.memoria.reactive.core.stream.Stream;
 import io.memoria.reactive.core.text.TextTransformer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -8,7 +10,7 @@ import reactor.core.publisher.Mono;
 record DefaultCommandStream(String topic,
                             int nPartitions,
                             int subscriptionPartition,
-                            UStreamRepo uStreamRepo,
+                            Stream stream,
                             TextTransformer transformer) implements CommandStream {
   public DefaultCommandStream {
     if (nPartitions < 1)
@@ -18,16 +20,22 @@ record DefaultCommandStream(String topic,
   }
 
   @Override
-  public Mono<Command> publish(Command command) {
-    var partition = command.stateId().hashCode() % nPartitions;
-    return CommandStream.toUMsg(command, transformer)
-                        .flatMap(msg -> uStreamRepo.publish(topic, partition, msg))
-                        .thenReturn(command);
+  public Flux<Id> publish(Flux<Command> commands) {
+    var msgs = commands.concatMap(this::toMsg);
+    return stream.publish(msgs);
   }
 
   @Override
-  public Flux<Command> subscribe(long skipped) {
-    return uStreamRepo.subscribe(topic, subscriptionPartition, skipped)
-                      .flatMap(msg -> CommandStream.toCommand(msg, transformer));
+  public Flux<Command> subscribe(long offset) {
+    return stream.subscribe(topic, subscriptionPartition, offset).flatMap(this::toCommand);
+  }
+
+  private Mono<Command> toCommand(Msg msg) {
+    return transformer.deserialize(msg.value(), Command.class);
+  }
+
+  private Mono<Msg> toMsg(Command command) {
+    var partition = command.stateId().hashCode() % nPartitions;
+    return transformer.serialize(command).map(body -> new Msg(topic, partition, command.id(), body));
   }
 }

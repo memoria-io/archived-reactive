@@ -5,7 +5,9 @@ import io.memoria.reactive.core.id.Id;
 import java.io.Serializable;
 
 public interface Event extends Serializable {
-  long sKey();
+  Id id();
 
   Id stateId();
+
+  long timestamp();
 }
