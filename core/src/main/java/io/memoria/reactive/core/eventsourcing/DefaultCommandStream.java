@@ -5,8 +5,11 @@ import io.memoria.reactive.core.text.TextTransformer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-record DefaultCommandStream(String topic, int nPartitions, UStreamRepo uStreamRepo, TextTransformer transformer)
-        implements CommandStream {
+record DefaultCommandStream(String topic,
+                            int nPartitions,
+                            int subscriptionPartition,
+                            UStreamRepo uStreamRepo,
+                            TextTransformer transformer) implements CommandStream {
   public DefaultCommandStream {
     if (nPartitions < 1)
       throw new IllegalArgumentException("Partition value can't be less than 0");
@@ -22,6 +25,7 @@ record DefaultCommandStream(String topic, int nPartitions, UStreamRepo uStreamRe
 
   @Override
   public Flux<Command> subscribe(long skipped) {
-    return uStreamRepo.subscribe(topic, nPartitions, skipped).flatMap(msg -> CommandStream.toCommand(msg, transformer));
+    return uStreamRepo.subscribe(topic, subscriptionPartition, skipped)
+                      .flatMap(msg -> CommandStream.toCommand(msg, transformer));
   }
 }

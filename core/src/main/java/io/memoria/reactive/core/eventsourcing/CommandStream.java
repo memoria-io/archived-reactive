@@ -13,8 +13,8 @@ public interface CommandStream {
   Flux<Command> subscribe(long skipped);
 
   /**
-   * Command StateId is used to route the command to the relevant partition 
-   * 
+   * Command StateId is used to route the command to the relevant partition
+   *
    * @param topic
    * @param nPartitions number of partitions
    * @param uStreamRepo
@@ -23,9 +23,10 @@ public interface CommandStream {
    */
   static CommandStream defaultCommandStream(String topic,
                                             int nPartitions,
+                                            int subscriptionPartition,
                                             UStreamRepo uStreamRepo,
                                             TextTransformer transformer) {
-    return new DefaultCommandStream(topic, nPartitions, uStreamRepo, transformer);
+    return new DefaultCommandStream(topic, nPartitions, subscriptionPartition, uStreamRepo, transformer);
   }
 
   static Mono<Command> toCommand(UMsg uMsg, TextTransformer transformer) {
