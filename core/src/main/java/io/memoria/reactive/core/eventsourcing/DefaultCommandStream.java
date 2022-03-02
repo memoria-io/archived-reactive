@@ -12,6 +12,8 @@ record DefaultCommandStream(String topic,
                             TextTransformer transformer) implements CommandStream {
   public DefaultCommandStream {
     if (nPartitions < 1)
+      throw new IllegalArgumentException("Number of partitions can't be less than 1");
+    if (subscriptionPartition < 0)
       throw new IllegalArgumentException("Partition value can't be less than 0");
   }
 

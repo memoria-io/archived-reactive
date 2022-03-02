@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 record DefaultEventStream(String topic, int partition, OStreamRepo oStreamRepo, TextTransformer transformer)
         implements EventStream {
   public DefaultEventStream {
-    if (partition < 1)
+    if (partition < 0)
       throw new IllegalArgumentException("Partition value can't be less than 0");
   }
 
