@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class UStreamMemRepoTest {
-  private static final int N_ELEMENTS = 1000;
+  private static final int N_ELEMENTS = 10000;
   private static final Map<String, Many<UMsg>> db = new ConcurrentHashMap<>();
   private static final UStreamMemRepo streamRepo = new UStreamMemRepo(db, 1000);
   private static final String SOME_TOPIC = "NODE_TOPIC";

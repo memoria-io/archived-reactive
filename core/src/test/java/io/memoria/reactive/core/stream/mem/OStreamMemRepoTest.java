@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class OStreamMemRepoTest {
-  private static final long N_ELEMENTS = 100000;
+  private static final long N_ELEMENTS = 10000;
   private static final Map<String, Many<OMsg>> db = new ConcurrentHashMap<>();
   private static final Map<String, AtomicLong> sizes = new HashMap<>();
   private static final OStreamMemRepo streamRepo = new OStreamMemRepo(db, sizes, 1000);
