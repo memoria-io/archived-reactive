@@ -36,15 +36,16 @@ public final class MemStream implements Stream {
 
   @Override
   public Flux<Msg> subscribe(String topic, int partition, long skipped) {
-    return Option.of(topicStream.get(topic)).map(m -> m.asFlux().skip(skipped)).getOrElse(Flux.empty());
+    return Mono.fromCallable(() -> createTopic(topic)).flatMapMany(f -> f.skip(skipped));
   }
 
-  private void createTopic(String topic) {
+  private Flux<Msg> createTopic(String topic) {
     if (topicStream.get(topic) == null) {
       var flux = Sinks.many().replay().<Msg>all(batchSize);
       topicStream.put(topic, flux);
       topicSize.put(topic, new AtomicLong());
     }
+    return topicStream.get(topic).asFlux();
   }
 
   private Id publishFn(Msg msg) {
