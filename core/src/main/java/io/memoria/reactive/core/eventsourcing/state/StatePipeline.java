@@ -33,18 +33,19 @@ public class StatePipeline {
                        EventStream eventStream,
                        StateDecider stateDecider,
                        StateEvolver stateEvolver) {
-    this(PipelineConfig.DEFAULT, initState, commandStream, eventStream, stateDecider, stateEvolver);
+    this(PipelineConfig.DEFAULT, initState, new HashMap<>(), commandStream, eventStream, stateDecider, stateEvolver);
   }
 
   public StatePipeline(PipelineConfig config,
                        State initState,
+                       Map<Id, State> stateMap,
                        CommandStream commandStream,
                        EventStream eventStream,
                        StateDecider stateDecider,
                        StateEvolver stateEvolver) {
     this.config = config;
     this.initState = initState;
-    this.stateMap = new HashMap<>();
+    this.stateMap = stateMap;
     this.commandStream = commandStream;
     this.eventStream = eventStream;
     this.stateDecider = stateDecider;
