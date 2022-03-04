@@ -11,7 +11,7 @@ import static reactor.core.publisher.SignalType.ON_NEXT;
 
 public record PipelineConfig(Level logLevel, boolean showLine, List<SignalType> signalType) {
   public static final PipelineConfig DEFAULT = new PipelineConfig(Level.INFO,
-                                                                  false,
+                                                                  true,
                                                                   List.of(ON_NEXT, ON_ERROR, ON_COMPLETE));
 
   public SignalType[] signalTypeArray() {
