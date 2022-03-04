@@ -10,7 +10,7 @@ import reactor.test.StepVerifier;
 
 import java.time.Duration;
 
-public class MemStreamTest {
+class MemStreamTest {
   private static final int N_ELEMENTS = 1000;
   private static final Stream STREAM = new MemStream(1000);
   private static final String TOPIC = "NODE_TOPIC";

@@ -4,65 +4,51 @@ import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.CommandStream;
 import io.memoria.reactive.core.eventsourcing.Event;
 import io.memoria.reactive.core.eventsourcing.EventStream;
+import io.memoria.reactive.core.eventsourcing.PipelineConfig;
 import io.memoria.reactive.core.eventsourcing.State;
 import io.memoria.reactive.core.id.Id;
 import io.vavr.control.Option;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.SignalType;
+import reactor.util.Logger;
+import reactor.util.Loggers;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 import static io.memoria.reactive.core.vavr.ReactorVavrUtils.toMono;
-import static reactor.core.publisher.SignalType.ON_COMPLETE;
-import static reactor.core.publisher.SignalType.ON_ERROR;
-import static reactor.core.publisher.SignalType.ON_NEXT;
 
 public class StatePipeline {
+  private static final Logger LOGGER = Loggers.getLogger(StatePipeline.class.getName());
   private final State initState;
   private final Map<Id, State> stateMap;
+  private final PipelineConfig config;
   private final CommandStream commandStream;
   private final EventStream eventStream;
   private final StateDecider stateDecider;
   private final StateEvolver evolver;
-  private final Level logLevel;
-  private final SignalType[] signalType;
 
   public StatePipeline(State initState,
-                       Map<Id, State> stateMap,
                        CommandStream commandStream,
                        EventStream eventStream,
                        StateDecider stateDecider,
                        StateEvolver stateEvolver) {
-    this(initState,
-         stateMap,
-         commandStream,
-         eventStream,
-         stateDecider,
-         stateEvolver,
-         Level.INFO,
-         ON_NEXT,
-         ON_ERROR,
-         ON_COMPLETE);
+    this(PipelineConfig.DEFAULT, initState, commandStream, eventStream, stateDecider, stateEvolver);
   }
 
-  public StatePipeline(State initState,
-                       Map<Id, State> stateMap,
+  public StatePipeline(PipelineConfig config,
+                       State initState,
                        CommandStream commandStream,
                        EventStream eventStream,
                        StateDecider stateDecider,
-                       StateEvolver stateEvolver,
-                       Level logLevel,
-                       SignalType... signalType) {
+                       StateEvolver stateEvolver) {
+    this.config = config;
     this.initState = initState;
-    this.stateMap = stateMap;
+    this.stateMap = new HashMap<>();
     this.commandStream = commandStream;
     this.eventStream = eventStream;
     this.stateDecider = stateDecider;
     this.evolver = stateEvolver;
-    this.logLevel = logLevel;
-    this.signalType = signalType;
   }
 
   /**
@@ -71,9 +57,9 @@ public class StatePipeline {
    */
   public Flux<Id> run(long commandsOffset) {
     var events = commandStream.subscribe(commandsOffset)
-                              .log("Inbound Command", logLevel, signalType)
+                              .log(LOGGER, config.logLevel(), config.showLine(), config.signalTypeArray())
                               .concatMap(this::decide)
-                              .log("New Event", logLevel, signalType)
+                              .log(LOGGER, config.logLevel(), config.showLine(), config.signalTypeArray())
                               .doOnNext(this::evolveState);
     var pubEvents = eventStream.publish(events);
     return buildStates().map(Event::id).concatWith(pubEvents);
@@ -82,7 +68,7 @@ public class StatePipeline {
   private Flux<Event> buildStates() {
     return eventStream.size()
                       .flatMapMany(this::readEvents)
-                      .log("Inbound Event", logLevel, signalType)
+                      .log(LOGGER, config.logLevel(), config.showLine(), config.signalTypeArray())
                       .doOnNext(this::evolveState);
   }
 

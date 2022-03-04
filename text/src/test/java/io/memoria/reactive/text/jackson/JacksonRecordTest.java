@@ -31,11 +31,6 @@ class JacksonRecordTest {
   }
 
   @Test
-  void jsonToYaml() {
-
-  }
-
-  @Test
   void testDeserializeRecordWithConstructor() throws IOException {
     RecordWithConstructor value = jsonMapper.readValue("{\"id\":123,\"name\":\"Bob\"}", RecordWithConstructor.class);
 

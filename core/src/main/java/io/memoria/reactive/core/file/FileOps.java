@@ -6,13 +6,11 @@ import reactor.core.publisher.Mono;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.function.BinaryOperator;
 import java.util.stream.Stream;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 public class FileOps {
-  private static final BinaryOperator<String> JOIN_LINES = (a, b) -> a + System.lineSeparator() + b;
 
   private FileOps() {}
 

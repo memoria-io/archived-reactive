@@ -18,23 +18,29 @@ public class ResourceFileOps {
     return Try.of(() -> resource(path));
   }
 
-  public static List<String> readResourceOrFile(String path) {
-    try {
-      if (path.startsWith("/")) {
-        return List.ofAll(Files.lines(Path.of(path)).toList());
-      } else {
-        try (var inputStream = Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(path))) {
-          return List.ofAll(new BufferedReader(new InputStreamReader(inputStream)).lines());
-        }
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+  public static Try<List<String>> readResourceOrFile(String path) {
+    if (path.startsWith("/")) {
+      return Try.of(() -> fileLines(path));
+    } else {
+      return Try.of(() -> resourceLines(path));
+    }
+  }
+
+  private static List<String> fileLines(String path) throws IOException {
+    try (var lines = Files.lines(Path.of(path))) {
+      return List.ofAll(lines);
     }
   }
 
   private static String resource(String path) throws IOException {
     try (InputStream is = ClassLoader.getSystemResourceAsStream(path)) {
       return new String(Objects.requireNonNull(is).readAllBytes());
+    }
+  }
+
+  private static List<String> resourceLines(String path) throws IOException {
+    try (var inputStream = Objects.requireNonNull(ClassLoader.getSystemResourceAsStream(path))) {
+      return List.ofAll(new BufferedReader(new InputStreamReader(inputStream)).lines());
     }
   }
 }

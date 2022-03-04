@@ -45,7 +45,10 @@ public class ConfigFileOps {
 
   private List<String> expand(String path, String line) {
     if (line == null)
-      return ResourceFileOps.readResourceOrFile(path).flatMap(l -> expand(path, l)).map(this::resolveLineExpression);
+      return ResourceFileOps.readResourceOrFile(path)
+                            .get()
+                            .flatMap(l -> expand(path, l))
+                            .map(this::resolveLineExpression);
     if (nestingPrefix.isDefined() && line.trim().startsWith(nestingPrefix.get())) {
       var subFilePath = line.substring(nestingPrefix.get().length()).trim();
       var relativePath = parentPath(path) + subFilePath;

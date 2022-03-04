@@ -40,11 +40,8 @@ public final class MemStream implements Stream {
   }
 
   private Flux<Msg> createTopic(String topic) {
-    if (topicStream.get(topic) == null) {
-      var flux = Sinks.many().replay().<Msg>all(batchSize);
-      topicStream.put(topic, flux);
-      topicSize.put(topic, new AtomicLong());
-    }
+    topicStream.computeIfAbsent(topic, k -> Sinks.many().replay().all(batchSize));
+    topicSize.computeIfAbsent(topic, k -> new AtomicLong());
     return topicStream.get(topic).asFlux();
   }
 

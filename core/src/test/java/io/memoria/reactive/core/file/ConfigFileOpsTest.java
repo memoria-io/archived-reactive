@@ -20,6 +20,7 @@ class ConfigFileOpsTest {
     var file = configOps.read(path).get();
     // Then
     var expected = ResourceFileOps.readResourceOrFile(TEST_DIR + "expectedConfig.yaml")
+                                  .get()
                                   .reduce(ConfigFileOps.JOIN_LINES);
     Assertions.assertEquals(expected, file);
   }
@@ -30,6 +31,7 @@ class ConfigFileOpsTest {
     var file = configOps.read(TEST_DIR + "systemEnv.yaml").get();
     // Then
     var expected = ResourceFileOps.readResourceOrFile(TEST_DIR + "expectedSystemEnv.yaml")
+                                  .get()
                                   .reduce(ConfigFileOps.JOIN_LINES);
     Assertions.assertEquals(expected, file);
   }
