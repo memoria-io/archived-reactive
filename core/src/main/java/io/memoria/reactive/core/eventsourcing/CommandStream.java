@@ -4,10 +4,13 @@ import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Stream;
 import io.memoria.reactive.core.text.TextTransformer;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface CommandStream {
 
   Flux<Id> publish(Flux<Command> commands);
+
+  Mono<Long> size();
 
   Flux<Command> subscribe(long offset);
 

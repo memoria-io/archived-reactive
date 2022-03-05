@@ -21,8 +21,12 @@ record DefaultCommandStream(String topic,
 
   @Override
   public Flux<Id> publish(Flux<Command> commands) {
-    var msgs = commands.concatMap(this::toMsg);
-    return stream.publish(msgs);
+    return stream.publish(commands.concatMap(this::toMsg));
+  }
+
+  @Override
+  public Mono<Long> size() {
+    return stream.size(topic, subscriptionPartition);
   }
 
   @Override
@@ -35,7 +39,9 @@ record DefaultCommandStream(String topic,
   }
 
   private Mono<Msg> toMsg(Command command) {
-    var partition = Math.abs(command.stateId().hashCode()) % nPartitions;
-    return transformer.serialize(command).map(body -> new Msg(topic, partition, command.id(), body));
+    return transformer.serialize(command).map(body -> {
+      var partition = Math.abs(command.stateId().hashCode()) % nPartitions;
+      return new Msg(topic, partition, command.id(), body);
+    });
   }
 }
