@@ -35,7 +35,7 @@ record DefaultCommandStream(String topic,
   }
 
   private Mono<Msg> toMsg(Command command) {
-    var partition = command.stateId().hashCode() % nPartitions;
+    var partition = Math.abs(command.stateId().hashCode()) % nPartitions;
     return transformer.serialize(command).map(body -> new Msg(topic, partition, command.id(), body));
   }
 }
