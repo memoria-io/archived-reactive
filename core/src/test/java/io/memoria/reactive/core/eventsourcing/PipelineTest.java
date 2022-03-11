@@ -41,7 +41,7 @@ class PipelineTest {
                                           eventStream,
                                           new UserStateDecider(),
                                           new UserStateEvolver());
-    var sagaPipeline = new SagaPipeline(eventStream, commandStream, new UserSagaDecider());
+    var sagaPipeline = new SagaPipeline(eventStream, commandStream, textTransformer, new UserSagaDecider());
     // Given
     Id bobId = Id.of("bob");
     Id janId = Id.of("jan");

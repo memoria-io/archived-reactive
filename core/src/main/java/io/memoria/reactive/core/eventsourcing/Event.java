@@ -9,5 +9,7 @@ public interface Event extends Serializable {
 
   Id stateId();
 
+  Id commandId();
+
   long timestamp();
 }
