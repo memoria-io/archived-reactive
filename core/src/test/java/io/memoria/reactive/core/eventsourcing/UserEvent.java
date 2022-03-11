@@ -1,15 +1,14 @@
 package io.memoria.reactive.core.eventsourcing;
 
 import io.memoria.reactive.core.id.Id;
-import io.memoria.reactive.core.id.IdGenerator;
-import io.memoria.reactive.core.id.SerialIdGenerator;
+
+import java.util.UUID;
 
 public sealed interface UserEvent extends Event {
-  IdGenerator idGen = new SerialIdGenerator();
 
   @Override
   default Id id() {
-    return idGen.get();
+    return Id.of(UUID.randomUUID());
   }
 
   @Override

@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 public class StatePipeline {
   private static final Logger LOGGER = Loggers.getLogger(StatePipeline.class.getName());
@@ -88,7 +89,7 @@ public class StatePipeline {
   private Flux<Event> publishEvents(Flux<Event> events) {
     return stream.publish(events.concatMap(this::toMsg))
                  .concatMap(this::toEvent)
-                 .log(LOGGER, logConfig.logLevel(), logConfig.showLine(), logConfig.signalTypeArray());
+                 .log(LOGGER, Level.INFO, logConfig.showLine(), logConfig.signalTypeArray());
   }
 
   private Flux<Event> readEvents(long until) {
@@ -96,7 +97,7 @@ public class StatePipeline {
       return stream.subscribe(streamConfig.topic(), streamConfig.partition(), streamConfig.offset())
                    .take(until)
                    .concatMap(this::toEvent)
-                   .log(LOGGER, logConfig.logLevel(), logConfig.showLine(), logConfig.signalTypeArray());
+                   .log(LOGGER, Level.INFO, logConfig.showLine(), logConfig.signalTypeArray());
     else
       return Flux.empty();
   }
@@ -109,7 +110,7 @@ public class StatePipeline {
     return stream.subscribe(commandConfig.topic(), commandConfig.partition(), commandConfig.offset())
                  .concatMap(this::toCommand)
                  .filter(cmd -> !processedCmds.contains(cmd.id()))
-                 .log(LOGGER, logConfig.logLevel(), logConfig.showLine(), logConfig.signalTypeArray());
+                 .log(LOGGER, Level.INFO, logConfig.showLine(), logConfig.signalTypeArray());
   }
 
   private Mono<Command> toCommand(Msg msg) {

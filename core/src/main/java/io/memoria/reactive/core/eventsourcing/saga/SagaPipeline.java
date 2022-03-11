@@ -14,6 +14,8 @@ import reactor.core.publisher.Mono;
 import reactor.util.Logger;
 import reactor.util.Loggers;
 
+import java.util.logging.Level;
+
 public class SagaPipeline {
   private static final Logger LOGGER = Loggers.getLogger(SagaPipeline.class.getName());
   // Infra
@@ -45,13 +47,15 @@ public class SagaPipeline {
 
   private Flux<Command> publishCommands(Flux<Command> commands) {
     var msgs = commands.concatMap(this::toMsg);
-    return stream.publish(msgs).concatMap(this::toCommand);
+    return stream.publish(msgs)
+                 .concatMap(this::toCommand)
+                 .log(LOGGER, Level.INFO, logConfig.showLine(), logConfig.signalTypeArray());
   }
 
   private Flux<Event> streamEvents() {
     return stream.subscribe(eventConfig.topic(), eventConfig.partition(), eventConfig.offset())
-                 .log(LOGGER, logConfig.logLevel(), logConfig.showLine(), logConfig.signalTypeArray())
-                 .concatMap(this::toEvent);
+                 .concatMap(this::toEvent)
+                 .log(LOGGER, Level.INFO, logConfig.showLine(), logConfig.signalTypeArray());
   }
 
   private Mono<Command> toCommand(Msg msg) {

@@ -2,10 +2,12 @@ package io.memoria.reactive.core.eventsourcing;
 
 import io.memoria.reactive.core.id.Id;
 
+import java.util.UUID;
+
 public sealed interface UserCommand extends Command {
   @Override
   default Id id() {
-    return Id.of(0);
+    return Id.of(UUID.randomUUID());
   }
 
   @Override

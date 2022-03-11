@@ -58,8 +58,8 @@ class PipelineTest {
     StepVerifier.create(stream.publish(cmds)).expectNextCount(3).verifyComplete();
     // When
     StepVerifier.create(statePipeline.run().take(3)).expectNextCount(3).verifyComplete();
-    StepVerifier.create(sagaPipeline.run().delaySubscription(Duration.ofMillis(100)).take(5))
-                .expectNextCount(5)
+    StepVerifier.create(sagaPipeline.run().delaySubscription(Duration.ofMillis(100)).take(1))
+                .expectNextCount(1)
                 .verifyComplete();
   }
 
