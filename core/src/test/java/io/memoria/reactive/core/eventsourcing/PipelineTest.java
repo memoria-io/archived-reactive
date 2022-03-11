@@ -57,10 +57,10 @@ class PipelineTest {
     var cmds = Flux.<Command>just(createUserBob, createUserJan, sendMsgFromBobToJan).map(PipelineTest::toMsg);
     StepVerifier.create(stream.publish(cmds)).expectNextCount(3).verifyComplete();
     // When
-    StepVerifier.create(statePipeline.run().take(3)).expectNextCount(3).verifyComplete();
-    StepVerifier.create(sagaPipeline.run().delaySubscription(Duration.ofMillis(100)).take(1))
+    StepVerifier.create(statePipeline.run()).expectNextCount(3).expectTimeout(Duration.ofMillis(100));
+    StepVerifier.create(sagaPipeline.run().delaySubscription(Duration.ofMillis(100)))
                 .expectNextCount(1)
-                .verifyComplete();
+                .expectTimeout(Duration.ofMillis(100));
   }
 
   private static Msg toMsg(Command command) {
