@@ -1,60 +1,71 @@
 package io.memoria.reactive.core.eventsourcing;
 
+import io.memoria.reactive.core.eventsourcing.PipelineConfig.LogConfig;
+import io.memoria.reactive.core.eventsourcing.PipelineConfig.StreamConfig;
 import io.memoria.reactive.core.eventsourcing.User.Visitor;
 import io.memoria.reactive.core.eventsourcing.UserCommand.CreateOutboundMsg;
 import io.memoria.reactive.core.eventsourcing.UserCommand.CreateUser;
 import io.memoria.reactive.core.eventsourcing.saga.SagaPipeline;
 import io.memoria.reactive.core.eventsourcing.state.StatePipeline;
 import io.memoria.reactive.core.id.Id;
+import io.memoria.reactive.core.stream.Msg;
+import io.memoria.reactive.core.stream.Stream;
 import io.memoria.reactive.core.stream.mem.MemStream;
 import io.memoria.reactive.core.text.SerializableTransformer;
-import jdk.jfr.consumer.EventStream;
+import io.memoria.reactive.core.text.TextTransformer;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
+import java.util.UUID;
 
 class PipelineTest {
-  private static final String CMD_TOPIC = "commands";
-  private static final String EVENT_TOPIC = "events";
-  private static final int nPartitions = 1;
-  private static final int cmdSubPartition = 0;
-  // Streams
-  private static final EventStream eventStream;
-  private static final CommandStream commandStream;
+  private static final Stream stream;
+  private static final TextTransformer transformer;
+  private static final PipelineConfig config;
+  private static final StatePipeline statePipeline;
+  private static final SagaPipeline sagaPipeline;
 
   static {
-    var transformer = new SerializableTransformer();
-    var streamRepo = new MemStream(1000);
-    eventStream = EventStream.defaultEventStream(EVENT_TOPIC, nPartitions, streamRepo, transformer);
-    commandStream = CommandStream.defaultCommandStream(CMD_TOPIC,
-                                                       nPartitions,
-                                                       cmdSubPartition,
-                                                       streamRepo,
-                                                       transformer);
+    // Infra
+    stream = new MemStream(1000);
+    transformer = new SerializableTransformer();
+    // Configs
+    var eventConfig = new StreamConfig("eventTopic", 0, 0, 1);
+    var commandConfig = new StreamConfig("commandTopic", 0, 0, 1);
+    var logConfig = LogConfig.DEFAULT;
+    config = new PipelineConfig(eventConfig, commandConfig, logConfig);
+    // Pipeline
+    statePipeline = new StatePipeline(stream,
+                                      transformer,
+                                      new Visitor(),
+                                      new UserStateDecider(),
+                                      new UserStateEvolver(),
+                                      config);
+    sagaPipeline = new SagaPipeline(stream, transformer, new UserSagaDecider(), config);
   }
 
   @Test
   void pipeline() {
-    var statePipeline = new StatePipeline(new Visitor(),
-                                          commandStream,
-                                          eventStream,
-                                          new UserStateDecider(),
-                                          new UserStateEvolver());
-    var sagaPipeline = new SagaPipeline(eventStream, commandStream, textTransformer, new UserSagaDecider());
     // Given
     Id bobId = Id.of("bob");
     Id janId = Id.of("jan");
     var createUserBob = new CreateUser(bobId, "bob");
     var createUserJan = new CreateUser(janId, "jan");
     var sendMsgFromBobToJan = new CreateOutboundMsg(bobId, janId, "hello");
-    var cmds = Flux.<Command>just(createUserBob, createUserJan, sendMsgFromBobToJan);
-    StepVerifier.create(commandStream.publish(cmds)).expectNextCount(3).verifyComplete();
+    var cmds = Flux.<Command>just(createUserBob, createUserJan, sendMsgFromBobToJan).map(PipelineTest::toMsg);
+    StepVerifier.create(stream.publish(cmds)).expectNextCount(3).verifyComplete();
     // When
-    statePipeline.run(0).subscribe();
-    sagaPipeline.run(0).delaySubscription(Duration.ofMillis(100)).subscribe();
-    StepVerifier.create(commandStream.subscribe(0).take(5)).expectNextCount(5).verifyComplete();
-    StepVerifier.create(eventStream.subscribe(0).take(5)).expectNextCount(5).verifyComplete();
+    StepVerifier.create(statePipeline.run().take(5)).expectNextCount(5).verifyComplete();
+    StepVerifier.create(sagaPipeline.run().delaySubscription(Duration.ofMillis(100)).take(5))
+                .expectNextCount(5)
+                .verifyComplete();
+  }
+
+  private static Msg toMsg(Command command) {
+    var conf = config.commandConfig();
+    var body = transformer.blockingSerialize(command).get();
+    return new Msg(conf.topic(), conf.partition(), Id.of(UUID.randomUUID()), body);
   }
 }
