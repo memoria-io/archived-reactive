@@ -26,7 +26,7 @@ class MemStreamTest {
     // Then
     var expected = msgs.map(Msg::id).collectList().block();
     assert expected != null;
-    StepVerifier.create(pub).expectNextSequence(expected).verifyComplete();
+    StepVerifier.create(pub.map(Msg::id)).expectNextSequence(expected).verifyComplete();
     StepVerifier.create(STREAM.size(TOPIC, PARTITION)).expectNext((long) N_ELEMENTS).verifyComplete();
   }
 

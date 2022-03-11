@@ -17,28 +17,28 @@ public sealed interface UserEvent extends Event {
     return 0;
   }
 
-  record InboundMsgCreated(Id userId, Id from, String message) implements UserEvent {
+  record InboundMsgCreated(Id commandId, Id userId, Id from, String message) implements UserEvent {
     @Override
     public Id stateId() {
       return userId;
     }
   }
 
-  record OutboundMsgCreated(Id userId, Id to, String message) implements UserEvent {
+  record OutboundMsgCreated(Id commandId, Id userId, Id to, String message) implements UserEvent {
     @Override
     public Id stateId() {
       return userId;
     }
   }
 
-  record OutboundSeen(Id userId, Id seenBy) implements UserEvent {
+  record OutboundSeen(Id commandId, Id userId, Id seenBy) implements UserEvent {
     @Override
     public Id stateId() {
       return userId;
     }
   }
 
-  record UserCreated(Id userId, String name) implements UserEvent {
+  record UserCreated(Id commandId, Id userId, String name) implements UserEvent {
     @Override
     public Id stateId() {
       return userId;

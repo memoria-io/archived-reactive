@@ -36,18 +36,18 @@ public record UserStateDecider() implements StateDecider {
   }
 
   private Try<Event> inboundMessageCreated(CreateInboundMsg cmd) {
-    return Try.success(new InboundMsgCreated(cmd.userId(), cmd.from(), cmd.message()));
+    return Try.success(new InboundMsgCreated(cmd.id(), cmd.userId(), cmd.from(), cmd.message()));
   }
 
   private Try<Event> outboundCreated(CreateOutboundMsg cmd) {
-    return Try.success(new OutboundMsgCreated(cmd.userId(), cmd.to(), cmd.message()));
+    return Try.success(new OutboundMsgCreated(cmd.id(), cmd.userId(), cmd.to(), cmd.message()));
   }
 
   private Try<Event> outboundSeen(MarkMsgAsSeen cmd) {
-    return Try.success(new OutboundSeen(cmd.userId(), cmd.seenBy()));
+    return Try.success(new OutboundSeen(cmd.id(), cmd.userId(), cmd.seenBy()));
   }
 
   private Try<Event> userCreated(CreateUser cmd) {
-    return Try.success(new UserCreated(cmd.userId(), cmd.username()));
+    return Try.success(new UserCreated(cmd.id(), cmd.userId(), cmd.username()));
   }
 }

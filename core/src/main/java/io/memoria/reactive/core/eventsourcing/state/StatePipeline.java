@@ -87,16 +87,16 @@ public class StatePipeline {
 
   private Flux<Event> publishEvents(Flux<Event> events) {
     return stream.publish(events.concatMap(this::toMsg))
-                 .log(LOGGER, logConfig.logLevel(), logConfig.showLine(), logConfig.signalTypeArray())
-                 .concatMap(this::toEvent);
+                 .concatMap(this::toEvent)
+                 .log(LOGGER, logConfig.logLevel(), logConfig.showLine(), logConfig.signalTypeArray());
   }
 
   private Flux<Event> readEvents(long until) {
     if (until > 0)
       return stream.subscribe(streamConfig.topic(), streamConfig.partition(), streamConfig.offset())
-                   .log(LOGGER, logConfig.logLevel(), logConfig.showLine(), logConfig.signalTypeArray())
                    .take(until)
-                   .concatMap(this::toEvent);
+                   .concatMap(this::toEvent)
+                   .log(LOGGER, logConfig.logLevel(), logConfig.showLine(), logConfig.signalTypeArray());
     else
       return Flux.empty();
   }
@@ -107,9 +107,9 @@ public class StatePipeline {
 
   private Flux<Command> streamCommands() {
     return stream.subscribe(commandConfig.topic(), commandConfig.partition(), commandConfig.offset())
-                 .log(LOGGER, logConfig.logLevel(), logConfig.showLine(), logConfig.signalTypeArray())
                  .concatMap(this::toCommand)
-                 .filter(cmd -> processedCmds.contains(cmd.id()));
+                 .filter(cmd -> !processedCmds.contains(cmd.id()))
+                 .log(LOGGER, logConfig.logLevel(), logConfig.showLine(), logConfig.signalTypeArray());
   }
 
   private Mono<Command> toCommand(Msg msg) {
