@@ -5,11 +5,11 @@ import io.memoria.reactive.core.id.Id;
 import java.io.Serializable;
 
 public interface Event extends Serializable {
+  Id commandId();
+
   Id id();
 
   Id stateId();
-
-  Id commandId();
 
   long timestamp();
 }

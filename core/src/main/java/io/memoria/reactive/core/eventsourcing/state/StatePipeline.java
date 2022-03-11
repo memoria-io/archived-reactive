@@ -27,33 +27,33 @@ public class StatePipeline {
   private static final Logger LOGGER = Loggers.getLogger(StatePipeline.class.getName());
   // Infra
   private final Stream stream;
+  private final TextTransformer transformer;
   private final Set<Id> processedCmds;
   private final Map<Id, State> stateRepo;
   // Business logic
   private final State initState;
   private final StateDecider stateDecider;
   private final StateEvolver evolver;
-  private final TextTransformer transformer;
   // Configs
   private final StreamConfig commandConfig;
   private final StreamConfig streamConfig;
   private final LogConfig logConfig;
 
   public StatePipeline(Stream stream,
+                       TextTransformer transformer,
                        State initState,
                        StateDecider stateDecider,
                        StateEvolver evolver,
-                       PipelineConfig config,
-                       TextTransformer transformer) {
+                       PipelineConfig config) {
     // Infra
     this.stream = stream;
+    this.transformer = transformer;
     this.processedCmds = new HashSet<>();
     this.stateRepo = new ConcurrentHashMap<>();
     // Business logic
     this.initState = initState;
     this.stateDecider = stateDecider;
     this.evolver = evolver;
-    this.transformer = transformer;
     // Configs
     this.commandConfig = config.commandConfig();
     this.streamConfig = config.eventConfig();
@@ -61,13 +61,11 @@ public class StatePipeline {
   }
 
   public Flux<Event> run() {
-    var msgs = streamCommands().map(this::decide)
-                               .concatMap(ReactorVavrUtils::toMono)
-                               .doOnNext(this::evolveState)
-                               .doOnNext(event -> processedCmds.add(event.commandId()))
-                               .concatMap(this::toMsg);
-    var msgsPublished = stream.publish(msgs).concatMap(this::toEvent);
-    return buildStates().concatWith(msgsPublished);
+    var events = streamCommands().map(this::decide)
+                                 .concatMap(ReactorVavrUtils::toMono)
+                                 .doOnNext(this::evolveState)
+                                 .doOnNext(event -> processedCmds.add(event.commandId()));
+    return buildStates().concatWith(publishEvents(events));
   }
 
   private Flux<Event> buildStates() {
@@ -87,11 +85,17 @@ public class StatePipeline {
     stateRepo.put(event.stateId(), newState);
   }
 
-  private Flux<Event> readEvents(long idxSize) {
-    if (idxSize > 0)
+  private Flux<Event> publishEvents(Flux<Event> events) {
+    return stream.publish(events.concatMap(this::toMsg))
+                 .log(LOGGER, logConfig.logLevel(), logConfig.showLine(), logConfig.signalTypeArray())
+                 .concatMap(this::toEvent);
+  }
+
+  private Flux<Event> readEvents(long until) {
+    if (until > 0)
       return stream.subscribe(streamConfig.topic(), streamConfig.partition(), streamConfig.offset())
                    .log(LOGGER, logConfig.logLevel(), logConfig.showLine(), logConfig.signalTypeArray())
-                   .take(idxSize)
+                   .take(until)
                    .concatMap(this::toEvent);
     else
       return Flux.empty();

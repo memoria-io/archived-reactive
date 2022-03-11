@@ -1,6 +1,5 @@
 package io.memoria.reactive.core.stream.mem;
 
-import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
 import io.vavr.control.Option;
@@ -25,7 +24,7 @@ public final class MemStream implements Stream {
   }
 
   @Override
-  public Flux<Id> publish(Flux<Msg> msgs) {
+  public Flux<Msg> publish(Flux<Msg> msgs) {
     return msgs.map(this::publishFn);
   }
 
@@ -45,12 +44,12 @@ public final class MemStream implements Stream {
     return topicStream.get(topic).asFlux();
   }
 
-  private Id publishFn(Msg msg) {
+  private Msg publishFn(Msg msg) {
     String topic = msg.topic();
     createTopic(topic);
     this.topicStream.get(topic).tryEmitNext(msg);
     this.topicSize.get(topic).getAndIncrement();
-    return msg.id();
+    return msg;
   }
 
   private Long topicSize(String topic) {

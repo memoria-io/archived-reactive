@@ -8,6 +8,7 @@ import io.memoria.reactive.core.eventsourcing.state.StatePipeline;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.mem.MemStream;
 import io.memoria.reactive.core.text.SerializableTransformer;
+import jdk.jfr.consumer.EventStream;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
