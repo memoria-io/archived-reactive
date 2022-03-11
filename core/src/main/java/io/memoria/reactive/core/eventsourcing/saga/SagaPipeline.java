@@ -38,10 +38,6 @@ public class SagaPipeline {
     this.logConfig = config.logConfig();
   }
 
-  /**
-   * @param eventsOffset the events reading offset
-   * @return Commands Ids flux
-   */
   public Flux<Command> run() {
     var cmds = streamEvents().map(sagaDecider).concatMap(ReactorVavrUtils::toMono);
     return publishCommands(cmds);
