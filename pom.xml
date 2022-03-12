@@ -11,7 +11,7 @@
     <!--suppress MavenRedundantGroupId -->
     <groupId>io.memoria</groupId>
     <artifactId>reactive</artifactId>
-    <version>0.349.0</version>
+    <version>0.350.0</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}.${project.artifactId}</name>
@@ -21,7 +21,7 @@
         <name>memoria.io</name>
         <url>https://memoria.io</url>
     </organization>
-    
+
     <modules>
         <module>core</module>
         <module>text</module>
@@ -38,7 +38,7 @@
         <argon2.version>2.11</argon2.version>
         <jsonwebtoken.version>0.11.2</jsonwebtoken.version>
     </properties>
-    
+
     <distributionManagement>
         <site>
             <id>${project.artifactId}-site</id>

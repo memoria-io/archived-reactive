@@ -2,10 +2,9 @@ package io.memoria.reactive.core.eventsourcing.state;
 
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.Event;
-import io.memoria.reactive.core.eventsourcing.PipelineConfig;
-import io.memoria.reactive.core.eventsourcing.PipelineConfig.LogConfig;
-import io.memoria.reactive.core.eventsourcing.PipelineConfig.StreamConfig;
+import io.memoria.reactive.core.eventsourcing.LogConfig;
 import io.memoria.reactive.core.eventsourcing.State;
+import io.memoria.reactive.core.eventsourcing.StreamConfig;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
@@ -37,7 +36,7 @@ public class StatePipeline {
   private final StateEvolver evolver;
   // Configs
   private final StreamConfig commandConfig;
-  private final StreamConfig streamConfig;
+  private final StreamConfig eventConfig;
   private final LogConfig logConfig;
 
   public StatePipeline(Stream stream,
@@ -45,7 +44,9 @@ public class StatePipeline {
                        State initState,
                        StateDecider stateDecider,
                        StateEvolver evolver,
-                       PipelineConfig config) {
+                       StreamConfig commandConfig,
+                       StreamConfig eventConfig,
+                       LogConfig logConfig) {
     // Infra
     this.stream = stream;
     this.transformer = transformer;
@@ -56,9 +57,9 @@ public class StatePipeline {
     this.stateDecider = stateDecider;
     this.evolver = evolver;
     // Configs
-    this.commandConfig = config.commandConfig();
-    this.streamConfig = config.eventConfig();
-    this.logConfig = config.logConfig();
+    this.commandConfig = commandConfig;
+    this.eventConfig = eventConfig;
+    this.logConfig = logConfig;
   }
 
   public Flux<Event> run() {
@@ -70,7 +71,7 @@ public class StatePipeline {
   }
 
   private Flux<Event> buildStates() {
-    return stream.size(streamConfig.topic(), streamConfig.partition())
+    return stream.size(eventConfig.topic(), eventConfig.partition())
                  .flatMapMany(this::readEvents)
                  .doOnNext(this::evolveState);
   }
@@ -94,7 +95,7 @@ public class StatePipeline {
 
   private Flux<Event> readEvents(long until) {
     if (until > 0)
-      return stream.subscribe(streamConfig.topic(), streamConfig.partition(), streamConfig.offset())
+      return stream.subscribe(eventConfig.topic(), eventConfig.partition(), eventConfig.offset())
                    .take(until)
                    .concatMap(this::toEvent)
                    .log(LOGGER, Level.INFO, logConfig.showLine(), logConfig.signalTypeArray());
@@ -123,6 +124,6 @@ public class StatePipeline {
 
   private Mono<Msg> toMsg(Event event) {
     return transformer.serialize(event)
-                      .map(body -> new Msg(streamConfig.topic(), streamConfig.partition(), event.id(), body));
+                      .map(body -> new Msg(eventConfig.topic(), eventConfig.partition(), event.id(), body));
   }
 }

@@ -1,7 +1,5 @@
 package io.memoria.reactive.core.eventsourcing;
 
-import io.memoria.reactive.core.eventsourcing.PipelineConfig.LogConfig;
-import io.memoria.reactive.core.eventsourcing.PipelineConfig.StreamConfig;
 import io.memoria.reactive.core.eventsourcing.User.Visitor;
 import io.memoria.reactive.core.eventsourcing.UserCommand.CreateOutboundMsg;
 import io.memoria.reactive.core.eventsourcing.UserCommand.CreateUser;
@@ -23,27 +21,30 @@ import java.util.UUID;
 class PipelineTest {
   private static final Stream stream;
   private static final TextTransformer transformer;
-  private static final PipelineConfig config;
   private static final StatePipeline statePipeline;
   private static final SagaPipeline sagaPipeline;
+  private static final StreamConfig commandConfig;
+  private static final StreamConfig eventConfig;
+  private static final LogConfig logConfig;
 
   static {
     // Infra
     stream = new MemStream(1000);
     transformer = new SerializableTransformer();
     // Configs
-    var eventConfig = new StreamConfig("eventTopic", 0, 0, 1);
-    var commandConfig = new StreamConfig("commandTopic", 0, 0, 1);
-    var logConfig = LogConfig.DEFAULT;
-    config = new PipelineConfig(eventConfig, commandConfig, logConfig);
+    commandConfig = new StreamConfig("commandTopic", 0, 0, 1);
+    eventConfig = new StreamConfig("eventTopic", 0, 0, 1);
+    logConfig = LogConfig.DEFAULT;
     // Pipeline
     statePipeline = new StatePipeline(stream,
                                       transformer,
                                       new Visitor(),
                                       new UserStateDecider(),
                                       new UserStateEvolver(),
-                                      config);
-    sagaPipeline = new SagaPipeline(stream, transformer, new UserSagaDecider(), config);
+                                      commandConfig,
+                                      eventConfig,
+                                      logConfig);
+    sagaPipeline = new SagaPipeline(stream, transformer, new UserSagaDecider(), commandConfig, eventConfig, logConfig);
   }
 
   @Test
@@ -64,8 +65,7 @@ class PipelineTest {
   }
 
   private static Msg toMsg(Command command) {
-    var conf = config.commandConfig();
     var body = transformer.blockingSerialize(command).get();
-    return new Msg(conf.topic(), conf.partition(), Id.of(UUID.randomUUID()), body);
+    return new Msg(commandConfig.topic(), commandConfig.partition(), Id.of(UUID.randomUUID()), body);
   }
 }

@@ -2,9 +2,8 @@ package io.memoria.reactive.core.eventsourcing.saga;
 
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.Event;
-import io.memoria.reactive.core.eventsourcing.PipelineConfig;
-import io.memoria.reactive.core.eventsourcing.PipelineConfig.LogConfig;
-import io.memoria.reactive.core.eventsourcing.PipelineConfig.StreamConfig;
+import io.memoria.reactive.core.eventsourcing.LogConfig;
+import io.memoria.reactive.core.eventsourcing.StreamConfig;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
 import io.memoria.reactive.core.text.TextTransformer;
@@ -28,16 +27,21 @@ public class SagaPipeline {
   private final StreamConfig eventConfig;
   private final LogConfig logConfig;
 
-  public SagaPipeline(Stream stream, TextTransformer transformer, SagaDecider sagaDecider, PipelineConfig config) {
+  public SagaPipeline(Stream stream,
+                      TextTransformer transformer,
+                      SagaDecider sagaDecider,
+                      StreamConfig commandConfig,
+                      StreamConfig eventConfig,
+                      LogConfig logConfig) {
     // Infra
     this.stream = stream;
     this.transformer = transformer;
     // Business logic
     this.sagaDecider = sagaDecider;
     // Config
-    this.commandConfig = config.commandConfig();
-    this.eventConfig = config.eventConfig();
-    this.logConfig = config.logConfig();
+    this.commandConfig = commandConfig;
+    this.eventConfig = eventConfig;
+    this.logConfig = logConfig;
   }
 
   public Flux<Command> run() {
