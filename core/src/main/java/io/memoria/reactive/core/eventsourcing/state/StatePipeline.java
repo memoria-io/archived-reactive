@@ -70,6 +70,23 @@ public class StatePipeline {
     return buildStates().concatWith(publishEvents(events));
   }
 
+  public State stateOrInit(Id stateId) {
+    return Option.of(stateRepo.get(stateId)).getOrElse(initState);
+  }
+
+  public Mono<Command> toCommand(Msg msg) {
+    return transformer.deserialize(msg.value(), Command.class);
+  }
+
+  public Mono<Event> toEvent(Msg msg) {
+    return transformer.deserialize(msg.value(), Event.class);
+  }
+
+  public Mono<Msg> toMsg(Event event) {
+    return transformer.serialize(event)
+                      .map(body -> new Msg(eventConfig.topic(), eventConfig.partition(), event.id(), body));
+  }
+
   private Flux<Event> buildStates() {
     return stream.size(eventConfig.topic(), eventConfig.partition())
                  .flatMapMany(this::readEvents)
@@ -103,27 +120,10 @@ public class StatePipeline {
       return Flux.empty();
   }
 
-  private State stateOrInit(Id stateId) {
-    return Option.of(stateRepo.get(stateId)).getOrElse(initState);
-  }
-
   private Flux<Command> streamCommands() {
     return stream.subscribe(commandConfig.topic(), commandConfig.partition(), commandConfig.offset())
                  .concatMap(this::toCommand)
                  .filter(cmd -> !processedCmds.contains(cmd.id()))
                  .log(LOGGER, Level.INFO, logConfig.showLine(), logConfig.signalTypeArray());
-  }
-
-  private Mono<Command> toCommand(Msg msg) {
-    return transformer.deserialize(msg.value(), Command.class);
-  }
-
-  private Mono<Event> toEvent(Msg msg) {
-    return transformer.deserialize(msg.value(), Event.class);
-  }
-
-  private Mono<Msg> toMsg(Event event) {
-    return transformer.serialize(event)
-                      .map(body -> new Msg(eventConfig.topic(), eventConfig.partition(), event.id(), body));
   }
 }

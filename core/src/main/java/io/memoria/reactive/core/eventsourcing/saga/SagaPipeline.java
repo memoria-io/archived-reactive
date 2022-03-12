@@ -49,6 +49,21 @@ public class SagaPipeline {
     return publishCommands(cmds);
   }
 
+  public Mono<Command> toCommand(Msg msg) {
+    return transformer.deserialize(msg.value(), Command.class);
+  }
+
+  public Mono<Event> toEvent(Msg msg) {
+    return transformer.deserialize(msg.value(), Event.class);
+  }
+
+  public Mono<Msg> toMsg(Command command) {
+    return transformer.serialize(command).map(body -> {
+      var partition = Math.abs(command.stateId().hashCode()) % commandConfig.totalPartitions();
+      return new Msg(commandConfig.topic(), partition, command.id(), body);
+    });
+  }
+
   private Flux<Command> publishCommands(Flux<Command> commands) {
     var msgs = commands.concatMap(this::toMsg);
     return stream.publish(msgs)
@@ -60,20 +75,5 @@ public class SagaPipeline {
     return stream.subscribe(eventConfig.topic(), eventConfig.partition(), eventConfig.offset())
                  .concatMap(this::toEvent)
                  .log(LOGGER, Level.INFO, logConfig.showLine(), logConfig.signalTypeArray());
-  }
-
-  private Mono<Command> toCommand(Msg msg) {
-    return transformer.deserialize(msg.value(), Command.class);
-  }
-
-  private Mono<Event> toEvent(Msg msg) {
-    return transformer.deserialize(msg.value(), Event.class);
-  }
-
-  private Mono<Msg> toMsg(Command command) {
-    return transformer.serialize(command).map(body -> {
-      var partition = Math.abs(command.stateId().hashCode()) % commandConfig.totalPartitions();
-      return new Msg(commandConfig.topic(), partition, command.id(), body);
-    });
   }
 }
