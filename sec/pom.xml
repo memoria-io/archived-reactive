@@ -13,7 +13,7 @@
     <version>0.349.0</version>
     <packaging>jar</packaging>
 
-    <name>${project.artifactId}</name>
+    <name>${project.groupId}.${project.artifactId}</name>
     <description>Security Module</description>
 
     <dependencies>
