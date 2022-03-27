@@ -4,7 +4,7 @@ import io.memoria.reactive.core.eventsourcing.UserCommand.CreateInboundMsg;
 import io.memoria.reactive.core.eventsourcing.UserCommand.MarkMsgAsSeen;
 import io.memoria.reactive.core.eventsourcing.UserEvent.InboundMsgCreated;
 import io.memoria.reactive.core.eventsourcing.UserEvent.OutboundMsgCreated;
-import io.memoria.reactive.core.eventsourcing.saga.SagaDecider;
+import io.memoria.reactive.core.eventsourcing.pipeline.SagaDecider;
 import io.vavr.control.Option;
 
 public record UserSagaDecider() implements SagaDecider {

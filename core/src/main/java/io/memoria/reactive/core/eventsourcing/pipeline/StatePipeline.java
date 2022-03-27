@@ -1,10 +1,8 @@
-package io.memoria.reactive.core.eventsourcing.state;
+package io.memoria.reactive.core.eventsourcing.pipeline;
 
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.Event;
-import io.memoria.reactive.core.eventsourcing.LogConfig;
 import io.memoria.reactive.core.eventsourcing.State;
-import io.memoria.reactive.core.eventsourcing.StreamConfig;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
@@ -35,18 +33,16 @@ public class StatePipeline {
   private final StateDecider stateDecider;
   private final StateEvolver evolver;
   // Configs
-  private final StreamConfig commandConfig;
-  private final StreamConfig eventConfig;
-  private final LogConfig logConfig;
+  private final PipelineRoute pipelineRoute;
+  private final PipelineLogConfig pipelineLogConfig;
 
   public StatePipeline(Stream stream,
                        TextTransformer transformer,
                        State initState,
                        StateDecider stateDecider,
                        StateEvolver evolver,
-                       StreamConfig commandConfig,
-                       StreamConfig eventConfig,
-                       LogConfig logConfig) {
+                       PipelineRoute pipelineRoute,
+                       PipelineLogConfig pipelineLogConfig) {
     // Infra
     this.stream = stream;
     this.transformer = transformer;
@@ -57,9 +53,8 @@ public class StatePipeline {
     this.stateDecider = stateDecider;
     this.evolver = evolver;
     // Configs
-    this.commandConfig = commandConfig;
-    this.eventConfig = eventConfig;
-    this.logConfig = logConfig;
+    this.pipelineRoute = pipelineRoute;
+    this.pipelineLogConfig = pipelineLogConfig;
   }
 
   public Flux<Event> run() {
@@ -84,11 +79,11 @@ public class StatePipeline {
 
   public Mono<Msg> toMsg(Event event) {
     return transformer.serialize(event)
-                      .map(body -> new Msg(eventConfig.topic(), eventConfig.partition(), event.id(), body));
+                      .map(body -> new Msg(pipelineRoute.eventTopic(), pipelineRoute.partition(), event.id(), body));
   }
 
   private Flux<Event> buildStates() {
-    return stream.size(eventConfig.topic(), eventConfig.partition())
+    return stream.size(pipelineRoute.eventTopic(), pipelineRoute.partition())
                  .flatMapMany(this::readEvents)
                  .doOnNext(this::evolveState);
   }
@@ -107,23 +102,23 @@ public class StatePipeline {
   private Flux<Event> publishEvents(Flux<Event> events) {
     return stream.publish(events.concatMap(this::toMsg))
                  .concatMap(this::toEvent)
-                 .log(LOGGER, Level.INFO, logConfig.showLine(), logConfig.signalTypeArray());
+                 .log(LOGGER, Level.INFO, pipelineLogConfig.showLine(), pipelineLogConfig.signalTypeArray());
   }
 
   private Flux<Event> readEvents(long until) {
     if (until > 0)
-      return stream.subscribe(eventConfig.topic(), eventConfig.partition(), eventConfig.offset())
+      return stream.subscribe(pipelineRoute.commandTopic(), pipelineRoute.partition(), 0)
                    .take(until)
                    .concatMap(this::toEvent)
-                   .log(LOGGER, Level.INFO, logConfig.showLine(), logConfig.signalTypeArray());
+                   .log(LOGGER, Level.INFO, pipelineLogConfig.showLine(), pipelineLogConfig.signalTypeArray());
     else
       return Flux.empty();
   }
 
   private Flux<Command> streamCommands() {
-    return stream.subscribe(commandConfig.topic(), commandConfig.partition(), commandConfig.offset())
+    return stream.subscribe(pipelineRoute.commandTopic(), pipelineRoute.partition(), 0)
                  .concatMap(this::toCommand)
                  .filter(cmd -> !processedCmds.contains(cmd.id()))
-                 .log(LOGGER, Level.INFO, logConfig.showLine(), logConfig.signalTypeArray());
+                 .log(LOGGER, Level.INFO, pipelineLogConfig.showLine(), pipelineLogConfig.signalTypeArray());
   }
 }

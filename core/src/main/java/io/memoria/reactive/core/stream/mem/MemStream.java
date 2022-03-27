@@ -52,7 +52,7 @@ public final class MemStream implements Stream {
     return msg;
   }
 
-  private Long topicSize(String topic) {
+  private long topicSize(String topic) {
     return Option.of(topicSize.get(topic)).map(AtomicLong::get).getOrElse(0L);
   }
 }

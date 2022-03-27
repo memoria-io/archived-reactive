@@ -1,4 +1,4 @@
-package io.memoria.reactive.core.eventsourcing.state;
+package io.memoria.reactive.core.eventsourcing.pipeline;
 
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.Event;

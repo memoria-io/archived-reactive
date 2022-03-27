@@ -1,4 +1,0 @@
-javaHomePath: /hello/java
-otherValue: defaultValue
-routeValue: /defaultValue/{paramName}/someOther
-routeValueWithSpace: /defaultValue/{paramName}/someOther

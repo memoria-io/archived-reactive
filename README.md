@@ -73,3 +73,6 @@ You can just do pull requests, and I will check them asap.
 ## TODOs
 
 * Increase test coverage to >85%
+* Eventsourcing sharding
+  * Kafka tools ?
+* Aggregate ID safety

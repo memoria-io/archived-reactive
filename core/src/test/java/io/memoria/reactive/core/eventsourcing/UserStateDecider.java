@@ -12,7 +12,7 @@ import io.memoria.reactive.core.eventsourcing.UserEvent.InboundMsgCreated;
 import io.memoria.reactive.core.eventsourcing.UserEvent.OutboundMsgCreated;
 import io.memoria.reactive.core.eventsourcing.UserEvent.OutboundSeen;
 import io.memoria.reactive.core.eventsourcing.UserEvent.UserCreated;
-import io.memoria.reactive.core.eventsourcing.state.StateDecider;
+import io.memoria.reactive.core.eventsourcing.pipeline.StateDecider;
 import io.vavr.control.Try;
 
 public record UserStateDecider() implements StateDecider {

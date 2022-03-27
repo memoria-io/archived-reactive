@@ -61,7 +61,7 @@ public class ConfigFileOps {
   private String removeBraces(String line) {
     StringBuilder stringBuilder = new StringBuilder(line);
     var openingIdx = stringBuilder.indexOf(VAR_PREFIX);
-    stringBuilder.replace(openingIdx, openingIdx + 1, "");
+    stringBuilder.replace(openingIdx, openingIdx + 2, "");
     var closingIdx = stringBuilder.lastIndexOf(VAR_POSTFIX);
     stringBuilder.replace(closingIdx, closingIdx + 1, "");
     return stringBuilder.toString().trim();

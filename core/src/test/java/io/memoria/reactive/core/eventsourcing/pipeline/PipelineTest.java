@@ -1,10 +1,12 @@
-package io.memoria.reactive.core.eventsourcing;
+package io.memoria.reactive.core.eventsourcing.pipeline;
 
+import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.User.Visitor;
 import io.memoria.reactive.core.eventsourcing.UserCommand.CreateOutboundMsg;
 import io.memoria.reactive.core.eventsourcing.UserCommand.CreateUser;
-import io.memoria.reactive.core.eventsourcing.saga.SagaPipeline;
-import io.memoria.reactive.core.eventsourcing.state.StatePipeline;
+import io.memoria.reactive.core.eventsourcing.UserSagaDecider;
+import io.memoria.reactive.core.eventsourcing.UserStateDecider;
+import io.memoria.reactive.core.eventsourcing.UserStateEvolver;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
@@ -23,28 +25,23 @@ class PipelineTest {
   private static final TextTransformer transformer;
   private static final StatePipeline statePipeline;
   private static final SagaPipeline sagaPipeline;
-  private static final StreamConfig commandConfig;
-  private static final StreamConfig eventConfig;
-  private static final LogConfig logConfig;
+  private static final PipelineRoute PIPELINE_CONFIG;
+  private static final PipelineLogConfig PIPELINE_LOGGING;
 
   static {
     // Infra
     stream = new MemStream(1000);
     transformer = new SerializableTransformer();
     // Configs
-    commandConfig = new StreamConfig("commandTopic", 0, 0, 1);
-    eventConfig = new StreamConfig("eventTopic", 0, 0, 1);
-    logConfig = LogConfig.DEFAULT;
+    PIPELINE_CONFIG = new PipelineRoute("commandTopic", "eventTopic", 0, 1);
+    PIPELINE_LOGGING = PipelineLogConfig.DEFAULT;
     // Pipeline
     statePipeline = new StatePipeline(stream,
                                       transformer,
                                       new Visitor(),
                                       new UserStateDecider(),
-                                      new UserStateEvolver(),
-                                      commandConfig,
-                                      eventConfig,
-                                      logConfig);
-    sagaPipeline = new SagaPipeline(stream, transformer, new UserSagaDecider(), commandConfig, eventConfig, logConfig);
+                                      new UserStateEvolver(), PIPELINE_CONFIG, PIPELINE_LOGGING);
+    sagaPipeline = new SagaPipeline(stream, transformer, new UserSagaDecider(), PIPELINE_CONFIG, PIPELINE_LOGGING);
   }
 
   @Test
@@ -67,6 +64,6 @@ class PipelineTest {
 
   private static Msg toMsg(Command command) {
     var body = transformer.blockingSerialize(command).get();
-    return new Msg(commandConfig.topic(), commandConfig.partition(), Id.of(UUID.randomUUID()), body);
+    return new Msg(PIPELINE_CONFIG.commandTopic(), PIPELINE_CONFIG.partition(), Id.of(UUID.randomUUID()), body);
   }
 }
