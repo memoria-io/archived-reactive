@@ -11,7 +11,7 @@
     <!--suppress MavenRedundantGroupId -->
     <groupId>io.memoria</groupId>
     <artifactId>reactive</artifactId>
-    <version>0.354.0</version>
+    <version>0.355.0</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}.${project.artifactId}</name>
@@ -32,8 +32,9 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <reactor.version>2020.0.16</reactor.version>
-        <vavr.version>0.10.3</vavr.version>
+        <reactor.version>2020.0.17</reactor.version>
+        <vavr.version>0.10.4</vavr.version>
+        <vavr-jackson.version>0.10.3</vavr-jackson.version>
         <jackson.version>2.13.1</jackson.version>
         <argon2.version>2.11</argon2.version>
         <jsonwebtoken.version>0.11.2</jsonwebtoken.version>
@@ -84,7 +85,7 @@
             <dependency>
                 <groupId>io.vavr</groupId>
                 <artifactId>vavr-jackson</artifactId>
-                <version>${vavr.version}</version>
+                <version>${vavr-jackson.version}</version>
             </dependency>
             <!--======================================================================================== -->
             <!-- Json Dependencies -->
