@@ -15,7 +15,7 @@ on [Reactive Streams](https://www.reactive-streams.org/) and uses [Project-React
 [Reactor Netty](https://github.com/reactor/reactor-netty), it also uses functional paradigms and collections
 from [Vavr](https://www.vavr.io/),
 
-## Features
+## Core Features
 
 * Vavr + Reactor Functional utilities
 * Reactor Netty utility functions
@@ -31,6 +31,26 @@ from [Vavr](https://www.vavr.io/),
         * `path: ${JAVA_HOME}`
         * `myVar: ${SOME_VAR:-defaultValue}`
 * reactive is up to date with the latest versions of JDK preview feature, currently `Java 17`.
+
+## DONE
+
+* Eventsourcing
+  * State decider, evolver, pipeline
+  * Sagas decider, pipeline
+* Streaming
+  * Stream api for usage in event sourcing
+
+
+## TODOs
+
+* Stream sharding to be used later for scaling 
+* Increase test coverage to >85%
+* Stream api for messaging
+* Aggregate ID safety
+
+## Release notes
+
+* Reactive is using `minor` (as in semantic versioning) as a major until first version is released 
 
 ## Usage
 
@@ -61,18 +81,11 @@ All modules depend on Core. There are currently no other inter-dependencies betw
 </dependencies>
 ```
 
-## Related Articles
-
-* [Error handling using Reactor and VAVR](https://marmoush.com/2019/11/12/Error-Handling.html)
-* [Why I stopped using getters and setters](https://marmoush.com/2019/12/13/stopped-using-getters-and-setters.html)
-
 ## Contribution
 
 You can just do pull requests, and I will check them asap.
 
-## TODOs
+## Related Articles
 
-* Increase test coverage to >85%
-* Eventsourcing sharding
-  * Kafka tools ?
-* Aggregate ID safety
+* [Error handling using Reactor and VAVR](https://marmoush.com/2019/11/12/Error-Handling.html)
+* [Why I stopped using getters and setters](https://marmoush.com/2019/12/13/stopped-using-getters-and-setters.html)
