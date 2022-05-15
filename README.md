@@ -47,7 +47,7 @@ from [Vavr](https://www.vavr.io/).
 * [ ] Event Stream Compaction
 * [ ] Increase test coverage to >85%
 * [ ] Stream api for messaging
-* [ ] Aggregate ID safety
+* [ ] id safety (stateId, commandId, eventId)
 
 ## Release notes
 

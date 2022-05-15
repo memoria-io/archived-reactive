@@ -2,7 +2,7 @@ package io.memoria.reactive.core.eventsourcing;
 
 import io.memoria.reactive.core.id.Id;
 
-public interface Stateful {
+public interface Shardable {
   default boolean isInPartition(int partition, int totalPartitions) {
     return partition == partition(totalPartitions);
   }
