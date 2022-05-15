@@ -3,25 +3,22 @@ package io.memoria.reactive.core.id;
 import java.io.Serializable;
 import java.util.UUID;
 
-public record Id(String value) implements Serializable {
-  public Id(long id) {
-    this(Long.toString(id));
+public interface Id extends Serializable {
+  String value();
+
+  static Id of() {
+    return of(UUID.randomUUID());
   }
 
-  public Id {
-    if (value == null || value.isEmpty())
-      throw new IllegalArgumentException("Id value is null or empty.");
+  static Id of(UUID id) {
+    return new DefaultId(id.toString());
   }
 
-  public static Id of(UUID id) {
-    return new Id(id.toString());
+  static Id of(long id) {
+    return new DefaultId(Long.toString(id));
   }
 
-  public static Id of(long id) {
-    return new Id(id);
-  }
-
-  public static Id of(String id) {
-    return new Id(id);
+  static Id of(String id) {
+    return new DefaultId(id);
   }
 }

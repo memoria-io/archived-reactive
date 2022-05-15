@@ -3,6 +3,7 @@ package io.memoria.reactive.core.id;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 class IdGeneratorTest {
@@ -25,7 +26,8 @@ class IdGeneratorTest {
 
   @Test
   void idTest() {
-    Assertions.assertThrows(IllegalArgumentException.class, () -> new Id(null));
-    Assertions.assertThrows(IllegalArgumentException.class, () -> new Id(""));
+    UUID u = null;
+    Assertions.assertThrows(NullPointerException.class, () -> Id.of(u));
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Id.of(""));
   }
 }
