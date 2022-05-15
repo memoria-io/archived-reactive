@@ -26,15 +26,15 @@ public class ResourceFileOps {
     }
   }
 
-  private static List<String> fileLines(String path) throws IOException {
-    try (var lines = Files.lines(Path.of(path))) {
-      return List.ofAll(lines);
-    }
-  }
-
   private static String resource(String path) throws IOException {
     try (InputStream is = ClassLoader.getSystemResourceAsStream(path)) {
       return new String(Objects.requireNonNull(is).readAllBytes());
+    }
+  }
+
+  private static List<String> fileLines(String path) throws IOException {
+    try (var lines = Files.lines(Path.of(path))) {
+      return List.ofAll(lines);
     }
   }
 

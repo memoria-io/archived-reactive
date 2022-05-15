@@ -12,6 +12,8 @@ import io.vavr.control.Option;
 import io.vavr.control.Try;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.ParallelFlux;
+import reactor.core.scheduler.Schedulers;
 import reactor.util.Logger;
 import reactor.util.Loggers;
 
@@ -19,13 +21,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 public class StatePipeline {
   private static final Logger LOGGER = Loggers.getLogger(StatePipeline.class.getName());
   // Infra
   private final Stream stream;
   private final TextTransformer transformer;
+  private final Set<Id> processedEvents;
   private final Set<Id> processedCmds;
   private final Map<Id, State> stateRepo;
   // Business logic
@@ -33,19 +35,20 @@ public class StatePipeline {
   private final StateDecider stateDecider;
   private final StateEvolver evolver;
   // Configs
-  private final PipelineRoute pipelineRoute;
-  private final PipelineLogConfig pipelineLogConfig;
+  private final Route route;
+  private final LogConfig logConfig;
 
   public StatePipeline(Stream stream,
                        TextTransformer transformer,
                        State initState,
                        StateDecider stateDecider,
                        StateEvolver evolver,
-                       PipelineRoute pipelineRoute,
-                       PipelineLogConfig pipelineLogConfig) {
+                       Route route,
+                       LogConfig logConfig) {
     // Infra
     this.stream = stream;
     this.transformer = transformer;
+    this.processedEvents = new HashSet<>();
     this.processedCmds = new HashSet<>();
     this.stateRepo = new ConcurrentHashMap<>();
     // Business logic
@@ -53,72 +56,102 @@ public class StatePipeline {
     this.stateDecider = stateDecider;
     this.evolver = evolver;
     // Configs
-    this.pipelineRoute = pipelineRoute;
-    this.pipelineLogConfig = pipelineLogConfig;
+    this.route = route;
+    this.logConfig = logConfig;
   }
 
   public Flux<Event> run() {
-    var events = streamCommands().map(this::decide)
-                                 .concatMap(ReactorVavrUtils::toMono)
-                                 .doOnNext(this::evolveState)
-                                 .doOnNext(event -> processedCmds.add(event.commandId()));
-    return buildStates().concatWith(publishEvents(events));
-  }
-
-  public State stateOrInit(Id stateId) {
-    return Option.of(stateRepo.get(stateId)).getOrElse(initState);
-  }
-
-  public Mono<Command> toCommand(Msg msg) {
-    return transformer.deserialize(msg.value(), Command.class);
+    var readCurrentSink = read(route.eventTopic(), route.partition()).doOnNext(this::evolveState);
+    var pubOldSinkEvents = publishEvents(readOldSink()).doOnNext(this::evolveState);
+    var pubCmdEvents = publishEvents(handleNewCommands()).doOnNext(this::evolveState);
+    return readCurrentSink.concatWith(pubOldSinkEvents).concatWith(pubCmdEvents);
   }
 
   public Mono<Event> toEvent(Msg msg) {
     return transformer.deserialize(msg.value(), Event.class);
   }
 
+  public State stateOrInit(Id stateId) {
+    return Option.of(stateRepo.get(stateId)).getOrElse(initState);
+  }
+
   public Mono<Msg> toMsg(Event event) {
-    return transformer.serialize(event)
-                      .map(body -> new Msg(pipelineRoute.eventTopic(), pipelineRoute.partition(), event.id(), body));
+    return transformer.serialize(event).map(body -> new Msg(route.eventTopic(), route.partition(), event.id(), body));
   }
 
-  private Flux<Event> buildStates() {
-    return stream.size(pipelineRoute.eventTopic(), pipelineRoute.partition())
-                 .flatMapMany(this::readEvents)
-                 .doOnNext(this::evolveState);
+  public Mono<Command> toCommand(Msg msg) {
+    return transformer.deserialize(msg.value(), Command.class);
   }
 
-  private Try<Event> decide(Command cmd) {
-    var state = stateOrInit(cmd.stateId());
-    return stateDecider.apply(state, cmd);
+  private Flux<Event> read(String topic, int partition) {
+    return stream.size(topic, partition)
+                 .filter(size -> size > 0)
+                 .flatMapMany(size -> stream.subscribe(topic, partition, 0).take(size))
+                 .concatMap(this::toEvent)
+                 .log(LOGGER, logConfig.level(), logConfig.showLine(), logConfig.signalTypeArray());
   }
 
   private void evolveState(Event event) {
     var currentState = stateOrInit(event.stateId());
     var newState = evolver.apply(currentState, event);
     stateRepo.put(event.stateId(), newState);
+    processedCmds.add(event.commandId());
+    processedEvents.add(event.id());
   }
 
   private Flux<Event> publishEvents(Flux<Event> events) {
     return stream.publish(events.concatMap(this::toMsg))
                  .concatMap(this::toEvent)
-                 .log(LOGGER, Level.INFO, pipelineLogConfig.showLine(), pipelineLogConfig.signalTypeArray());
+                 .log(LOGGER, logConfig.level(), logConfig.showLine(), logConfig.signalTypeArray());
   }
 
-  private Flux<Event> readEvents(long until) {
-    if (until > 0)
-      return stream.subscribe(pipelineRoute.commandTopic(), pipelineRoute.partition(), 0)
-                   .take(until)
-                   .concatMap(this::toEvent)
-                   .log(LOGGER, Level.INFO, pipelineLogConfig.showLine(), pipelineLogConfig.signalTypeArray());
-    else
-      return Flux.empty();
+  private Flux<Event> readOldSink() {
+    return readAll(route.prevEventTopic(), route.prevPartitions()).filter(this::isEligible)
+                                                                  .sequential()
+                                                                  .publishOn(Schedulers.single());
   }
 
-  private Flux<Command> streamCommands() {
-    return stream.subscribe(pipelineRoute.commandTopic(), pipelineRoute.partition(), 0)
+  private Flux<Event> handleNewCommands() {
+    return stream.subscribe(route.commandTopic(), route.partition(), 0)
                  .concatMap(this::toCommand)
+                 .concatMap(this::rerouteIfNotEligible)
+                 .filter(this::isEligible)
                  .filter(cmd -> !processedCmds.contains(cmd.id()))
-                 .log(LOGGER, Level.INFO, pipelineLogConfig.showLine(), pipelineLogConfig.signalTypeArray());
+                 .log(LOGGER, logConfig.level(), logConfig.showLine(), logConfig.signalTypeArray())
+                 .map(this::decide)
+                 .concatMap(ReactorVavrUtils::toMono);
+  }
+
+  private ParallelFlux<Event> readAll(String prevTopic, int prevTotal) {
+    if (prevTotal > 0)
+      return Flux.range(0, prevTotal).parallel(prevTotal).runOn(Schedulers.parallel()).flatMap(i -> read(prevTopic, i));
+    else
+      return ParallelFlux.from(Flux.empty());
+  }
+
+  private Flux<Command> rerouteIfNotEligible(Command cmd) {
+    if (isEligible(cmd)) {
+      return Flux.just(cmd);
+    } else {
+      var msg = transformer.serialize(cmd).map(body -> rerouteCommand(cmd, body));
+      return stream.publish(msg.flux()).thenMany(Flux.just(cmd));
+    }
+  }
+
+  private Msg rerouteCommand(Command cmd, String body) {
+    return new Msg(route.commandTopic(), cmd.partition(route.totalPartitions()), cmd.id(), body);
+  }
+
+  private boolean isEligible(Command cmd) {
+    return cmd.isInPartition(route.partition(), route.totalPartitions());
+  }
+
+  private boolean isEligible(Event e) {
+    return e.isInPartition(route.partition(), route.totalPartitions()) && !processedEvents.contains(e.id());
+  }
+
+  private Try<Event> decide(Command cmd) {
+    var state = stateOrInit(cmd.stateId());
+    return stateDecider.apply(state, cmd);
   }
 }

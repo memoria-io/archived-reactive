@@ -9,18 +9,20 @@ import reactor.core.publisher.Sinks;
 import reactor.core.publisher.Sinks.Many;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public final class MemStream implements Stream {
-  private final Map<String, Many<Msg>> topicStream;
-  private final Map<String, AtomicLong> topicSize;
-  private final int batchSize;
+  private final Map<String, List<Many<Msg>>> topicStream;
+  private final Map<String, List<AtomicLong>> topicSize;
 
-  public MemStream(int batchSize) {
+  public MemStream(List<StreamConfig> streamConfigs) {
     this.topicStream = new HashMap<>();
     this.topicSize = new HashMap<>();
-    this.batchSize = batchSize;
+    streamConfigs.forEach(s -> setup(s.name(), s.partitions(), s.history()));
   }
 
   @Override
@@ -30,29 +32,32 @@ public final class MemStream implements Stream {
 
   @Override
   public Mono<Long> size(String topic, int partition) {
-    return Mono.fromCallable(() -> topicSize(topic));
+    return Mono.fromCallable(() -> tpSize(topic, partition));
   }
 
   @Override
   public Flux<Msg> subscribe(String topic, int partition, long skipped) {
-    return Mono.fromCallable(() -> createTopic(topic)).flatMapMany(f -> f.skip(skipped));
+    return this.topicStream.get(topic).get(partition).asFlux().skip(skipped);
   }
 
-  private Flux<Msg> createTopic(String topic) {
-    topicStream.computeIfAbsent(topic, k -> Sinks.many().replay().all(batchSize));
-    topicSize.computeIfAbsent(topic, k -> new AtomicLong());
-    return topicStream.get(topic).asFlux();
+  private void setup(String topic, int nPartitions, int history) {
+    var partitions = IntStream.range(0, nPartitions)
+                              .mapToObj(i -> Sinks.many().replay().<Msg>limit(history))
+                              .collect(Collectors.toList());
+    topicStream.put(topic, partitions);
+    var partitionSizes = IntStream.range(0, nPartitions).mapToObj(i -> new AtomicLong()).collect(Collectors.toList());
+    topicSize.put(topic, partitionSizes);
+  }
+
+  private long tpSize(String topic, int partition) {
+    return Option.of(topicSize.get(topic).get(partition)).map(AtomicLong::get).getOrElse(0L);
   }
 
   private Msg publishFn(Msg msg) {
     String topic = msg.topic();
-    createTopic(topic);
-    this.topicStream.get(topic).tryEmitNext(msg);
-    this.topicSize.get(topic).getAndIncrement();
+    int partition = msg.partition();
+    this.topicStream.get(topic).get(partition).tryEmitNext(msg);
+    this.topicSize.get(topic).get(partition).getAndIncrement();
     return msg;
-  }
-
-  private long topicSize(String topic) {
-    return Option.of(topicSize.get(topic)).map(AtomicLong::get).getOrElse(0L);
   }
 }

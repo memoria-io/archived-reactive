@@ -24,35 +24,6 @@ import java.text.SimpleDateFormat;
 public class JacksonUtils {
   private JacksonUtils() {}
 
-  public static ObjectMapper addJ8Modules(ObjectMapper om) {
-    return om.registerModule(new ParameterNamesModule())
-             .registerModule(new Jdk8Module())
-             .registerModule(new JavaTimeModule());
-  }
-
-  public static ObjectMapper addVavrModule(ObjectMapper om) {
-    return om.registerModule(new VavrModule());
-  }
-
-  public static ObjectMapper json() {
-    ObjectMapper om = JsonMapper.builder().build();
-    om = setDateFormat(om);
-    om = addJ8Modules(om);
-    om = addVavrModule(om);
-    om.registerModule(reactiveModule());
-    om.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
-    return om;
-  }
-
-  public static ObjectMapper jsonPrettyPrinting(ObjectMapper om) {
-    var printer = new DefaultPrettyPrinter().withoutSpacesInObjectEntries();
-    printer.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
-    var resultMapper = om.enable(SerializationFeature.INDENT_OUTPUT);
-    resultMapper.setDefaultPrettyPrinter(printer);
-
-    return resultMapper;
-  }
-
   /**
    * Maps inheriting classes simple names written with format "As.PROPERTY" and property name is "@type" to this
    * baseClass argument
@@ -94,16 +65,45 @@ public class JacksonUtils {
     return jsonPrettyPrinting(json());
   }
 
+  public static ObjectMapper jsonPrettyPrinting(ObjectMapper om) {
+    var printer = new DefaultPrettyPrinter().withoutSpacesInObjectEntries();
+    printer.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
+    var resultMapper = om.enable(SerializationFeature.INDENT_OUTPUT);
+    resultMapper.setDefaultPrettyPrinter(printer);
+
+    return resultMapper;
+  }
+
+  public static ObjectMapper json() {
+    ObjectMapper om = JsonMapper.builder().build();
+    om = setDateFormat(om);
+    om = addJ8Modules(om);
+    om = addVavrModule(om);
+    om.registerModule(reactiveModule());
+    om.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
+    return om;
+  }
+
+  public static ObjectMapper setDateFormat(ObjectMapper om) {
+    return om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd" + "'T'" + "HH:mm:ss"));
+  }
+
+  public static ObjectMapper addJ8Modules(ObjectMapper om) {
+    return om.registerModule(new ParameterNamesModule())
+             .registerModule(new Jdk8Module())
+             .registerModule(new JavaTimeModule());
+  }
+
+  public static ObjectMapper addVavrModule(ObjectMapper om) {
+    return om.registerModule(new VavrModule());
+  }
+
   public static SimpleModule reactiveModule() {
     var reactive = new SimpleModule();
     // Id
     reactive.addSerializer(Id.class, new IdSerializer());
     reactive.addDeserializer(Id.class, new IdDeserializer());
     return reactive;
-  }
-
-  public static ObjectMapper setDateFormat(ObjectMapper om) {
-    return om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd" + "'T'" + "HH:mm:ss"));
   }
 
   public static ObjectMapper yaml() {

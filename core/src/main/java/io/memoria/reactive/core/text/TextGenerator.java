@@ -11,11 +11,19 @@ public final class TextGenerator {
     this.random = random;
   }
 
+  public String minMaxAlphanumeric(int minLength, int maxLength) {
+    return alphanumeric(random.nextInt(maxLength - minLength) + minLength);
+  }
+
   public String alphanumeric(int length) {
     var sb = new StringBuilder(length);
     while (sb.length() < length)
       sb.append(ALPHANUMERICS.charAt(random.nextInt(ALPHANUMERICS.length())));
     return sb.toString();
+  }
+
+  public String minMaxHex(int minLength, int maxLength) {
+    return hex(random.nextInt(maxLength - minLength) + minLength);
   }
 
   public String hex(int length) {
@@ -24,13 +32,5 @@ public final class TextGenerator {
       sb.append(Integer.toHexString(random.nextInt()));
     }
     return sb.substring(0, length);
-  }
-
-  public String minMaxAlphanumeric(int minLength, int maxLength) {
-    return alphanumeric(random.nextInt(maxLength - minLength) + minLength);
-  }
-
-  public String minMaxHex(int minLength, int maxLength) {
-    return hex(random.nextInt(maxLength - minLength) + minLength);
   }
 }

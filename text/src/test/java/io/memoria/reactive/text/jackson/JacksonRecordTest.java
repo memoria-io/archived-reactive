@@ -17,7 +17,8 @@ import static io.memoria.reactive.text.jackson.TestDeps.prettyJson;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * A Copy from https://github.com/FasterXML/jackson-databind/blob/977fbb3dcfa7ad7fda4f45f7f0c1afa0916b702e/src/test/java/com/fasterxml/jackson/databind/BaseMapTest.java
+ * A Copy from
+ * https://github.com/FasterXML/jackson-databind/blob/977fbb3dcfa7ad7fda4f45f7f0c1afa0916b702e/src/test/java/com/fasterxml/jackson/databind/BaseMapTest.java
  */
 class JacksonRecordTest {
 

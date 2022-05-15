@@ -3,18 +3,24 @@ package io.memoria.reactive.core.stream.mem;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.Objects;
 
+@TestMethodOrder(OrderAnnotation.class)
 class MemStreamTest {
-  private static final int N_ELEMENTS = 1000;
-  private static final Stream STREAM = new MemStream(1000);
-  private static final String TOPIC = "NODE_TOPIC";
+  private static final int ELEMENTS_SIZE = 1000;
+  private static final int DOUBLE_ELEMENTS = 2 * ELEMENTS_SIZE;
+  private static final String topic = "NODE_TOPIC";
   private static final int PARTITION = 0;
+  private static final Stream stream = new MemStream(List.of(new StreamConfig(topic, 1, Integer.MAX_VALUE)));
 
   @Test
   @Order(0)
@@ -22,12 +28,10 @@ class MemStreamTest {
     // Given
     var msgs = createMsgs();
     // When
-    var pub = STREAM.publish(msgs);
+    var pub = stream.publish(msgs).map(Msg::id);
     // Then
-    var expected = msgs.map(Msg::id).collectList().block();
-    assert expected != null;
-    StepVerifier.create(pub.map(Msg::id)).expectNextSequence(expected).verifyComplete();
-    StepVerifier.create(STREAM.size(TOPIC, PARTITION)).expectNext((long) N_ELEMENTS).verifyComplete();
+    var expected = Objects.requireNonNull(msgs.map(Msg::id).collectList().block());
+    StepVerifier.create(pub).expectNextSequence(expected).verifyComplete();
   }
 
   @Test
@@ -35,17 +39,31 @@ class MemStreamTest {
   void subscribe() {
     // Given
     var msgs = createMsgs();
-    STREAM.publish(msgs).delaySubscription(Duration.ofMillis(10)).subscribe();
+    stream.publish(msgs).subscribe();
     // When
-    var sub = STREAM.subscribe(TOPIC, PARTITION, 0).map(Msg::id).take(2 * N_ELEMENTS);
+    var sub = stream.subscribe(topic, PARTITION, 0).map(Msg::id).take(DOUBLE_ELEMENTS);
     // Then
-    StepVerifier.create(sub).expectNextCount(2 * N_ELEMENTS).verifyComplete();
-    StepVerifier.create(STREAM.size(TOPIC, PARTITION)).expectNext(2L * N_ELEMENTS).verifyComplete();
+    StepVerifier.create(sub).expectNextCount(DOUBLE_ELEMENTS).verifyComplete();
     // And resubscribing works   
-    StepVerifier.create(sub).expectNextCount(2 * N_ELEMENTS).verifyComplete();
+    StepVerifier.create(sub).expectNextCount(DOUBLE_ELEMENTS).verifyComplete();
+  }
+
+  @Test
+  @Order(2)
+  void delayedSubscribe() {
+    // When
+    var sub = stream.subscribe(topic, PARTITION, 0).delaySubscription(Duration.ofMillis(1000)).take(DOUBLE_ELEMENTS);
+    // Then
+    StepVerifier.create(sub).expectNextCount(DOUBLE_ELEMENTS).verifyComplete();
+  }
+
+  @Test
+  @Order(3)
+  void size() {
+    StepVerifier.create(stream.size(topic, PARTITION)).expectNext((long) DOUBLE_ELEMENTS).verifyComplete();
   }
 
   private Flux<Msg> createMsgs() {
-    return Flux.range(0, N_ELEMENTS).map(i -> new Msg(TOPIC, PARTITION, Id.of(i), "hello" + i));
+    return Flux.range(0, ELEMENTS_SIZE).map(i -> new Msg(topic, PARTITION, Id.of(i), "hello" + i));
   }
 }

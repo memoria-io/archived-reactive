@@ -31,10 +31,10 @@ class ConfigFileOpsTest {
     var file = configOps.read(TEST_DIR + "systemEnv.yaml").get();
     // Then
     var lines = file.split("\n");
-    Assertions.assertNotEquals(lines[0],"javaHomePath: /hello/java");
-    Assertions.assertEquals(lines[1],"otherValue: defaultValue");
-    Assertions.assertEquals(lines[2],"routeValue: /defaultValue/{paramName}/someOther");
-    Assertions.assertEquals(lines[3],"routeValueWithSpace: /defaultValue/{paramName}/someOther");
+    Assertions.assertNotEquals(lines[0], "javaHomePath: /hello/java");
+    Assertions.assertEquals(lines[1], "otherValue: defaultValue");
+    Assertions.assertEquals(lines[2], "routeValue: /defaultValue/{paramName}/someOther");
+    Assertions.assertEquals(lines[3], "routeValueWithSpace: /defaultValue/{paramName}/someOther");
   }
 
   private static Stream<String> paths() {

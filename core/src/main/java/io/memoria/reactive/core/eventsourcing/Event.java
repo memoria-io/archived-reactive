@@ -4,7 +4,7 @@ import io.memoria.reactive.core.id.Id;
 
 import java.io.Serializable;
 
-public interface Event extends Serializable {
+public interface Event extends Stateful, Serializable {
   Id commandId();
 
   Id id();

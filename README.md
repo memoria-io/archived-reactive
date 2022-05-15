@@ -13,7 +13,11 @@
 `reactive` is a tool-box that makes it easier and faster to build reactive applications. It relies heavily
 on [Reactive Streams](https://www.reactive-streams.org/) and uses [Project-Reactor](https://projectreactor.io/),
 [Reactor Netty](https://github.com/reactor/reactor-netty), it also uses functional paradigms and collections
-from [Vavr](https://www.vavr.io/),
+from [Vavr](https://www.vavr.io/).
+
+## JDK notes
+
+* reactive is up-to-date with the latest versions of JDK preview feature, currently `Java 18`.
 
 ## Core Features
 
@@ -30,27 +34,24 @@ from [Vavr](https://www.vavr.io/),
     * Reading as a system property if not found as environment variable or else the default value if it was supplied:
         * `path: ${JAVA_HOME}`
         * `myVar: ${SOME_VAR:-defaultValue}`
-* reactive is up to date with the latest versions of JDK preview feature, currently `Java 17`.
-
-## DONE
-
-* Eventsourcing
-  * State decider, evolver, pipeline
-  * Sagas decider, pipeline
-* Streaming
-  * Stream api for usage in event sourcing
-
 
 ## TODOs
 
-* Stream sharding to be used later for scaling 
-* Increase test coverage to >85%
-* Stream api for messaging
-* Aggregate ID safety
+* [x] Event Sourcing
+    *[x] State decider, evolver, Stream pipeline
+    *[x] Sagas decider, Stream pipeline
+* [x] Streaming
+    *[x] Stream api for usage in event sourcing
+* [x] Stream sharding to be used later for scaling
+    * [x] Tests
+* [ ] Event Stream Compaction
+* [ ] Increase test coverage to >85%
+* [ ] Stream api for messaging
+* [ ] Aggregate ID safety
 
 ## Release notes
 
-* Reactive is using `minor` (as in semantic versioning) as a major until first version is released 
+* Reactive is using `minor` (as in semantic versioning) as a major until first version is released
 
 ## Usage
 

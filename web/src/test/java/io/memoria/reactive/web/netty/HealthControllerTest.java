@@ -28,21 +28,21 @@ class HealthControllerTest {
   }
 
   @Test
-  void success() {
-    // Given
-    flip.set(true);
-    var monoResp = NettyClientUtils.get(httpClient, endpoint);
-    // Then
-    StepVerifier.create(monoResp).expectNext(Response.of(OK, "ok")).verifyComplete();
-  }
-
-  @Test
   void failure() {
     // Given
     flip.set(false);
     var monoResp = NettyClientUtils.get(httpClient, endpoint);
     // Then
     StepVerifier.create(monoResp).expectNext(Response.of(INTERNAL_SERVER_ERROR, ERROR_MSG)).verifyComplete();
+  }
+
+  @Test
+  void success() {
+    // Given
+    flip.set(true);
+    var monoResp = NettyClientUtils.get(httpClient, endpoint);
+    // Then
+    StepVerifier.create(monoResp).expectNext(Response.of(OK, "ok")).verifyComplete();
   }
 
   @AfterAll

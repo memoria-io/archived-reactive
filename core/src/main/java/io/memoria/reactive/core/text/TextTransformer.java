@@ -6,11 +6,11 @@ import io.vavr.control.Try;
 import reactor.core.publisher.Mono;
 
 public interface TextTransformer {
-  <T> Try<T> blockingDeserialize(String str, Class<T> tClass);
-
   default <T> Function1<String, Try<T>> blockingDeserialize(Class<T> tClass) {
     return str -> blockingDeserialize(str, tClass);
   }
+
+  <T> Try<T> blockingDeserialize(String str, Class<T> tClass);
 
   default <T> Function1<T, Try<String>> blockingSerialize() {
     return this::blockingSerialize;
@@ -18,12 +18,12 @@ public interface TextTransformer {
 
   <T> Try<String> blockingSerialize(T t);
 
-  default <T> Mono<T> deserialize(String str, Class<T> tClass) {
-    return Mono.fromCallable(() -> blockingDeserialize(str, tClass)).flatMap(ReactorVavrUtils::toMono);
-  }
-
   default <T> Function1<String, Mono<T>> deserialize(Class<T> tClass) {
     return str -> deserialize(str, tClass);
+  }
+
+  default <T> Mono<T> deserialize(String str, Class<T> tClass) {
+    return Mono.fromCallable(() -> blockingDeserialize(str, tClass)).flatMap(ReactorVavrUtils::toMono);
   }
 
   default <T> Function1<T, Mono<String>> serialize() {

@@ -1,7 +1,18 @@
 package io.memoria.reactive.core.eventsourcing.pipeline;
 
-public record PipelineRoute(String commandTopic, String eventTopic, int partition, int totalPartitions) {
-  public PipelineRoute {
+public record Route(String prevEventTopic,
+                    int prevPartitions,
+                    String commandTopic,
+                    String eventTopic,
+                    int partition,
+                    int totalPartitions) {
+  public static final String EMPTY_TOPIC = "EMTPY_EVENT";
+
+  public Route(String commandTopic, String eventTopic, int partition, int totalPartitions) {
+    this(EMPTY_TOPIC, 0, commandTopic, eventTopic, partition, totalPartitions);
+  }
+
+  public Route {
     if (commandTopic == null || commandTopic.isEmpty() || eventTopic == null || eventTopic.isEmpty()) {
       throw new IllegalArgumentException("Topic is null or empty");
     }

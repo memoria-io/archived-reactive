@@ -14,6 +14,10 @@ public class NettyClientUtils {
     return httpClient.delete().uri(path).responseSingle(NettyClientUtils::response);
   }
 
+  public static Mono<Response> response(HttpClientResponse res, ByteBufMono body) {
+    return body.asString().defaultIfEmpty("").map(s -> Response.of(res.status(), s));
+  }
+
   public static Mono<Response> get(HttpClient httpClient, String path) {
     return httpClient.get().uri(path).responseSingle(NettyClientUtils::response);
   }
@@ -30,9 +34,5 @@ public class NettyClientUtils {
                      .uri(path)
                      .send(ByteBufFlux.fromString(Flux.just(payload)))
                      .responseSingle(NettyClientUtils::response);
-  }
-
-  public static Mono<Response> response(HttpClientResponse res, ByteBufMono body) {
-    return body.asString().defaultIfEmpty("").map(s -> Response.of(res.status(), s));
   }
 }
