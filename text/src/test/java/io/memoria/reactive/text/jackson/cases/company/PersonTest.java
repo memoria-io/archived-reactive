@@ -5,8 +5,8 @@ import reactor.test.StepVerifier;
 
 import static io.memoria.reactive.text.jackson.TestDeps.compactJson;
 
-class CompactJsonJacksonTest {
-  private static String text = "{\"name\":\"bob\",\"friendsIds\":[\"1\",\"2\",\"3\"]}";
+class PersonTest {
+  private static String text = "{\"name\":\"bob\",\"friendsIds\":[\"1\",\"2\",\"3\"],\"familyIds\":[\"1\",\"2\",\"3\"]}";
 
   @Test
   void deserializePerson() {

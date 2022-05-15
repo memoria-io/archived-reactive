@@ -1,5 +1,6 @@
 package io.memoria.reactive.text.jackson.cases.company;
 
+import io.memoria.reactive.core.eventsourcing.StateId;
 import io.memoria.reactive.core.file.ResourceFileOps;
 import io.memoria.reactive.core.id.Id;
 import io.vavr.collection.List;
@@ -37,7 +38,7 @@ public class CompanyData {
     BOB_ENGINEER = new Engineer("bob", LocalDate.of(2000, 1, 1), List.of("fix issue 1", "Fix issue 2"));
     ALEX_ENGINEER = new Engineer("alex", LocalDate.of(2000, 1, 1), List.of("fix issue 3", "Fix issue 4"));
     ANNIKA_MANAGER = new Manager("Annika", List.of(BOB_ENGINEER, ALEX_ENGINEER));
-    BOB_PERSON = new Person("bob", List.of("1", "2", "3").map(Id::of));
+    BOB_PERSON = new Person("bob", List.of("1", "2", "3").map(Id::of), List.of("1", "2", "3").map(StateId::of));
   }
 
   private CompanyData() {}

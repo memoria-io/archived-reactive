@@ -38,22 +38,4 @@ class JsonJacksonTest {
                 .expectNext(List.of(CompanyData.BOB_ENGINEER, CompanyData.ALEX_ENGINEER))
                 .verifyComplete();
   }
-
-  @Test
-  void deserializePerson() {
-    // When
-    var personMono = prettyJson.deserialize(CompanyData.BOB_PERSON_JSON, Person.class);
-    // Then
-    StepVerifier.create(personMono).expectNext(CompanyData.BOB_PERSON).verifyComplete();
-  }
-
-  @Test
-  void serializePerson() {
-    // When
-    var bobMono = prettyJson.serialize(CompanyData.BOB_PERSON);
-    // Then
-    assert CompanyData.BOB_PERSON_JSON != null;
-    StepVerifier.create(bobMono).expectNext(CompanyData.BOB_PERSON_JSON).verifyComplete();
-  }
-
 }

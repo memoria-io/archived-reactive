@@ -14,9 +14,18 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import io.memoria.reactive.core.eventsourcing.CommandId;
+import io.memoria.reactive.core.eventsourcing.EventId;
+import io.memoria.reactive.core.eventsourcing.StateId;
 import io.memoria.reactive.core.id.Id;
+import io.memoria.reactive.text.jackson.adapters.CommandIdTransformer.CommandIdDeserializer;
+import io.memoria.reactive.text.jackson.adapters.CommandIdTransformer.CommandIdSerializer;
+import io.memoria.reactive.text.jackson.adapters.EventIdTransformer.EventIdDeserializer;
+import io.memoria.reactive.text.jackson.adapters.EventIdTransformer.EventIdSerializer;
 import io.memoria.reactive.text.jackson.adapters.IdTransformer.IdDeserializer;
 import io.memoria.reactive.text.jackson.adapters.IdTransformer.IdSerializer;
+import io.memoria.reactive.text.jackson.adapters.StateIdTransformer.StateIdDeserializer;
+import io.memoria.reactive.text.jackson.adapters.StateIdTransformer.StateIdSerializer;
 import io.vavr.jackson.datatype.VavrModule;
 
 import java.text.SimpleDateFormat;
@@ -103,6 +112,15 @@ public class JacksonUtils {
     // Id
     reactive.addSerializer(Id.class, new IdSerializer());
     reactive.addDeserializer(Id.class, new IdDeserializer());
+    // StateId
+    reactive.addSerializer(StateId.class, new StateIdSerializer());
+    reactive.addDeserializer(StateId.class, new StateIdDeserializer());
+    // EventId
+    reactive.addSerializer(EventId.class, new EventIdSerializer());
+    reactive.addDeserializer(EventId.class, new EventIdDeserializer());
+    // CommandId
+    reactive.addSerializer(CommandId.class, new CommandIdSerializer());
+    reactive.addDeserializer(CommandId.class, new CommandIdDeserializer());
     return reactive;
   }
 
