@@ -44,10 +44,10 @@ from [Vavr](https://www.vavr.io/).
     *[x] Stream api for usage in event sourcing
 * [x] Stream sharding to be used later for scaling
     * [x] Tests
+* [x] id safety (stateId, commandId, eventId)
 * [ ] Event Stream Compaction
 * [ ] Increase test coverage to >85%
-* [ ] Stream api for messaging
-* [ ] id safety (stateId, commandId, eventId)
+* [ ] Stream api for messaging patterns
 
 ## Release notes
 
