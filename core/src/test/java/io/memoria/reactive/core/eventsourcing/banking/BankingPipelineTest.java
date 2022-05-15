@@ -1,6 +1,7 @@
 package io.memoria.reactive.core.eventsourcing.banking;
 
 import io.memoria.reactive.core.eventsourcing.Command;
+import io.memoria.reactive.core.eventsourcing.StateId;
 import io.memoria.reactive.core.eventsourcing.banking.User.Account;
 import io.memoria.reactive.core.eventsourcing.banking.User.ClosedAccount;
 import io.memoria.reactive.core.eventsourcing.banking.User.Visitor;
@@ -61,9 +62,9 @@ class BankingPipelineTest {
   @Test
   void simple() {
     // Given
-    Id bobId = Id.of("bob");
+    var bobId = StateId.of("bob");
     var createUserBob = CreateUser.of(bobId, "bob", 100);
-    Id janId = Id.of("jan");
+    var janId = StateId.of("jan");
     var createUserJan = CreateUser.of(janId, "jan", 100);
     var sendMoneyFromBobToJan = Debit.of(bobId, janId, 50);
     var requestClosure = CloseAccount.of(janId);

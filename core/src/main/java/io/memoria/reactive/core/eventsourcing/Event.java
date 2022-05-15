@@ -1,15 +1,14 @@
 package io.memoria.reactive.core.eventsourcing;
 
-import io.memoria.reactive.core.id.Id;
-
 import java.io.Serializable;
 
 public interface Event extends Shardable, Serializable {
-  Id commandId();
+  CommandId commandId();
 
-  Id id();
+  EventId id();
 
-  Id stateId();
+  StateId stateId();
 
   long timestamp();
+
 }

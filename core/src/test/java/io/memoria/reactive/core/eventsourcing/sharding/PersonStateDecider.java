@@ -3,6 +3,7 @@ package io.memoria.reactive.core.eventsourcing.sharding;
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.ESException.UnknownCommand;
 import io.memoria.reactive.core.eventsourcing.Event;
+import io.memoria.reactive.core.eventsourcing.EventId;
 import io.memoria.reactive.core.eventsourcing.State;
 import io.memoria.reactive.core.eventsourcing.pipeline.StateDecider;
 import io.memoria.reactive.core.eventsourcing.sharding.Person.Account;
@@ -11,10 +12,7 @@ import io.memoria.reactive.core.eventsourcing.sharding.PersonCommand.ChangeName;
 import io.memoria.reactive.core.eventsourcing.sharding.PersonCommand.CreatePerson;
 import io.memoria.reactive.core.eventsourcing.sharding.PersonEvent.AccountCreated;
 import io.memoria.reactive.core.eventsourcing.sharding.PersonEvent.NameChanged;
-import io.memoria.reactive.core.id.Id;
 import io.vavr.control.Try;
-
-import java.util.UUID;
 
 @SuppressWarnings("SwitchStatementWithTooFewBranches")
 record PersonStateDecider() implements StateDecider {
@@ -44,11 +42,10 @@ record PersonStateDecider() implements StateDecider {
   }
 
   private Try<Event> accountCreated(CreatePerson c) {
-    return Try.success(new AccountCreated(Id.of(UUID.randomUUID()), c.id(), c.userId(), c.username()));
+    return Try.success(new AccountCreated(EventId.randomUUID(), c.id(), c.userId(), c.username()));
   }
 
   private Try<Event> nameChanged(ChangeName c) {
-    return Try.success(new NameChanged(Id.of(UUID.randomUUID()), c.id(), c.userId(), c.newName()));
+    return Try.success(new NameChanged(EventId.randomUUID(), c.id(), c.userId(), c.newName()));
   }
-
 }

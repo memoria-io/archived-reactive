@@ -1,13 +1,11 @@
 package io.memoria.reactive.core.eventsourcing.banking;
 
 import io.memoria.reactive.core.eventsourcing.State;
-import io.memoria.reactive.core.id.Id;
-
-import java.util.UUID;
+import io.memoria.reactive.core.eventsourcing.StateId;
 
 sealed interface User extends State {
-  record Account(Id id, String name, int balance, int debitCount) implements User {
-    public Account(Id id, String name, int balance) {
+  record Account(StateId id, String name, int balance, int debitCount) implements User {
+    public Account(StateId id, String name, int balance) {
       this(id, name, balance, 0);
     }
 
@@ -32,11 +30,11 @@ sealed interface User extends State {
     }
   }
 
-  record ClosedAccount(Id id) implements User {}
+  record ClosedAccount(StateId id) implements User {}
 
-  record Visitor(Id id) implements User {
+  record Visitor(StateId id) implements User {
     public Visitor() {
-      this(Id.of(UUID.randomUUID()));
+      this(StateId.randomUUID());
     }
   }
 }

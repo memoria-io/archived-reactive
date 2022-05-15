@@ -1,6 +1,8 @@
 package io.memoria.reactive.core.eventsourcing.socialnetwork;
 
 import io.memoria.reactive.core.eventsourcing.Command;
+import io.memoria.reactive.core.eventsourcing.CommandId;
+import io.memoria.reactive.core.eventsourcing.StateId;
 import io.memoria.reactive.core.eventsourcing.pipeline.LogConfig;
 import io.memoria.reactive.core.eventsourcing.pipeline.Route;
 import io.memoria.reactive.core.eventsourcing.pipeline.SagaPipeline;
@@ -53,11 +55,11 @@ class SocialNetworkPipelineTest {
   @Test
   void pipeline() {
     // Given
-    Id bobId = Id.of("bob");
-    var createUserBob = new CreateUser(Id.of(UUID.randomUUID()), bobId, "bob");
-    Id janId = Id.of("jan");
-    var createUserJan = new CreateUser(Id.of(UUID.randomUUID()), janId, "jan");
-    var sendMsgFromBobToJan = new CreateOutboundMsg(Id.of(UUID.randomUUID()), bobId, janId, "hello");
+    var bobId = StateId.of("bob");
+    var createUserBob = new CreateUser(CommandId.randomUUID(), bobId, "bob");
+    var janId = StateId.of("jan");
+    var createUserJan = new CreateUser(CommandId.randomUUID(), janId, "jan");
+    var sendMsgFromBobToJan = new CreateOutboundMsg(CommandId.randomUUID(), bobId, janId, "hello");
     var cmds = Flux.<Command>just(createUserBob, createUserJan, sendMsgFromBobToJan)
                    .map(SocialNetworkPipelineTest::toMsg);
     StepVerifier.create(stream.publish(cmds)).expectNextCount(3).verifyComplete();

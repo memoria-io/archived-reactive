@@ -1,9 +1,8 @@
 package io.memoria.reactive.core.eventsourcing.sharding;
 
 import io.memoria.reactive.core.eventsourcing.Command;
-import io.memoria.reactive.core.id.Id;
-
-import java.util.UUID;
+import io.memoria.reactive.core.eventsourcing.CommandId;
+import io.memoria.reactive.core.eventsourcing.StateId;
 
 sealed interface PersonCommand extends Command {
   @Override
@@ -11,25 +10,25 @@ sealed interface PersonCommand extends Command {
     return 0;
   }
 
-  record ChangeName(Id id, Id userId, String newName) implements PersonCommand {
+  record ChangeName(CommandId id, StateId userId, String newName) implements PersonCommand {
     @Override
-    public Id stateId() {
+    public StateId stateId() {
       return userId;
     }
 
-    public static ChangeName of(Id userId, String newName) {
-      return new ChangeName(Id.of(UUID.randomUUID()), userId, newName);
+    public static ChangeName of(StateId userId, String newName) {
+      return new ChangeName(CommandId.randomUUID(), userId, newName);
     }
   }
 
-  record CreatePerson(Id id, Id userId, String username) implements PersonCommand {
+  record CreatePerson(CommandId id, StateId userId, String username) implements PersonCommand {
     @Override
-    public Id stateId() {
+    public StateId stateId() {
       return userId;
     }
 
-    public static CreatePerson of(Id userId, String username) {
-      return new CreatePerson(Id.of(UUID.randomUUID()), userId, username);
+    public static CreatePerson of(StateId userId, String username) {
+      return new CreatePerson(CommandId.randomUUID(), userId, username);
     }
   }
 

@@ -1,9 +1,9 @@
 package io.memoria.reactive.core.eventsourcing.banking;
 
+import io.memoria.reactive.core.eventsourcing.StateId;
 import io.memoria.reactive.core.eventsourcing.banking.UserCommand.CloseAccount;
 import io.memoria.reactive.core.eventsourcing.banking.UserCommand.CreateUser;
 import io.memoria.reactive.core.eventsourcing.banking.UserCommand.Debit;
-import io.memoria.reactive.core.id.Id;
 import io.vavr.collection.List;
 
 import java.util.Random;
@@ -11,8 +11,8 @@ import java.util.Random;
 class DataSet {
   private DataSet() {}
 
-  static Id createId(int i) {
-    return Id.of("user_id_" + i);
+  static StateId createId(int i) {
+    return StateId.of("user_id_" + i);
   }
 
   static String createName(int i) {
@@ -35,11 +35,11 @@ class DataSet {
     return List.range(0, nUsers / 2).map(i -> createOutboundBalance(from.get(i), to.get(i), amounts.get(i)));
   }
 
-  private static Debit createOutboundBalance(Id from, Id to, int amount) {
+  private static Debit createOutboundBalance(StateId from, StateId to, int amount) {
     return Debit.of(from, to, amount);
   }
 
-  private static List<Id> shuffledUserIds(int nUsers) {
+  private static List<StateId> shuffledUserIds(int nUsers) {
     return List.range(0, nUsers).shuffle().map(DataSet::createId);
   }
 }

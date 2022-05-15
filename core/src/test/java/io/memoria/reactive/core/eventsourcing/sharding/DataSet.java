@@ -1,9 +1,9 @@
 package io.memoria.reactive.core.eventsourcing.sharding;
 
 import io.memoria.reactive.core.eventsourcing.Command;
+import io.memoria.reactive.core.eventsourcing.StateId;
 import io.memoria.reactive.core.eventsourcing.sharding.PersonCommand.ChangeName;
 import io.memoria.reactive.core.eventsourcing.sharding.PersonCommand.CreatePerson;
-import io.memoria.reactive.core.id.Id;
 import io.vavr.collection.List;
 import reactor.core.publisher.Flux;
 
@@ -16,8 +16,8 @@ class DataSet {
     return Flux.fromIterable(createUsers.appendAll(changes));
   }
 
-  static Id createId(int i) {
-    return Id.of("userId:" + i);
+  static StateId createId(int i) {
+    return StateId.of("userId:" + i);
   }
 
   static String createName(int i) {

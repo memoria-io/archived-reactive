@@ -1,9 +1,8 @@
 package io.memoria.reactive.core.eventsourcing.banking;
 
 import io.memoria.reactive.core.eventsourcing.Command;
-import io.memoria.reactive.core.id.Id;
-
-import java.util.UUID;
+import io.memoria.reactive.core.eventsourcing.CommandId;
+import io.memoria.reactive.core.eventsourcing.StateId;
 
 sealed interface UserCommand extends Command {
   @Override
@@ -11,58 +10,58 @@ sealed interface UserCommand extends Command {
     return 0;
   }
 
-  record CloseAccount(Id id, Id userId) implements UserCommand {
+  record CloseAccount(CommandId id, StateId userId) implements UserCommand {
     @Override
-    public Id stateId() {
+    public StateId stateId() {
       return userId;
     }
 
-    public static CloseAccount of(Id userId) {
-      return new CloseAccount(Id.of(UUID.randomUUID()), userId);
+    public static CloseAccount of(StateId userId) {
+      return new CloseAccount(CommandId.randomUUID(), userId);
     }
   }
 
-  record ConfirmDebit(Id id, Id debitedAcc) implements UserCommand {
+  record ConfirmDebit(CommandId id, StateId debitedAcc) implements UserCommand {
     @Override
-    public Id stateId() {
+    public StateId stateId() {
       return debitedAcc;
     }
 
-    public static ConfirmDebit of(Id debitedAcc) {
-      return new ConfirmDebit(Id.of(UUID.randomUUID()), debitedAcc);
+    public static ConfirmDebit of(StateId debitedAcc) {
+      return new ConfirmDebit(CommandId.randomUUID(), debitedAcc);
     }
   }
 
-  record CreateUser(Id id, Id userId, String username, int balance) implements UserCommand {
+  record CreateUser(CommandId id, StateId userId, String username, int balance) implements UserCommand {
     @Override
-    public Id stateId() {
+    public StateId stateId() {
       return userId;
     }
 
-    public static CreateUser of(Id userId, String username, int balance) {
-      return new CreateUser(Id.of(UUID.randomUUID()), userId, username, balance);
+    public static CreateUser of(StateId userId, String username, int balance) {
+      return new CreateUser(CommandId.randomUUID(), userId, username, balance);
     }
   }
-  
-  record Credit(Id id, Id creditedAcc, Id debitedAcc, int amount) implements UserCommand {
+
+  record Credit(CommandId id, StateId creditedAcc, StateId debitedAcc, int amount) implements UserCommand {
     @Override
-    public Id stateId() {
+    public StateId stateId() {
       return creditedAcc;
     }
 
-    public static Credit of(Id creditedAcc, Id debitedAcc, int amount) {
-      return new Credit(Id.of(UUID.randomUUID()), creditedAcc, debitedAcc, amount);
+    public static Credit of(StateId creditedAcc, StateId debitedAcc, int amount) {
+      return new Credit(CommandId.randomUUID(), creditedAcc, debitedAcc, amount);
     }
   }
 
-  record Debit(Id id, Id debitedAcc, Id creditedAcc, int amount) implements UserCommand {
+  record Debit(CommandId id, StateId debitedAcc, StateId creditedAcc, int amount) implements UserCommand {
     @Override
-    public Id stateId() {
+    public StateId stateId() {
       return debitedAcc;
     }
 
-    public static Debit of(Id debitedAcc, Id creditedAcc, int amount) {
-      return new Debit(Id.of(UUID.randomUUID()), debitedAcc, creditedAcc, amount);
+    public static Debit of(StateId debitedAcc, StateId creditedAcc, int amount) {
+      return new Debit(CommandId.randomUUID(), debitedAcc, creditedAcc, amount);
     }
   }
 }
