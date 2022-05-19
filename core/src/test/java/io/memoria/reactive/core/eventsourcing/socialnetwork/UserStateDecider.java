@@ -37,22 +37,22 @@ record UserStateDecider() implements StateDecider {
   }
 
   private Try<Event> userCreated(CreateUser cmd) {
-    return Try.success(UserEvent.userCreated(cmd.id(), cmd.userId(), cmd.username()));
+    return Try.success(UserEvent.userCreated(cmd.commandId(), cmd.userId(), cmd.username()));
   }
 
   private Try<Event> outboundCreated(CreateOutboundMsg cmd) {
-    return Try.success(UserEvent.outboundMsgCreated(cmd.id(), cmd.msgSender(), cmd.msgReceiver(), cmd.message()));
+    return Try.success(UserEvent.outboundMsgCreated(cmd.commandId(), cmd.msgSender(), cmd.msgReceiver(), cmd.message()));
   }
 
   private Try<Event> inboundMessageCreated(CreateInboundMsg cmd) {
-    return Try.success(UserEvent.inboundMsgCreated(cmd.id(), cmd.msgSender(), cmd.msgReceiver(), cmd.message()));
+    return Try.success(UserEvent.inboundMsgCreated(cmd.commandId(), cmd.msgSender(), cmd.msgReceiver(), cmd.message()));
   }
 
   private Try<Event> outboundSeen(MarkMsgAsSeen cmd) {
-    return Try.success(UserEvent.outboundSeen(cmd.id(), cmd.msgSender(), cmd.msgReceiver()));
+    return Try.success(UserEvent.outboundSeen(cmd.commandId(), cmd.msgSender(), cmd.msgReceiver()));
   }
 
   private Try<Event> accountClosed(CloseAccount cmd) {
-    return Try.success(UserEvent.accountClosed(cmd.id(), cmd.userId()));
+    return Try.success(UserEvent.accountClosed(cmd.commandId(), cmd.userId()));
   }
 }

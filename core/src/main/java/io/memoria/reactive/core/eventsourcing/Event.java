@@ -5,7 +5,7 @@ import java.io.Serializable;
 public interface Event extends Shardable, Serializable {
   CommandId commandId();
 
-  EventId id();
+  EventId eventId();
 
   StateId stateId();
 

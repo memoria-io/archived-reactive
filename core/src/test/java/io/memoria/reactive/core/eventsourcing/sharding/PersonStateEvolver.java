@@ -23,7 +23,7 @@ record PersonStateEvolver() implements StateEvolver {
 
   private State handle(Visitor acc, PersonEvent event) {
     return switch (event) {
-      case AccountCreated e -> new Account(acc.id(), e.name());
+      case AccountCreated e -> new Account(acc.stateId(), e.name());
       default -> acc;
     };
   }

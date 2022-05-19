@@ -76,7 +76,7 @@ public class StatePipeline {
   }
 
   public Mono<Msg> toMsg(Event event) {
-    return transformer.serialize(event).map(body -> new Msg(route.eventTopic(), route.partition(), event.id(), body));
+    return transformer.serialize(event).map(body -> new Msg(route.eventTopic(), route.partition(), event.eventId(), body));
   }
 
   public Mono<Command> toCommand(Msg msg) {
@@ -96,7 +96,7 @@ public class StatePipeline {
     var newState = evolver.apply(currentState, event);
     stateRepo.put(event.stateId(), newState);
     processedCmds.add(event.commandId());
-    processedEvents.add(event.id());
+    processedEvents.add(event.eventId());
   }
 
   private Flux<Event> publishEvents(Flux<Event> events) {
@@ -116,7 +116,7 @@ public class StatePipeline {
                  .concatMap(this::toCommand)
                  .concatMap(this::rerouteIfNotEligible)
                  .filter(this::isEligible)
-                 .filter(cmd -> !processedCmds.contains(cmd.id()))
+                 .filter(cmd -> !processedCmds.contains(cmd.commandId()))
                  .log(LOGGER, logConfig.level(), logConfig.showLine(), logConfig.signalTypeArray())
                  .map(this::decide)
                  .concatMap(ReactorVavrUtils::toMono);
@@ -139,7 +139,7 @@ public class StatePipeline {
   }
 
   private Msg rerouteCommand(Command cmd, String body) {
-    return new Msg(route.commandTopic(), cmd.partition(route.totalPartitions()), cmd.id(), body);
+    return new Msg(route.commandTopic(), cmd.partition(route.totalPartitions()), cmd.commandId(), body);
   }
 
   private boolean isEligible(Command cmd) {
@@ -147,7 +147,7 @@ public class StatePipeline {
   }
 
   private boolean isEligible(Event e) {
-    return e.isInPartition(route.partition(), route.totalPartitions()) && !processedEvents.contains(e.id());
+    return e.isInPartition(route.partition(), route.totalPartitions()) && !processedEvents.contains(e.eventId());
   }
 
   private Try<Event> decide(Command cmd) {

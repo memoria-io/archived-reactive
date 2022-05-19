@@ -50,7 +50,7 @@ public class SagaPipeline {
   public Mono<Msg> toMsg(Command command) {
     return transformer.serialize(command).map(body -> {
       var partition = command.partition(route.totalPartitions());
-      return new Msg(route.commandTopic(), partition, command.id(), body);
+      return new Msg(route.commandTopic(), partition, command.commandId(), body);
     });
   }
 

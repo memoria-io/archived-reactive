@@ -63,28 +63,28 @@ record UserStateDecider() implements StateDecider {
   }
 
   private Try<Event> debitConfirmed(ConfirmDebit cmd) {
-    return Try.success(DebitConfirmed.of(cmd.id(), cmd.debitedAcc()));
+    return Try.success(DebitConfirmed.of(cmd.commandId(), cmd.debitedAcc()));
   }
 
   private Try<Event> tryToClose(Account user, CloseAccount cmd) {
     if (user.hasOngoingDebit())
-      return Try.success(ClosureRejected.of(cmd.id(), cmd.userId()));
-    return Try.success(AccountClosed.of(cmd.id(), cmd.userId()));
+      return Try.success(ClosureRejected.of(cmd.commandId(), cmd.userId()));
+    return Try.success(AccountClosed.of(cmd.commandId(), cmd.userId()));
   }
 
   private Try<Event> credited(Credit cmd) {
-    return Try.success(Credited.of(cmd.id(), cmd.creditedAcc(), cmd.debitedAcc(), cmd.amount()));
+    return Try.success(Credited.of(cmd.commandId(), cmd.creditedAcc(), cmd.debitedAcc(), cmd.amount()));
   }
 
   private Try<Event> creditRejected(Credit cmd) {
-    return Try.success(CreditRejected.of(cmd.id(), cmd.creditedAcc(), cmd.debitedAcc(), cmd.amount()));
+    return Try.success(CreditRejected.of(cmd.commandId(), cmd.creditedAcc(), cmd.debitedAcc(), cmd.amount()));
   }
 
   private Try<Event> debited(Debit cmd) {
-    return Try.success(Debited.of(cmd.id(), cmd.debitedAcc(), cmd.creditedAcc(), cmd.amount()));
+    return Try.success(Debited.of(cmd.commandId(), cmd.debitedAcc(), cmd.creditedAcc(), cmd.amount()));
   }
 
   private Try<Event> userCreated(CreateUser cmd) {
-    return Try.success(UserCreated.of(cmd.id(), cmd.userId(), cmd.username(), cmd.balance()));
+    return Try.success(UserCreated.of(cmd.commandId(), cmd.userId(), cmd.username(), cmd.balance()));
   }
 }
