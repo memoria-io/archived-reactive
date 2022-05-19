@@ -53,15 +53,19 @@ sealed interface UserEvent extends Event {
     }
   }
 
-  record OutboundMsgCreated(EventId eventId, CommandId commandId, StateId msgSender, StateId msgReceiver, String message)
-          implements UserEvent {
+  record OutboundMsgCreated(EventId eventId,
+                            CommandId commandId,
+                            StateId msgSender,
+                            StateId msgReceiver,
+                            String message) implements UserEvent {
     @Override
     public StateId stateId() {
       return msgSender;
     }
   }
 
-  record OutboundSeen(EventId eventId, CommandId commandId, StateId msgSender, StateId msgReceiver) implements UserEvent {
+  record OutboundSeen(EventId eventId, CommandId commandId, StateId msgSender, StateId msgReceiver)
+          implements UserEvent {
     @Override
     public StateId stateId() {
       return msgSender;

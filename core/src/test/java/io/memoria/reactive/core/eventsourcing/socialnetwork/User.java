@@ -7,9 +7,12 @@ import io.vavr.collection.List;
 import io.vavr.collection.Map;
 
 sealed interface User extends State {
-  record Account(StateId stateId, String name, Map<StateId, List<String>> inbox, Map<StateId, Boolean> isSeen, int balance)
-          implements User {
-    public Account(StateId stateId ,String name) {
+  record Account(StateId stateId,
+                 String name,
+                 Map<StateId, List<String>> inbox,
+                 Map<StateId, Boolean> isSeen,
+                 int balance) implements User {
+    public Account(StateId stateId, String name) {
       this(stateId, name, HashMap.empty(), HashMap.empty(), 0);
     }
 
@@ -25,7 +28,7 @@ sealed interface User extends State {
       return new Account(stateId, name, updateInbox(stateId, message), isSeen, balance);
     }
 
-    private Map<StateId, List<String>> updateInbox(StateId stateId ,String message) {
+    private Map<StateId, List<String>> updateInbox(StateId stateId, String message) {
       return inbox.put(stateId, inbox.getOrElse(stateId, List.empty()).append(message));
     }
   }

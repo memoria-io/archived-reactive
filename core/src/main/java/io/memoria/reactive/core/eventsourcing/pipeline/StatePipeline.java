@@ -76,7 +76,8 @@ public class StatePipeline {
   }
 
   public Mono<Msg> toMsg(Event event) {
-    return transformer.serialize(event).map(body -> new Msg(route.eventTopic(), route.partition(), event.eventId(), body));
+    return transformer.serialize(event)
+                      .map(body -> new Msg(route.eventTopic(), route.partition(), event.eventId(), body));
   }
 
   public Mono<Command> toCommand(Msg msg) {

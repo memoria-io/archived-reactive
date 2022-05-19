@@ -41,7 +41,10 @@ record UserStateDecider() implements StateDecider {
   }
 
   private Try<Event> outboundCreated(CreateOutboundMsg cmd) {
-    return Try.success(UserEvent.outboundMsgCreated(cmd.commandId(), cmd.msgSender(), cmd.msgReceiver(), cmd.message()));
+    return Try.success(UserEvent.outboundMsgCreated(cmd.commandId(),
+                                                    cmd.msgSender(),
+                                                    cmd.msgReceiver(),
+                                                    cmd.message()));
   }
 
   private Try<Event> inboundMessageCreated(CreateInboundMsg cmd) {

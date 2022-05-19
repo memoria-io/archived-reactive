@@ -42,7 +42,8 @@ sealed interface UserCommand extends Command {
     }
   }
 
-  record CreateInboundMsg(CommandId commandId, StateId msgSender, StateId msgReceiver, String message) implements UserCommand {
+  record CreateInboundMsg(CommandId commandId, StateId msgSender, StateId msgReceiver, String message)
+          implements UserCommand {
     @Override
     public StateId stateId() {
       return msgReceiver;

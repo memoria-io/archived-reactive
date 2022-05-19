@@ -12,17 +12,6 @@ sealed interface PersonEvent extends Event {
     return 0;
   }
 
-  record NameChanged(EventId eventId, CommandId commandId, StateId userId, String newName) implements PersonEvent {
-    @Override
-    public StateId stateId() {
-      return userId;
-    }
-
-    public static NameChanged of(CommandId commandId, StateId userId, String newName) {
-      return new NameChanged(EventId.randomUUID(), commandId, userId, newName);
-    }
-  }
-
   record AccountCreated(EventId eventId, CommandId commandId, StateId userId, String name) implements PersonEvent {
     @Override
     public StateId stateId() {
@@ -31,6 +20,17 @@ sealed interface PersonEvent extends Event {
 
     public static AccountCreated of(CommandId commandId, StateId userId, String name) {
       return new AccountCreated(EventId.randomUUID(), commandId, userId, name);
+    }
+  }
+
+  record NameChanged(EventId eventId, CommandId commandId, StateId userId, String newName) implements PersonEvent {
+    @Override
+    public StateId stateId() {
+      return userId;
+    }
+
+    public static NameChanged of(CommandId commandId, StateId userId, String newName) {
+      return new NameChanged(EventId.randomUUID(), commandId, userId, newName);
     }
   }
 }

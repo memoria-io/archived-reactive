@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import io.memoria.reactive.core.eventsourcing.CommandId;
-import io.memoria.reactive.core.eventsourcing.EventId;
 
 import java.io.IOException;
 
