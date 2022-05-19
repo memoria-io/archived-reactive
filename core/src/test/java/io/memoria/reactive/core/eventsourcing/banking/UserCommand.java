@@ -10,7 +10,7 @@ sealed interface UserCommand extends Command {
     return 0;
   }
 
-  record CloseAccount(CommandId id, StateId userId) implements UserCommand {
+  record CloseAccount(CommandId commandId, StateId userId) implements UserCommand {
     @Override
     public StateId stateId() {
       return userId;
@@ -21,7 +21,7 @@ sealed interface UserCommand extends Command {
     }
   }
 
-  record ConfirmDebit(CommandId id, StateId debitedAcc) implements UserCommand {
+  record ConfirmDebit(CommandId commandId, StateId debitedAcc) implements UserCommand {
     @Override
     public StateId stateId() {
       return debitedAcc;
@@ -32,7 +32,7 @@ sealed interface UserCommand extends Command {
     }
   }
 
-  record CreateUser(CommandId id, StateId userId, String username, int balance) implements UserCommand {
+  record CreateUser(CommandId commandId, StateId userId, String username, int balance) implements UserCommand {
     @Override
     public StateId stateId() {
       return userId;
@@ -43,7 +43,7 @@ sealed interface UserCommand extends Command {
     }
   }
 
-  record Credit(CommandId id, StateId creditedAcc, StateId debitedAcc, int amount) implements UserCommand {
+  record Credit(CommandId commandId, StateId creditedAcc, StateId debitedAcc, int amount) implements UserCommand {
     @Override
     public StateId stateId() {
       return creditedAcc;
@@ -54,7 +54,7 @@ sealed interface UserCommand extends Command {
     }
   }
 
-  record Debit(CommandId id, StateId debitedAcc, StateId creditedAcc, int amount) implements UserCommand {
+  record Debit(CommandId commandId, StateId debitedAcc, StateId creditedAcc, int amount) implements UserCommand {
     @Override
     public StateId stateId() {
       return debitedAcc;

@@ -12,7 +12,7 @@ sealed interface PersonEvent extends Event {
     return 0;
   }
 
-  record NameChanged(EventId id, CommandId commandId, StateId userId, String newName) implements PersonEvent {
+  record NameChanged(EventId eventId, CommandId commandId, StateId userId, String newName) implements PersonEvent {
     @Override
     public StateId stateId() {
       return userId;
@@ -23,7 +23,7 @@ sealed interface PersonEvent extends Event {
     }
   }
 
-  record AccountCreated(EventId id, CommandId commandId, StateId userId, String name) implements PersonEvent {
+  record AccountCreated(EventId eventId, CommandId commandId, StateId userId, String name) implements PersonEvent {
     @Override
     public StateId stateId() {
       return userId;

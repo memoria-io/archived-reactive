@@ -10,7 +10,7 @@ sealed interface PersonCommand extends Command {
     return 0;
   }
 
-  record ChangeName(CommandId id, StateId userId, String newName) implements PersonCommand {
+  record ChangeName(CommandId commandId, StateId userId, String newName) implements PersonCommand {
     @Override
     public StateId stateId() {
       return userId;
@@ -21,7 +21,7 @@ sealed interface PersonCommand extends Command {
     }
   }
 
-  record CreatePerson(CommandId id, StateId userId, String username) implements PersonCommand {
+  record CreatePerson(CommandId commandId, StateId userId, String username) implements PersonCommand {
     @Override
     public StateId stateId() {
       return userId;

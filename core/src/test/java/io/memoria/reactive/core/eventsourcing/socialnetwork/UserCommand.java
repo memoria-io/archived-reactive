@@ -35,28 +35,28 @@ sealed interface UserCommand extends Command {
     return new MarkMsgAsSeen(CommandId.randomUUID(), msgSender, msgReceiver);
   }
 
-  record CloseAccount(CommandId id, StateId userId) implements UserCommand {
+  record CloseAccount(CommandId commandId, StateId userId) implements UserCommand {
     @Override
     public StateId stateId() {
       return userId;
     }
   }
 
-  record CreateInboundMsg(CommandId id, StateId msgSender, StateId msgReceiver, String message) implements UserCommand {
+  record CreateInboundMsg(CommandId commandId, StateId msgSender, StateId msgReceiver, String message) implements UserCommand {
     @Override
     public StateId stateId() {
       return msgReceiver;
     }
   }
 
-  record CreateNewMsgNotification(CommandId id, StateId msgReceiver) implements UserCommand {
+  record CreateNewMsgNotification(CommandId commandId, StateId msgReceiver) implements UserCommand {
     @Override
     public StateId stateId() {
       return msgReceiver;
     }
   }
 
-  record CreateOutboundMsg(CommandId id, StateId msgSender, StateId msgReceiver, String message)
+  record CreateOutboundMsg(CommandId commandId, StateId msgSender, StateId msgReceiver, String message)
           implements UserCommand {
     @Override
     public StateId stateId() {
@@ -64,14 +64,14 @@ sealed interface UserCommand extends Command {
     }
   }
 
-  record CreateUser(CommandId id, StateId userId, String username) implements UserCommand {
+  record CreateUser(CommandId commandId, StateId userId, String username) implements UserCommand {
     @Override
     public StateId stateId() {
       return userId;
     }
   }
 
-  record MarkMsgAsSeen(CommandId id, StateId msgSender, StateId msgReceiver) implements UserCommand {
+  record MarkMsgAsSeen(CommandId commandId, StateId msgSender, StateId msgReceiver) implements UserCommand {
     @Override
     public StateId stateId() {
       return msgSender;

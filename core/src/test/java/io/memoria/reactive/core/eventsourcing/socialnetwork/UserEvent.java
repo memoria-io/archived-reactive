@@ -38,14 +38,14 @@ sealed interface UserEvent extends Event {
     return new UserCreated(EventId.randomUUID(), commandId, userId, name);
   }
 
-  record AccountClosed(EventId id, CommandId commandId, StateId userId) implements UserEvent {
+  record AccountClosed(EventId eventId, CommandId commandId, StateId userId) implements UserEvent {
     @Override
     public StateId stateId() {
       return userId;
     }
   }
 
-  record InboundMsgCreated(EventId id, CommandId commandId, StateId msgSender, StateId msgReceiver, String message)
+  record InboundMsgCreated(EventId eventId, CommandId commandId, StateId msgSender, StateId msgReceiver, String message)
           implements UserEvent {
     @Override
     public StateId stateId() {
@@ -53,7 +53,7 @@ sealed interface UserEvent extends Event {
     }
   }
 
-  record OutboundMsgCreated(EventId id, CommandId commandId, StateId msgSender, StateId msgReceiver, String message)
+  record OutboundMsgCreated(EventId eventId, CommandId commandId, StateId msgSender, StateId msgReceiver, String message)
           implements UserEvent {
     @Override
     public StateId stateId() {
@@ -61,14 +61,14 @@ sealed interface UserEvent extends Event {
     }
   }
 
-  record OutboundSeen(EventId id, CommandId commandId, StateId msgSender, StateId msgReceiver) implements UserEvent {
+  record OutboundSeen(EventId eventId, CommandId commandId, StateId msgSender, StateId msgReceiver) implements UserEvent {
     @Override
     public StateId stateId() {
       return msgSender;
     }
   }
 
-  record UserCreated(EventId id, CommandId commandId, StateId userId, String name) implements UserEvent {
+  record UserCreated(EventId eventId, CommandId commandId, StateId userId, String name) implements UserEvent {
     @Override
     public StateId stateId() {
       return userId;
