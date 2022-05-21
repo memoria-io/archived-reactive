@@ -40,7 +40,7 @@ from [Vavr](https://www.vavr.io/).
 * [x] Event Sourcing
     * [x] State decider, evolver, Stream pipeline
     * [x] Sagas decider, Stream pipeline
-    * [x] id safety (stateId, commandId, eventId)
+    * [x] id safety with typed classed (StateId, CommandId, EventId)
     * [x] Events reduction
         * If using reduction the event reducer should map all states to creation event
         * Init states can't have creation events.
