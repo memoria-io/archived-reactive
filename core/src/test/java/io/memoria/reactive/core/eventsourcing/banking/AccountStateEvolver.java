@@ -6,10 +6,10 @@ import io.memoria.reactive.core.eventsourcing.banking.Account.Acc;
 import io.memoria.reactive.core.eventsourcing.banking.Account.ClosedAccount;
 import io.memoria.reactive.core.eventsourcing.banking.Account.Visitor;
 import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.AccountClosed;
+import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.AccountCreated;
 import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.Credited;
 import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.DebitConfirmed;
 import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.Debited;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.AccountCreated;
 import io.memoria.reactive.core.eventsourcing.pipeline.StateEvolver;
 
 @SuppressWarnings("SwitchStatementWithTooFewBranches")

@@ -23,6 +23,18 @@ sealed interface AccountEvent extends Event {
     }
   }
 
+  record AccountCreated(EventId eventId, CommandId commandId, StateId accountId, String name, int balance)
+          implements AccountEvent {
+    @Override
+    public StateId stateId() {
+      return accountId;
+    }
+
+    public static AccountCreated of(CommandId commandId, StateId accountId, String name, int balance) {
+      return new AccountCreated(EventId.randomUUID(), commandId, accountId, name, balance);
+    }
+  }
+
   record ClosureRejected(EventId eventId, CommandId commandId, StateId accountId) implements AccountEvent {
     @Override
     public StateId stateId() {
@@ -78,18 +90,6 @@ sealed interface AccountEvent extends Event {
 
     public static Debited of(CommandId commandId, StateId debitedAcc, StateId creditedAcc, int amount) {
       return new Debited(EventId.randomUUID(), commandId, debitedAcc, creditedAcc, amount);
-    }
-  }
-
-  record AccountCreated(EventId eventId, CommandId commandId, StateId accountId, String name, int balance)
-          implements AccountEvent {
-    @Override
-    public StateId stateId() {
-      return accountId;
-    }
-
-    public static AccountCreated of(CommandId commandId, StateId accountId, String name, int balance) {
-      return new AccountCreated(EventId.randomUUID(), commandId, accountId, name, balance);
     }
   }
 }

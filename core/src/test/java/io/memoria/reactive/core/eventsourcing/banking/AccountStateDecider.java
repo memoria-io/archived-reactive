@@ -14,12 +14,12 @@ import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.CreateAccou
 import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.Credit;
 import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.Debit;
 import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.AccountClosed;
+import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.AccountCreated;
 import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.ClosureRejected;
 import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.CreditRejected;
 import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.Credited;
 import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.DebitConfirmed;
 import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.Debited;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.AccountCreated;
 import io.memoria.reactive.core.eventsourcing.pipeline.StateDecider;
 import io.vavr.control.Try;
 

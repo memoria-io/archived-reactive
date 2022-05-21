@@ -4,7 +4,8 @@ import io.memoria.reactive.core.eventsourcing.State;
 import io.memoria.reactive.core.eventsourcing.StateId;
 
 sealed interface Account extends State {
-  record Acc(StateId stateId, String name, int balance, int debitCount) implements io.memoria.reactive.core.eventsourcing.banking.Account {
+  record Acc(StateId stateId, String name, int balance, int debitCount)
+          implements io.memoria.reactive.core.eventsourcing.banking.Account {
     public Acc(StateId stateId, String name, int balance) {
       this(stateId, name, balance, 0);
     }
