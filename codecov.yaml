@@ -1,0 +1,3 @@
+ignore:
+  - "*Exception*.java"
+  - "Transformer*.java"
