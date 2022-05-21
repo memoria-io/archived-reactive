@@ -11,7 +11,7 @@ import io.memoria.reactive.core.eventsourcing.socialnetwork.Account.Visitor;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CloseAccount;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateInboundMsg;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateOutboundMsg;
-import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateUser;
+import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateAcc;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.MarkMsgAsSeen;
 import io.vavr.control.Try;
 
@@ -27,7 +27,7 @@ record AccountStateDecider() implements StateDecider {
 
   private Try<Event> apply(Account account, AccountCommand accountCommand) {
     return switch (accountCommand) {
-      case CreateUser cmd && account instanceof Visitor -> userCreated(cmd);
+      case CreateAcc cmd && account instanceof Visitor -> accountCreated(cmd);
       case CreateOutboundMsg cmd && account instanceof Acc -> outboundCreated(cmd);
       case CreateInboundMsg cmd && account instanceof Acc -> inboundMessageCreated(cmd);
       case MarkMsgAsSeen cmd && account instanceof Acc -> outboundSeen(cmd);
@@ -36,8 +36,8 @@ record AccountStateDecider() implements StateDecider {
     };
   }
 
-  private Try<Event> userCreated(CreateUser cmd) {
-    return Try.success(AccountEvent.userCreated(cmd.commandId(), cmd.accountId(), cmd.username()));
+  private Try<Event> accountCreated(CreateAcc cmd) {
+    return Try.success(AccountEvent.accountCreated(cmd.commandId(), cmd.accountId(), cmd.accountname()));
   }
 
   private Try<Event> outboundCreated(CreateOutboundMsg cmd) {

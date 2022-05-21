@@ -32,14 +32,14 @@ sealed interface AccountCommand extends Command {
     }
   }
 
-  record CreateAccount(CommandId commandId, StateId accountId, String username, int balance) implements AccountCommand {
+  record CreateAccount(CommandId commandId, StateId accountId, String accountname, int balance) implements AccountCommand {
     @Override
     public StateId stateId() {
       return accountId;
     }
 
-    public static CreateAccount of(StateId accountId, String username, int balance) {
-      return new CreateAccount(CommandId.randomUUID(), accountId, username, balance);
+    public static CreateAccount of(StateId accountId, String accountname, int balance) {
+      return new CreateAccount(CommandId.randomUUID(), accountId, accountname, balance);
     }
   }
 

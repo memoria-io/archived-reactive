@@ -27,8 +27,8 @@ sealed interface AccountCommand extends Command {
     return new CreateOutboundMsg(CommandId.randomUUID(), msgSender, msgReceiver, message);
   }
 
-  static CreateUser createUser(StateId accountId, String username) {
-    return new CreateUser(CommandId.randomUUID(), accountId, username);
+  static CreateAcc createAcc(StateId accountId, String accountname) {
+    return new CreateAcc(CommandId.randomUUID(), accountId, accountname);
   }
 
   static MarkMsgAsSeen markMsgAsSeen(StateId msgSender, StateId msgReceiver) {
@@ -65,7 +65,7 @@ sealed interface AccountCommand extends Command {
     }
   }
 
-  record CreateUser(CommandId commandId, StateId accountId, String username) implements AccountCommand {
+  record CreateAcc(CommandId commandId, StateId accountId, String accountname) implements AccountCommand {
     @Override
     public StateId stateId() {
       return accountId;

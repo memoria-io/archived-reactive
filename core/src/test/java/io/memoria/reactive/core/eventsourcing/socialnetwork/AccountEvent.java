@@ -34,7 +34,7 @@ sealed interface AccountEvent extends Event {
     return new OutboundSeen(EventId.randomUUID(), commandId, msgSender, msgReceiver);
   }
 
-  static AccountCreated userCreated(CommandId commandId, StateId accountId, String name) {
+  static AccountCreated accountCreated(CommandId commandId, StateId accountId, String name) {
     return new AccountCreated(EventId.randomUUID(), commandId, accountId, name);
   }
 

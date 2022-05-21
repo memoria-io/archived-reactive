@@ -10,10 +10,10 @@ import reactor.core.publisher.Flux;
 class DataSet {
   private DataSet() {}
 
-  public static Flux<Command> personScenario(int nUsers, int nameChanges) {
-    var createUsers = createPersons(nUsers);
-    var changes = List.range(0, nameChanges).flatMap(i -> changeNames(nUsers));
-    return Flux.fromIterable(createUsers.appendAll(changes));
+  public static Flux<Command> personScenario(int nAccounts, int nameChanges) {
+    var createAccounts = createAccounts(nAccounts);
+    var changes = List.range(0, nameChanges).flatMap(i -> changeNames(nAccounts));
+    return Flux.fromIterable(createAccounts.appendAll(changes));
   }
 
   static StateId createId(int i) {
@@ -24,11 +24,11 @@ class DataSet {
     return "name:" + i;
   }
 
-  static List<Command> createPersons(int nUsers) {
-    return List.range(0, nUsers).map(i -> CreatePerson.of(createId(i), createName(i)));
+  static List<Command> createAccounts(int nAccounts) {
+    return List.range(0, nAccounts).map(i -> CreatePerson.of(createId(i), createName(i)));
   }
 
-  static List<Command> changeNames(int nUsers) {
-    return List.range(0, nUsers).map(i -> ChangeName.of(createId(i), createName(i)));
+  static List<Command> changeNames(int nAccounts) {
+    return List.range(0, nAccounts).map(i -> ChangeName.of(createId(i), createName(i)));
   }
 }

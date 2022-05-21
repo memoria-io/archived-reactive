@@ -37,10 +37,10 @@ record AccountStateDecider() implements StateDecider {
     return Try.failure(UnknownCommand.create(command));
   }
 
-  private Try<Event> handle(Visitor user, AccountCommand accountCommand) {
+  private Try<Event> handle(Visitor account, AccountCommand accountCommand) {
     return switch (accountCommand) {
-      case CreateAccount cmd -> userCreated(cmd);
-      default -> Try.failure(InvalidOperation.create(user, accountCommand));
+      case CreateAccount cmd -> accountCreated(cmd);
+      default -> Try.failure(InvalidOperation.create(account, accountCommand));
     };
   }
 
@@ -54,11 +54,11 @@ record AccountStateDecider() implements StateDecider {
     };
   }
 
-  private Try<Event> handle(ClosedAccount user, AccountCommand accountCommand) {
+  private Try<Event> handle(ClosedAccount account, AccountCommand accountCommand) {
     return switch (accountCommand) {
       case Credit cmd -> creditRejected(cmd);
       case ConfirmDebit cmd -> debitConfirmed(cmd);
-      default -> Try.failure(InvalidOperation.create(user, accountCommand));
+      default -> Try.failure(InvalidOperation.create(account, accountCommand));
     };
   }
 
@@ -84,7 +84,7 @@ record AccountStateDecider() implements StateDecider {
     return Try.success(Debited.of(cmd.commandId(), cmd.debitedAcc(), cmd.creditedAcc(), cmd.amount()));
   }
 
-  private Try<Event> userCreated(CreateAccount cmd) {
-    return Try.success(AccountCreated.of(cmd.commandId(), cmd.accountId(), cmd.username(), cmd.balance()));
+  private Try<Event> accountCreated(CreateAccount cmd) {
+    return Try.success(AccountCreated.of(cmd.commandId(), cmd.accountId(), cmd.accountname(), cmd.balance()));
   }
 }

@@ -18,7 +18,7 @@ public record AccountStateCompactor() implements StateCompactor {
         case Acc acc -> accountCreated(acc);
       };
     } else {
-      throw new IllegalArgumentException("State %s is not instance of user".formatted(state));
+      throw new IllegalArgumentException("State %s is not instance of account".formatted(state));
     }
   }
 

@@ -12,14 +12,14 @@ class DataSet {
   private DataSet() {}
 
   static StateId createId(int i) {
-    return StateId.of("user_id_" + i);
+    return StateId.of("acc_id_" + i);
   }
 
   static String createName(int i) {
     return "name_" + i;
   }
 
-  static List<CreateAccount> createUsers(int nUsers, int balance) {
+  static List<CreateAccount> createAccounts(int nUsers, int balance) {
     return List.range(0, nUsers).map(i -> CreateAccount.of(createId(i), createName(i), balance));
   }
 
@@ -28,9 +28,9 @@ class DataSet {
   }
 
   static List<Debit> randomOutBounds(int nUsers, int maxAmount) {
-    var users = shuffledaccountIds(nUsers);
-    var from = users.subSequence(0, nUsers / 2);
-    var to = users.subSequence(nUsers / 2, nUsers);
+    var accounts = shuffledaccountIds(nUsers);
+    var from = accounts.subSequence(0, nUsers / 2);
+    var to = accounts.subSequence(nUsers / 2, nUsers);
     var amounts = List.ofAll(new Random().ints(nUsers, 1, maxAmount).boxed());
     return List.range(0, nUsers / 2).map(i -> createOutboundBalance(from.get(i), to.get(i), amounts.get(i)));
   }

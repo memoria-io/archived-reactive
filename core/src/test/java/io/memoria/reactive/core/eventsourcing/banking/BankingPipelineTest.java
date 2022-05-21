@@ -64,17 +64,13 @@ class BankingPipelineTest {
   void simple() {
     // Given
     var bobId = StateId.of("bob");
-    var createUserBob = CreateAccount.of(bobId, "bob", 100);
     var janId = StateId.of("jan");
-    var createUserJan = CreateAccount.of(janId, "jan", 100);
+    var createBob = CreateAccount.of(bobId, "bob", 100);
+    var createJan = CreateAccount.of(janId, "jan", 100);
     var sendMoneyFromBobToJan = Debit.of(bobId, janId, 50);
     var requestClosure = CloseAccount.of(janId);
     // When
-    Flux<Command> cmds = Flux.just(createUserBob,
-                                   createUserJan,
-                                   sendMoneyFromBobToJan,
-                                   requestClosure,
-                                   sendMoneyFromBobToJan);
+    Flux<Command> cmds = Flux.just(createBob, createJan, sendMoneyFromBobToJan, requestClosure, sendMoneyFromBobToJan);
     stream.publish(cmds.map(this::toMsg)).subscribe();
     // Then
     var pipelines = Flux.merge(statePipeline.run(), sagaPipeline.run());
@@ -91,18 +87,18 @@ class BankingPipelineTest {
     int nUsers = 4;
     int balance = 100;
     int treasury = nUsers * balance;
-    var createUsers = DataSet.createUsers(nUsers, balance);
-    var accountIds = createUsers.map(CreateAccount::accountId);
+    var createAccounts = DataSet.createAccounts(nUsers, balance);
+    var accountIds = createAccounts.map(CreateAccount::accountId);
     var randomOutbounds = DataSet.randomOutBounds(nUsers, balance);
-    var cmds = Flux.<Command>fromIterable(createUsers).concatWith(Flux.fromIterable(randomOutbounds)).map(this::toMsg);
+    var cmds = Flux.<Command>fromIterable(createAccounts).concatWith(Flux.fromIterable(randomOutbounds)).map(this::toMsg);
 
     // When
     var pipelines = Flux.merge(stream.publish(cmds), statePipeline.run(), sagaPipeline.run());
     StepVerifier.create(pipelines).expectNextCount(20).verifyTimeout(timeout);
     // Then
-    var users = accountIds.map(statePipeline::stateOrInit).map(u -> (Acc) u);
-    Assertions.assertEquals(nUsers, users.size());
-    var total = users.foldLeft(0, (a, b) -> a + b.balance());
+    var accounts = accountIds.map(statePipeline::stateOrInit).map(u -> (Acc) u);
+    Assertions.assertEquals(nUsers, accounts.size());
+    var total = accounts.foldLeft(0, (a, b) -> a + b.balance());
     Assertions.assertEquals(treasury, total);
   }
 

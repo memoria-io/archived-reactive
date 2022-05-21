@@ -21,7 +21,7 @@ public record AccountStateCompactor() implements StateCompactor {
         case ClosedAccount acc -> new AccountClosed(EventId.randomUUID(), CommandId.randomUUID(), acc.stateId());
       };
     } else {
-      throw new IllegalArgumentException("State %s is not instance of user".formatted(state));
+      throw new IllegalArgumentException("State %s is not instance of account".formatted(state));
     }
   }
 

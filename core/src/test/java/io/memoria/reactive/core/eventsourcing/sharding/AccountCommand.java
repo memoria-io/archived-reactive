@@ -21,15 +21,14 @@ sealed interface AccountCommand extends Command {
     }
   }
 
-  record CreatePerson(CommandId commandId, StateId accountId, String username) implements AccountCommand {
+  record CreatePerson(CommandId commandId, StateId accountId, String accName) implements AccountCommand {
     @Override
     public StateId stateId() {
       return accountId;
     }
 
-    public static CreatePerson of(StateId accountId, String username) {
-      return new CreatePerson(CommandId.randomUUID(), accountId, username);
+    public static CreatePerson of(StateId accountId, String accountName) {
+      return new CreatePerson(CommandId.randomUUID(), accountId, accountName);
     }
   }
-
 }
