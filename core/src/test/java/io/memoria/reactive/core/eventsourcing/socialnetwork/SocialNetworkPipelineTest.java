@@ -47,7 +47,7 @@ class SocialNetworkPipelineTest {
                                       new Visitor(),
                                       new AccountStateDecider(),
                                       new AccountStateEvolver(),
-                                      new AccountStateCompactor(),
+                                      new AccountStateReducer(),
                                       route,
                                       logging);
     sagaPipeline = new SagaPipeline(stream, transformer, new AccountSagaDecider(), route, logging);

@@ -4,6 +4,7 @@ import io.memoria.reactive.core.eventsourcing.Event;
 import io.memoria.reactive.core.eventsourcing.State;
 import io.memoria.reactive.core.eventsourcing.pipeline.StateEvolver;
 import io.memoria.reactive.core.eventsourcing.sharding.Account.Acc;
+import io.memoria.reactive.core.eventsourcing.sharding.Account.ClosedAcc;
 import io.memoria.reactive.core.eventsourcing.sharding.Account.Visitor;
 import io.memoria.reactive.core.eventsourcing.sharding.AccountEvent.AccountCreated;
 import io.memoria.reactive.core.eventsourcing.sharding.AccountEvent.NameChanged;
@@ -16,9 +17,14 @@ record AccountStateEvolver() implements StateEvolver {
       return switch (account) {
         case Visitor acc -> handle(acc, accountEvent);
         case Acc acc -> handle(acc, accountEvent);
+        case ClosedAcc acc -> handle(acc, accountEvent);
       };
     }
     return state;
+  }
+
+  private State handle(ClosedAcc acc, AccountEvent accountEvent) {
+    return new ClosedAcc(acc.accountId());
   }
 
   private State handle(Visitor acc, AccountEvent event) {

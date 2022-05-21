@@ -1,15 +1,18 @@
 package io.memoria.reactive.core.eventsourcing.sharding;
 
 import io.memoria.reactive.core.eventsourcing.Command;
+import io.memoria.reactive.core.eventsourcing.CommandId;
 import io.memoria.reactive.core.eventsourcing.ESException.UnknownCommand;
 import io.memoria.reactive.core.eventsourcing.Event;
 import io.memoria.reactive.core.eventsourcing.EventId;
 import io.memoria.reactive.core.eventsourcing.State;
 import io.memoria.reactive.core.eventsourcing.pipeline.StateDecider;
 import io.memoria.reactive.core.eventsourcing.sharding.Account.Acc;
+import io.memoria.reactive.core.eventsourcing.sharding.Account.ClosedAcc;
 import io.memoria.reactive.core.eventsourcing.sharding.Account.Visitor;
 import io.memoria.reactive.core.eventsourcing.sharding.AccountCommand.ChangeName;
 import io.memoria.reactive.core.eventsourcing.sharding.AccountCommand.CreatePerson;
+import io.memoria.reactive.core.eventsourcing.sharding.AccountEvent.AccountClosed;
 import io.memoria.reactive.core.eventsourcing.sharding.AccountEvent.AccountCreated;
 import io.memoria.reactive.core.eventsourcing.sharding.AccountEvent.NameChanged;
 import io.vavr.control.Try;
@@ -22,9 +25,14 @@ record AccountStateDecider() implements StateDecider {
       return switch (account) {
         case Visitor acc -> handle(acc, accountCommand);
         case Acc acc -> handle(acc, accountCommand);
+        case ClosedAcc closedAcc -> handle(closedAcc, accountCommand);
       };
     }
     return Try.failure(UnknownCommand.create(command));
+  }
+
+  private Try<Event> handle(ClosedAcc closedAcc, AccountCommand accountCommand) {
+    return Try.success(new AccountClosed(EventId.randomUUID(), CommandId.randomUUID(), closedAcc.accountId()));
   }
 
   private Try<Event> handle(Visitor acc, AccountCommand cmd) {

@@ -5,17 +5,18 @@ import io.memoria.reactive.core.eventsourcing.CommandId;
 import io.memoria.reactive.core.eventsourcing.StateId;
 
 sealed interface AccountCommand extends Command {
+  StateId accountId();
+
+  default StateId stateId() {
+    return accountId();
+  }
+
   @Override
   default long timestamp() {
     return 0;
   }
 
   record CloseAccount(CommandId commandId, StateId accountId) implements AccountCommand {
-    @Override
-    public StateId stateId() {
-      return accountId;
-    }
-
     public static CloseAccount of(StateId accountId) {
       return new CloseAccount(CommandId.randomUUID(), accountId);
     }
@@ -23,7 +24,7 @@ sealed interface AccountCommand extends Command {
 
   record ConfirmDebit(CommandId commandId, StateId debitedAcc) implements AccountCommand {
     @Override
-    public StateId stateId() {
+    public StateId accountId() {
       return debitedAcc;
     }
 
@@ -34,11 +35,6 @@ sealed interface AccountCommand extends Command {
 
   record CreateAccount(CommandId commandId, StateId accountId, String accountname, int balance)
           implements AccountCommand {
-    @Override
-    public StateId stateId() {
-      return accountId;
-    }
-
     public static CreateAccount of(StateId accountId, String accountname, int balance) {
       return new CreateAccount(CommandId.randomUUID(), accountId, accountname, balance);
     }
@@ -46,7 +42,7 @@ sealed interface AccountCommand extends Command {
 
   record Credit(CommandId commandId, StateId creditedAcc, StateId debitedAcc, int amount) implements AccountCommand {
     @Override
-    public StateId stateId() {
+    public StateId accountId() {
       return creditedAcc;
     }
 
@@ -57,7 +53,7 @@ sealed interface AccountCommand extends Command {
 
   record Debit(CommandId commandId, StateId debitedAcc, StateId creditedAcc, int amount) implements AccountCommand {
     @Override
-    public StateId stateId() {
+    public StateId accountId() {
       return debitedAcc;
     }
 

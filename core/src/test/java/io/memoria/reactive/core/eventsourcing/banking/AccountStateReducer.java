@@ -9,9 +9,9 @@ import io.memoria.reactive.core.eventsourcing.banking.Account.ClosedAccount;
 import io.memoria.reactive.core.eventsourcing.banking.Account.Visitor;
 import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.AccountClosed;
 import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.AccountCreated;
-import io.memoria.reactive.core.eventsourcing.pipeline.StateCompactor;
+import io.memoria.reactive.core.eventsourcing.pipeline.StateReducer;
 
-public record AccountStateCompactor() implements StateCompactor {
+public record AccountStateReducer() implements StateReducer {
   @Override
   public Event apply(State state) {
     if (state instanceof Account account) {

@@ -31,13 +31,13 @@ public class StatePipeline {
   private final TextTransformer transformer;
   private final Set<Id> processedEvents;
   private final Set<Id> processedCmds;
-  private final Set<StateId> compactedStates;
+  private final Set<StateId> reducedStates;
   private final Map<StateId, State> stateRepo;
   // Business logic
   private final State initState;
   private final StateDecider decider;
   private final StateEvolver evolver;
-  private final StateCompactor compactor;
+  private final StateReducer reducer;
   // Configs
   private final Route route;
   private final LogConfig logConfig;
@@ -47,7 +47,7 @@ public class StatePipeline {
                        State initState,
                        StateDecider decider,
                        StateEvolver evolver,
-                       StateCompactor compactor,
+                       StateReducer reducer,
                        Route route,
                        LogConfig logConfig) {
     // Infra
@@ -55,13 +55,13 @@ public class StatePipeline {
     this.transformer = transformer;
     this.processedEvents = new HashSet<>();
     this.processedCmds = new HashSet<>();
-    this.compactedStates = new HashSet<>();
+    this.reducedStates = new HashSet<>();
     this.stateRepo = new ConcurrentHashMap<>();
     // Business logic
     this.initState = initState;
     this.decider = decider;
     this.evolver = evolver;
-    this.compactor = compactor;
+    this.reducer = reducer;
     // Configs
     this.route = route;
     this.logConfig = logConfig;
@@ -74,10 +74,10 @@ public class StatePipeline {
     return readCurrentSink.concatWith(pubOldSinkEvents).concatWith(pubCmdEvents);
   }
 
-  public Flux<Event> compactRun() {
-    var publishCompaction = publishEvents(compactionEvents());
+  public Flux<Event> runReduced() {
+    var publishReduced = publishEvents(reducedEvents());
     var pubCmdEvents = publishEvents(handleNewCommands()).doOnNext(this::evolveState);
-    return publishCompaction.concatWith(pubCmdEvents);
+    return publishReduced.concatWith(pubCmdEvents);
   }
 
   public Mono<Event> toEvent(Msg msg) {
@@ -97,14 +97,14 @@ public class StatePipeline {
     return transformer.deserialize(msg.value(), Command.class);
   }
 
-  private Flux<Event> compactionEvents() {
+  private Flux<Event> reducedEvents() {
     var compacted = read(route.eventTopic(), route.partition()).doOnNext(this::evolveState)
-                                                               .doOnNext(e -> compactedStates.add(e.stateId()));
-    var nonCompacted = readOldSink().filter(e -> !compactedStates.contains(e.stateId())).doOnNext(this::evolveState);
+                                                               .doOnNext(e -> reducedStates.add(e.stateId()));
+    var nonCompacted = readOldSink().filter(e -> !reducedStates.contains(e.stateId())).doOnNext(this::evolveState);
     var compactNonCom = Flux.fromIterable(this.stateRepo.entrySet())
-                            .filter(e -> !compactedStates.contains(e.getKey()))
+                            .filter(e -> !reducedStates.contains(e.getKey()))
                             .map(Entry::getValue)
-                            .map(compactor);
+                            .map(reducer);
     return compacted.thenMany(nonCompacted).thenMany(compactNonCom);
   }
 

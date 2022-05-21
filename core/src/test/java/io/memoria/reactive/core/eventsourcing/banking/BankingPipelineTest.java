@@ -54,7 +54,7 @@ class BankingPipelineTest {
                                       new Visitor(),
                                       new AccountStateDecider(),
                                       new AccountStateEvolver(),
-                                      new AccountStateCompactor(),
+                                      new AccountStateReducer(),
                                       route,
                                       LogConfig.FINE);
     sagaPipeline = new SagaPipeline(stream, transformer, new AccountSagaDecider(), route, LogConfig.FINE);

@@ -67,9 +67,40 @@ class ShardingPipelineTest {
                 .verifyTimeout(timeout);
 
     // Then events are published to the new pipeline topic, with number of partitions = totalPartitions, 
-    //    System.out.println("-----------------------------------------------");
     var newEvents = Flux.range(0, totalPartitions).flatMap(i -> accountCreatedStream(newEventTopic.name(), i));
     StepVerifier.create(newEvents).expectNextCount(eventCount).verifyTimeout(timeout);
+  }
+
+  @Test
+  void reduction() {
+    // Given published commands
+    int personsCount = 10;
+    int nameChanges = 2;
+    int eventCount = personsCount + (personsCount * nameChanges);
+
+    // When simple pipeline is activated
+    stream.publish(DataSet.personScenario(personsCount, nameChanges).map(ShardingPipelineTest::toMsg))
+          .delaySubscription(Duration.ofMillis(100))
+          .subscribe();
+    StepVerifier.create(Flux.merge(oldPipelines.map(StatePipeline::run)))
+                .expectNextCount(eventCount)
+                .verifyTimeout(timeout);
+
+    // Then events are published to old pipeline topic, with number of partitions = prevPartitions  
+    var oldEvents = Flux.range(0, prevPartitions).flatMap(i -> accountCreatedStream(oldEventTopic.name(), i));
+    StepVerifier.create(oldEvents).expectNextCount(eventCount).verifyTimeout(timeout);
+
+    // And When new pipelines are run with reduction
+    StepVerifier.create(Flux.merge(newPipelines.map(StatePipeline::runReduced)))
+                .expectNextCount(personsCount)
+                .verifyTimeout(timeout);
+
+    /*
+     * Then events are published to the new pipeline topic, with number of partitions = totalPartitions,
+     * and only one event per user
+     */
+    var newEvents = Flux.range(0, totalPartitions).flatMap(i -> accountCreatedStream(newEventTopic.name(), i));
+    StepVerifier.create(newEvents).expectNextCount(personsCount).verifyTimeout(timeout);
   }
 
   private Route shardedRoute(int partition) {
@@ -91,7 +122,7 @@ class ShardingPipelineTest {
                              new Visitor(),
                              new AccountStateDecider(),
                              new AccountStateEvolver(),
-                             new AccountStateCompactor(),
+                             new AccountStateReducer(),
                              route,
                              LogConfig.FINE);
   }
