@@ -4,7 +4,7 @@ import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.pipeline.LogConfig;
 import io.memoria.reactive.core.eventsourcing.pipeline.Route;
 import io.memoria.reactive.core.eventsourcing.pipeline.StatePipeline;
-import io.memoria.reactive.core.eventsourcing.sharding.Person.Visitor;
+import io.memoria.reactive.core.eventsourcing.sharding.Account.Visitor;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
@@ -67,9 +67,40 @@ class ShardingPipelineTest {
                 .verifyTimeout(timeout);
 
     // Then events are published to the new pipeline topic, with number of partitions = totalPartitions, 
-    //    System.out.println("-----------------------------------------------");
     var newEvents = Flux.range(0, totalPartitions).flatMap(i -> accountCreatedStream(newEventTopic.name(), i));
     StepVerifier.create(newEvents).expectNextCount(eventCount).verifyTimeout(timeout);
+  }
+
+  @Test
+  void reduction() {
+    // Given published commands
+    int personsCount = 10;
+    int nameChanges = 2;
+    int eventCount = personsCount + (personsCount * nameChanges);
+
+    // When simple pipeline is activated
+    stream.publish(DataSet.personScenario(personsCount, nameChanges).map(ShardingPipelineTest::toMsg))
+          .delaySubscription(Duration.ofMillis(100))
+          .subscribe();
+    StepVerifier.create(Flux.merge(oldPipelines.map(StatePipeline::run)))
+                .expectNextCount(eventCount)
+                .verifyTimeout(timeout);
+
+    // Then events are published to old pipeline topic, with number of partitions = prevPartitions  
+    var oldEvents = Flux.range(0, prevPartitions).flatMap(i -> accountCreatedStream(oldEventTopic.name(), i));
+    StepVerifier.create(oldEvents).expectNextCount(eventCount).verifyTimeout(timeout);
+
+    // And When new pipelines are run with reduction
+    StepVerifier.create(Flux.merge(newPipelines.map(StatePipeline::runReduced)))
+                .expectNextCount(personsCount)
+                .verifyTimeout(timeout);
+
+    /*
+     * Then events are published to the new pipeline topic, with number of partitions = totalPartitions,
+     * and only one event per user
+     */
+    var newEvents = Flux.range(0, totalPartitions).flatMap(i -> accountCreatedStream(newEventTopic.name(), i));
+    StepVerifier.create(newEvents).expectNextCount(personsCount).verifyTimeout(timeout);
   }
 
   private Route shardedRoute(int partition) {
@@ -89,14 +120,15 @@ class ShardingPipelineTest {
     return new StatePipeline(stream,
                              transformer,
                              new Visitor(),
-                             new PersonStateDecider(),
-                             new PersonStateEvolver(),
+                             new AccountStateDecider(),
+                             new AccountStateEvolver(),
+                             new AccountStateReducer(),
                              route,
                              LogConfig.FINE);
   }
 
-  private Flux<PersonEvent> accountCreatedStream(String topic, int i) {
-    return stream.subscribe(topic, i, 0).concatMap(msg -> transformer.deserialize(msg.value(), PersonEvent.class));
+  private Flux<AccountEvent> accountCreatedStream(String topic, int i) {
+    return stream.subscribe(topic, i, 0).concatMap(msg -> transformer.deserialize(msg.value(), AccountEvent.class));
     //                 .doOnNext(e -> System.out.printf("p(%d)-%s%n", i, e));
   }
 

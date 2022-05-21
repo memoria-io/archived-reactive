@@ -7,9 +7,9 @@ import io.memoria.reactive.core.eventsourcing.pipeline.LogConfig;
 import io.memoria.reactive.core.eventsourcing.pipeline.Route;
 import io.memoria.reactive.core.eventsourcing.pipeline.SagaPipeline;
 import io.memoria.reactive.core.eventsourcing.pipeline.StatePipeline;
-import io.memoria.reactive.core.eventsourcing.socialnetwork.User.Visitor;
-import io.memoria.reactive.core.eventsourcing.socialnetwork.UserCommand.CreateOutboundMsg;
-import io.memoria.reactive.core.eventsourcing.socialnetwork.UserCommand.CreateUser;
+import io.memoria.reactive.core.eventsourcing.socialnetwork.Account.Visitor;
+import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateAcc;
+import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateOutboundMsg;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
@@ -45,23 +45,23 @@ class SocialNetworkPipelineTest {
     statePipeline = new StatePipeline(stream,
                                       transformer,
                                       new Visitor(),
-                                      new UserStateDecider(),
-                                      new UserStateEvolver(),
+                                      new AccountStateDecider(),
+                                      new AccountStateEvolver(),
+                                      new AccountStateReducer(),
                                       route,
                                       logging);
-    sagaPipeline = new SagaPipeline(stream, transformer, new UserSagaDecider(), route, logging);
+    sagaPipeline = new SagaPipeline(stream, transformer, new AccountSagaDecider(), route, logging);
   }
 
   @Test
   void pipeline() {
     // Given
     var bobId = StateId.of("bob");
-    var createUserBob = new CreateUser(CommandId.randomUUID(), bobId, "bob");
     var janId = StateId.of("jan");
-    var createUserJan = new CreateUser(CommandId.randomUUID(), janId, "jan");
+    var createBob = new CreateAcc(CommandId.randomUUID(), bobId, "bob");
+    var createJan = new CreateAcc(CommandId.randomUUID(), janId, "jan");
     var sendMsgFromBobToJan = new CreateOutboundMsg(CommandId.randomUUID(), bobId, janId, "hello");
-    var cmds = Flux.<Command>just(createUserBob, createUserJan, sendMsgFromBobToJan)
-                   .map(SocialNetworkPipelineTest::toMsg);
+    var cmds = Flux.<Command>just(createBob, createJan, sendMsgFromBobToJan).map(SocialNetworkPipelineTest::toMsg);
     StepVerifier.create(stream.publish(cmds)).expectNextCount(3).verifyComplete();
     // When
     StepVerifier.create(statePipeline.run()).expectNextCount(3).expectTimeout(Duration.ofMillis(100)).verify();

@@ -44,8 +44,13 @@ from [Vavr](https://www.vavr.io/).
     *[x] Stream api for usage in event sourcing
 * [x] Stream sharding to be used later for scaling
     * [x] Tests
+    * Due to sharding (reading from **multiple** src event streams) the whole cluster should be down first before
+      executing sharding, so that oldStreams are not receiving new events, while being ingested, they should be in read
+      only state
 * [x] id safety (stateId, commandId, eventId)
-* [ ] Event Stream Compaction
+* [x] Events reduction
+  * If using reduction the event reducer should map all states to creation event
+  * Init states can't have creation events.
 * [ ] Increase test coverage to >85%
 * [ ] Stream api for messaging patterns
 

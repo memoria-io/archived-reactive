@@ -2,8 +2,8 @@ package io.memoria.reactive.core.eventsourcing.socialnetwork;
 
 import io.memoria.reactive.core.eventsourcing.CommandId;
 import io.memoria.reactive.core.eventsourcing.StateId;
-import io.memoria.reactive.core.eventsourcing.socialnetwork.UserCommand.CreateOutboundMsg;
-import io.memoria.reactive.core.eventsourcing.socialnetwork.UserCommand.CreateUser;
+import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateAcc;
+import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateOutboundMsg;
 import io.memoria.reactive.core.id.Id;
 import io.vavr.collection.List;
 
@@ -11,8 +11,8 @@ class DataSet {
 
   private DataSet() {}
 
-  List<CreateUser> createUserCommands(int nUsers) {
-    return List.range(0, nUsers).map(i -> new CreateUser(CommandId.randomUUID(), createId(i), createName(i)));
+  List<CreateAcc> createAccCommands(int nAccounts) {
+    return List.range(0, nAccounts).map(i -> new CreateAcc(CommandId.randomUUID(), createId(i), createName(i)));
   }
 
   CreateOutboundMsg sendMsg(StateId from, StateId to) {
@@ -20,7 +20,7 @@ class DataSet {
   }
 
   private StateId createId(Integer i) {
-    return StateId.of("user_id_" + i);
+    return StateId.of("acc_id_" + i);
   }
 
   private String createName(Integer i) {

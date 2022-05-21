@@ -5,15 +5,15 @@ import io.memoria.reactive.core.eventsourcing.Event;
 import io.memoria.reactive.core.eventsourcing.EventId;
 import io.memoria.reactive.core.eventsourcing.StateId;
 
-sealed interface UserEvent extends Event {
+sealed interface AccountEvent extends Event {
 
   @Override
   default long timestamp() {
     return 0;
   }
 
-  static AccountClosed accountClosed(CommandId commandId, StateId userId) {
-    return new AccountClosed(EventId.randomUUID(), commandId, userId);
+  static AccountClosed accountClosed(CommandId commandId, StateId accountId) {
+    return new AccountClosed(EventId.randomUUID(), commandId, accountId);
   }
 
   static InboundMsgCreated inboundMsgCreated(CommandId commandId,
@@ -34,19 +34,26 @@ sealed interface UserEvent extends Event {
     return new OutboundSeen(EventId.randomUUID(), commandId, msgSender, msgReceiver);
   }
 
-  static UserCreated userCreated(CommandId commandId, StateId userId, String name) {
-    return new UserCreated(EventId.randomUUID(), commandId, userId, name);
+  static AccountCreated accountCreated(CommandId commandId, StateId accountId, String name) {
+    return new AccountCreated(EventId.randomUUID(), commandId, accountId, name);
   }
 
-  record AccountClosed(EventId eventId, CommandId commandId, StateId userId) implements UserEvent {
+  record AccountClosed(EventId eventId, CommandId commandId, StateId accountId) implements AccountEvent {
     @Override
     public StateId stateId() {
-      return userId;
+      return accountId;
+    }
+  }
+
+  record AccountCreated(EventId eventId, CommandId commandId, StateId accountId, String name) implements AccountEvent {
+    @Override
+    public StateId stateId() {
+      return accountId;
     }
   }
 
   record InboundMsgCreated(EventId eventId, CommandId commandId, StateId msgSender, StateId msgReceiver, String message)
-          implements UserEvent {
+          implements AccountEvent {
     @Override
     public StateId stateId() {
       return msgReceiver;
@@ -57,7 +64,7 @@ sealed interface UserEvent extends Event {
                             CommandId commandId,
                             StateId msgSender,
                             StateId msgReceiver,
-                            String message) implements UserEvent {
+                            String message) implements AccountEvent {
     @Override
     public StateId stateId() {
       return msgSender;
@@ -65,17 +72,10 @@ sealed interface UserEvent extends Event {
   }
 
   record OutboundSeen(EventId eventId, CommandId commandId, StateId msgSender, StateId msgReceiver)
-          implements UserEvent {
+          implements AccountEvent {
     @Override
     public StateId stateId() {
       return msgSender;
-    }
-  }
-
-  record UserCreated(EventId eventId, CommandId commandId, StateId userId, String name) implements UserEvent {
-    @Override
-    public StateId stateId() {
-      return userId;
     }
   }
 }
