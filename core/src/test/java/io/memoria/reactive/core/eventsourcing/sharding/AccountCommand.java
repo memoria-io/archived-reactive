@@ -10,25 +10,25 @@ sealed interface AccountCommand extends Command {
     return 0;
   }
 
-  record ChangeName(CommandId commandId, StateId userId, String newName) implements AccountCommand {
+  record ChangeName(CommandId commandId, StateId accountId, String newName) implements AccountCommand {
     @Override
     public StateId stateId() {
-      return userId;
+      return accountId;
     }
 
-    public static ChangeName of(StateId userId, String newName) {
-      return new ChangeName(CommandId.randomUUID(), userId, newName);
+    public static ChangeName of(StateId accountId, String newName) {
+      return new ChangeName(CommandId.randomUUID(), accountId, newName);
     }
   }
 
-  record CreatePerson(CommandId commandId, StateId userId, String username) implements AccountCommand {
+  record CreatePerson(CommandId commandId, StateId accountId, String username) implements AccountCommand {
     @Override
     public StateId stateId() {
-      return userId;
+      return accountId;
     }
 
-    public static CreatePerson of(StateId userId, String username) {
-      return new CreatePerson(CommandId.randomUUID(), userId, username);
+    public static CreatePerson of(StateId accountId, String username) {
+      return new CreatePerson(CommandId.randomUUID(), accountId, username);
     }
   }
 

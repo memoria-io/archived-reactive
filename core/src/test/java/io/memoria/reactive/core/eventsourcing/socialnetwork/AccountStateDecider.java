@@ -37,7 +37,7 @@ record AccountStateDecider() implements StateDecider {
   }
 
   private Try<Event> userCreated(CreateUser cmd) {
-    return Try.success(AccountEvent.userCreated(cmd.commandId(), cmd.userId(), cmd.username()));
+    return Try.success(AccountEvent.userCreated(cmd.commandId(), cmd.accountId(), cmd.username()));
   }
 
   private Try<Event> outboundCreated(CreateOutboundMsg cmd) {
@@ -56,6 +56,6 @@ record AccountStateDecider() implements StateDecider {
   }
 
   private Try<Event> accountClosed(CloseAccount cmd) {
-    return Try.success(AccountEvent.accountClosed(cmd.commandId(), cmd.userId()));
+    return Try.success(AccountEvent.accountClosed(cmd.commandId(), cmd.accountId()));
   }
 }

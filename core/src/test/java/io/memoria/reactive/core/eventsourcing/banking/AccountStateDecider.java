@@ -68,8 +68,8 @@ record AccountStateDecider() implements StateDecider {
 
   private Try<Event> tryToClose(Acc acc, CloseAccount cmd) {
     if (acc.hasOngoingDebit())
-      return Try.success(ClosureRejected.of(cmd.commandId(), cmd.userId()));
-    return Try.success(AccountClosed.of(cmd.commandId(), cmd.userId()));
+      return Try.success(ClosureRejected.of(cmd.commandId(), cmd.accountId()));
+    return Try.success(AccountClosed.of(cmd.commandId(), cmd.accountId()));
   }
 
   private Try<Event> credited(Credit cmd) {
@@ -85,6 +85,6 @@ record AccountStateDecider() implements StateDecider {
   }
 
   private Try<Event> userCreated(CreateAccount cmd) {
-    return Try.success(AccountCreated.of(cmd.commandId(), cmd.userId(), cmd.username(), cmd.balance()));
+    return Try.success(AccountCreated.of(cmd.commandId(), cmd.accountId(), cmd.username(), cmd.balance()));
   }
 }

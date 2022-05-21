@@ -42,10 +42,10 @@ record AccountStateDecider() implements StateDecider {
   }
 
   private Try<Event> accountCreated(CreatePerson c) {
-    return Try.success(new AccountCreated(EventId.randomUUID(), c.commandId(), c.userId(), c.username()));
+    return Try.success(new AccountCreated(EventId.randomUUID(), c.commandId(), c.accountId(), c.username()));
   }
 
   private Try<Event> nameChanged(ChangeName c) {
-    return Try.success(new NameChanged(EventId.randomUUID(), c.commandId(), c.userId(), c.newName()));
+    return Try.success(new NameChanged(EventId.randomUUID(), c.commandId(), c.accountId(), c.newName()));
   }
 }

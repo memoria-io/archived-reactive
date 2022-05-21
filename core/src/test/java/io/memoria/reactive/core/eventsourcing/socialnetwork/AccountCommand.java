@@ -11,8 +11,8 @@ sealed interface AccountCommand extends Command {
     return 0;
   }
 
-  static CloseAccount closeAccount(StateId userId) {
-    return new CloseAccount(CommandId.randomUUID(), userId);
+  static CloseAccount closeAccount(StateId accountId) {
+    return new CloseAccount(CommandId.randomUUID(), accountId);
   }
 
   static CreateInboundMsg createInboundMsg(StateId msgSender, StateId msgReceiver, String message) {
@@ -27,18 +27,18 @@ sealed interface AccountCommand extends Command {
     return new CreateOutboundMsg(CommandId.randomUUID(), msgSender, msgReceiver, message);
   }
 
-  static CreateUser createUser(StateId userId, String username) {
-    return new CreateUser(CommandId.randomUUID(), userId, username);
+  static CreateUser createUser(StateId accountId, String username) {
+    return new CreateUser(CommandId.randomUUID(), accountId, username);
   }
 
   static MarkMsgAsSeen markMsgAsSeen(StateId msgSender, StateId msgReceiver) {
     return new MarkMsgAsSeen(CommandId.randomUUID(), msgSender, msgReceiver);
   }
 
-  record CloseAccount(CommandId commandId, StateId userId) implements AccountCommand {
+  record CloseAccount(CommandId commandId, StateId accountId) implements AccountCommand {
     @Override
     public StateId stateId() {
-      return userId;
+      return accountId;
     }
   }
 
@@ -65,10 +65,10 @@ sealed interface AccountCommand extends Command {
     }
   }
 
-  record CreateUser(CommandId commandId, StateId userId, String username) implements AccountCommand {
+  record CreateUser(CommandId commandId, StateId accountId, String username) implements AccountCommand {
     @Override
     public StateId stateId() {
-      return userId;
+      return accountId;
     }
   }
 

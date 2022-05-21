@@ -92,7 +92,7 @@ class BankingPipelineTest {
     int balance = 100;
     int treasury = nUsers * balance;
     var createUsers = DataSet.createUsers(nUsers, balance);
-    var userIds = createUsers.map(CreateAccount::userId);
+    var accountIds = createUsers.map(CreateAccount::accountId);
     var randomOutbounds = DataSet.randomOutBounds(nUsers, balance);
     var cmds = Flux.<Command>fromIterable(createUsers).concatWith(Flux.fromIterable(randomOutbounds)).map(this::toMsg);
 
@@ -100,7 +100,7 @@ class BankingPipelineTest {
     var pipelines = Flux.merge(stream.publish(cmds), statePipeline.run(), sagaPipeline.run());
     StepVerifier.create(pipelines).expectNextCount(20).verifyTimeout(timeout);
     // Then
-    var users = userIds.map(statePipeline::stateOrInit).map(u -> (Acc) u);
+    var users = accountIds.map(statePipeline::stateOrInit).map(u -> (Acc) u);
     Assertions.assertEquals(nUsers, users.size());
     var total = users.foldLeft(0, (a, b) -> a + b.balance());
     Assertions.assertEquals(treasury, total);

@@ -12,8 +12,8 @@ sealed interface AccountEvent extends Event {
     return 0;
   }
 
-  static AccountClosed accountClosed(CommandId commandId, StateId userId) {
-    return new AccountClosed(EventId.randomUUID(), commandId, userId);
+  static AccountClosed accountClosed(CommandId commandId, StateId accountId) {
+    return new AccountClosed(EventId.randomUUID(), commandId, accountId);
   }
 
   static InboundMsgCreated inboundMsgCreated(CommandId commandId,
@@ -34,14 +34,14 @@ sealed interface AccountEvent extends Event {
     return new OutboundSeen(EventId.randomUUID(), commandId, msgSender, msgReceiver);
   }
 
-  static AccountCreated userCreated(CommandId commandId, StateId userId, String name) {
-    return new AccountCreated(EventId.randomUUID(), commandId, userId, name);
+  static AccountCreated userCreated(CommandId commandId, StateId accountId, String name) {
+    return new AccountCreated(EventId.randomUUID(), commandId, accountId, name);
   }
 
-  record AccountClosed(EventId eventId, CommandId commandId, StateId userId) implements AccountEvent {
+  record AccountClosed(EventId eventId, CommandId commandId, StateId accountId) implements AccountEvent {
     @Override
     public StateId stateId() {
-      return userId;
+      return accountId;
     }
   }
 
@@ -72,10 +72,10 @@ sealed interface AccountEvent extends Event {
     }
   }
 
-  record AccountCreated(EventId eventId, CommandId commandId, StateId userId, String name) implements AccountEvent {
+  record AccountCreated(EventId eventId, CommandId commandId, StateId accountId, String name) implements AccountEvent {
     @Override
     public StateId stateId() {
-      return userId;
+      return accountId;
     }
   }
 }

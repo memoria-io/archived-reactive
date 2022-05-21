@@ -24,11 +24,11 @@ class DataSet {
   }
 
   static List<CloseAccount> randomClosure(int nUsers) {
-    return shuffledUserIds(nUsers).map(CloseAccount::of);
+    return shuffledaccountIds(nUsers).map(CloseAccount::of);
   }
 
   static List<Debit> randomOutBounds(int nUsers, int maxAmount) {
-    var users = shuffledUserIds(nUsers);
+    var users = shuffledaccountIds(nUsers);
     var from = users.subSequence(0, nUsers / 2);
     var to = users.subSequence(nUsers / 2, nUsers);
     var amounts = List.ofAll(new Random().ints(nUsers, 1, maxAmount).boxed());
@@ -39,7 +39,7 @@ class DataSet {
     return Debit.of(from, to, amount);
   }
 
-  private static List<StateId> shuffledUserIds(int nUsers) {
+  private static List<StateId> shuffledaccountIds(int nUsers) {
     return List.range(0, nUsers).shuffle().map(DataSet::createId);
   }
 }

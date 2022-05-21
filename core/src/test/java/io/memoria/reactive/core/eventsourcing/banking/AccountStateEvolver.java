@@ -38,7 +38,7 @@ record AccountStateEvolver() implements StateEvolver {
       case Credited e -> acc.withCredit(e.amount());
       case Debited e -> acc.withDebit(e.amount());
       case DebitConfirmed e -> acc.withDebitConfirmed();
-      case AccountClosed e -> new ClosedAccount(e.userId());
+      case AccountClosed e -> new ClosedAccount(e.accountId());
       default -> acc;
     };
   }

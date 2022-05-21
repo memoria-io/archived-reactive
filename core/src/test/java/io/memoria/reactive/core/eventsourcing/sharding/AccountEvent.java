@@ -12,25 +12,25 @@ sealed interface AccountEvent extends Event {
     return 0;
   }
 
-  record AccountCreated(EventId eventId, CommandId commandId, StateId userId, String name) implements AccountEvent {
+  record AccountCreated(EventId eventId, CommandId commandId, StateId accountId, String name) implements AccountEvent {
     @Override
     public StateId stateId() {
-      return userId;
+      return accountId;
     }
 
-    public static AccountCreated of(CommandId commandId, StateId userId, String name) {
-      return new AccountCreated(EventId.randomUUID(), commandId, userId, name);
+    public static AccountCreated of(CommandId commandId, StateId accountId, String name) {
+      return new AccountCreated(EventId.randomUUID(), commandId, accountId, name);
     }
   }
 
-  record NameChanged(EventId eventId, CommandId commandId, StateId userId, String newName) implements AccountEvent {
+  record NameChanged(EventId eventId, CommandId commandId, StateId accountId, String newName) implements AccountEvent {
     @Override
     public StateId stateId() {
-      return userId;
+      return accountId;
     }
 
-    public static NameChanged of(CommandId commandId, StateId userId, String newName) {
-      return new NameChanged(EventId.randomUUID(), commandId, userId, newName);
+    public static NameChanged of(CommandId commandId, StateId accountId, String newName) {
+      return new NameChanged(EventId.randomUUID(), commandId, accountId, newName);
     }
   }
 }

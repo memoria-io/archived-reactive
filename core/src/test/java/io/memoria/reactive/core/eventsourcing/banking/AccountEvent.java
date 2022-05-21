@@ -12,25 +12,25 @@ sealed interface AccountEvent extends Event {
     return 0;
   }
 
-  record AccountClosed(EventId eventId, CommandId commandId, StateId userId) implements AccountEvent {
+  record AccountClosed(EventId eventId, CommandId commandId, StateId accountId) implements AccountEvent {
     @Override
     public StateId stateId() {
-      return userId;
+      return accountId;
     }
 
-    public static AccountClosed of(CommandId commandId, StateId userId) {
-      return new AccountClosed(EventId.randomUUID(), commandId, userId);
+    public static AccountClosed of(CommandId commandId, StateId accountId) {
+      return new AccountClosed(EventId.randomUUID(), commandId, accountId);
     }
   }
 
-  record ClosureRejected(EventId eventId, CommandId commandId, StateId userId) implements AccountEvent {
+  record ClosureRejected(EventId eventId, CommandId commandId, StateId accountId) implements AccountEvent {
     @Override
     public StateId stateId() {
-      return userId;
+      return accountId;
     }
 
-    public static ClosureRejected of(CommandId commandId, StateId userId) {
-      return new ClosureRejected(EventId.randomUUID(), commandId, userId);
+    public static ClosureRejected of(CommandId commandId, StateId accountId) {
+      return new ClosureRejected(EventId.randomUUID(), commandId, accountId);
     }
   }
 
@@ -81,15 +81,15 @@ sealed interface AccountEvent extends Event {
     }
   }
 
-  record AccountCreated(EventId eventId, CommandId commandId, StateId userId, String name, int balance)
+  record AccountCreated(EventId eventId, CommandId commandId, StateId accountId, String name, int balance)
           implements AccountEvent {
     @Override
     public StateId stateId() {
-      return userId;
+      return accountId;
     }
 
-    public static AccountCreated of(CommandId commandId, StateId userId, String name, int balance) {
-      return new AccountCreated(EventId.randomUUID(), commandId, userId, name, balance);
+    public static AccountCreated of(CommandId commandId, StateId accountId, String name, int balance) {
+      return new AccountCreated(EventId.randomUUID(), commandId, accountId, name, balance);
     }
   }
 }
