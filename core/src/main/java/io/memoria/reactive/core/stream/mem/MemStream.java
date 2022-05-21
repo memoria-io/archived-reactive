@@ -43,9 +43,9 @@ public final class MemStream implements Stream {
   private void setup(String topic, int nPartitions, int history) {
     var partitions = IntStream.range(0, nPartitions)
                               .mapToObj(i -> Sinks.many().replay().<Msg>limit(history))
-                              .collect(Collectors.toList());
+                              .toList();
     topicStream.put(topic, partitions);
-    var partitionSizes = IntStream.range(0, nPartitions).mapToObj(i -> new AtomicLong()).collect(Collectors.toList());
+    var partitionSizes = IntStream.range(0, nPartitions).mapToObj(i -> new AtomicLong()).toList();
     topicSize.put(topic, partitionSizes);
   }
 
