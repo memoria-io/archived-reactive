@@ -8,7 +8,8 @@ public interface Shardable {
   }
 
   default int partition(int totalPartitions) {
-    return Math.abs(stateId().hashCode()) % totalPartitions;
+    var hash = (stateId().hashCode() == Integer.MIN_VALUE) ? Integer.MAX_VALUE : stateId().hashCode();
+    return Math.abs(hash) % totalPartitions;
   }
 
   Id stateId();
