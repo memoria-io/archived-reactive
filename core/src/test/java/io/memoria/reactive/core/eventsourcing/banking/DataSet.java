@@ -19,27 +19,27 @@ class DataSet {
     return "name_" + i;
   }
 
-  static List<CreateAccount> createAccounts(int nUsers, int balance) {
-    return List.range(0, nUsers).map(i -> CreateAccount.of(createId(i), createName(i), balance));
+  static List<CreateAccount> createAccounts(int nAccounts, int balance) {
+    return List.range(0, nAccounts).map(i -> CreateAccount.of(createId(i), createName(i), balance));
   }
 
-  static List<CloseAccount> randomClosure(int nUsers) {
-    return shuffledaccountIds(nUsers).map(CloseAccount::of);
+  static List<CloseAccount> randomClosure(int nAccounts) {
+    return shuffledaccountIds(nAccounts).map(CloseAccount::of);
   }
 
-  static List<Debit> randomOutBounds(int nUsers, int maxAmount) {
-    var accounts = shuffledaccountIds(nUsers);
-    var from = accounts.subSequence(0, nUsers / 2);
-    var to = accounts.subSequence(nUsers / 2, nUsers);
-    var amounts = List.ofAll(new Random().ints(nUsers, 1, maxAmount).boxed());
-    return List.range(0, nUsers / 2).map(i -> createOutboundBalance(from.get(i), to.get(i), amounts.get(i)));
+  static List<Debit> randomOutBounds(int nAccounts, int maxAmount) {
+    var accounts = shuffledaccountIds(nAccounts);
+    var from = accounts.subSequence(0, nAccounts / 2);
+    var to = accounts.subSequence(nAccounts / 2, nAccounts);
+    var amounts = List.ofAll(new Random().ints(nAccounts, 1, maxAmount).boxed());
+    return List.range(0, nAccounts / 2).map(i -> createOutboundBalance(from.get(i), to.get(i), amounts.get(i)));
   }
 
   private static Debit createOutboundBalance(StateId from, StateId to, int amount) {
     return Debit.of(from, to, amount);
   }
 
-  private static List<StateId> shuffledaccountIds(int nUsers) {
-    return List.range(0, nUsers).shuffle().map(DataSet::createId);
+  private static List<StateId> shuffledaccountIds(int nAccounts) {
+    return List.range(0, nAccounts).shuffle().map(DataSet::createId);
   }
 }

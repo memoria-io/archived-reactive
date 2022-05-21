@@ -7,11 +7,8 @@ import io.vavr.collection.List;
 import io.vavr.collection.Map;
 
 sealed interface Account extends State {
-  record Acc(StateId stateId,
-             String name,
-             Map<StateId, List<String>> inbox,
-             Map<StateId, Boolean> isSeen,
-             int balance) implements Account {
+  record Acc(StateId stateId, String name, Map<StateId, List<String>> inbox, Map<StateId, Boolean> isSeen, int balance)
+          implements Account {
     public Acc(StateId stateId, String name) {
       this(stateId, name, HashMap.empty(), HashMap.empty(), 0);
     }

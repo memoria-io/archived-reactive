@@ -13,10 +13,10 @@ record AccountSagaDecider() implements SagaDecider {
 
   @Override
   public Option<Command> apply(Event event) {
-    return event instanceof AccountEvent accountEvent ? handleUserEvent(accountEvent) : Option.none();
+    return event instanceof AccountEvent accountEvent ? handleAccountEvent(accountEvent) : Option.none();
   }
 
-  private Option<Command> handleUserEvent(AccountEvent accountEvent) {
+  private Option<Command> handleAccountEvent(AccountEvent accountEvent) {
     return switch (accountEvent) {
       case OutboundMsgCreated messageSent -> Option.some(createInboundMessage(messageSent));
       case InboundMsgCreated inboundMsgCreated -> Option.some(createNewMsgNotification(inboundMsgCreated));

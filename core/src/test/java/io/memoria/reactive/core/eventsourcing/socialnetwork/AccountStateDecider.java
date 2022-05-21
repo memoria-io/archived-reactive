@@ -9,9 +9,9 @@ import io.memoria.reactive.core.eventsourcing.pipeline.StateDecider;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.Account.Acc;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.Account.Visitor;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CloseAccount;
+import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateAcc;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateInboundMsg;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateOutboundMsg;
-import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateAcc;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.MarkMsgAsSeen;
 import io.vavr.control.Try;
 
@@ -48,7 +48,10 @@ record AccountStateDecider() implements StateDecider {
   }
 
   private Try<Event> inboundMessageCreated(CreateInboundMsg cmd) {
-    return Try.success(AccountEvent.inboundMsgCreated(cmd.commandId(), cmd.msgSender(), cmd.msgReceiver(), cmd.message()));
+    return Try.success(AccountEvent.inboundMsgCreated(cmd.commandId(),
+                                                      cmd.msgSender(),
+                                                      cmd.msgReceiver(),
+                                                      cmd.message()));
   }
 
   private Try<Event> outboundSeen(MarkMsgAsSeen cmd) {

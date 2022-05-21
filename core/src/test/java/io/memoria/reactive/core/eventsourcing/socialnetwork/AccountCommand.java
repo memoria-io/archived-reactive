@@ -42,6 +42,13 @@ sealed interface AccountCommand extends Command {
     }
   }
 
+  record CreateAcc(CommandId commandId, StateId accountId, String accountname) implements AccountCommand {
+    @Override
+    public StateId stateId() {
+      return accountId;
+    }
+  }
+
   record CreateInboundMsg(CommandId commandId, StateId msgSender, StateId msgReceiver, String message)
           implements AccountCommand {
     @Override
@@ -62,13 +69,6 @@ sealed interface AccountCommand extends Command {
     @Override
     public StateId stateId() {
       return msgSender;
-    }
-  }
-
-  record CreateAcc(CommandId commandId, StateId accountId, String accountname) implements AccountCommand {
-    @Override
-    public StateId stateId() {
-      return accountId;
     }
   }
 

@@ -14,10 +14,10 @@ record AccountSagaDecider() implements SagaDecider {
 
   @Override
   public Option<Command> apply(Event event) {
-    return event instanceof AccountEvent accountEvent ? handleUserEvent(accountEvent) : Option.none();
+    return event instanceof AccountEvent accountEvent ? handleAccountEvent(accountEvent) : Option.none();
   }
 
-  private Option<Command> handleUserEvent(AccountEvent accountEvent) {
+  private Option<Command> handleAccountEvent(AccountEvent accountEvent) {
     return switch (accountEvent) {
       case Debited e -> Option.some(Credit.of(e.creditedAcc(), e.debitedAcc(), e.amount()));
       case Credited e -> Option.some(ConfirmDebit.of(e.debitedAcc()));

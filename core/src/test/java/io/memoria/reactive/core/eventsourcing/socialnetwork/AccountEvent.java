@@ -45,6 +45,13 @@ sealed interface AccountEvent extends Event {
     }
   }
 
+  record AccountCreated(EventId eventId, CommandId commandId, StateId accountId, String name) implements AccountEvent {
+    @Override
+    public StateId stateId() {
+      return accountId;
+    }
+  }
+
   record InboundMsgCreated(EventId eventId, CommandId commandId, StateId msgSender, StateId msgReceiver, String message)
           implements AccountEvent {
     @Override
@@ -69,13 +76,6 @@ sealed interface AccountEvent extends Event {
     @Override
     public StateId stateId() {
       return msgSender;
-    }
-  }
-
-  record AccountCreated(EventId eventId, CommandId commandId, StateId accountId, String name) implements AccountEvent {
-    @Override
-    public StateId stateId() {
-      return accountId;
     }
   }
 }

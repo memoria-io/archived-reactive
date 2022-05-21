@@ -84,20 +84,22 @@ class BankingPipelineTest {
   @Test
   void complex() {
     // Given
-    int nUsers = 4;
+    int nAccounts = 4;
     int balance = 100;
-    int treasury = nUsers * balance;
-    var createAccounts = DataSet.createAccounts(nUsers, balance);
+    int treasury = nAccounts * balance;
+    var createAccounts = DataSet.createAccounts(nAccounts, balance);
     var accountIds = createAccounts.map(CreateAccount::accountId);
-    var randomOutbounds = DataSet.randomOutBounds(nUsers, balance);
-    var cmds = Flux.<Command>fromIterable(createAccounts).concatWith(Flux.fromIterable(randomOutbounds)).map(this::toMsg);
+    var randomOutbounds = DataSet.randomOutBounds(nAccounts, balance);
+    var cmds = Flux.<Command>fromIterable(createAccounts)
+                   .concatWith(Flux.fromIterable(randomOutbounds))
+                   .map(this::toMsg);
 
     // When
     var pipelines = Flux.merge(stream.publish(cmds), statePipeline.run(), sagaPipeline.run());
     StepVerifier.create(pipelines).expectNextCount(20).verifyTimeout(timeout);
     // Then
     var accounts = accountIds.map(statePipeline::stateOrInit).map(u -> (Acc) u);
-    Assertions.assertEquals(nUsers, accounts.size());
+    Assertions.assertEquals(nAccounts, accounts.size());
     var total = accounts.foldLeft(0, (a, b) -> a + b.balance());
     Assertions.assertEquals(treasury, total);
   }

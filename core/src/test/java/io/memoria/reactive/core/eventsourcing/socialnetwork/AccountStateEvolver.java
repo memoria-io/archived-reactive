@@ -5,10 +5,10 @@ import io.memoria.reactive.core.eventsourcing.State;
 import io.memoria.reactive.core.eventsourcing.pipeline.StateEvolver;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.Account.Acc;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.Account.Visitor;
+import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountEvent.AccountCreated;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountEvent.InboundMsgCreated;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountEvent.OutboundMsgCreated;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountEvent.OutboundSeen;
-import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountEvent.AccountCreated;
 
 record AccountStateEvolver() implements StateEvolver {
   @Override

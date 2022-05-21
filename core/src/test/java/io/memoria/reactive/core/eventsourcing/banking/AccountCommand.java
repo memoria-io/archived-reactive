@@ -32,7 +32,8 @@ sealed interface AccountCommand extends Command {
     }
   }
 
-  record CreateAccount(CommandId commandId, StateId accountId, String accountname, int balance) implements AccountCommand {
+  record CreateAccount(CommandId commandId, StateId accountId, String accountname, int balance)
+          implements AccountCommand {
     @Override
     public StateId stateId() {
       return accountId;
