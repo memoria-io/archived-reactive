@@ -1,7 +1,7 @@
 [![Release](https://github.com/memoria-io/reactive/workflows/Release/badge.svg)](https://github.com/memoria-io/reactive/actions?query=workflow%3ARelease)
 [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/memoria-io/reactive?label=Version&logo=github)](https://github.com/orgs/memoria-io/packages?repo_name=reactive)
 [![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/memoria-io/reactive/latest?logoColor=github)](https://github.com/memoria-io/reactive/commits/master)
-
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=memoria-io_reactive&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=memoria-io_reactive)
 [![codecov](https://codecov.io/gh/memoria-io/reactive/branch/master/graph/badge.svg?token=hR4YugU12n)](https://codecov.io/gh/memoria-io/reactive)
 
 # reactive
