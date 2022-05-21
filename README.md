@@ -48,7 +48,9 @@ from [Vavr](https://www.vavr.io/).
       executing sharding, so that oldStreams are not receiving new events, while being ingested, they should be in read
       only state
 * [x] id safety (stateId, commandId, eventId)
-* [ ] Event Stream Compaction
+* [x] Events reduction
+  * If using reduction the event reducer should map all states to creation event
+  * Init states can't have creation events.
 * [ ] Increase test coverage to >85%
 * [ ] Stream api for messaging patterns
 
