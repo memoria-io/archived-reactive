@@ -47,7 +47,8 @@ from [Vavr](https://www.vavr.io/).
     * [x] Stream sharding to be used later for scaling
         * [x] Tests
         * Due to sharding (reading from **multiple** src event streams) the whole cluster should be down first before
-          executing sharding, so that oldStreams are not receiving new events, while being ingested, they should be in read
+          executing sharding, so that oldStreams are not receiving new events, while being ingested, they should be in
+          read
           only state
 * [x] Streaming
     * [x] Stream api for usage in event sourcing
