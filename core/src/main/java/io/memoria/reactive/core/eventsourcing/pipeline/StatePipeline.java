@@ -3,6 +3,7 @@ package io.memoria.reactive.core.eventsourcing.pipeline;
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.Event;
 import io.memoria.reactive.core.eventsourcing.State;
+import io.memoria.reactive.core.eventsourcing.StateId;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
@@ -19,6 +20,7 @@ import reactor.util.Loggers;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,11 +31,13 @@ public class StatePipeline {
   private final TextTransformer transformer;
   private final Set<Id> processedEvents;
   private final Set<Id> processedCmds;
-  private final Map<Id, State> stateRepo;
+  private final Set<StateId> compactedStates;
+  private final Map<StateId, State> stateRepo;
   // Business logic
   private final State initState;
-  private final StateDecider stateDecider;
+  private final StateDecider decider;
   private final StateEvolver evolver;
+  private final StateCompactor compactor;
   // Configs
   private final Route route;
   private final LogConfig logConfig;
@@ -41,8 +45,9 @@ public class StatePipeline {
   public StatePipeline(Stream stream,
                        TextTransformer transformer,
                        State initState,
-                       StateDecider stateDecider,
+                       StateDecider decider,
                        StateEvolver evolver,
+                       StateCompactor compactor,
                        Route route,
                        LogConfig logConfig) {
     // Infra
@@ -50,11 +55,13 @@ public class StatePipeline {
     this.transformer = transformer;
     this.processedEvents = new HashSet<>();
     this.processedCmds = new HashSet<>();
+    this.compactedStates = new HashSet<>();
     this.stateRepo = new ConcurrentHashMap<>();
     // Business logic
     this.initState = initState;
-    this.stateDecider = stateDecider;
+    this.decider = decider;
     this.evolver = evolver;
+    this.compactor = compactor;
     // Configs
     this.route = route;
     this.logConfig = logConfig;
@@ -67,11 +74,17 @@ public class StatePipeline {
     return readCurrentSink.concatWith(pubOldSinkEvents).concatWith(pubCmdEvents);
   }
 
+  public Flux<Event> compactRun() {
+    var publishCompaction = publishEvents(compactionEvents());
+    var pubCmdEvents = publishEvents(handleNewCommands()).doOnNext(this::evolveState);
+    return publishCompaction.concatWith(pubCmdEvents);
+  }
+
   public Mono<Event> toEvent(Msg msg) {
     return transformer.deserialize(msg.value(), Event.class);
   }
 
-  public State stateOrInit(Id stateId) {
+  public State stateOrInit(StateId stateId) {
     return Option.of(stateRepo.get(stateId)).getOrElse(initState);
   }
 
@@ -82,6 +95,17 @@ public class StatePipeline {
 
   public Mono<Command> toCommand(Msg msg) {
     return transformer.deserialize(msg.value(), Command.class);
+  }
+
+  private Flux<Event> compactionEvents() {
+    var compacted = read(route.eventTopic(), route.partition()).doOnNext(this::evolveState)
+                                                               .doOnNext(e -> compactedStates.add(e.stateId()));
+    var nonCompacted = readOldSink().filter(e -> !compactedStates.contains(e.stateId())).doOnNext(this::evolveState);
+    var compactNonCom = Flux.fromIterable(this.stateRepo.entrySet())
+                            .filter(e -> !compactedStates.contains(e.getKey()))
+                            .map(Entry::getValue)
+                            .map(compactor);
+    return compacted.thenMany(nonCompacted).thenMany(compactNonCom);
   }
 
   private Flux<Event> read(String topic, int partition) {
@@ -153,6 +177,6 @@ public class StatePipeline {
 
   private Try<Event> decide(Command cmd) {
     var state = stateOrInit(cmd.stateId());
-    return stateDecider.apply(state, cmd);
+    return decider.apply(state, cmd);
   }
 }

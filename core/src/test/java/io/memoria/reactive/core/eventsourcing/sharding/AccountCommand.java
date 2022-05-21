@@ -4,13 +4,13 @@ import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.CommandId;
 import io.memoria.reactive.core.eventsourcing.StateId;
 
-sealed interface PersonCommand extends Command {
+sealed interface AccountCommand extends Command {
   @Override
   default long timestamp() {
     return 0;
   }
 
-  record ChangeName(CommandId commandId, StateId userId, String newName) implements PersonCommand {
+  record ChangeName(CommandId commandId, StateId userId, String newName) implements AccountCommand {
     @Override
     public StateId stateId() {
       return userId;
@@ -21,7 +21,7 @@ sealed interface PersonCommand extends Command {
     }
   }
 
-  record CreatePerson(CommandId commandId, StateId userId, String username) implements PersonCommand {
+  record CreatePerson(CommandId commandId, StateId userId, String username) implements AccountCommand {
     @Override
     public StateId stateId() {
       return userId;

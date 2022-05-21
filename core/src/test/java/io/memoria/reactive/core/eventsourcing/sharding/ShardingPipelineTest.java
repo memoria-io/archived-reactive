@@ -4,7 +4,7 @@ import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.pipeline.LogConfig;
 import io.memoria.reactive.core.eventsourcing.pipeline.Route;
 import io.memoria.reactive.core.eventsourcing.pipeline.StatePipeline;
-import io.memoria.reactive.core.eventsourcing.sharding.Person.Visitor;
+import io.memoria.reactive.core.eventsourcing.sharding.Account.Visitor;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
@@ -89,14 +89,15 @@ class ShardingPipelineTest {
     return new StatePipeline(stream,
                              transformer,
                              new Visitor(),
-                             new PersonStateDecider(),
-                             new PersonStateEvolver(),
+                             new AccountStateDecider(),
+                             new AccountStateEvolver(),
+                             new AccountStateCompactor(),
                              route,
                              LogConfig.FINE);
   }
 
-  private Flux<PersonEvent> accountCreatedStream(String topic, int i) {
-    return stream.subscribe(topic, i, 0).concatMap(msg -> transformer.deserialize(msg.value(), PersonEvent.class));
+  private Flux<AccountEvent> accountCreatedStream(String topic, int i) {
+    return stream.subscribe(topic, i, 0).concatMap(msg -> transformer.deserialize(msg.value(), AccountEvent.class));
     //                 .doOnNext(e -> System.out.printf("p(%d)-%s%n", i, e));
   }
 

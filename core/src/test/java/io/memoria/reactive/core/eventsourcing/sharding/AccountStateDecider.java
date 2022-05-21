@@ -6,35 +6,35 @@ import io.memoria.reactive.core.eventsourcing.Event;
 import io.memoria.reactive.core.eventsourcing.EventId;
 import io.memoria.reactive.core.eventsourcing.State;
 import io.memoria.reactive.core.eventsourcing.pipeline.StateDecider;
-import io.memoria.reactive.core.eventsourcing.sharding.Person.Account;
-import io.memoria.reactive.core.eventsourcing.sharding.Person.Visitor;
-import io.memoria.reactive.core.eventsourcing.sharding.PersonCommand.ChangeName;
-import io.memoria.reactive.core.eventsourcing.sharding.PersonCommand.CreatePerson;
-import io.memoria.reactive.core.eventsourcing.sharding.PersonEvent.AccountCreated;
-import io.memoria.reactive.core.eventsourcing.sharding.PersonEvent.NameChanged;
+import io.memoria.reactive.core.eventsourcing.sharding.Account.Acc;
+import io.memoria.reactive.core.eventsourcing.sharding.Account.Visitor;
+import io.memoria.reactive.core.eventsourcing.sharding.AccountCommand.ChangeName;
+import io.memoria.reactive.core.eventsourcing.sharding.AccountCommand.CreatePerson;
+import io.memoria.reactive.core.eventsourcing.sharding.AccountEvent.AccountCreated;
+import io.memoria.reactive.core.eventsourcing.sharding.AccountEvent.NameChanged;
 import io.vavr.control.Try;
 
 @SuppressWarnings("SwitchStatementWithTooFewBranches")
-record PersonStateDecider() implements StateDecider {
+record AccountStateDecider() implements StateDecider {
   @Override
   public Try<Event> apply(State state, Command command) {
-    if (state instanceof Person person && command instanceof PersonCommand personCommand) {
-      return switch (person) {
-        case Visitor acc -> handle(acc, personCommand);
-        case Account acc -> handle(acc, personCommand);
+    if (state instanceof Account account && command instanceof AccountCommand accountCommand) {
+      return switch (account) {
+        case Visitor acc -> handle(acc, accountCommand);
+        case Acc acc -> handle(acc, accountCommand);
       };
     }
     return Try.failure(UnknownCommand.create(command));
   }
 
-  private Try<Event> handle(Visitor acc, PersonCommand cmd) {
+  private Try<Event> handle(Visitor acc, AccountCommand cmd) {
     return switch (cmd) {
       case CreatePerson c -> accountCreated(c);
       default -> Try.failure(UnknownCommand.create(cmd));
     };
   }
 
-  private Try<Event> handle(Account acc, PersonCommand cmd) {
+  private Try<Event> handle(Acc acc, AccountCommand cmd) {
     return switch (cmd) {
       case ChangeName c -> nameChanged(c);
       default -> Try.failure(UnknownCommand.create(cmd));

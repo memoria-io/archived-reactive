@@ -2,8 +2,8 @@ package io.memoria.reactive.core.eventsourcing.sharding;
 
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.StateId;
-import io.memoria.reactive.core.eventsourcing.sharding.PersonCommand.ChangeName;
-import io.memoria.reactive.core.eventsourcing.sharding.PersonCommand.CreatePerson;
+import io.memoria.reactive.core.eventsourcing.sharding.AccountCommand.ChangeName;
+import io.memoria.reactive.core.eventsourcing.sharding.AccountCommand.CreatePerson;
 import io.vavr.collection.List;
 import reactor.core.publisher.Flux;
 

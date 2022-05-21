@@ -4,13 +4,13 @@ import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.CommandId;
 import io.memoria.reactive.core.eventsourcing.StateId;
 
-sealed interface UserCommand extends Command {
+sealed interface AccountCommand extends Command {
   @Override
   default long timestamp() {
     return 0;
   }
 
-  record CloseAccount(CommandId commandId, StateId userId) implements UserCommand {
+  record CloseAccount(CommandId commandId, StateId userId) implements AccountCommand {
     @Override
     public StateId stateId() {
       return userId;
@@ -21,7 +21,7 @@ sealed interface UserCommand extends Command {
     }
   }
 
-  record ConfirmDebit(CommandId commandId, StateId debitedAcc) implements UserCommand {
+  record ConfirmDebit(CommandId commandId, StateId debitedAcc) implements AccountCommand {
     @Override
     public StateId stateId() {
       return debitedAcc;
@@ -32,18 +32,18 @@ sealed interface UserCommand extends Command {
     }
   }
 
-  record CreateUser(CommandId commandId, StateId userId, String username, int balance) implements UserCommand {
+  record CreateAccount(CommandId commandId, StateId userId, String username, int balance) implements AccountCommand {
     @Override
     public StateId stateId() {
       return userId;
     }
 
-    public static CreateUser of(StateId userId, String username, int balance) {
-      return new CreateUser(CommandId.randomUUID(), userId, username, balance);
+    public static CreateAccount of(StateId userId, String username, int balance) {
+      return new CreateAccount(CommandId.randomUUID(), userId, username, balance);
     }
   }
 
-  record Credit(CommandId commandId, StateId creditedAcc, StateId debitedAcc, int amount) implements UserCommand {
+  record Credit(CommandId commandId, StateId creditedAcc, StateId debitedAcc, int amount) implements AccountCommand {
     @Override
     public StateId stateId() {
       return creditedAcc;
@@ -54,7 +54,7 @@ sealed interface UserCommand extends Command {
     }
   }
 
-  record Debit(CommandId commandId, StateId debitedAcc, StateId creditedAcc, int amount) implements UserCommand {
+  record Debit(CommandId commandId, StateId debitedAcc, StateId creditedAcc, int amount) implements AccountCommand {
     @Override
     public StateId stateId() {
       return debitedAcc;

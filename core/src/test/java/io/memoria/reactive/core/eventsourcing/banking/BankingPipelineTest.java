@@ -2,12 +2,12 @@ package io.memoria.reactive.core.eventsourcing.banking;
 
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.StateId;
-import io.memoria.reactive.core.eventsourcing.banking.User.Account;
-import io.memoria.reactive.core.eventsourcing.banking.User.ClosedAccount;
-import io.memoria.reactive.core.eventsourcing.banking.User.Visitor;
-import io.memoria.reactive.core.eventsourcing.banking.UserCommand.CloseAccount;
-import io.memoria.reactive.core.eventsourcing.banking.UserCommand.CreateUser;
-import io.memoria.reactive.core.eventsourcing.banking.UserCommand.Debit;
+import io.memoria.reactive.core.eventsourcing.banking.Account.Acc;
+import io.memoria.reactive.core.eventsourcing.banking.Account.ClosedAccount;
+import io.memoria.reactive.core.eventsourcing.banking.Account.Visitor;
+import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.CloseAccount;
+import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.CreateAccount;
+import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.Debit;
 import io.memoria.reactive.core.eventsourcing.pipeline.LogConfig;
 import io.memoria.reactive.core.eventsourcing.pipeline.Route;
 import io.memoria.reactive.core.eventsourcing.pipeline.SagaPipeline;
@@ -52,20 +52,21 @@ class BankingPipelineTest {
     statePipeline = new StatePipeline(stream,
                                       transformer,
                                       new Visitor(),
-                                      new UserStateDecider(),
-                                      new UserStateEvolver(),
+                                      new AccountStateDecider(),
+                                      new AccountStateEvolver(),
+                                      new AccountStateCompactor(),
                                       route,
                                       LogConfig.FINE);
-    sagaPipeline = new SagaPipeline(stream, transformer, new UserSagaDecider(), route, LogConfig.FINE);
+    sagaPipeline = new SagaPipeline(stream, transformer, new AccountSagaDecider(), route, LogConfig.FINE);
   }
 
   @Test
   void simple() {
     // Given
     var bobId = StateId.of("bob");
-    var createUserBob = CreateUser.of(bobId, "bob", 100);
+    var createUserBob = CreateAccount.of(bobId, "bob", 100);
     var janId = StateId.of("jan");
-    var createUserJan = CreateUser.of(janId, "jan", 100);
+    var createUserJan = CreateAccount.of(janId, "jan", 100);
     var sendMoneyFromBobToJan = Debit.of(bobId, janId, 50);
     var requestClosure = CloseAccount.of(janId);
     // When
@@ -80,7 +81,7 @@ class BankingPipelineTest {
     StepVerifier.create(pipelines).expectNextCount(10).verifyTimeout(timeout);
     var bob = statePipeline.stateOrInit(bobId);
     var jan = statePipeline.stateOrInit(janId);
-    Assertions.assertInstanceOf(Account.class, bob);
+    Assertions.assertInstanceOf(Acc.class, bob);
     Assertions.assertInstanceOf(ClosedAccount.class, jan);
   }
 
@@ -91,7 +92,7 @@ class BankingPipelineTest {
     int balance = 100;
     int treasury = nUsers * balance;
     var createUsers = DataSet.createUsers(nUsers, balance);
-    var userIds = createUsers.map(CreateUser::userId);
+    var userIds = createUsers.map(CreateAccount::userId);
     var randomOutbounds = DataSet.randomOutBounds(nUsers, balance);
     var cmds = Flux.<Command>fromIterable(createUsers).concatWith(Flux.fromIterable(randomOutbounds)).map(this::toMsg);
 
@@ -99,7 +100,7 @@ class BankingPipelineTest {
     var pipelines = Flux.merge(stream.publish(cmds), statePipeline.run(), sagaPipeline.run());
     StepVerifier.create(pipelines).expectNextCount(20).verifyTimeout(timeout);
     // Then
-    var users = userIds.map(statePipeline::stateOrInit).map(u -> (Account) u);
+    var users = userIds.map(statePipeline::stateOrInit).map(u -> (Acc) u);
     Assertions.assertEquals(nUsers, users.size());
     var total = users.foldLeft(0, (a, b) -> a + b.balance());
     Assertions.assertEquals(treasury, total);

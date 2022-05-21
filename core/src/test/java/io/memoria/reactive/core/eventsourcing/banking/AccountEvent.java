@@ -5,14 +5,14 @@ import io.memoria.reactive.core.eventsourcing.Event;
 import io.memoria.reactive.core.eventsourcing.EventId;
 import io.memoria.reactive.core.eventsourcing.StateId;
 
-sealed interface UserEvent extends Event {
+sealed interface AccountEvent extends Event {
 
   @Override
   default long timestamp() {
     return 0;
   }
 
-  record AccountClosed(EventId eventId, CommandId commandId, StateId userId) implements UserEvent {
+  record AccountClosed(EventId eventId, CommandId commandId, StateId userId) implements AccountEvent {
     @Override
     public StateId stateId() {
       return userId;
@@ -23,7 +23,7 @@ sealed interface UserEvent extends Event {
     }
   }
 
-  record ClosureRejected(EventId eventId, CommandId commandId, StateId userId) implements UserEvent {
+  record ClosureRejected(EventId eventId, CommandId commandId, StateId userId) implements AccountEvent {
     @Override
     public StateId stateId() {
       return userId;
@@ -35,7 +35,7 @@ sealed interface UserEvent extends Event {
   }
 
   record CreditRejected(EventId eventId, CommandId commandId, StateId creditedAcc, StateId debitedAcc, int amount)
-          implements UserEvent {
+          implements AccountEvent {
     @Override
     public StateId stateId() {
       return creditedAcc;
@@ -47,7 +47,7 @@ sealed interface UserEvent extends Event {
   }
 
   record Credited(EventId eventId, CommandId commandId, StateId creditedAcc, StateId debitedAcc, int amount)
-          implements UserEvent {
+          implements AccountEvent {
     @Override
     public StateId stateId() {
       return creditedAcc;
@@ -58,7 +58,7 @@ sealed interface UserEvent extends Event {
     }
   }
 
-  record DebitConfirmed(EventId eventId, CommandId commandId, StateId debitedAcc) implements UserEvent {
+  record DebitConfirmed(EventId eventId, CommandId commandId, StateId debitedAcc) implements AccountEvent {
     @Override
     public StateId stateId() {
       return debitedAcc;
@@ -70,7 +70,7 @@ sealed interface UserEvent extends Event {
   }
 
   record Debited(EventId eventId, CommandId commandId, StateId debitedAcc, StateId creditedAcc, int amount)
-          implements UserEvent {
+          implements AccountEvent {
     @Override
     public StateId stateId() {
       return debitedAcc;
@@ -81,15 +81,15 @@ sealed interface UserEvent extends Event {
     }
   }
 
-  record UserCreated(EventId eventId, CommandId commandId, StateId userId, String name, int balance)
-          implements UserEvent {
+  record AccountCreated(EventId eventId, CommandId commandId, StateId userId, String name, int balance)
+          implements AccountEvent {
     @Override
     public StateId stateId() {
       return userId;
     }
 
-    public static UserCreated of(CommandId commandId, StateId userId, String name, int balance) {
-      return new UserCreated(EventId.randomUUID(), commandId, userId, name, balance);
+    public static AccountCreated of(CommandId commandId, StateId userId, String name, int balance) {
+      return new AccountCreated(EventId.randomUUID(), commandId, userId, name, balance);
     }
   }
 }

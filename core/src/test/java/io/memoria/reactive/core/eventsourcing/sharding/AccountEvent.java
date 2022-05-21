@@ -5,14 +5,14 @@ import io.memoria.reactive.core.eventsourcing.Event;
 import io.memoria.reactive.core.eventsourcing.EventId;
 import io.memoria.reactive.core.eventsourcing.StateId;
 
-sealed interface PersonEvent extends Event {
+sealed interface AccountEvent extends Event {
 
   @Override
   default long timestamp() {
     return 0;
   }
 
-  record AccountCreated(EventId eventId, CommandId commandId, StateId userId, String name) implements PersonEvent {
+  record AccountCreated(EventId eventId, CommandId commandId, StateId userId, String name) implements AccountEvent {
     @Override
     public StateId stateId() {
       return userId;
@@ -23,7 +23,7 @@ sealed interface PersonEvent extends Event {
     }
   }
 
-  record NameChanged(EventId eventId, CommandId commandId, StateId userId, String newName) implements PersonEvent {
+  record NameChanged(EventId eventId, CommandId commandId, StateId userId, String newName) implements AccountEvent {
     @Override
     public StateId stateId() {
       return userId;

@@ -7,9 +7,9 @@ import io.memoria.reactive.core.eventsourcing.pipeline.LogConfig;
 import io.memoria.reactive.core.eventsourcing.pipeline.Route;
 import io.memoria.reactive.core.eventsourcing.pipeline.SagaPipeline;
 import io.memoria.reactive.core.eventsourcing.pipeline.StatePipeline;
-import io.memoria.reactive.core.eventsourcing.socialnetwork.User.Visitor;
-import io.memoria.reactive.core.eventsourcing.socialnetwork.UserCommand.CreateOutboundMsg;
-import io.memoria.reactive.core.eventsourcing.socialnetwork.UserCommand.CreateUser;
+import io.memoria.reactive.core.eventsourcing.socialnetwork.Account.Visitor;
+import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateOutboundMsg;
+import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateUser;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
@@ -45,11 +45,12 @@ class SocialNetworkPipelineTest {
     statePipeline = new StatePipeline(stream,
                                       transformer,
                                       new Visitor(),
-                                      new UserStateDecider(),
-                                      new UserStateEvolver(),
+                                      new AccountStateDecider(),
+                                      new AccountStateEvolver(),
+                                      new AccountStateCompactor(),
                                       route,
                                       logging);
-    sagaPipeline = new SagaPipeline(stream, transformer, new UserSagaDecider(), route, logging);
+    sagaPipeline = new SagaPipeline(stream, transformer, new AccountSagaDecider(), route, logging);
   }
 
   @Test

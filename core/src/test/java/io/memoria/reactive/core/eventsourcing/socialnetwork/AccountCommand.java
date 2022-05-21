@@ -4,7 +4,7 @@ import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.CommandId;
 import io.memoria.reactive.core.eventsourcing.StateId;
 
-sealed interface UserCommand extends Command {
+sealed interface AccountCommand extends Command {
 
   @Override
   default long timestamp() {
@@ -35,7 +35,7 @@ sealed interface UserCommand extends Command {
     return new MarkMsgAsSeen(CommandId.randomUUID(), msgSender, msgReceiver);
   }
 
-  record CloseAccount(CommandId commandId, StateId userId) implements UserCommand {
+  record CloseAccount(CommandId commandId, StateId userId) implements AccountCommand {
     @Override
     public StateId stateId() {
       return userId;
@@ -43,14 +43,14 @@ sealed interface UserCommand extends Command {
   }
 
   record CreateInboundMsg(CommandId commandId, StateId msgSender, StateId msgReceiver, String message)
-          implements UserCommand {
+          implements AccountCommand {
     @Override
     public StateId stateId() {
       return msgReceiver;
     }
   }
 
-  record CreateNewMsgNotification(CommandId commandId, StateId msgReceiver) implements UserCommand {
+  record CreateNewMsgNotification(CommandId commandId, StateId msgReceiver) implements AccountCommand {
     @Override
     public StateId stateId() {
       return msgReceiver;
@@ -58,21 +58,21 @@ sealed interface UserCommand extends Command {
   }
 
   record CreateOutboundMsg(CommandId commandId, StateId msgSender, StateId msgReceiver, String message)
-          implements UserCommand {
+          implements AccountCommand {
     @Override
     public StateId stateId() {
       return msgSender;
     }
   }
 
-  record CreateUser(CommandId commandId, StateId userId, String username) implements UserCommand {
+  record CreateUser(CommandId commandId, StateId userId, String username) implements AccountCommand {
     @Override
     public StateId stateId() {
       return userId;
     }
   }
 
-  record MarkMsgAsSeen(CommandId commandId, StateId msgSender, StateId msgReceiver) implements UserCommand {
+  record MarkMsgAsSeen(CommandId commandId, StateId msgSender, StateId msgReceiver) implements AccountCommand {
     @Override
     public StateId stateId() {
       return msgSender;

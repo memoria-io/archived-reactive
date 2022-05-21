@@ -1,9 +1,9 @@
 package io.memoria.reactive.core.eventsourcing.banking;
 
 import io.memoria.reactive.core.eventsourcing.StateId;
-import io.memoria.reactive.core.eventsourcing.banking.UserCommand.CloseAccount;
-import io.memoria.reactive.core.eventsourcing.banking.UserCommand.CreateUser;
-import io.memoria.reactive.core.eventsourcing.banking.UserCommand.Debit;
+import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.CloseAccount;
+import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.CreateAccount;
+import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.Debit;
 import io.vavr.collection.List;
 
 import java.util.Random;
@@ -19,8 +19,8 @@ class DataSet {
     return "name_" + i;
   }
 
-  static List<CreateUser> createUsers(int nUsers, int balance) {
-    return List.range(0, nUsers).map(i -> CreateUser.of(createId(i), createName(i), balance));
+  static List<CreateAccount> createUsers(int nUsers, int balance) {
+    return List.range(0, nUsers).map(i -> CreateAccount.of(createId(i), createName(i), balance));
   }
 
   static List<CloseAccount> randomClosure(int nUsers) {

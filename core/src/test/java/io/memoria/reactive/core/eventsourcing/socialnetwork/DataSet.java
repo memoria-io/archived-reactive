@@ -2,8 +2,8 @@ package io.memoria.reactive.core.eventsourcing.socialnetwork;
 
 import io.memoria.reactive.core.eventsourcing.CommandId;
 import io.memoria.reactive.core.eventsourcing.StateId;
-import io.memoria.reactive.core.eventsourcing.socialnetwork.UserCommand.CreateOutboundMsg;
-import io.memoria.reactive.core.eventsourcing.socialnetwork.UserCommand.CreateUser;
+import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateOutboundMsg;
+import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateUser;
 import io.memoria.reactive.core.id.Id;
 import io.vavr.collection.List;
 
