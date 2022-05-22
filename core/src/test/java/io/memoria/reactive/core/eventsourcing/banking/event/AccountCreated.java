@@ -12,7 +12,7 @@ public record AccountCreated(EventId eventId, CommandId commandId, StateId accou
     return accountId;
   }
 
-  public static AccountCreated of(CreateAccount cmd) {
+  public static AccountCreated from(CreateAccount cmd) {
     return new AccountCreated(EventId.randomUUID(), cmd.commandId(), cmd.accountId(), cmd.accountname(), cmd.balance());
   }
 }

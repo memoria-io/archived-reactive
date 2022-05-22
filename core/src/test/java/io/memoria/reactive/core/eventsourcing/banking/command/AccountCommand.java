@@ -4,7 +4,7 @@ import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.StateId;
 
 public sealed interface AccountCommand extends Command
-        permits CloseAccount, ConfirmDebit, CreateAccount, Credit, Debit {
+        permits ChangeName, CloseAccount, ConfirmDebit, CreateAccount, Credit, Debit {
   StateId accountId();
 
   default StateId stateId() {

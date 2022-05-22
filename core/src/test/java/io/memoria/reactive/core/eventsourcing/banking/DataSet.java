@@ -1,7 +1,9 @@
 package io.memoria.reactive.core.eventsourcing.banking;
 
+import io.memoria.reactive.core.eventsourcing.CommandId;
 import io.memoria.reactive.core.eventsourcing.StateId;
 import io.memoria.reactive.core.eventsourcing.banking.command.AccountCommand;
+import io.memoria.reactive.core.eventsourcing.banking.command.ChangeName;
 import io.memoria.reactive.core.eventsourcing.banking.command.CloseAccount;
 import io.memoria.reactive.core.eventsourcing.banking.command.CreateAccount;
 import io.memoria.reactive.core.eventsourcing.banking.command.Debit;
@@ -15,8 +17,12 @@ class DataSet {
 
   static Flux<AccountCommand> scenario(int nAccounts, int nameChanges) {
     var createAccounts = createAccounts(nAccounts, 0);
-    var changes = List.range(0, nameChanges).flatMap(i -> randomOutBounds(nAccounts, 100));
+    var changes = List.range(0, nameChanges).flatMap(i -> changeName(nAccounts));
     return Flux.fromIterable(createAccounts.appendAll(changes));
+  }
+
+  private static List<ChangeName> changeName(int nAccounts) {
+    return List.range(0, nAccounts).map(i -> new ChangeName(createId(i), CommandId.randomUUID(), createNewName(i)));
   }
 
   static StateId createId(int i) {
@@ -25,6 +31,10 @@ class DataSet {
 
   static String createName(int i) {
     return "name_" + i;
+  }
+
+  static String createNewName(int i) {
+    return "new_name_" + i;
   }
 
   static List<AccountCommand> createAccounts(int nAccounts, int balance) {

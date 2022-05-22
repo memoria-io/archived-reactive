@@ -12,7 +12,7 @@ public record CreditRejected(EventId eventId, CommandId commandId, StateId credi
     return creditedAcc;
   }
 
-  public static CreditRejected of(Credit cmd) {
+  public static CreditRejected from(Credit cmd) {
     return new CreditRejected(EventId.randomUUID(), cmd.commandId(), cmd.creditedAcc(), cmd.debitedAcc(), cmd.amount());
   }
 }

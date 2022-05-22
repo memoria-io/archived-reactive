@@ -11,7 +11,7 @@ public record AccountClosed(EventId eventId, CommandId commandId, StateId accoun
     return accountId;
   }
 
-  public static AccountClosed of(CloseAccount cmd) {
+  public static AccountClosed from(CloseAccount cmd) {
     return new AccountClosed(EventId.randomUUID(), cmd.commandId(), cmd.stateId());
   }
 }

@@ -3,10 +3,6 @@ package io.memoria.reactive.core.eventsourcing.banking.state;
 import io.memoria.reactive.core.eventsourcing.StateId;
 
 public record Acc(StateId accountId, String name, int balance, int debitCount) implements Account {
-  public Acc(StateId accountId, String name, int balance) {
-    this(accountId, name, balance, 0);
-  }
-
   public boolean hasOngoingDebit() {
     return debitCount != 0;
   }
@@ -25,5 +21,9 @@ public record Acc(StateId accountId, String name, int balance, int debitCount) i
 
   public Acc withDebitRejected(int returnedDebit) {
     return new Acc(accountId, name, balance + returnedDebit, debitCount - 1);
+  }
+
+  public Acc withName(String newName) {
+    return new Acc(accountId, newName, balance, debitCount);
   }
 }

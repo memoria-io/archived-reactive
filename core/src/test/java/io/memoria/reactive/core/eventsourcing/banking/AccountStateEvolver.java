@@ -25,7 +25,7 @@ public record AccountStateEvolver() implements StateEvolver<Account, AccountEven
 
   private Account handle(Visitor acc, AccountEvent accountEvent) {
     return switch (accountEvent) {
-      case AccountCreated e -> new Acc(e.stateId(), e.name(), e.balance());
+      case AccountCreated e -> new Acc(e.stateId(), e.name(), e.balance(), 0);
       default -> acc;
     };
   }

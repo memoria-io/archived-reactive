@@ -11,7 +11,7 @@ public record DebitConfirmed(EventId eventId, CommandId commandId, StateId debit
     return debitedAcc;
   }
 
-  public static DebitConfirmed of(ConfirmDebit cmd) {
+  public static DebitConfirmed from(ConfirmDebit cmd) {
     return new DebitConfirmed(EventId.randomUUID(), cmd.commandId(), cmd.debitedAcc());
   }
 }

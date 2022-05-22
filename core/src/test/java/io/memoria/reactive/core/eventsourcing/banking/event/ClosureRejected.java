@@ -11,7 +11,7 @@ public record ClosureRejected(EventId eventId, CommandId commandId, StateId acco
     return accountId;
   }
 
-  public static ClosureRejected of(CloseAccount cmd) {
+  public static ClosureRejected from(CloseAccount cmd) {
     return new ClosureRejected(EventId.randomUUID(), cmd.commandId(), cmd.stateId());
   }
 }

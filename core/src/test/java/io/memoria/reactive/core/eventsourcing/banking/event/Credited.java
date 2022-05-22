@@ -12,7 +12,7 @@ public record Credited(EventId eventId, CommandId commandId, StateId creditedAcc
     return creditedAcc;
   }
 
-  public static Credited of(Credit cmd) {
+  public static Credited from(Credit cmd) {
     return new Credited(EventId.randomUUID(), cmd.commandId(), cmd.creditedAcc(), cmd.debitedAcc(), cmd.amount());
   }
 }

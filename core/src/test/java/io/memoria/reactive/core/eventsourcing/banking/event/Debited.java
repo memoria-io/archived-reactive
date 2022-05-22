@@ -12,7 +12,7 @@ public record Debited(EventId eventId, CommandId commandId, StateId debitedAcc, 
     return debitedAcc;
   }
 
-  public static Debited of(Debit cmd) {
+  public static Debited from(Debit cmd) {
     return new Debited(EventId.randomUUID(), cmd.commandId(), cmd.debitedAcc(), cmd.creditedAcc(), cmd.amount());
   }
 }
