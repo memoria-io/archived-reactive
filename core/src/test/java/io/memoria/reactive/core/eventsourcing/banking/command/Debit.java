@@ -10,12 +10,7 @@ public record Debit(CommandId commandId, StateId debitedAcc, StateId creditedAcc
     return debitedAcc;
   }
 
-  public static Debit of(StateId debitedAcc,
-                         StateId creditedAcc,
-                         int amount) {
-    return new Debit(CommandId.randomUUID(),
-                     debitedAcc,
-                     creditedAcc,
-                     amount);
+  public static Debit of(StateId debitedAcc, StateId creditedAcc, int amount) {
+    return new Debit(CommandId.randomUUID(), debitedAcc, creditedAcc, amount);
   }
 }

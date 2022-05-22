@@ -11,14 +11,7 @@ public record AccountCreated(EventId eventId, CommandId commandId, StateId accou
     return accountId;
   }
 
-  public static AccountCreated of(CommandId commandId,
-                                  StateId accountId,
-                                  String name,
-                                  int balance) {
-    return new AccountCreated(EventId.randomUUID(),
-                              commandId,
-                              accountId,
-                              name,
-                              balance);
+  public static AccountCreated of(CommandId commandId, StateId accountId, String name, int balance) {
+    return new AccountCreated(EventId.randomUUID(), commandId, accountId, name, balance);
   }
 }

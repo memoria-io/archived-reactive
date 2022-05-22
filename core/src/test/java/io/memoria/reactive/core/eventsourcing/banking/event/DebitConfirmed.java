@@ -10,10 +10,7 @@ public record DebitConfirmed(EventId eventId, CommandId commandId, StateId debit
     return debitedAcc;
   }
 
-  public static DebitConfirmed of(CommandId commandId,
-                                  StateId debitedAcc) {
-    return new DebitConfirmed(EventId.randomUUID(),
-                              commandId,
-                              debitedAcc);
+  public static DebitConfirmed of(CommandId commandId, StateId debitedAcc) {
+    return new DebitConfirmed(EventId.randomUUID(), commandId, debitedAcc);
   }
 }

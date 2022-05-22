@@ -11,14 +11,7 @@ public record Debited(EventId eventId, CommandId commandId, StateId debitedAcc, 
     return debitedAcc;
   }
 
-  public static Debited of(CommandId commandId,
-                           StateId debitedAcc,
-                           StateId creditedAcc,
-                           int amount) {
-    return new Debited(EventId.randomUUID(),
-                       commandId,
-                       debitedAcc,
-                       creditedAcc,
-                       amount);
+  public static Debited of(CommandId commandId, StateId debitedAcc, StateId creditedAcc, int amount) {
+    return new Debited(EventId.randomUUID(), commandId, debitedAcc, creditedAcc, amount);
   }
 }

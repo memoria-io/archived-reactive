@@ -2,12 +2,12 @@ package io.memoria.reactive.core.eventsourcing.banking;
 
 import io.memoria.reactive.core.eventsourcing.banking.event.AccountCreated;
 import io.memoria.reactive.core.eventsourcing.banking.event.AccountEvent;
+import io.memoria.reactive.core.eventsourcing.banking.event.CreditRejected.AccountClosed;
 import io.memoria.reactive.core.eventsourcing.banking.event.Credited;
 import io.memoria.reactive.core.eventsourcing.banking.event.DebitConfirmed;
 import io.memoria.reactive.core.eventsourcing.banking.event.Debited;
 import io.memoria.reactive.core.eventsourcing.banking.state.Acc;
 import io.memoria.reactive.core.eventsourcing.banking.state.Account;
-import io.memoria.reactive.core.eventsourcing.banking.event.CreditRejected.AccountClosed;
 import io.memoria.reactive.core.eventsourcing.banking.state.ClosedAccount;
 import io.memoria.reactive.core.eventsourcing.banking.state.Visitor;
 import io.memoria.reactive.core.eventsourcing.pipeline.state.StateEvolver;

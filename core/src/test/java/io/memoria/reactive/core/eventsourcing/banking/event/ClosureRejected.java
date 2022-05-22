@@ -10,10 +10,7 @@ public record ClosureRejected(EventId eventId, CommandId commandId, StateId acco
     return accountId;
   }
 
-  public static ClosureRejected of(CommandId commandId,
-                                   StateId accountId) {
-    return new ClosureRejected(EventId.randomUUID(),
-                               commandId,
-                               accountId);
+  public static ClosureRejected of(CommandId commandId, StateId accountId) {
+    return new ClosureRejected(EventId.randomUUID(), commandId, accountId);
   }
 }

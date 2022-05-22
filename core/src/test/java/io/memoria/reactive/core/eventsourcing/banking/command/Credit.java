@@ -10,12 +10,7 @@ public record Credit(CommandId commandId, StateId creditedAcc, StateId debitedAc
     return creditedAcc;
   }
 
-  public static Credit of(StateId creditedAcc,
-                          StateId debitedAcc,
-                          int amount) {
-    return new Credit(CommandId.randomUUID(),
-                      creditedAcc,
-                      debitedAcc,
-                      amount);
+  public static Credit of(StateId creditedAcc, StateId debitedAcc, int amount) {
+    return new Credit(CommandId.randomUUID(), creditedAcc, debitedAcc, amount);
   }
 }

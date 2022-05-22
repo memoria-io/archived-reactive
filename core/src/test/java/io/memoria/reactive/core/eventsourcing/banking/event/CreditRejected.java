@@ -11,15 +11,8 @@ public record CreditRejected(EventId eventId, CommandId commandId, StateId credi
     return creditedAcc;
   }
 
-  public static CreditRejected of(CommandId commandId,
-                                  StateId creditedAcc,
-                                  StateId debitedAcc,
-                                  int amount) {
-    return new CreditRejected(EventId.randomUUID(),
-                              commandId,
-                              creditedAcc,
-                              debitedAcc,
-                              amount);
+  public static CreditRejected of(CommandId commandId, StateId creditedAcc, StateId debitedAcc, int amount) {
+    return new CreditRejected(EventId.randomUUID(), commandId, creditedAcc, debitedAcc, amount);
   }
 
   public static record AccountClosed(EventId eventId, CommandId commandId, StateId accountId) implements AccountEvent {
@@ -27,9 +20,8 @@ public record CreditRejected(EventId eventId, CommandId commandId, StateId credi
     public StateId stateId() {
       return accountId;
     }
-  
-    public static AccountClosed of(CommandId commandId,
-                                   StateId accountId) {
+
+    public static AccountClosed of(CommandId commandId, StateId accountId) {
       return new AccountClosed(EventId.randomUUID(), commandId, accountId);
     }
   }

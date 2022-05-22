@@ -24,9 +24,6 @@ public record Acc(StateId accountId, String name, int balance, int debitCount) i
   }
 
   public Acc withDebitRejected(int returnedDebit) {
-    return new Acc(accountId,
-                   name,
-                                                                  balance + returnedDebit,
-                                                                  debitCount - 1);
+    return new Acc(accountId, name, balance + returnedDebit, debitCount - 1);
   }
 }

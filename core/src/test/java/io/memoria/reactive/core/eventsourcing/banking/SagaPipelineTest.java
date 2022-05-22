@@ -87,7 +87,7 @@ class SagaPipelineTest {
     int balance = 100;
     int treasury = nAccounts * balance;
     var createAccounts = DataSet.createAccounts(nAccounts, balance);
-    var accountIds = createAccounts.map(CreateAccount::accountId);
+    var accountIds = createAccounts.map(AccountCommand::accountId);
     var randomOutbounds = DataSet.randomOutBounds(nAccounts, balance);
     var cmds = Flux.<Command>fromIterable(createAccounts)
                    .concatWith(Flux.fromIterable(randomOutbounds))
