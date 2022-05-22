@@ -10,6 +10,10 @@ public record CommandId(String value) implements Id {
       throw new IllegalArgumentException("Id value is null or empty.");
   }
 
+  public static CommandId of(Id id) {
+    return new CommandId(id.value());
+  }
+
   public static CommandId randomUUID() {
     return of(UUID.randomUUID());
   }

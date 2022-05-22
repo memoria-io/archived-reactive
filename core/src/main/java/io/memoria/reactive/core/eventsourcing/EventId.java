@@ -18,6 +18,10 @@ public record EventId(String value) implements Id {
     return new EventId(id.toString());
   }
 
+  public static EventId of(Id id) {
+    return new EventId(id.value());
+  }
+
   public static EventId of(long id) {
     return new EventId(Long.toString(id));
   }

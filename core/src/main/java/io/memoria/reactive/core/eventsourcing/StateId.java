@@ -10,6 +10,10 @@ public record StateId(String value) implements Id {
       throw new IllegalArgumentException("Id value is null or empty.");
   }
 
+  public static StateId of(Id id) {
+    return new StateId(id.value());
+  }
+
   public static StateId randomUUID() {
     return of(UUID.randomUUID());
   }
