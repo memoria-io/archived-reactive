@@ -5,4 +5,4 @@ import io.memoria.reactive.core.eventsourcing.State;
 import io.vavr.Function1;
 
 @FunctionalInterface
-public interface StateReducer extends Function1<State, Event> {}
+public interface StateReducer<S extends State, E extends Event> extends Function1<S, E> {}

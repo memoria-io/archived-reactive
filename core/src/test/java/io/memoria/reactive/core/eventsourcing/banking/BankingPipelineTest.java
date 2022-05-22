@@ -10,7 +10,9 @@ import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.CreateAccou
 import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.Debit;
 import io.memoria.reactive.core.eventsourcing.pipeline.LogConfig;
 import io.memoria.reactive.core.eventsourcing.pipeline.Route;
+import io.memoria.reactive.core.eventsourcing.pipeline.SagaDomain;
 import io.memoria.reactive.core.eventsourcing.pipeline.SagaPipeline;
+import io.memoria.reactive.core.eventsourcing.pipeline.StateDomain;
 import io.memoria.reactive.core.eventsourcing.pipeline.StatePipeline;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
@@ -38,8 +40,8 @@ class BankingPipelineTest {
 
   private final Route route;
   private final Stream stream;
-  private final StatePipeline statePipeline;
-  private final SagaPipeline sagaPipeline;
+  private final StatePipeline<Account, AccountEvent, AccountCommand> statePipeline;
+  private final SagaPipeline<AccountEvent, AccountCommand> sagaPipeline;
 
   BankingPipelineTest() {
     // Configs
@@ -49,15 +51,9 @@ class BankingPipelineTest {
     var eventTp = new StreamConfig(route.eventTopic(), route.totalPartitions(), Integer.MAX_VALUE);
     stream = new MemStream(List.of(cmdTp, eventTp).toJavaList());
     // Pipeline
-    statePipeline = new StatePipeline(stream,
-                                      transformer,
-                                      new Visitor(),
-                                      new AccountStateDecider(),
-                                      new AccountStateEvolver(),
-                                      new AccountStateReducer(),
-                                      route,
-                                      LogConfig.FINE);
-    sagaPipeline = new SagaPipeline(stream, transformer, new AccountSagaDecider(), route, LogConfig.FINE);
+
+    statePipeline = new StatePipeline<>(stateDomain(), stream, transformer, route, LogConfig.FINE);
+    sagaPipeline = new SagaPipeline<>(sagaDomain(), stream, transformer, route, LogConfig.FINE);
   }
 
   @Test
@@ -102,6 +98,20 @@ class BankingPipelineTest {
     Assertions.assertEquals(nAccounts, accounts.size());
     var total = accounts.foldLeft(0, (a, b) -> a + b.balance());
     Assertions.assertEquals(treasury, total);
+  }
+
+  private SagaDomain<AccountEvent, AccountCommand> sagaDomain() {
+    return new SagaDomain<>(AccountEvent.class, AccountCommand.class, new AccountSagaDecider());
+  }
+
+  private StateDomain<Account, AccountEvent, AccountCommand> stateDomain() {
+    return new StateDomain<>(Account.class,
+                             AccountEvent.class,
+                             AccountCommand.class,
+                             new Visitor(),
+                             new AccountStateDecider(),
+                             new AccountStateEvolver(),
+                             new AccountStateReducer());
   }
 
   private Msg toMsg(Command command) {

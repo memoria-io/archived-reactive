@@ -12,57 +12,57 @@ import reactor.util.Logger;
 import reactor.util.Loggers;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class SagaPipeline {
+public class SagaPipeline<E extends Event, C extends Command> {
   private static final Logger LOGGER = Loggers.getLogger(SagaPipeline.class.getName());
+  // Business logic
+  private final SagaDomain<E, C> sagaDomain;
   // Infra
   private final Stream stream;
   private final TextTransformer transformer;
-  // Business logic
-  private final SagaDecider sagaDecider;
   // Config
   private final Route route;
   private final LogConfig logConfig;
 
-  public SagaPipeline(Stream stream,
+  public SagaPipeline(SagaDomain<E, C> sagaDomain,
+                      Stream stream,
                       TextTransformer transformer,
-                      SagaDecider sagaDecider,
                       Route route,
                       LogConfig logConfig) {
+    // Business logic
+    this.sagaDomain = sagaDomain;
     // Infra
     this.stream = stream;
     this.transformer = transformer;
-    // Business logic
-    this.sagaDecider = sagaDecider;
     // Config
     this.route = route;
     this.logConfig = logConfig;
   }
 
-  public Flux<Command> run() {
-    var cmds = streamEvents().map(sagaDecider).concatMap(ReactorVavrUtils::toMono);
+  public Flux<C> run() {
+    var cmds = streamEvents().map(sagaDomain.decider()).concatMap(ReactorVavrUtils::toMono);
     return publishCommands(cmds);
   }
 
-  public Mono<Event> toEvent(Msg msg) {
-    return transformer.deserialize(msg.value(), Event.class);
+  public Mono<E> toEvent(Msg msg) {
+    return transformer.deserialize(msg.value(), sagaDomain.eventClass());
   }
 
-  public Mono<Msg> toMsg(Command command) {
+  public Mono<Msg> toMsg(C command) {
     return transformer.serialize(command).map(body -> {
       var partition = command.partition(route.totalPartitions());
       return new Msg(route.commandTopic(), partition, command.commandId(), body);
     });
   }
 
-  public Mono<Command> toCommand(Msg msg) {
-    return transformer.deserialize(msg.value(), Command.class);
+  public Mono<C> toCommand(Msg msg) {
+    return transformer.deserialize(msg.value(), sagaDomain.commandClass());
   }
 
-  private Flux<Event> streamEvents() {
+  private Flux<E> streamEvents() {
     return stream.subscribe(route.eventTopic(), route.partition(), 0).concatMap(this::toEvent);
   }
 
-  private Flux<Command> publishCommands(Flux<Command> commands) {
+  private Flux<C> publishCommands(Flux<C> commands) {
     var msgs = commands.concatMap(this::toMsg);
     return stream.publish(msgs)
                  .concatMap(this::toCommand)

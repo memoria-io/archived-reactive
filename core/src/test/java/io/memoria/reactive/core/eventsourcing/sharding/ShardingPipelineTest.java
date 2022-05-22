@@ -3,6 +3,7 @@ package io.memoria.reactive.core.eventsourcing.sharding;
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.pipeline.LogConfig;
 import io.memoria.reactive.core.eventsourcing.pipeline.Route;
+import io.memoria.reactive.core.eventsourcing.pipeline.StateDomain;
 import io.memoria.reactive.core.eventsourcing.pipeline.StatePipeline;
 import io.memoria.reactive.core.eventsourcing.sharding.Account.Visitor;
 import io.memoria.reactive.core.id.Id;
@@ -31,8 +32,8 @@ class ShardingPipelineTest {
   private static final int totalPartitions = 5;
   // Pipelines
   private final Stream stream;
-  private final List<StatePipeline> oldPipelines;
-  private final List<StatePipeline> newPipelines;
+  private final List<StatePipeline<Account, AccountEvent, AccountCommand>> oldPipelines;
+  private final List<StatePipeline<Account, AccountEvent, AccountCommand>> newPipelines;
 
   ShardingPipelineTest() {
     // Infra
@@ -116,15 +117,18 @@ class ShardingPipelineTest {
     return new Route(cmdTp.name(), oldEventTopic.name(), partition, prevPartitions);
   }
 
-  private StatePipeline createPipeline(Route route) {
-    return new StatePipeline(stream,
-                             transformer,
+  private StatePipeline<Account, AccountEvent, AccountCommand> createPipeline(Route route) {
+    return new StatePipeline<>(stateDomain(), stream, transformer, route, LogConfig.FINE);
+  }
+
+  private StateDomain<Account, AccountEvent, AccountCommand> stateDomain() {
+    return new StateDomain<>(Account.class,
+                             AccountEvent.class,
+                             AccountCommand.class,
                              new Visitor(),
                              new AccountStateDecider(),
                              new AccountStateEvolver(),
-                             new AccountStateReducer(),
-                             route,
-                             LogConfig.FINE);
+                             new AccountStateReducer());
   }
 
   private Flux<AccountEvent> accountCreatedStream(String topic, int i) {

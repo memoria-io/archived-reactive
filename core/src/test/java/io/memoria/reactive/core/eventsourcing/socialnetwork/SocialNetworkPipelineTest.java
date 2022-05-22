@@ -5,7 +5,9 @@ import io.memoria.reactive.core.eventsourcing.CommandId;
 import io.memoria.reactive.core.eventsourcing.StateId;
 import io.memoria.reactive.core.eventsourcing.pipeline.LogConfig;
 import io.memoria.reactive.core.eventsourcing.pipeline.Route;
+import io.memoria.reactive.core.eventsourcing.pipeline.SagaDomain;
 import io.memoria.reactive.core.eventsourcing.pipeline.SagaPipeline;
+import io.memoria.reactive.core.eventsourcing.pipeline.StateDomain;
 import io.memoria.reactive.core.eventsourcing.pipeline.StatePipeline;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.Account.Visitor;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateAcc;
@@ -28,8 +30,8 @@ import java.util.UUID;
 class SocialNetworkPipelineTest {
   private static final TextTransformer transformer = new SerializableTransformer();
   private static final Stream stream;
-  private static final StatePipeline statePipeline;
-  private static final SagaPipeline sagaPipeline;
+  private static final StatePipeline<Account, AccountEvent, AccountCommand> statePipeline;
+  private static final SagaPipeline<AccountEvent, AccountCommand> sagaPipeline;
   private static final Route route;
   private static final LogConfig logging;
 
@@ -42,15 +44,8 @@ class SocialNetworkPipelineTest {
     var eventTp = new StreamConfig(route.eventTopic(), route.totalPartitions(), Integer.MAX_VALUE);
     stream = new MemStream(List.of(cmdTp, eventTp).toJavaList());
     // Pipeline
-    statePipeline = new StatePipeline(stream,
-                                      transformer,
-                                      new Visitor(),
-                                      new AccountStateDecider(),
-                                      new AccountStateEvolver(),
-                                      new AccountStateReducer(),
-                                      route,
-                                      logging);
-    sagaPipeline = new SagaPipeline(stream, transformer, new AccountSagaDecider(), route, logging);
+    statePipeline = new StatePipeline<>(stateDomain(), stream, transformer, route, logging);
+    sagaPipeline = new SagaPipeline<>(sagaDomain(), stream, transformer, route, logging);
   }
 
   @Test
@@ -69,6 +64,20 @@ class SocialNetworkPipelineTest {
                 .expectNextCount(1)
                 .expectTimeout(Duration.ofMillis(1000))
                 .verify();
+  }
+
+  private static SagaDomain<AccountEvent, AccountCommand> sagaDomain() {
+    return new SagaDomain<>(AccountEvent.class, AccountCommand.class, new AccountSagaDecider());
+  }
+
+  private static StateDomain<Account, AccountEvent, AccountCommand> stateDomain() {
+    return new StateDomain<>(Account.class,
+                             AccountEvent.class,
+                             AccountCommand.class,
+                             new Visitor(),
+                             new AccountStateDecider(),
+                             new AccountStateEvolver(),
+                             new AccountStateReducer());
   }
 
   private static Msg toMsg(Command command) {

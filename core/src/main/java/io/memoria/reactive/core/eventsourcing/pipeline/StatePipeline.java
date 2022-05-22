@@ -1,10 +1,11 @@
 package io.memoria.reactive.core.eventsourcing.pipeline;
 
 import io.memoria.reactive.core.eventsourcing.Command;
+import io.memoria.reactive.core.eventsourcing.CommandId;
 import io.memoria.reactive.core.eventsourcing.Event;
+import io.memoria.reactive.core.eventsourcing.EventId;
 import io.memoria.reactive.core.eventsourcing.State;
 import io.memoria.reactive.core.eventsourcing.StateId;
-import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
 import io.memoria.reactive.core.text.TextTransformer;
@@ -24,68 +25,61 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class StatePipeline {
+public class StatePipeline<S extends State, E extends Event, C extends Command> {
   private static final Logger LOGGER = Loggers.getLogger(StatePipeline.class.getName());
+  // Domain logic
+  private final StateDomain<S, E, C> stateDomain;
   // Infra
   private final Stream stream;
   private final TextTransformer transformer;
-  private final Set<Id> processedEvents;
-  private final Set<Id> processedCmds;
-  private final Set<StateId> reducedStates;
-  private final Map<StateId, State> stateRepo;
-  // Business logic
-  private final State initState;
-  private final StateDecider decider;
-  private final StateEvolver evolver;
-  private final StateReducer reducer;
-  // Configs
   private final Route route;
+  // Configs
   private final LogConfig logConfig;
+  // State
+  private final Map<StateId, S> stateRepo;
+  private final Set<StateId> reducedStates;
+  private final Set<EventId> processedEvents;
+  private final Set<CommandId> processedCmds;
 
-  public StatePipeline(Stream stream,
+  public StatePipeline(StateDomain<S, E, C> stateDomain,
+                       Stream stream,
                        TextTransformer transformer,
-                       State initState,
-                       StateDecider decider,
-                       StateEvolver evolver,
-                       StateReducer reducer,
                        Route route,
                        LogConfig logConfig) {
+    // Domain logic
+    this.stateDomain = stateDomain;
     // Infra
     this.stream = stream;
     this.transformer = transformer;
+    this.route = route;
+    // Config
+    this.logConfig = logConfig;
+    // State
+    this.stateRepo = new ConcurrentHashMap<>();
+    this.reducedStates = new HashSet<>();
     this.processedEvents = new HashSet<>();
     this.processedCmds = new HashSet<>();
-    this.reducedStates = new HashSet<>();
-    this.stateRepo = new ConcurrentHashMap<>();
-    // Business logic
-    this.initState = initState;
-    this.decider = decider;
-    this.evolver = evolver;
-    this.reducer = reducer;
-    // Configs
-    this.route = route;
-    this.logConfig = logConfig;
   }
 
-  public Flux<Event> run() {
+  public Flux<E> run() {
     var readCurrentSink = read(route.eventTopic(), route.partition()).doOnNext(this::evolveState);
     var pubOldSinkEvents = publishEvents(readOldSink()).doOnNext(this::evolveState);
     var pubCmdEvents = publishEvents(handleNewCommands()).doOnNext(this::evolveState);
     return readCurrentSink.concatWith(pubOldSinkEvents).concatWith(pubCmdEvents);
   }
 
-  public Flux<Event> runReduced() {
+  public Flux<E> runReduced() {
     var publishReduced = publishEvents(reducedEvents());
     var pubCmdEvents = publishEvents(handleNewCommands()).doOnNext(this::evolveState);
     return publishReduced.concatWith(pubCmdEvents);
   }
 
-  public Mono<Event> toEvent(Msg msg) {
-    return transformer.deserialize(msg.value(), Event.class);
+  public Mono<E> toEvent(Msg msg) {
+    return transformer.deserialize(msg.value(), stateDomain.eventClass());
   }
 
-  public State stateOrInit(StateId stateId) {
-    return Option.of(stateRepo.get(stateId)).getOrElse(initState);
+  public S stateOrInit(StateId stateId) {
+    return Option.of(stateRepo.get(stateId)).getOrElse(stateDomain.initState());
   }
 
   public Mono<Msg> toMsg(Event event) {
@@ -93,22 +87,22 @@ public class StatePipeline {
                       .map(body -> new Msg(route.eventTopic(), route.partition(), event.eventId(), body));
   }
 
-  public Mono<Command> toCommand(Msg msg) {
-    return transformer.deserialize(msg.value(), Command.class);
+  public Mono<C> toCommand(Msg msg) {
+    return transformer.deserialize(msg.value(), stateDomain.commandClass());
   }
 
-  private Flux<Event> reducedEvents() {
+  private Flux<E> reducedEvents() {
     var compacted = read(route.eventTopic(), route.partition()).doOnNext(this::evolveState)
                                                                .doOnNext(e -> reducedStates.add(e.stateId()));
     var nonCompacted = readOldSink().filter(e -> !reducedStates.contains(e.stateId())).doOnNext(this::evolveState);
     var compactNonCom = Flux.fromIterable(this.stateRepo.entrySet())
                             .filter(e -> !reducedStates.contains(e.getKey()))
                             .map(Entry::getValue)
-                            .map(reducer);
+                            .map(stateDomain.reducer());
     return compacted.thenMany(nonCompacted).thenMany(compactNonCom);
   }
 
-  private Flux<Event> read(String topic, int partition) {
+  private Flux<E> read(String topic, int partition) {
     return stream.size(topic, partition)
                  .filter(size -> size > 0)
                  .flatMapMany(size -> stream.subscribe(topic, partition, 0).take(size))
@@ -116,27 +110,27 @@ public class StatePipeline {
                  .log(LOGGER, logConfig.level(), logConfig.showLine(), logConfig.signalTypeArray());
   }
 
-  private void evolveState(Event event) {
+  private void evolveState(E event) {
     var currentState = stateOrInit(event.stateId());
-    var newState = evolver.apply(currentState, event);
+    var newState = stateDomain.evolver().apply(currentState, event);
     stateRepo.put(event.stateId(), newState);
     processedCmds.add(event.commandId());
     processedEvents.add(event.eventId());
   }
 
-  private Flux<Event> publishEvents(Flux<Event> events) {
+  private Flux<E> publishEvents(Flux<E> events) {
     return stream.publish(events.concatMap(this::toMsg))
                  .concatMap(this::toEvent)
                  .log(LOGGER, logConfig.level(), logConfig.showLine(), logConfig.signalTypeArray());
   }
 
-  private Flux<Event> readOldSink() {
+  private Flux<E> readOldSink() {
     return readAll(route.prevEventTopic(), route.prevPartitions()).filter(this::isEligible)
                                                                   .sequential()
                                                                   .publishOn(Schedulers.single());
   }
 
-  private Flux<Event> handleNewCommands() {
+  private Flux<E> handleNewCommands() {
     return stream.subscribe(route.commandTopic(), route.partition(), 0)
                  .concatMap(this::toCommand)
                  .concatMap(this::rerouteIfNotEligible)
@@ -147,14 +141,14 @@ public class StatePipeline {
                  .concatMap(ReactorVavrUtils::toMono);
   }
 
-  private ParallelFlux<Event> readAll(String prevTopic, int prevTotal) {
+  private ParallelFlux<E> readAll(String prevTopic, int prevTotal) {
     if (prevTotal > 0)
       return Flux.range(0, prevTotal).parallel(prevTotal).runOn(Schedulers.parallel()).flatMap(i -> read(prevTopic, i));
     else
       return ParallelFlux.from(Flux.empty());
   }
 
-  private Flux<Command> rerouteIfNotEligible(Command cmd) {
+  private Flux<C> rerouteIfNotEligible(C cmd) {
     if (isEligible(cmd)) {
       return Flux.just(cmd);
     } else {
@@ -163,20 +157,20 @@ public class StatePipeline {
     }
   }
 
-  private Msg rerouteCommand(Command cmd, String body) {
+  private Msg rerouteCommand(C cmd, String body) {
     return new Msg(route.commandTopic(), cmd.partition(route.totalPartitions()), cmd.commandId(), body);
   }
 
-  private boolean isEligible(Command cmd) {
+  private boolean isEligible(C cmd) {
     return cmd.isInPartition(route.partition(), route.totalPartitions());
   }
 
-  private boolean isEligible(Event e) {
+  private boolean isEligible(E e) {
     return e.isInPartition(route.partition(), route.totalPartitions()) && !processedEvents.contains(e.eventId());
   }
 
-  private Try<Event> decide(Command cmd) {
+  private Try<E> decide(C cmd) {
     var state = stateOrInit(cmd.stateId());
-    return decider.apply(state, cmd);
+    return stateDomain.decider().apply(state, cmd);
   }
 }

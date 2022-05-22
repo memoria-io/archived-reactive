@@ -1,10 +1,6 @@
 package io.memoria.reactive.core.eventsourcing.socialnetwork;
 
-import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.ESException.InvalidOperation;
-import io.memoria.reactive.core.eventsourcing.ESException.UnknownCommand;
-import io.memoria.reactive.core.eventsourcing.Event;
-import io.memoria.reactive.core.eventsourcing.State;
 import io.memoria.reactive.core.eventsourcing.pipeline.StateDecider;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.Account.Acc;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.Account.Visitor;
@@ -15,17 +11,9 @@ import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.Creat
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.MarkMsgAsSeen;
 import io.vavr.control.Try;
 
-record AccountStateDecider() implements StateDecider {
+record AccountStateDecider() implements StateDecider<Account, AccountCommand, AccountEvent> {
   @Override
-  public Try<Event> apply(State state, Command command) {
-    if (state instanceof Account account && command instanceof AccountCommand accountCommand) {
-      return apply(account, accountCommand);
-    }
-    return Try.failure(UnknownCommand.create(command));
-
-  }
-
-  private Try<Event> apply(Account account, AccountCommand accountCommand) {
+  public Try<AccountEvent> apply(Account account, AccountCommand accountCommand) {
     return switch (accountCommand) {
       case CreateAcc cmd && account instanceof Visitor -> accountCreated(cmd);
       case CreateOutboundMsg cmd && account instanceof Acc -> outboundCreated(cmd);
@@ -36,29 +24,29 @@ record AccountStateDecider() implements StateDecider {
     };
   }
 
-  private Try<Event> accountCreated(CreateAcc cmd) {
+  private Try<AccountEvent> accountCreated(CreateAcc cmd) {
     return Try.success(AccountEvent.accountCreated(cmd.commandId(), cmd.accountId(), cmd.accountname()));
   }
 
-  private Try<Event> outboundCreated(CreateOutboundMsg cmd) {
+  private Try<AccountEvent> outboundCreated(CreateOutboundMsg cmd) {
     return Try.success(AccountEvent.outboundMsgCreated(cmd.commandId(),
                                                        cmd.msgSender(),
                                                        cmd.msgReceiver(),
                                                        cmd.message()));
   }
 
-  private Try<Event> inboundMessageCreated(CreateInboundMsg cmd) {
+  private Try<AccountEvent> inboundMessageCreated(CreateInboundMsg cmd) {
     return Try.success(AccountEvent.inboundMsgCreated(cmd.commandId(),
                                                       cmd.msgSender(),
                                                       cmd.msgReceiver(),
                                                       cmd.message()));
   }
 
-  private Try<Event> outboundSeen(MarkMsgAsSeen cmd) {
+  private Try<AccountEvent> outboundSeen(MarkMsgAsSeen cmd) {
     return Try.success(AccountEvent.outboundSeen(cmd.commandId(), cmd.msgSender(), cmd.msgReceiver()));
   }
 
-  private Try<Event> accountClosed(CloseAccount cmd) {
+  private Try<AccountEvent> accountClosed(CloseAccount cmd) {
     return Try.success(AccountEvent.accountClosed(cmd.commandId(), cmd.accountId()));
   }
 }

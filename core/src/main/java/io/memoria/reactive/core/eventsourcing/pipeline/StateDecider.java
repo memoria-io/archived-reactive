@@ -7,4 +7,6 @@ import io.vavr.Function2;
 import io.vavr.control.Try;
 
 @FunctionalInterface
-public interface StateDecider extends Function2<State, Command, Try<Event>> {}
+public interface StateDecider<S extends State, C extends Command, E extends Event> extends Function2<S, C, Try<E>> {
+
+}

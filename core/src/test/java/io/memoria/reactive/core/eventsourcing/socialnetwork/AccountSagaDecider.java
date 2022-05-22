@@ -1,7 +1,5 @@
 package io.memoria.reactive.core.eventsourcing.socialnetwork;
 
-import io.memoria.reactive.core.eventsourcing.Command;
-import io.memoria.reactive.core.eventsourcing.Event;
 import io.memoria.reactive.core.eventsourcing.pipeline.SagaDecider;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateInboundMsg;
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountCommand.CreateNewMsgNotification;
@@ -9,14 +7,9 @@ import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountEvent.Inbound
 import io.memoria.reactive.core.eventsourcing.socialnetwork.AccountEvent.OutboundMsgCreated;
 import io.vavr.control.Option;
 
-record AccountSagaDecider() implements SagaDecider {
+record AccountSagaDecider() implements SagaDecider<AccountEvent, AccountCommand> {
 
-  @Override
-  public Option<Command> apply(Event event) {
-    return event instanceof AccountEvent accountEvent ? handleAccountEvent(accountEvent) : Option.none();
-  }
-
-  private Option<Command> handleAccountEvent(AccountEvent accountEvent) {
+  public Option<AccountCommand> apply(AccountEvent accountEvent) {
     return switch (accountEvent) {
       case OutboundMsgCreated messageSent -> Option.some(createInboundMessage(messageSent));
       case InboundMsgCreated inboundMsgCreated -> Option.some(createNewMsgNotification(inboundMsgCreated));
