@@ -1,23 +1,19 @@
 package io.memoria.reactive.core.eventsourcing.banking;
 
-import io.memoria.reactive.core.eventsourcing.Command;
-import io.memoria.reactive.core.eventsourcing.Event;
-import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.ConfirmDebit;
-import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.Credit;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.CreditRejected;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.Credited;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.Debited;
-import io.memoria.reactive.core.eventsourcing.pipeline.SagaDecider;
+import io.memoria.reactive.core.eventsourcing.banking.command.AccountCommand;
+import io.memoria.reactive.core.eventsourcing.banking.command.ConfirmDebit;
+import io.memoria.reactive.core.eventsourcing.banking.command.Credit;
+import io.memoria.reactive.core.eventsourcing.banking.event.AccountEvent;
+import io.memoria.reactive.core.eventsourcing.banking.event.CreditRejected;
+import io.memoria.reactive.core.eventsourcing.banking.event.Credited;
+import io.memoria.reactive.core.eventsourcing.banking.event.Debited;
+import io.memoria.reactive.core.eventsourcing.pipeline.saga.SagaDecider;
 import io.vavr.control.Option;
 
-record AccountSagaDecider() implements SagaDecider {
+public record AccountSagaDecider() implements SagaDecider<AccountEvent, AccountCommand> {
 
   @Override
-  public Option<Command> apply(Event event) {
-    return event instanceof AccountEvent accountEvent ? handleAccountEvent(accountEvent) : Option.none();
-  }
-
-  private Option<Command> handleAccountEvent(AccountEvent accountEvent) {
+  public Option<AccountCommand> apply(AccountEvent accountEvent) {
     return switch (accountEvent) {
       case Debited e -> Option.some(Credit.of(e.creditedAcc(), e.debitedAcc(), e.amount()));
       case Credited e -> Option.some(ConfirmDebit.of(e.debitedAcc()));
