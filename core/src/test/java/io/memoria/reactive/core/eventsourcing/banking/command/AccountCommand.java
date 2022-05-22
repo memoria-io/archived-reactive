@@ -15,5 +15,4 @@ public sealed interface AccountCommand extends Command
   default long timestamp() {
     return 0;
   }
-
 }

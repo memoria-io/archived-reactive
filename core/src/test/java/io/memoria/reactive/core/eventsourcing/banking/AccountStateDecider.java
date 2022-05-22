@@ -1,17 +1,17 @@
 package io.memoria.reactive.core.eventsourcing.banking;
 
-import io.memoria.reactive.core.eventsourcing.ESException.InvalidOperation;
+import io.memoria.reactive.core.eventsourcing.Utils;
 import io.memoria.reactive.core.eventsourcing.banking.command.AccountCommand;
 import io.memoria.reactive.core.eventsourcing.banking.command.CloseAccount;
 import io.memoria.reactive.core.eventsourcing.banking.command.ConfirmDebit;
 import io.memoria.reactive.core.eventsourcing.banking.command.CreateAccount;
 import io.memoria.reactive.core.eventsourcing.banking.command.Credit;
 import io.memoria.reactive.core.eventsourcing.banking.command.Debit;
+import io.memoria.reactive.core.eventsourcing.banking.event.AccountClosed;
 import io.memoria.reactive.core.eventsourcing.banking.event.AccountCreated;
 import io.memoria.reactive.core.eventsourcing.banking.event.AccountEvent;
 import io.memoria.reactive.core.eventsourcing.banking.event.ClosureRejected;
 import io.memoria.reactive.core.eventsourcing.banking.event.CreditRejected;
-import io.memoria.reactive.core.eventsourcing.banking.event.CreditRejected.AccountClosed;
 import io.memoria.reactive.core.eventsourcing.banking.event.Credited;
 import io.memoria.reactive.core.eventsourcing.banking.event.DebitConfirmed;
 import io.memoria.reactive.core.eventsourcing.banking.event.Debited;
@@ -34,54 +34,39 @@ public record AccountStateDecider() implements StateDecider<Account, AccountComm
     };
   }
 
-  private Try<AccountEvent> handle(Visitor account, AccountCommand accountCommand) {
+  private Try<AccountEvent> handle(Visitor visitor, AccountCommand accountCommand) {
     return switch (accountCommand) {
-      case CreateAccount cmd -> accountCreated(cmd);
-      default -> Try.failure(InvalidOperation.create(account, accountCommand));
+      case CreateAccount cmd -> Try.success(AccountCreated.of(cmd));
+      case Debit cmd -> Utils.error(visitor, cmd);
+      case Credit cmd -> Utils.error(visitor, cmd);
+      case CloseAccount cmd -> Utils.error(visitor, cmd);
+      case ConfirmDebit cmd -> Utils.error(visitor, cmd);
     };
   }
 
   private Try<AccountEvent> handle(Acc acc, AccountCommand accountCommand) {
     return switch (accountCommand) {
-      case Debit cmd -> debited(cmd);
-      case Credit cmd -> credited(cmd);
+      case Debit cmd -> Try.success(Debited.of(cmd));
+      case Credit cmd -> Try.success(Credited.of(cmd));
       case CloseAccount cmd -> tryToClose(acc, cmd);
-      case ConfirmDebit cmd -> debitConfirmed(cmd);
-      case CreateAccount cmd -> Try.failure(InvalidOperation.create(acc, cmd));
+      case ConfirmDebit cmd -> Try.success(DebitConfirmed.of(cmd));
+      case CreateAccount cmd -> Utils.error(acc, cmd);
     };
   }
 
-  private Try<AccountEvent> handle(ClosedAccount account, AccountCommand accountCommand) {
+  private Try<AccountEvent> handle(ClosedAccount closedAccount, AccountCommand accountCommand) {
     return switch (accountCommand) {
-      case Credit cmd -> creditRejected(cmd);
-      case ConfirmDebit cmd -> debitConfirmed(cmd);
-      default -> Try.failure(InvalidOperation.create(account, accountCommand));
+      case Credit cmd -> Try.success(CreditRejected.of(cmd));
+      case ConfirmDebit cmd -> Try.success(DebitConfirmed.of(cmd));
+      case Debit cmd -> Utils.error(closedAccount, cmd);
+      case CreateAccount cmd -> Utils.error(closedAccount, cmd);
+      case CloseAccount cmd -> Utils.error(closedAccount, cmd);
     };
-  }
-
-  private Try<AccountEvent> debitConfirmed(ConfirmDebit cmd) {
-    return Try.success(DebitConfirmed.of(cmd.commandId(), cmd.debitedAcc()));
   }
 
   private Try<AccountEvent> tryToClose(Acc acc, CloseAccount cmd) {
     if (acc.hasOngoingDebit())
-      return Try.success(ClosureRejected.of(cmd.commandId(), cmd.accountId()));
-    return Try.success(AccountClosed.of(cmd.commandId(), cmd.accountId()));
-  }
-
-  private Try<AccountEvent> credited(Credit cmd) {
-    return Try.success(Credited.of(cmd.commandId(), cmd.creditedAcc(), cmd.debitedAcc(), cmd.amount()));
-  }
-
-  private Try<AccountEvent> creditRejected(Credit cmd) {
-    return Try.success(CreditRejected.of(cmd.commandId(), cmd.creditedAcc(), cmd.debitedAcc(), cmd.amount()));
-  }
-
-  private Try<AccountEvent> debited(Debit cmd) {
-    return Try.success(Debited.of(cmd.commandId(), cmd.debitedAcc(), cmd.creditedAcc(), cmd.amount()));
-  }
-
-  private Try<AccountEvent> accountCreated(CreateAccount cmd) {
-    return Try.success(AccountCreated.of(cmd.commandId(), cmd.accountId(), cmd.accountname(), cmd.balance()));
+      return Try.success(ClosureRejected.of(cmd));
+    return Try.success(AccountClosed.of(cmd));
   }
 }

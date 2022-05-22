@@ -9,5 +9,4 @@ public sealed interface Account extends State permits Acc, ClosedAccount, Visito
   default StateId stateId() {
     return accountId();
   }
-
 }

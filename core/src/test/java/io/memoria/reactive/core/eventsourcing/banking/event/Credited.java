@@ -3,6 +3,7 @@ package io.memoria.reactive.core.eventsourcing.banking.event;
 import io.memoria.reactive.core.eventsourcing.CommandId;
 import io.memoria.reactive.core.eventsourcing.EventId;
 import io.memoria.reactive.core.eventsourcing.StateId;
+import io.memoria.reactive.core.eventsourcing.banking.command.Credit;
 
 public record Credited(EventId eventId, CommandId commandId, StateId creditedAcc, StateId debitedAcc, int amount)
         implements AccountEvent {
@@ -11,7 +12,7 @@ public record Credited(EventId eventId, CommandId commandId, StateId creditedAcc
     return creditedAcc;
   }
 
-  public static Credited of(CommandId commandId, StateId creditedAcc, StateId debitedAcc, int amount) {
-    return new Credited(EventId.randomUUID(), commandId, creditedAcc, debitedAcc, amount);
+  public static Credited of(Credit cmd) {
+    return new Credited(EventId.randomUUID(), cmd.commandId(), cmd.creditedAcc(), cmd.debitedAcc(), cmd.amount());
   }
 }
