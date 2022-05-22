@@ -2,23 +2,11 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0  http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>18</source>
-                    <target>18</target>
-                    <compilerArgs>--enable-preview</compilerArgs>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jbom</artifactId>
-        <version>20.0.1</version>
+        <version>20.2.0</version>
     </parent>
 
     <!--suppress MavenRedundantGroupId -->
@@ -45,12 +33,10 @@
     <properties>
         <maven.compiler.source>18</maven.compiler.source>
         <maven.compiler.target>18</maven.compiler.target>
-        <reactor.version>2020.0.18</reactor.version>
+        <reactor.version>2020.0.19</reactor.version>
         <vavr.version>0.10.4</vavr.version>
         <vavr-jackson.version>0.10.3</vavr-jackson.version>
-        <jackson.version>2.13.2</jackson.version>
-        <argon2.version>2.11</argon2.version>
-        <jsonwebtoken.version>0.11.2</jsonwebtoken.version>
+        <jsonwebtoken.version>0.11.5</jsonwebtoken.version>
     </properties>
 
     <distributionManagement>
@@ -106,7 +92,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>${jackson.version}</version>
+                <version>2.13.3</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -116,7 +102,7 @@
             <dependency>
                 <groupId>de.mkammerer</groupId>
                 <artifactId>argon2-jvm</artifactId>
-                <version>${argon2.version}</version>
+                <version>2.11</version>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
@@ -162,4 +148,17 @@
         <!--======================================================================================== -->
 
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>18</source>
+                    <target>18</target>
+                    <compilerArgs>--enable-preview</compilerArgs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

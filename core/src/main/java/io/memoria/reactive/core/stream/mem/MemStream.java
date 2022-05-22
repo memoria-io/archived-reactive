@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public final class MemStream implements Stream {
@@ -41,9 +40,7 @@ public final class MemStream implements Stream {
   }
 
   private void setup(String topic, int nPartitions, int history) {
-    var partitions = IntStream.range(0, nPartitions)
-                              .mapToObj(i -> Sinks.many().replay().<Msg>limit(history))
-                              .toList();
+    var partitions = IntStream.range(0, nPartitions).mapToObj(i -> Sinks.many().replay().<Msg>limit(history)).toList();
     topicStream.put(topic, partitions);
     var partitionSizes = IntStream.range(0, nPartitions).mapToObj(i -> new AtomicLong()).toList();
     topicSize.put(topic, partitionSizes);
