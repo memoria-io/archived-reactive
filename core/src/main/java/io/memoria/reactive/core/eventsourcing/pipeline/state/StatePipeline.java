@@ -27,10 +27,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class StatePipeline<S extends State, E extends Event, C extends Command> {
+public class StatePipeline<S extends State, C extends Command, E extends Event> {
   private static final Logger LOGGER = Loggers.getLogger(StatePipeline.class.getName());
   // Domain logic
-  private final StateDomain<S, E, C> stateDomain;
+  private final StateDomain<S, C, E> stateDomain;
   // Infra
   private final Stream stream;
   private final TextTransformer transformer;
@@ -43,7 +43,7 @@ public class StatePipeline<S extends State, E extends Event, C extends Command> 
   private final Set<EventId> processedEvents;
   private final Set<CommandId> processedCmds;
 
-  public StatePipeline(StateDomain<S, E, C> stateDomain,
+  public StatePipeline(StateDomain<S, C, E> stateDomain,
                        Stream stream,
                        TextTransformer transformer,
                        Route route,

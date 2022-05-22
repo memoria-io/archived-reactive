@@ -43,7 +43,7 @@ class SagaPipelineTest {
 
   private final Route route;
   private final Stream stream;
-  private final StatePipeline<Account, AccountEvent, AccountCommand> statePipeline;
+  private final StatePipeline<Account, AccountCommand, AccountEvent> statePipeline;
   private final SagaPipeline<AccountEvent, AccountCommand> sagaPipeline;
 
   SagaPipelineTest() {
@@ -107,10 +107,10 @@ class SagaPipelineTest {
     return new SagaDomain<>(AccountEvent.class, AccountCommand.class, new AccountSagaDecider());
   }
 
-  private StateDomain<Account, AccountEvent, AccountCommand> stateDomain() {
+  private StateDomain<Account, AccountCommand, AccountEvent> stateDomain() {
     return new StateDomain<>(Account.class,
-                             AccountEvent.class,
                              AccountCommand.class,
+                             AccountEvent.class,
                              new Visitor(),
                              new AccountStateDecider(),
                              new AccountStateEvolver(),

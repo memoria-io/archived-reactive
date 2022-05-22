@@ -35,8 +35,8 @@ class ShardingPipelineTest {
   private static final int totalPartitions = 5;
   // Pipelines
   private final Stream stream;
-  private final List<StatePipeline<Account, AccountEvent, AccountCommand>> oldPipelines;
-  private final List<StatePipeline<Account, AccountEvent, AccountCommand>> newPipelines;
+  private final List<StatePipeline<Account, AccountCommand, AccountEvent>> oldPipelines;
+  private final List<StatePipeline<Account, AccountCommand, AccountEvent>> newPipelines;
 
   ShardingPipelineTest() {
     // Infra
@@ -120,14 +120,14 @@ class ShardingPipelineTest {
     return new Route(cmdTp.name(), oldEventTopic.name(), partition, prevPartitions);
   }
 
-  private StatePipeline<Account, AccountEvent, AccountCommand> createPipeline(Route route) {
+  private StatePipeline<Account, AccountCommand, AccountEvent> createPipeline(Route route) {
     return new StatePipeline<>(stateDomain(), stream, transformer, route, LogConfig.FINE);
   }
 
-  private StateDomain<Account, AccountEvent, AccountCommand> stateDomain() {
+  private StateDomain<Account, AccountCommand, AccountEvent> stateDomain() {
     return new StateDomain<>(Account.class,
-                             AccountEvent.class,
                              AccountCommand.class,
+                             AccountEvent.class,
                              new Visitor(),
                              new AccountStateDecider(),
                              new AccountStateEvolver(),
