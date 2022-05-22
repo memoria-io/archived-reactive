@@ -1,26 +1,29 @@
 package io.memoria.reactive.core.eventsourcing.banking;
 
 import io.memoria.reactive.core.eventsourcing.ESException.InvalidOperation;
-import io.memoria.reactive.core.eventsourcing.banking.Account.Acc;
-import io.memoria.reactive.core.eventsourcing.banking.Account.ClosedAccount;
-import io.memoria.reactive.core.eventsourcing.banking.Account.Visitor;
-import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.CloseAccount;
-import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.ConfirmDebit;
-import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.CreateAccount;
-import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.Credit;
-import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.Debit;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.AccountClosed;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.AccountCreated;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.ClosureRejected;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.CreditRejected;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.Credited;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.DebitConfirmed;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.Debited;
-import io.memoria.reactive.core.eventsourcing.pipeline.StateDecider;
+import io.memoria.reactive.core.eventsourcing.banking.command.AccountCommand;
+import io.memoria.reactive.core.eventsourcing.banking.command.CloseAccount;
+import io.memoria.reactive.core.eventsourcing.banking.command.ConfirmDebit;
+import io.memoria.reactive.core.eventsourcing.banking.command.CreateAccount;
+import io.memoria.reactive.core.eventsourcing.banking.command.Credit;
+import io.memoria.reactive.core.eventsourcing.banking.command.Debit;
+import io.memoria.reactive.core.eventsourcing.banking.event.AccountCreated;
+import io.memoria.reactive.core.eventsourcing.banking.event.AccountEvent;
+import io.memoria.reactive.core.eventsourcing.banking.event.ClosureRejected;
+import io.memoria.reactive.core.eventsourcing.banking.event.CreditRejected;
+import io.memoria.reactive.core.eventsourcing.banking.event.Credited;
+import io.memoria.reactive.core.eventsourcing.banking.event.DebitConfirmed;
+import io.memoria.reactive.core.eventsourcing.banking.event.Debited;
+import io.memoria.reactive.core.eventsourcing.banking.state.Acc;
+import io.memoria.reactive.core.eventsourcing.banking.state.Account;
+import io.memoria.reactive.core.eventsourcing.banking.event.CreditRejected.AccountClosed;
+import io.memoria.reactive.core.eventsourcing.banking.state.ClosedAccount;
+import io.memoria.reactive.core.eventsourcing.banking.state.Visitor;
+import io.memoria.reactive.core.eventsourcing.pipeline.state.StateDecider;
 import io.vavr.control.Try;
 
 @SuppressWarnings({"SwitchStatementWithTooFewBranches"})
-record AccountStateDecider() implements StateDecider<Account, AccountCommand, AccountEvent> {
+public record AccountStateDecider() implements StateDecider<Account, AccountCommand, AccountEvent> {
 
   @Override
   public Try<AccountEvent> apply(Account account, AccountCommand accountCommand) {

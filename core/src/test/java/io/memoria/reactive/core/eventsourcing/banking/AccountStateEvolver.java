@@ -1,17 +1,19 @@
 package io.memoria.reactive.core.eventsourcing.banking;
 
-import io.memoria.reactive.core.eventsourcing.banking.Account.Acc;
-import io.memoria.reactive.core.eventsourcing.banking.Account.ClosedAccount;
-import io.memoria.reactive.core.eventsourcing.banking.Account.Visitor;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.AccountClosed;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.AccountCreated;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.Credited;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.DebitConfirmed;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.Debited;
-import io.memoria.reactive.core.eventsourcing.pipeline.StateEvolver;
+import io.memoria.reactive.core.eventsourcing.banking.event.AccountCreated;
+import io.memoria.reactive.core.eventsourcing.banking.event.AccountEvent;
+import io.memoria.reactive.core.eventsourcing.banking.event.Credited;
+import io.memoria.reactive.core.eventsourcing.banking.event.DebitConfirmed;
+import io.memoria.reactive.core.eventsourcing.banking.event.Debited;
+import io.memoria.reactive.core.eventsourcing.banking.state.Acc;
+import io.memoria.reactive.core.eventsourcing.banking.state.Account;
+import io.memoria.reactive.core.eventsourcing.banking.event.CreditRejected.AccountClosed;
+import io.memoria.reactive.core.eventsourcing.banking.state.ClosedAccount;
+import io.memoria.reactive.core.eventsourcing.banking.state.Visitor;
+import io.memoria.reactive.core.eventsourcing.pipeline.state.StateEvolver;
 
 @SuppressWarnings("SwitchStatementWithTooFewBranches")
-record AccountStateEvolver() implements StateEvolver<Account, AccountEvent> {
+public record AccountStateEvolver() implements StateEvolver<Account, AccountEvent> {
   @Override
   public Account apply(Account account, AccountEvent accountEvent) {
     return switch (account) {

@@ -1,14 +1,16 @@
 package io.memoria.reactive.core.eventsourcing.banking;
 
-import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.ConfirmDebit;
-import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.Credit;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.CreditRejected;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.Credited;
-import io.memoria.reactive.core.eventsourcing.banking.AccountEvent.Debited;
-import io.memoria.reactive.core.eventsourcing.pipeline.SagaDecider;
+import io.memoria.reactive.core.eventsourcing.banking.command.AccountCommand;
+import io.memoria.reactive.core.eventsourcing.banking.command.ConfirmDebit;
+import io.memoria.reactive.core.eventsourcing.banking.command.Credit;
+import io.memoria.reactive.core.eventsourcing.banking.event.AccountEvent;
+import io.memoria.reactive.core.eventsourcing.banking.event.CreditRejected;
+import io.memoria.reactive.core.eventsourcing.banking.event.Credited;
+import io.memoria.reactive.core.eventsourcing.banking.event.Debited;
+import io.memoria.reactive.core.eventsourcing.pipeline.saga.SagaDecider;
 import io.vavr.control.Option;
 
-record AccountSagaDecider() implements SagaDecider<AccountEvent, AccountCommand> {
+public record AccountSagaDecider() implements SagaDecider<AccountEvent, AccountCommand> {
 
   @Override
   public Option<AccountCommand> apply(AccountEvent accountEvent) {

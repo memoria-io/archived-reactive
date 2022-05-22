@@ -1,15 +1,21 @@
 package io.memoria.reactive.core.eventsourcing.banking;
 
 import io.memoria.reactive.core.eventsourcing.StateId;
-import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.CloseAccount;
-import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.CreateAccount;
-import io.memoria.reactive.core.eventsourcing.banking.AccountCommand.Debit;
+import io.memoria.reactive.core.eventsourcing.banking.command.CloseAccount;
+import io.memoria.reactive.core.eventsourcing.banking.command.CreateAccount;
+import io.memoria.reactive.core.eventsourcing.banking.command.Debit;
 import io.vavr.collection.List;
 
 import java.util.Random;
 
 class DataSet {
   private DataSet() {}
+
+  //  static Flux<AccountCommand> scenario(int nAccounts, int nameChanges) {
+  //    var createAccounts = createAccounts(nAccounts, 0);
+  //    var changes = List.range(0, nameChanges).flatMap(i -> changeNames(nAccounts));
+  //    return Flux.fromIterable(createAccounts.appendAll(changes));
+  //  }
 
   static StateId createId(int i) {
     return StateId.of("acc_id_" + i);
