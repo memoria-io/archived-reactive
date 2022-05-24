@@ -13,7 +13,7 @@ import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
 import io.memoria.reactive.core.stream.mem.MemStream;
-import io.memoria.reactive.core.stream.mem.StreamConfig;
+import io.memoria.reactive.core.stream.mem.MemStreamConfig;
 import io.memoria.reactive.core.text.SerializableTransformer;
 import io.memoria.reactive.core.text.TextTransformer;
 import io.vavr.collection.List;
@@ -28,9 +28,9 @@ class ShardingPipelineTest {
   private static final TextTransformer transformer = new SerializableTransformer();
   private static final Duration timeout = Duration.ofMillis(300);
   // topics config, with ephemeral command topic
-  private static final StreamConfig cmdTp = new StreamConfig("commandsTopic", 100, 2);
-  private static final StreamConfig oldEventTopic = new StreamConfig("oldEventTopic", 100, 100);
-  private static final StreamConfig newEventTopic = new StreamConfig("newEventTopic", 100, 100);
+  private static final MemStreamConfig cmdTp = new MemStreamConfig("commandsTopic", 100, 2);
+  private static final MemStreamConfig oldEventTopic = new MemStreamConfig("oldEventTopic", 100, 100);
+  private static final MemStreamConfig newEventTopic = new MemStreamConfig("newEventTopic", 100, 100);
   private static final int prevPartitions = 3;
   private static final int totalPartitions = 5;
   // Pipelines

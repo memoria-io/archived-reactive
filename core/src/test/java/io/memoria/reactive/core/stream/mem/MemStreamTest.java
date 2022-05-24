@@ -20,7 +20,7 @@ class MemStreamTest {
   private static final int DOUBLE_ELEMENTS = 2 * ELEMENTS_SIZE;
   private static final String topic = "NODE_TOPIC";
   private static final int PARTITION = 0;
-  private static final Stream stream = new MemStream(List.of(new StreamConfig(topic, 1, Integer.MAX_VALUE)));
+  private static final Stream stream = new MemStream(List.of(new MemStreamConfig(topic, 1, Integer.MAX_VALUE)));
 
   @Test
   @Order(0)

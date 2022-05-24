@@ -18,10 +18,10 @@ public final class MemStream implements Stream {
   private final Map<String, List<Many<Msg>>> topicStream;
   private final Map<String, List<AtomicLong>> topicSize;
 
-  public MemStream(List<StreamConfig> streamConfigs) {
+  public MemStream(List<MemStreamConfig> memStreamConfigs) {
     this.topicStream = new HashMap<>();
     this.topicSize = new HashMap<>();
-    streamConfigs.forEach(s -> setup(s.name(), s.partitions(), s.history()));
+    memStreamConfigs.forEach(s -> setup(s.name(), s.partitions(), s.history()));
   }
 
   @Override
