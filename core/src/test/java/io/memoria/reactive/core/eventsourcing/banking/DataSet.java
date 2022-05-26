@@ -21,10 +21,6 @@ class DataSet {
     return Flux.fromIterable(createAccounts.appendAll(changes));
   }
 
-  private static List<ChangeName> changeName(int nAccounts) {
-    return List.range(0, nAccounts).map(i -> new ChangeName(createId(i), CommandId.randomUUID(), createNewName(i)));
-  }
-
   static StateId createId(int i) {
     return StateId.of("acc_id_" + i);
   }
@@ -51,6 +47,10 @@ class DataSet {
     var to = accounts.subSequence(nAccounts / 2, nAccounts);
     var amounts = List.ofAll(new Random().ints(nAccounts, 1, maxAmount).boxed());
     return List.range(0, nAccounts / 2).map(i -> createOutboundBalance(from.get(i), to.get(i), amounts.get(i)));
+  }
+
+  private static List<ChangeName> changeName(int nAccounts) {
+    return List.range(0, nAccounts).map(i -> new ChangeName(createId(i), CommandId.randomUUID(), createNewName(i)));
   }
 
   private static AccountCommand createOutboundBalance(StateId from, StateId to, int amount) {

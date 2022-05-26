@@ -24,13 +24,13 @@ import io.memoria.reactive.core.stream.mem.MemStream;
 import io.memoria.reactive.core.stream.mem.MemStreamConfig;
 import io.memoria.reactive.core.text.SerializableTransformer;
 import io.memoria.reactive.core.text.TextTransformer;
-import io.vavr.collection.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
+import java.util.Set;
 import java.util.UUID;
 
 class SagaPipelineTest {
@@ -52,7 +52,7 @@ class SagaPipelineTest {
     // Infra
     var cmdTp = new MemStreamConfig(route.commandTopic(), route.totalPartitions(), Integer.MAX_VALUE);
     var eventTp = new MemStreamConfig(route.eventTopic(), route.totalPartitions(), Integer.MAX_VALUE);
-    stream = new MemStream(List.of(cmdTp, eventTp).toJavaList());
+    stream = new MemStream(Set.of(cmdTp, eventTp));
     // Pipeline
 
     statePipeline = new StatePipeline<>(stateDomain(), stream, transformer, route, LogConfig.FINE);

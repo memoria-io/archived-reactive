@@ -22,6 +22,7 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
+import java.util.Set;
 import java.util.UUID;
 
 class ShardingPipelineTest {
@@ -40,7 +41,7 @@ class ShardingPipelineTest {
 
   ShardingPipelineTest() {
     // Infra
-    stream = new MemStream(List.of(cmdTp, oldEventTopic, newEventTopic).toJavaList());
+    stream = new MemStream(Set.of(cmdTp, oldEventTopic, newEventTopic));
     // Pipelines
     oldPipelines = List.range(0, prevPartitions).map(this::simpleRoute).map(this::createPipeline);
     newPipelines = List.range(0, totalPartitions).map(this::shardedRoute).map(this::createPipeline);
