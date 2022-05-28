@@ -6,13 +6,13 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jbom</artifactId>
-        <version>20.2.0</version>
+        <version>2022.18.2</version>
     </parent>
 
     <!--suppress MavenRedundantGroupId -->
     <groupId>io.memoria</groupId>
     <artifactId>reactive</artifactId>
-    <version>0.373.0</version>
+    <version>2022.18.1</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}.${project.artifactId}</name>
@@ -31,8 +31,6 @@
     </modules>
 
     <properties>
-        <maven.compiler.source>18</maven.compiler.source>
-        <maven.compiler.target>18</maven.compiler.target>
         <reactor.version>2020.0.19</reactor.version>
         <vavr.version>0.10.4</vavr.version>
         <vavr-jackson.version>0.10.3</vavr-jackson.version>
@@ -148,18 +146,4 @@
         <!--======================================================================================== -->
 
     </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>18</source>
-                    <target>18</target>
-                    <compilerArgs>--enable-preview</compilerArgs>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
