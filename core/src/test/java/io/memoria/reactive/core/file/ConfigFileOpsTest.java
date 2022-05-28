@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 class ConfigFileOpsTest {
   private static final String TEST_DIR = "file/configFileOps/";
-  private static final ConfigFileOps configOps = new ConfigFileOps("#{include}:", true);
+  private static final ConfigFileOps configOps = new ConfigFileOps("#include:", true);
 
   @ParameterizedTest
   @MethodSource("paths")

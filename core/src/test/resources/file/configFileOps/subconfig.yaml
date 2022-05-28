@@ -1,2 +1,2 @@
 age: 20
-#{include}: subSubConfig.yaml
+#include: subSubConfig.yaml
