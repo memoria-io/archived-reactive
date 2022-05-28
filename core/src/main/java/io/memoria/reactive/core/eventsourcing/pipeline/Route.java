@@ -1,6 +1,7 @@
 package io.memoria.reactive.core.eventsourcing.pipeline;
 
 import io.memoria.reactive.core.stream.StreamConfig;
+import io.vavr.collection.List;
 
 public record Route(String commandTopic,
                     int partition,
@@ -20,11 +21,11 @@ public record Route(String commandTopic,
     }
   }
 
-  public StreamConfig prevEventConfig() {
+  public StreamConfig oldEventConfig() {
     return new StreamConfig(oldEventTopic, oldPartitions);
   }
 
-  public StreamConfig eventConfig() {
+  public StreamConfig newEventConfig() {
     return new StreamConfig(newEventTopic, newPartitions);
   }
 
@@ -32,7 +33,7 @@ public record Route(String commandTopic,
     return new StreamConfig(commandTopic, newPartitions);
   }
 
-  public StreamConfig[] streamConfigs() {
-    return new StreamConfig[]{prevEventConfig(), eventConfig(), commandConfig()};
+  public List<StreamConfig> streamConfigList() {
+    return List.of(commandConfig(), oldEventConfig(), newEventConfig());
   }
 }

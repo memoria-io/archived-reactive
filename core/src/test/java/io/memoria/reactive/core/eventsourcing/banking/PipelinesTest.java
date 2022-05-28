@@ -42,8 +42,8 @@ class PipelinesTest {
     var oldRoutes = List.range(0, oldPartitions).map(PipelinesTest::odlRoute0);
     var newRoutes = List.range(0, newPartitions).map(PipelinesTest::route1);
     stream = new MemStream(newRoutes.get().commandConfig().withHistory(100),
-                           newRoutes.get().prevEventConfig(),
-                           newRoutes.get().eventConfig());
+                           newRoutes.get().oldEventConfig(),
+                           newRoutes.get().newEventConfig());
     oldPipeline = oldRoutes.map(this::createPipeline);
     pipeline1 = newRoutes.map(this::createPipeline);
   }

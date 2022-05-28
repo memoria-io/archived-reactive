@@ -20,6 +20,10 @@ public final class MemStream implements Stream {
   private final Map<String, List<AtomicLong>> topicSize;
 
   public MemStream(StreamConfig... streamConfigs) {
+    this(io.vavr.collection.List.of(streamConfigs));
+  }
+
+  public MemStream(io.vavr.collection.List<StreamConfig> streamConfigs) {
     this.topicStream = new HashMap<>();
     this.topicSize = new HashMap<>();
     for (StreamConfig s : streamConfigs) {
