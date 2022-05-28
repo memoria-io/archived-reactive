@@ -21,7 +21,6 @@ import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
 import io.memoria.reactive.core.stream.mem.MemStream;
-import io.memoria.reactive.core.stream.mem.MemStreamConfig;
 import io.memoria.reactive.core.text.SerializableTransformer;
 import io.memoria.reactive.core.text.TextTransformer;
 import org.junit.jupiter.api.Assertions;
@@ -30,7 +29,6 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
-import java.util.Set;
 import java.util.UUID;
 
 class SagaPipelineTest {
@@ -39,7 +37,7 @@ class SagaPipelineTest {
 
   private static final String commandTopic = "commandTopic";
   private static final String oldEventTopic = "oldEventTopic";
-  private static final String eventTopic = "eventTopic";
+  private static final String newEventTopic = "newEventTopic";
 
   private final Route route;
   private final Stream stream;
@@ -47,14 +45,8 @@ class SagaPipelineTest {
   private final SagaPipeline<AccountEvent, AccountCommand> sagaPipeline;
 
   SagaPipelineTest() {
-    // Configs
-    route = new Route(oldEventTopic, 0, commandTopic, eventTopic, 0, 1);
-    // Infra
-    var cmdTp = new MemStreamConfig(route.commandTopic(), route.totalPartitions(), Integer.MAX_VALUE);
-    var eventTp = new MemStreamConfig(route.eventTopic(), route.totalPartitions(), Integer.MAX_VALUE);
-    stream = new MemStream(Set.of(cmdTp, eventTp));
-    // Pipeline
-
+    route = new Route(commandTopic, 0, oldEventTopic, 1, newEventTopic, 1);
+    stream = new MemStream(route.streamConfigs());
     statePipeline = new StatePipeline<>(stateDomain(), stream, transformer, route, LogConfig.FINE);
     sagaPipeline = new SagaPipeline<>(sagaDomain(), stream, transformer, route, LogConfig.FINE);
   }

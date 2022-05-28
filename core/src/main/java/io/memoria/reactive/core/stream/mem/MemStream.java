@@ -2,6 +2,7 @@ package io.memoria.reactive.core.stream.mem;
 
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
+import io.memoria.reactive.core.stream.StreamConfig;
 import io.vavr.control.Option;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -11,7 +12,6 @@ import reactor.core.publisher.Sinks.Many;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 
@@ -19,10 +19,12 @@ public final class MemStream implements Stream {
   private final Map<String, List<Many<Msg>>> topicStream;
   private final Map<String, List<AtomicLong>> topicSize;
 
-  public MemStream(Set<MemStreamConfig> memStreamConfigs) {
+  public MemStream(StreamConfig... streamConfigs) {
     this.topicStream = new HashMap<>();
     this.topicSize = new HashMap<>();
-    memStreamConfigs.forEach(s -> setup(s.name(), s.partitions(), s.history()));
+    for (StreamConfig s : streamConfigs) {
+      setup(s.name(), s.totalPartitions(), s.history());
+    }
   }
 
   @Override

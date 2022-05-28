@@ -13,7 +13,6 @@ import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
 import io.memoria.reactive.core.stream.mem.MemStream;
-import io.memoria.reactive.core.stream.mem.MemStreamConfig;
 import io.memoria.reactive.core.text.SerializableTransformer;
 import io.memoria.reactive.core.text.TextTransformer;
 import io.vavr.collection.List;
@@ -22,29 +21,31 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
-import java.util.Set;
 import java.util.UUID;
 
-class ShardingPipelineTest {
+class PipelinesTest {
   private static final TextTransformer transformer = new SerializableTransformer();
   private static final Duration timeout = Duration.ofMillis(300);
-  // topics config, with ephemeral command topic
-  private static final MemStreamConfig cmdTp = new MemStreamConfig("commandsTopic", 100, 2);
-  private static final MemStreamConfig oldEventTopic = new MemStreamConfig("oldEventTopic", 100, 100);
-  private static final MemStreamConfig newEventTopic = new MemStreamConfig("newEventTopic", 100, 100);
-  private static final int prevPartitions = 3;
-  private static final int totalPartitions = 5;
+  // pipeline sharding
+  private static final int oldPartitions = 3;
+  private static final int newPartitions = 5;
+  private static final String commandTopic = "commandTopic";
+  private static final String oldEventTopic = "oldEventTopic";
+  public static final String newEventTopic = "newEventTopic";
   // Pipelines
   private final Stream stream;
-  private final List<StatePipeline<Account, AccountCommand, AccountEvent>> oldPipelines;
-  private final List<StatePipeline<Account, AccountCommand, AccountEvent>> newPipelines;
+  private final List<StatePipeline<Account, AccountCommand, AccountEvent>> oldPipeline;
+  private final List<StatePipeline<Account, AccountCommand, AccountEvent>> pipeline1;
 
-  ShardingPipelineTest() {
-    // Infra
-    stream = new MemStream(Set.of(cmdTp, oldEventTopic, newEventTopic));
+  PipelinesTest() {
     // Pipelines
-    oldPipelines = List.range(0, prevPartitions).map(this::simpleRoute).map(this::createPipeline);
-    newPipelines = List.range(0, totalPartitions).map(this::shardedRoute).map(this::createPipeline);
+    var oldRoutes = List.range(0, oldPartitions).map(PipelinesTest::odlRoute0);
+    var newRoutes = List.range(0, newPartitions).map(PipelinesTest::route1);
+    stream = new MemStream(newRoutes.get().commandConfig().withHistory(100),
+                           newRoutes.get().prevEventConfig(),
+                           newRoutes.get().eventConfig());
+    oldPipeline = oldRoutes.map(this::createPipeline);
+    pipeline1 = newRoutes.map(this::createPipeline);
   }
 
   @Test
@@ -55,24 +56,19 @@ class ShardingPipelineTest {
     int eventCount = personsCount + (personsCount * nameChanges);
 
     // When simple pipeline is activated
-    stream.publish(DataSet.scenario(personsCount, nameChanges).map(ShardingPipelineTest::toMsg))
-          .delaySubscription(Duration.ofMillis(100))
-          .subscribe();
-    StepVerifier.create(Flux.merge(oldPipelines.map(StatePipeline::run)))
-                .expectNextCount(eventCount)
-                .verifyTimeout(timeout);
+    runOldPipeline(personsCount, nameChanges, eventCount);
 
-    // Then events are published to old pipeline topic, with number of partitions = prevPartitions  
-    var oldEvents = Flux.range(0, prevPartitions).flatMap(i -> accountCreatedStream(oldEventTopic.name(), i));
+    // Then events are published to old pipeline topic, with number of totalPartitions = prevPartitions
+    var oldEvents = Flux.range(0, oldPartitions).flatMap(i -> accountCreatedStream(oldEventTopic, i));
     StepVerifier.create(oldEvents).expectNextCount(eventCount).verifyTimeout(timeout);
 
     // And When
-    StepVerifier.create(Flux.merge(newPipelines.map(StatePipeline::run)))
+    StepVerifier.create(Flux.merge(pipeline1.map(StatePipeline::run)))
                 .expectNextCount(eventCount)
                 .verifyTimeout(timeout);
 
-    // Then events are published to the new pipeline topic, with number of partitions = totalPartitions, 
-    var newEvents = Flux.range(0, totalPartitions).flatMap(i -> accountCreatedStream(newEventTopic.name(), i));
+    // Then events are published to the new pipeline topic, with number of totalPartitions = totalPartitions,
+    var newEvents = Flux.range(0, newPartitions).flatMap(i -> accountCreatedStream(newEventTopic, i));
     StepVerifier.create(newEvents).expectNextCount(eventCount).verifyTimeout(timeout);
   }
 
@@ -84,41 +80,32 @@ class ShardingPipelineTest {
     int eventCount = personsCount + (personsCount * nameChanges);
 
     // When simple pipeline is activated
-    stream.publish(DataSet.scenario(personsCount, nameChanges).map(ShardingPipelineTest::toMsg))
-          .delaySubscription(Duration.ofMillis(100))
-          .subscribe();
-    StepVerifier.create(Flux.merge(oldPipelines.map(StatePipeline::run)))
-                .expectNextCount(eventCount)
-                .verifyTimeout(timeout);
+    runOldPipeline(personsCount, nameChanges, eventCount);
 
-    // Then events are published to old pipeline topic, with number of partitions = prevPartitions  
-    var oldEvents = Flux.range(0, prevPartitions).flatMap(i -> accountCreatedStream(oldEventTopic.name(), i));
+    // Then events are published to old pipeline topic, with number of totalPartitions = prevPartitions
+    var oldEvents = Flux.range(0, oldPartitions).flatMap(i -> accountCreatedStream(oldEventTopic, i));
     StepVerifier.create(oldEvents).expectNextCount(eventCount).verifyTimeout(timeout);
 
     // And When new pipelines are run with reduction
-    StepVerifier.create(Flux.merge(newPipelines.map(StatePipeline::runReduced)))
+    StepVerifier.create(Flux.merge(pipeline1.map(StatePipeline::runReduced)))
                 .expectNextCount(personsCount)
                 .verifyTimeout(timeout);
 
     /*
-     * Then events are published to the new pipeline topic, with number of partitions = totalPartitions,
+     * Then events are published to the new pipeline topic, with number of totalPartitions = totalPartitions,
      * and only one event per user
      */
-    var newEvents = Flux.range(0, totalPartitions).flatMap(i -> accountCreatedStream(newEventTopic.name(), i));
+    var newEvents = Flux.range(0, newPartitions).flatMap(i -> accountCreatedStream(newEventTopic, i));
     StepVerifier.create(newEvents).expectNextCount(personsCount).verifyTimeout(timeout);
   }
 
-  private Route shardedRoute(int partition) {
-    return new Route(oldEventTopic.name(),
-                     prevPartitions,
-                     cmdTp.name(),
-                     newEventTopic.name(),
-                     partition,
-                     totalPartitions);
-  }
-
-  private Route simpleRoute(int partition) {
-    return new Route(cmdTp.name(), oldEventTopic.name(), partition, prevPartitions);
+  private void runOldPipeline(int personsCount, int nameChanges, int eventCount) {
+    stream.publish(DataSet.scenario(personsCount, nameChanges).map(PipelinesTest::toMsg))
+          .delaySubscription(Duration.ofMillis(100))
+          .subscribe();
+    StepVerifier.create(Flux.merge(oldPipeline.map(StatePipeline::run)))
+                .expectNextCount(eventCount)
+                .verifyTimeout(timeout);
   }
 
   private StatePipeline<Account, AccountCommand, AccountEvent> createPipeline(Route route) {
@@ -140,8 +127,16 @@ class ShardingPipelineTest {
     //                 .doOnNext(e -> System.out.printf("p(%d)-%s%n", i, e));
   }
 
+  private static Route odlRoute0(int partition) {
+    return new Route(commandTopic, partition, "dummy", 0, oldEventTopic, oldPartitions);
+  }
+
+  private static Route route1(int partition) {
+    return new Route(commandTopic, partition, oldEventTopic, oldPartitions, newEventTopic, newPartitions);
+  }
+
   private static Msg toMsg(Command command) {
     var body = transformer.blockingSerialize(command).get();
-    return new Msg(cmdTp.name(), command.partition(prevPartitions), Id.of(UUID.randomUUID()), body);
+    return new Msg(commandTopic, command.partition(oldPartitions), Id.of(UUID.randomUUID()), body);
   }
 }

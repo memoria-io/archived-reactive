@@ -3,6 +3,7 @@ package io.memoria.reactive.core.stream.mem;
 import io.memoria.reactive.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
+import io.memoria.reactive.core.stream.StreamConfig;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,6 @@ import reactor.test.StepVerifier;
 
 import java.time.Duration;
 import java.util.Objects;
-import java.util.Set;
 
 @TestMethodOrder(OrderAnnotation.class)
 class MemStreamTest {
@@ -20,7 +20,7 @@ class MemStreamTest {
   private static final int DOUBLE_ELEMENTS = 2 * ELEMENTS_SIZE;
   private static final String topic = "NODE_TOPIC";
   private static final int PARTITION = 0;
-  private static final Stream stream = new MemStream(Set.of(new MemStreamConfig(topic, 1, Integer.MAX_VALUE)));
+  private static final Stream stream = new MemStream(new StreamConfig(topic, 1, Integer.MAX_VALUE));
 
   @Test
   @Order(0)

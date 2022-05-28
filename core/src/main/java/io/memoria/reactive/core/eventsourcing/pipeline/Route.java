@@ -1,26 +1,38 @@
 package io.memoria.reactive.core.eventsourcing.pipeline;
 
-public record Route(String prevEventTopic,
-                    int prevPartitions,
-                    String commandTopic,
-                    String eventTopic,
+import io.memoria.reactive.core.stream.StreamConfig;
+
+public record Route(String commandTopic,
                     int partition,
-                    int totalPartitions) {
-  public static final String EMPTY_TOPIC = "EMTPY_EVENT";
-
-  public Route(String commandTopic, String eventTopic, int partition, int totalPartitions) {
-    this(EMPTY_TOPIC, 0, commandTopic, eventTopic, partition, totalPartitions);
-  }
-
+                    String oldEventTopic,
+                    int oldPartitions,
+                    String newEventTopic,
+                    int newPartitions) {
   public Route {
-    if (commandTopic == null || commandTopic.isEmpty() || eventTopic == null || eventTopic.isEmpty()) {
+    if (commandTopic == null || commandTopic.isEmpty() || newEventTopic == null || newEventTopic.isEmpty()) {
       throw new IllegalArgumentException("Topic is null or empty");
     }
     if (partition < 0) {
-      throw new IllegalArgumentException("Partition number %d is less than 0".formatted(totalPartitions));
+      throw new IllegalArgumentException("Partition number %d is less than 0".formatted(newPartitions));
     }
-    if (totalPartitions < 1) {
-      throw new IllegalArgumentException("Total number of partitions %d is less than 1".formatted(totalPartitions));
+    if (newPartitions < 1) {
+      throw new IllegalArgumentException("Total number of totalPartitions %d is less than 1".formatted(newPartitions));
     }
+  }
+
+  public StreamConfig prevEventConfig() {
+    return new StreamConfig(oldEventTopic, oldPartitions);
+  }
+
+  public StreamConfig eventConfig() {
+    return new StreamConfig(newEventTopic, newPartitions);
+  }
+
+  public StreamConfig commandConfig() {
+    return new StreamConfig(commandTopic, newPartitions);
+  }
+
+  public StreamConfig[] streamConfigs() {
+    return new StreamConfig[]{prevEventConfig(), eventConfig(), commandConfig()};
   }
 }

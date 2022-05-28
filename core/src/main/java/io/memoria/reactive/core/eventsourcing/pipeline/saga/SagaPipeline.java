@@ -51,7 +51,7 @@ public class SagaPipeline<E extends Event, C extends Command> {
 
   public Mono<Msg> toMsg(C command) {
     return transformer.serialize(command).map(body -> {
-      var partition = command.partition(route.totalPartitions());
+      var partition = command.partition(route.newPartitions());
       return new Msg(route.commandTopic(), partition, command.commandId(), body);
     });
   }
@@ -61,7 +61,7 @@ public class SagaPipeline<E extends Event, C extends Command> {
   }
 
   private Flux<E> streamEvents() {
-    return stream.subscribe(route.eventTopic(), route.partition(), 0).concatMap(this::toEvent);
+    return stream.subscribe(route.newEventTopic(), route.partition(), 0).concatMap(this::toEvent);
   }
 
   private Flux<C> publishCommands(Flux<C> commands) {

@@ -64,7 +64,7 @@ public class StatePipeline<S extends State, C extends Command, E extends Event> 
   }
 
   public Flux<E> run() {
-    var readCurrentSink = read(route.eventTopic(), route.partition()).doOnNext(this::evolveState);
+    var readCurrentSink = read(route.newEventTopic(), route.partition()).doOnNext(this::evolveState);
     var pubOldSinkEvents = publishEvents(readOldSink()).doOnNext(this::evolveState);
     var pubCmdEvents = publishEvents(handleNewCommands()).doOnNext(this::evolveState);
     return readCurrentSink.concatWith(pubOldSinkEvents).concatWith(pubCmdEvents);
@@ -86,7 +86,7 @@ public class StatePipeline<S extends State, C extends Command, E extends Event> 
 
   public Mono<Msg> toMsg(Event event) {
     return transformer.serialize(event)
-                      .map(body -> new Msg(route.eventTopic(), route.partition(), event.eventId(), body));
+                      .map(body -> new Msg(route.newEventTopic(), route.partition(), event.eventId(), body));
   }
 
   public Mono<C> toCommand(Msg msg) {
@@ -94,8 +94,8 @@ public class StatePipeline<S extends State, C extends Command, E extends Event> 
   }
 
   private Flux<E> reducedEvents() {
-    var compacted = read(route.eventTopic(), route.partition()).doOnNext(this::evolveState)
-                                                               .doOnNext(e -> reducedStates.add(e.stateId()));
+    var compacted = read(route.newEventTopic(), route.partition()).doOnNext(this::evolveState)
+                                                                  .doOnNext(e -> reducedStates.add(e.stateId()));
     var nonCompacted = readOldSink().filter(e -> !reducedStates.contains(e.stateId())).doOnNext(this::evolveState);
     var compactNonCom = Flux.fromIterable(this.stateRepo.entrySet())
                             .filter(e -> !reducedStates.contains(e.getKey()))
@@ -127,9 +127,9 @@ public class StatePipeline<S extends State, C extends Command, E extends Event> 
   }
 
   private Flux<E> readOldSink() {
-    return readAll(route.prevEventTopic(), route.prevPartitions()).filter(this::isEligible)
-                                                                  .sequential()
-                                                                  .publishOn(Schedulers.single());
+    return readAll(route.oldEventTopic(), route.oldPartitions()).filter(this::isEligible)
+                                                                .sequential()
+                                                                .publishOn(Schedulers.single());
   }
 
   private Flux<E> handleNewCommands() {
@@ -160,15 +160,15 @@ public class StatePipeline<S extends State, C extends Command, E extends Event> 
   }
 
   private Msg rerouteCommand(C cmd, String body) {
-    return new Msg(route.commandTopic(), cmd.partition(route.totalPartitions()), cmd.commandId(), body);
+    return new Msg(route.commandTopic(), cmd.partition(route.newPartitions()), cmd.commandId(), body);
   }
 
   private boolean isEligible(C cmd) {
-    return cmd.isInPartition(route.partition(), route.totalPartitions());
+    return cmd.isInPartition(route.partition(), route.newPartitions());
   }
 
   private boolean isEligible(E e) {
-    return e.isInPartition(route.partition(), route.totalPartitions()) && !processedEvents.contains(e.eventId());
+    return e.isInPartition(route.partition(), route.newPartitions()) && !processedEvents.contains(e.eventId());
   }
 
   private Try<E> decide(C cmd) {
