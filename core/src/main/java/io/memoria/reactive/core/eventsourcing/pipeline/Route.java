@@ -33,7 +33,7 @@ public record Route(String commandTopic,
     return new StreamConfig(commandTopic, newPartitions);
   }
 
-  public List<StreamConfig> streamConfigList() {
+  public List<StreamConfig> streamConfigs() {
     return List.of(commandConfig(), oldEventConfig(), newEventConfig());
   }
 }

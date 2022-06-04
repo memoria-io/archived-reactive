@@ -56,7 +56,7 @@ from [Vavr](https://www.vavr.io/).
 
 ## Release notes
 
-* Reactive is using `minor` (as in semantic versioning) as a major until first version is released
+* Current versioning  `YEAR.JDK.BREAKING_CHANGES.NON_BREAKING`
 
 ## Usage
 
@@ -67,24 +67,26 @@ All modules depend on Core. There are currently no other inter-dependencies betw
 
 ```xml
 
-<properties>
-    <reactive.version>...</reactive.version>
-</properties>
+<project>
+    <properties>
+        <reactive.version>...</reactive.version>
+    </properties>
 
-<dependencies>
-<dependency>
-    <groupId>io.memoria.reactive</groupId>
-    <artifactId>core</artifactId>
-    <version>${reactive.version}</version>
-</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>io.memoria.reactive</groupId>
+            <artifactId>core</artifactId>
+            <version>${reactive.version}</version>
+        </dependency>
 
-<dependency>
-    <!-- replace module_name with your preferred module -->
-    <groupId>io.memoria.reactive</groupId>
-    <artifactId>module_name</artifactId>
-    <version>${reactive.version}</version>
-</dependency>
-</dependencies>
+        <dependency>
+            <!-- replace module_name with your preferred module -->
+            <groupId>io.memoria.reactive</groupId>
+            <artifactId>module_name</artifactId>
+            <version>${reactive.version}</version>
+        </dependency>
+    </dependencies>
+</project>
 ```
 
 ## Contribution

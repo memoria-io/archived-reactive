@@ -46,7 +46,7 @@ class SagaPipelineTest {
 
   SagaPipelineTest() {
     route = new Route(commandTopic, 0, oldEventTopic, 1, newEventTopic, 1);
-    stream = new MemStream(route.streamConfigList());
+    stream = new MemStream(route.streamConfigs());
     statePipeline = new StatePipeline<>(stateDomain(), stream, transformer, route, LogConfig.FINE);
     sagaPipeline = new SagaPipeline<>(sagaDomain(), stream, transformer, route, LogConfig.FINE);
   }
