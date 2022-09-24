@@ -6,13 +6,13 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jbom</artifactId>
-        <version>2022.19.0</version>
+        <version>2022.19.1</version>
     </parent>
 
     <!--suppress MavenRedundantGroupId -->
     <groupId>io.memoria</groupId>
     <artifactId>reactive</artifactId>
-    <version>2022.19.0</version>
+    <version>2022.19.1</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}.${project.artifactId}</name>
@@ -31,7 +31,7 @@
     </modules>
 
     <properties>
-        <reactor.version>2020.0.19</reactor.version>
+        <reactor.version>2020.0.23</reactor.version>
         <vavr.version>0.10.4</vavr.version>
         <vavr-jackson.version>0.10.3</vavr-jackson.version>
         <jsonwebtoken.version>0.11.5</jsonwebtoken.version>
@@ -90,7 +90,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.13.3</version>
+                <version>2.13.4</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
