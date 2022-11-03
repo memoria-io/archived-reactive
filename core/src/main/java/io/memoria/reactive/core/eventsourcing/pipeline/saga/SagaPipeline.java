@@ -1,17 +1,19 @@
 package io.memoria.reactive.core.eventsourcing.pipeline.saga;
 
+import io.memoria.atom.core.text.TextTransformer;
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.Event;
 import io.memoria.reactive.core.eventsourcing.pipeline.LogConfig;
 import io.memoria.reactive.core.eventsourcing.pipeline.Route;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
-import io.memoria.reactive.core.text.TextTransformer;
 import io.memoria.reactive.core.vavr.ReactorVavrUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.Logger;
 import reactor.util.Loggers;
+
+import static io.memoria.reactive.core.vavr.ReactorVavrUtils.toMono;
 
 @SuppressWarnings("ClassCanBeRecord")
 public class SagaPipeline<E extends Event, C extends Command> {
@@ -46,18 +48,18 @@ public class SagaPipeline<E extends Event, C extends Command> {
   }
 
   public Mono<E> toEvent(Msg msg) {
-    return transformer.deserialize(msg.value(), sagaDomain.eventClass());
+    return toMono(transformer.deserialize(msg.value(), sagaDomain.eventClass()));
   }
 
   public Mono<Msg> toMsg(C command) {
-    return transformer.serialize(command).map(body -> {
+    return toMono(transformer.serialize(command)).map(body -> {
       var partition = command.partition(route.newPartitions());
       return new Msg(route.commandTopic(), partition, command.commandId(), body);
     });
   }
 
   public Mono<C> toCommand(Msg msg) {
-    return transformer.deserialize(msg.value(), sagaDomain.commandClass());
+    return toMono(transformer.deserialize(msg.value(), sagaDomain.commandClass()));
   }
 
   private Flux<E> streamEvents() {

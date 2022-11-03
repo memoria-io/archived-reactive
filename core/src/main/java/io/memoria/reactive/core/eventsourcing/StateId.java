@@ -1,6 +1,6 @@
 package io.memoria.reactive.core.eventsourcing;
 
-import io.memoria.reactive.core.id.Id;
+import io.memoria.atom.core.id.Id;
 
 import java.util.UUID;
 

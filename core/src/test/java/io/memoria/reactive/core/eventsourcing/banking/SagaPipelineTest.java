@@ -1,5 +1,7 @@
 package io.memoria.reactive.core.eventsourcing.banking;
 
+import io.memoria.atom.core.text.SerializableTransformer;
+import io.memoria.atom.core.text.TextTransformer;
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.StateId;
 import io.memoria.reactive.core.eventsourcing.banking.command.AccountCommand;
@@ -17,12 +19,10 @@ import io.memoria.reactive.core.eventsourcing.pipeline.saga.SagaDomain;
 import io.memoria.reactive.core.eventsourcing.pipeline.saga.SagaPipeline;
 import io.memoria.reactive.core.eventsourcing.pipeline.state.StateDomain;
 import io.memoria.reactive.core.eventsourcing.pipeline.state.StatePipeline;
-import io.memoria.reactive.core.id.Id;
+import io.memoria.atom.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
 import io.memoria.reactive.core.stream.mem.MemStream;
-import io.memoria.reactive.core.text.SerializableTransformer;
-import io.memoria.reactive.core.text.TextTransformer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -110,7 +110,7 @@ class SagaPipelineTest {
   }
 
   private Msg toMsg(Command command) {
-    var body = transformer.blockingSerialize(command).get();
+    var body = transformer.serialize(command).get();
     return new Msg(route.commandTopic(), route.partition(), Id.of(UUID.randomUUID()), body);
   }
 }

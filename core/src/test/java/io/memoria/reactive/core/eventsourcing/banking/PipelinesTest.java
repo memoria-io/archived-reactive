@@ -1,5 +1,7 @@
 package io.memoria.reactive.core.eventsourcing.banking;
 
+import io.memoria.atom.core.text.SerializableTransformer;
+import io.memoria.atom.core.text.TextTransformer;
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.banking.command.AccountCommand;
 import io.memoria.reactive.core.eventsourcing.banking.event.AccountEvent;
@@ -9,12 +11,10 @@ import io.memoria.reactive.core.eventsourcing.pipeline.LogConfig;
 import io.memoria.reactive.core.eventsourcing.pipeline.Route;
 import io.memoria.reactive.core.eventsourcing.pipeline.state.StateDomain;
 import io.memoria.reactive.core.eventsourcing.pipeline.state.StatePipeline;
-import io.memoria.reactive.core.id.Id;
+import io.memoria.atom.core.id.Id;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
 import io.memoria.reactive.core.stream.mem.MemStream;
-import io.memoria.reactive.core.text.SerializableTransformer;
-import io.memoria.reactive.core.text.TextTransformer;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -22,6 +22,8 @@ import reactor.test.StepVerifier;
 
 import java.time.Duration;
 import java.util.UUID;
+
+import static io.memoria.reactive.core.vavr.ReactorVavrUtils.toMono;
 
 class PipelinesTest {
   private static final TextTransformer transformer = new SerializableTransformer();
@@ -123,7 +125,7 @@ class PipelinesTest {
   }
 
   private Flux<AccountEvent> accountCreatedStream(String topic, int i) {
-    return stream.subscribe(topic, i, 0).concatMap(msg -> transformer.deserialize(msg.value(), AccountEvent.class));
+    return stream.subscribe(topic, i, 0).concatMap(msg -> toMono(transformer.deserialize(msg.value(), AccountEvent.class)));
     //                 .doOnNext(e -> System.out.printf("p(%d)-%s%n", i, e));
   }
 
@@ -136,7 +138,7 @@ class PipelinesTest {
   }
 
   private static Msg toMsg(Command command) {
-    var body = transformer.blockingSerialize(command).get();
+    var body = transformer.serialize(command).get();
     return new Msg(commandTopic, command.partition(oldPartitions), Id.of(UUID.randomUUID()), body);
   }
 }

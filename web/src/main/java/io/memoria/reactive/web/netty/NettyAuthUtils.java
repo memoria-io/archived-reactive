@@ -1,6 +1,6 @@
 package io.memoria.reactive.web.netty;
 
-import io.memoria.reactive.web.http.HttpUtils;
+import io.memoria.atom.web.http.HttpUtils;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.vavr.Tuple2;

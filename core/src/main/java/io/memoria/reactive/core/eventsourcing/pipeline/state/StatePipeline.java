@@ -1,5 +1,6 @@
 package io.memoria.reactive.core.eventsourcing.pipeline.state;
 
+import io.memoria.atom.core.text.TextTransformer;
 import io.memoria.reactive.core.eventsourcing.Command;
 import io.memoria.reactive.core.eventsourcing.CommandId;
 import io.memoria.reactive.core.eventsourcing.Event;
@@ -10,7 +11,6 @@ import io.memoria.reactive.core.eventsourcing.pipeline.LogConfig;
 import io.memoria.reactive.core.eventsourcing.pipeline.Route;
 import io.memoria.reactive.core.stream.Msg;
 import io.memoria.reactive.core.stream.Stream;
-import io.memoria.reactive.core.text.TextTransformer;
 import io.memoria.reactive.core.vavr.ReactorVavrUtils;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static io.memoria.reactive.core.vavr.ReactorVavrUtils.toMono;
 
 public class StatePipeline<S extends State, C extends Command, E extends Event> {
   private static final Logger LOGGER = Loggers.getLogger(StatePipeline.class.getName());
@@ -77,7 +79,7 @@ public class StatePipeline<S extends State, C extends Command, E extends Event> 
   }
 
   public Mono<E> toEvent(Msg msg) {
-    return transformer.deserialize(msg.value(), stateDomain.eventClass());
+    return toMono(transformer.deserialize(msg.value(), stateDomain.eventClass()));
   }
 
   public S stateOrInit(StateId stateId) {
@@ -85,12 +87,12 @@ public class StatePipeline<S extends State, C extends Command, E extends Event> 
   }
 
   public Mono<Msg> toMsg(Event event) {
-    return transformer.serialize(event)
+    return toMono(transformer.serialize(event))
                       .map(body -> new Msg(route.newEventTopic(), route.partition(), event.eventId(), body));
   }
 
   public Mono<C> toCommand(Msg msg) {
-    return transformer.deserialize(msg.value(), stateDomain.commandClass());
+    return toMono(transformer.deserialize(msg.value(), stateDomain.commandClass()));
   }
 
   private Flux<E> reducedEvents() {
@@ -155,7 +157,8 @@ public class StatePipeline<S extends State, C extends Command, E extends Event> 
       return Flux.just(cmd);
     } else {
       var msg = transformer.serialize(cmd).map(body -> rerouteCommand(cmd, body));
-      return stream.publish(msg.flux()).thenMany(Flux.just(cmd));
+      var msgMono = toMono(msg);
+      return stream.publish(msgMono.flux()).thenMany(Flux.just(cmd));
     }
   }
 
