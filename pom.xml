@@ -31,9 +31,6 @@
     <properties>
         <atom.version>2022.19.5</atom.version>
         <reactor.version>2020.0.23</reactor.version>
-        <vavr.version>0.10.4</vavr.version>
-        <vavr-jackson.version>0.10.3</vavr-jackson.version>
-        <jsonwebtoken.version>0.11.5</jsonwebtoken.version>
     </properties>
 
     <distributionManagement>
@@ -73,16 +70,6 @@
                 <scope>import</scope>
             </dependency>
 
-            <dependency>
-                <groupId>io.vavr</groupId>
-                <artifactId>vavr</artifactId>
-                <version>${vavr.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.vavr</groupId>
-                <artifactId>vavr-jackson</artifactId>
-                <version>${vavr-jackson.version}</version>
-            </dependency>
             <!--======================================================================================== -->
             <!-- Json Dependencies -->
             <!--======================================================================================== -->
@@ -142,13 +129,6 @@
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <!--======================================================================================== -->
-        <!-- Functional Dependencies -->
-        <!--======================================================================================== -->
-        <dependency>
-            <groupId>io.vavr</groupId>
-            <artifactId>vavr</artifactId>
         </dependency>
     </dependencies>
 </project>
