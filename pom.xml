@@ -12,7 +12,7 @@
     <!--suppress MavenRedundantGroupId -->
     <groupId>io.memoria</groupId>
     <artifactId>reactive</artifactId>
-    <version>2022.19.3</version>
+    <version>2022.19.4</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}.${project.artifactId}</name>
@@ -26,6 +26,7 @@
     <modules>
         <module>core</module>
         <module>web</module>
+        <module>eventsourcing</module>
     </modules>
 
     <properties>

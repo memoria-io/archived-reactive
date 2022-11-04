@@ -9,10 +9,20 @@
         <version>2022.19.4</version>
     </parent>
     <groupId>io.memoria.reactive</groupId>
-    <artifactId>core</artifactId>
+    <artifactId>eventsourcing</artifactId>
     <version>2022.19.4</version>
     <packaging>jar</packaging>
     <name>${project.groupId}.${project.artifactId}</name>
-    <description>Core Module</description>
+    <description>event sourcing Module</description>
+    <dependencies>
+        <!--======================================================================================== -->
+        <!-- Modules Dependencies -->
+        <!--======================================================================================== -->
+        <dependency>
+            <groupId>io.memoria.reactive</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
 </project>
 
