@@ -7,8 +7,6 @@ public interface Event extends Shardable, Serializable {
 
   EventId eventId();
 
-  StateId stateId();
-
   long timestamp();
 
 }
