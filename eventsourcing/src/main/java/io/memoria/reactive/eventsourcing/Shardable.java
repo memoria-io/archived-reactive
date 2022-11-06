@@ -1,7 +1,5 @@
 package io.memoria.reactive.eventsourcing;
 
-import io.memoria.atom.core.id.Id;
-
 public interface Shardable {
   default boolean isInPartition(int partition, int totalPartitions) {
     return partition == partition(totalPartitions);
@@ -12,5 +10,5 @@ public interface Shardable {
     return Math.abs(hash) % totalPartitions;
   }
 
-  Id stateId();
+  StateId stateId();
 }
