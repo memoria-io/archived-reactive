@@ -6,13 +6,13 @@
     <parent>
         <groupId>io.memoria</groupId>
         <artifactId>jbom</artifactId>
-        <version>2022.19.2</version>
+        <version>19.3.0</version>
     </parent>
 
     <!--suppress MavenRedundantGroupId -->
     <groupId>io.memoria</groupId>
     <artifactId>reactive</artifactId>
-    <version>2022.19.8.1</version>
+    <version>19.3.0.1</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}.${project.artifactId}</name>
@@ -32,7 +32,7 @@
     </modules>
 
     <properties>
-        <atom.version>2022.19.8</atom.version>
+        <atom.version>19.3.0.1</atom.version>
         <reactor.version>2020.0.23</reactor.version>
     </properties>
 
