@@ -9,11 +9,11 @@
         <version>2022.19.7</version>
     </parent>
     <groupId>io.memoria.reactive</groupId>
-    <artifactId>eventsourcing</artifactId>
+    <artifactId>text</artifactId>
     <version>2022.19.7</version>
     <packaging>jar</packaging>
     <name>${project.groupId}.${project.artifactId}</name>
-    <description>event sourcing Module</description>
+    <description>text Module</description>
     <dependencies>
         <!--======================================================================================== -->
         <!-- Modules Dependencies -->
@@ -28,7 +28,14 @@
         <!--======================================================================================== -->
         <dependency>
             <groupId>io.memoria.atom</groupId>
-            <artifactId>eventsourcing</artifactId>
+            <artifactId>text</artifactId>
+        </dependency>
+        <!--======================================================================================== -->
+        <!-- Library Dependencies -->
+        <!--======================================================================================== -->
+        <dependency>
+            <groupId>io.projectreactor.netty</groupId>
+            <artifactId>reactor-netty</artifactId>
         </dependency>
     </dependencies>
 </project>
