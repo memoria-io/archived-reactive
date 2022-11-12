@@ -1,6 +1,6 @@
 package io.memoria.reactive.eventsourcing.banking.event;
 
-import io.memoria.reactive.eventsourcing.Event;
+import io.memoria.atom.eventsourcing.Event;
 
 public sealed interface AccountEvent extends Event permits AccountClosed,
                                                            AccountCreated,

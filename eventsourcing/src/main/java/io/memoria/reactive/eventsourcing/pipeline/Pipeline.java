@@ -1,15 +1,13 @@
-package io.memoria.reactive.eventsourcing.pipeline.state;
+package io.memoria.reactive.eventsourcing.pipeline;
 
 import io.memoria.atom.core.text.TextTransformer;
+import io.memoria.atom.eventsourcing.Command;
+import io.memoria.atom.eventsourcing.CommandId;
+import io.memoria.atom.eventsourcing.Event;
+import io.memoria.atom.eventsourcing.EventId;
+import io.memoria.atom.eventsourcing.State;
+import io.memoria.atom.eventsourcing.StateId;
 import io.memoria.reactive.core.vavr.ReactorVavrUtils;
-import io.memoria.reactive.eventsourcing.Command;
-import io.memoria.reactive.eventsourcing.CommandId;
-import io.memoria.reactive.eventsourcing.Event;
-import io.memoria.reactive.eventsourcing.EventId;
-import io.memoria.reactive.eventsourcing.pipeline.LogConfig;
-import io.memoria.reactive.eventsourcing.State;
-import io.memoria.reactive.eventsourcing.StateId;
-import io.memoria.reactive.eventsourcing.pipeline.Route;
 import io.memoria.reactive.eventsourcing.repo.Msg;
 import io.memoria.reactive.eventsourcing.repo.Stream;
 import io.vavr.control.Option;
@@ -29,10 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static io.memoria.reactive.core.vavr.ReactorVavrUtils.toMono;
 
-public class StatePipeline<S extends State, C extends Command, E extends Event> {
-  private static final Logger LOGGER = Loggers.getLogger(StatePipeline.class.getName());
+public class Pipeline<S extends State, C extends Command, E extends Event> {
+  private static final Logger LOGGER = Loggers.getLogger(Pipeline.class.getName());
   // Domain logic
-  private final StateDomain<S, C, E> stateDomain;
+  private final Domain<S, C, E> domain;
   private final Stream stream;
   // Infra
   private final TextTransformer transformer;
@@ -45,13 +43,13 @@ public class StatePipeline<S extends State, C extends Command, E extends Event> 
   private final Set<EventId> processedEvents;
   private final Set<CommandId> processedCmds;
 
-  public StatePipeline(StateDomain<S, C, E> stateDomain,
-                       Stream stream,
-                       TextTransformer transformer,
-                       Route route,
-                       LogConfig logConfig) {
+  public Pipeline(Domain<S, C, E> domain,
+                  Stream stream,
+                  TextTransformer transformer,
+                  Route route,
+                  LogConfig logConfig) {
     // Domain logic
-    this.stateDomain = stateDomain;
+    this.domain = domain;
     // Infra
     this.stream = stream;
     this.transformer = transformer;
@@ -79,20 +77,22 @@ public class StatePipeline<S extends State, C extends Command, E extends Event> 
   }
 
   public Mono<E> toEvent(Msg msg) {
-    return toMono(transformer.deserialize(msg.value(), stateDomain.eventClass()));
+    return toMono(transformer.deserialize(msg.value(), domain.eventClass()));
   }
 
   public S stateOrInit(StateId stateId) {
-    return Option.of(stateRepo.get(stateId)).getOrElse(stateDomain.initState());
+    return Option.of(stateRepo.get(stateId)).getOrElse(domain.initState());
   }
 
   public Mono<Msg> toMsg(Event event) {
-    return toMono(transformer.serialize(event))
-                      .map(body -> new Msg(route.newEventTopic(), route.partition(), event.eventId(), body));
+    return toMono(transformer.serialize(event)).map(body -> new Msg(route.newEventTopic(),
+                                                                    route.partition(),
+                                                                    event.eventId(),
+                                                                    body));
   }
 
   public Mono<C> toCommand(Msg msg) {
-    return toMono(transformer.deserialize(msg.value(), stateDomain.commandClass()));
+    return toMono(transformer.deserialize(msg.value(), domain.commandClass()));
   }
 
   private Flux<E> reducedEvents() {
@@ -102,7 +102,7 @@ public class StatePipeline<S extends State, C extends Command, E extends Event> 
     var compactNonCom = Flux.fromIterable(this.stateRepo.entrySet())
                             .filter(e -> !reducedStates.contains(e.getKey()))
                             .map(Entry::getValue)
-                            .map(stateDomain.reducer());
+                            .map(domain.reducer());
     return compacted.thenMany(nonCompacted).thenMany(compactNonCom);
   }
 
@@ -116,7 +116,7 @@ public class StatePipeline<S extends State, C extends Command, E extends Event> 
 
   private void evolveState(E event) {
     var currentState = stateOrInit(event.stateId());
-    var newState = stateDomain.evolver().apply(currentState, event);
+    var newState = domain.evolver().apply(currentState, event);
     stateRepo.put(event.stateId(), newState);
     processedCmds.add(event.commandId());
     processedEvents.add(event.eventId());
@@ -176,6 +176,6 @@ public class StatePipeline<S extends State, C extends Command, E extends Event> 
 
   private Try<E> decide(C cmd) {
     var state = stateOrInit(cmd.stateId());
-    return stateDomain.decider().apply(state, cmd);
+    return domain.decider().apply(state, cmd);
   }
 }

@@ -1,7 +1,7 @@
 package io.memoria.reactive.eventsourcing.banking;
 
-import io.memoria.reactive.eventsourcing.CommandId;
-import io.memoria.reactive.eventsourcing.StateId;
+import io.memoria.atom.eventsourcing.CommandId;
+import io.memoria.atom.eventsourcing.StateId;
 import io.memoria.reactive.eventsourcing.banking.command.AccountCommand;
 import io.memoria.reactive.eventsourcing.banking.command.ChangeName;
 import io.memoria.reactive.eventsourcing.banking.command.CloseAccount;

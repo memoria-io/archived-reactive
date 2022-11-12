@@ -1,6 +1,6 @@
 package io.memoria.reactive.eventsourcing.banking.state;
 
-import io.memoria.reactive.eventsourcing.StateId;
+import io.memoria.atom.eventsourcing.StateId;
 
 public record Acc(StateId accountId, String name, int balance, int debitCount) implements Account {
   public boolean hasOngoingDebit() {

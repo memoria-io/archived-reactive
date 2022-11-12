@@ -1,5 +1,6 @@
 package io.memoria.reactive.eventsourcing.banking;
 
+import io.memoria.atom.eventsourcing.rule.Decider;
 import io.memoria.reactive.eventsourcing.Utils;
 import io.memoria.reactive.eventsourcing.banking.command.AccountCommand;
 import io.memoria.reactive.eventsourcing.banking.command.ChangeName;
@@ -21,11 +22,10 @@ import io.memoria.reactive.eventsourcing.banking.state.Acc;
 import io.memoria.reactive.eventsourcing.banking.state.Account;
 import io.memoria.reactive.eventsourcing.banking.state.ClosedAccount;
 import io.memoria.reactive.eventsourcing.banking.state.Visitor;
-import io.memoria.reactive.eventsourcing.pipeline.state.StateDecider;
 import io.vavr.control.Try;
 
 @SuppressWarnings({"SwitchStatementWithTooFewBranches"})
-public record AccountStateDecider() implements StateDecider<Account, AccountCommand, AccountEvent> {
+public record AccountDecider() implements Decider<Account, AccountCommand, AccountEvent> {
 
   @Override
   public Try<AccountEvent> apply(Account account, AccountCommand accountCommand) {

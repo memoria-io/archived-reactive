@@ -1,8 +1,8 @@
 package io.memoria.reactive.eventsourcing.banking.event;
 
-import io.memoria.reactive.eventsourcing.CommandId;
-import io.memoria.reactive.eventsourcing.EventId;
-import io.memoria.reactive.eventsourcing.StateId;
+import io.memoria.atom.eventsourcing.CommandId;
+import io.memoria.atom.eventsourcing.EventId;
+import io.memoria.atom.eventsourcing.StateId;
 import io.memoria.reactive.eventsourcing.banking.command.ChangeName;
 
 public record NameChanged(EventId eventId, CommandId commandId, StateId accountId, String newName)

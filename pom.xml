@@ -30,7 +30,7 @@
     </modules>
 
     <properties>
-        <atom.version>2022.19.5</atom.version>
+        <atom.version>2022.19.8</atom.version>
         <reactor.version>2020.0.23</reactor.version>
     </properties>
 
@@ -61,6 +61,24 @@
     <dependencyManagement>
         <dependencies>
             <!--======================================================================================== -->
+            <!-- Atom Dependencies -->
+            <!--======================================================================================== -->
+            <dependency>
+                <groupId>io.memoria.atom</groupId>
+                <artifactId>core</artifactId>
+                <version>${atom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.memoria.atom</groupId>
+                <artifactId>eventsourcing</artifactId>
+                <version>${atom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.memoria.atom</groupId>
+                <artifactId>web</artifactId>
+                <version>${atom.version}</version>
+            </dependency>
+            <!--======================================================================================== -->
             <!-- Reactive Dependencies -->
             <!--======================================================================================== -->
             <dependency>
@@ -76,12 +94,10 @@
         <dependency>
             <groupId>io.memoria.atom</groupId>
             <artifactId>core</artifactId>
-            <version>${atom.version}</version>
         </dependency>
         <dependency>
             <groupId>io.memoria.atom</groupId>
             <artifactId>web</artifactId>
-            <version>${atom.version}</version>
         </dependency>
         <!--======================================================================================== -->
         <!-- Reactive Dependencies -->

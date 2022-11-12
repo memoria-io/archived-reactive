@@ -1,9 +1,10 @@
 package io.memoria.reactive.eventsourcing.banking;
 
+import io.memoria.atom.core.id.Id;
 import io.memoria.atom.core.text.SerializableTransformer;
 import io.memoria.atom.core.text.TextTransformer;
-import io.memoria.reactive.eventsourcing.Command;
-import io.memoria.reactive.eventsourcing.StateId;
+import io.memoria.atom.eventsourcing.Command;
+import io.memoria.atom.eventsourcing.StateId;
 import io.memoria.reactive.eventsourcing.banking.command.AccountCommand;
 import io.memoria.reactive.eventsourcing.banking.command.CloseAccount;
 import io.memoria.reactive.eventsourcing.banking.command.CreateAccount;
@@ -13,13 +14,12 @@ import io.memoria.reactive.eventsourcing.banking.state.Acc;
 import io.memoria.reactive.eventsourcing.banking.state.Account;
 import io.memoria.reactive.eventsourcing.banking.state.ClosedAccount;
 import io.memoria.reactive.eventsourcing.banking.state.Visitor;
+import io.memoria.reactive.eventsourcing.pipeline.Domain;
 import io.memoria.reactive.eventsourcing.pipeline.LogConfig;
+import io.memoria.reactive.eventsourcing.pipeline.Pipeline;
 import io.memoria.reactive.eventsourcing.pipeline.Route;
-import io.memoria.reactive.eventsourcing.pipeline.saga.SagaDomain;
-import io.memoria.reactive.eventsourcing.pipeline.saga.SagaPipeline;
-import io.memoria.reactive.eventsourcing.pipeline.state.StateDomain;
-import io.memoria.reactive.eventsourcing.pipeline.state.StatePipeline;
-import io.memoria.atom.core.id.Id;
+import io.memoria.reactive.eventsourcing.pipeline.SagaDomain;
+import io.memoria.reactive.eventsourcing.pipeline.SagaPipeline;
 import io.memoria.reactive.eventsourcing.repo.Msg;
 import io.memoria.reactive.eventsourcing.repo.Stream;
 import io.memoria.reactive.eventsourcing.repo.mem.MemStream;
@@ -41,13 +41,13 @@ class SagaPipelineTest {
 
   private final Route route;
   private final Stream stream;
-  private final StatePipeline<Account, AccountCommand, AccountEvent> statePipeline;
+  private final Pipeline<Account, AccountCommand, AccountEvent> pipeline;
   private final SagaPipeline<AccountEvent, AccountCommand> sagaPipeline;
 
   SagaPipelineTest() {
     route = new Route(commandTopic, 0, oldEventTopic, 1, newEventTopic, 1);
     stream = new MemStream(route.streamConfigs());
-    statePipeline = new StatePipeline<>(stateDomain(), stream, transformer, route, LogConfig.FINE);
+    pipeline = new Pipeline<>(stateDomain(), stream, transformer, route, LogConfig.FINE);
     sagaPipeline = new SagaPipeline<>(sagaDomain(), stream, transformer, route, LogConfig.FINE);
   }
 
@@ -64,10 +64,10 @@ class SagaPipelineTest {
     Flux<Command> cmds = Flux.just(createBob, createJan, sendMoneyFromBobToJan, requestClosure, sendMoneyFromBobToJan);
     stream.publish(cmds.map(this::toMsg)).subscribe();
     // Then
-    var pipelines = Flux.merge(statePipeline.run(), sagaPipeline.run());
+    var pipelines = Flux.merge(pipeline.run(), sagaPipeline.run());
     StepVerifier.create(pipelines).expectNextCount(10).verifyTimeout(timeout);
-    var bob = statePipeline.stateOrInit(bobId);
-    var jan = statePipeline.stateOrInit(janId);
+    var bob = pipeline.stateOrInit(bobId);
+    var jan = pipeline.stateOrInit(janId);
     Assertions.assertInstanceOf(Acc.class, bob);
     Assertions.assertInstanceOf(ClosedAccount.class, jan);
   }
@@ -86,27 +86,27 @@ class SagaPipelineTest {
                    .map(this::toMsg);
 
     // When
-    var pipelines = Flux.merge(stream.publish(cmds), statePipeline.run(), sagaPipeline.run());
+    var pipelines = Flux.merge(stream.publish(cmds), pipeline.run(), sagaPipeline.run());
     StepVerifier.create(pipelines).expectNextCount(20).verifyTimeout(timeout);
     // Then
-    var accounts = accountIds.map(statePipeline::stateOrInit).map(u -> (Acc) u);
+    var accounts = accountIds.map(pipeline::stateOrInit).map(u -> (Acc) u);
     Assertions.assertEquals(nAccounts, accounts.size());
     var total = accounts.foldLeft(0, (a, b) -> a + b.balance());
     Assertions.assertEquals(treasury, total);
   }
 
   private SagaDomain<AccountEvent, AccountCommand> sagaDomain() {
-    return new SagaDomain<>(AccountEvent.class, AccountCommand.class, new AccountSagaDecider());
+    return new SagaDomain<>(AccountEvent.class, AccountCommand.class, new AccountSaga());
   }
 
-  private StateDomain<Account, AccountCommand, AccountEvent> stateDomain() {
-    return new StateDomain<>(Account.class,
-                             AccountCommand.class,
-                             AccountEvent.class,
-                             new Visitor(),
-                             new AccountStateDecider(),
-                             new AccountStateEvolver(),
-                             new AccountStateReducer());
+  private Domain<Account, AccountCommand, AccountEvent> stateDomain() {
+    return new Domain<>(Account.class,
+                        AccountCommand.class,
+                        AccountEvent.class,
+                        new Visitor(),
+                        new AccountDecider(),
+                        new AccountEvolver(),
+                        new AccountReducer());
   }
 
   private Msg toMsg(Command command) {

@@ -1,7 +1,7 @@
 package io.memoria.reactive.eventsourcing.banking.command;
 
-import io.memoria.reactive.eventsourcing.CommandId;
-import io.memoria.reactive.eventsourcing.StateId;
+import io.memoria.atom.eventsourcing.CommandId;
+import io.memoria.atom.eventsourcing.StateId;
 
 public record Debit(CommandId commandId, StateId debitedAcc, StateId creditedAcc, int amount)
         implements AccountCommand {

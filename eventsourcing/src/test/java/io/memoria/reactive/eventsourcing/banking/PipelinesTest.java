@@ -1,17 +1,17 @@
 package io.memoria.reactive.eventsourcing.banking;
 
+import io.memoria.atom.core.id.Id;
 import io.memoria.atom.core.text.SerializableTransformer;
 import io.memoria.atom.core.text.TextTransformer;
-import io.memoria.reactive.eventsourcing.Command;
+import io.memoria.atom.eventsourcing.Command;
 import io.memoria.reactive.eventsourcing.banking.command.AccountCommand;
 import io.memoria.reactive.eventsourcing.banking.event.AccountEvent;
 import io.memoria.reactive.eventsourcing.banking.state.Account;
 import io.memoria.reactive.eventsourcing.banking.state.Visitor;
+import io.memoria.reactive.eventsourcing.pipeline.Domain;
 import io.memoria.reactive.eventsourcing.pipeline.LogConfig;
+import io.memoria.reactive.eventsourcing.pipeline.Pipeline;
 import io.memoria.reactive.eventsourcing.pipeline.Route;
-import io.memoria.reactive.eventsourcing.pipeline.state.StateDomain;
-import io.memoria.reactive.eventsourcing.pipeline.state.StatePipeline;
-import io.memoria.atom.core.id.Id;
 import io.memoria.reactive.eventsourcing.repo.Msg;
 import io.memoria.reactive.eventsourcing.repo.Stream;
 import io.memoria.reactive.eventsourcing.repo.mem.MemStream;
@@ -36,8 +36,8 @@ class PipelinesTest {
   public static final String newEventTopic = "newEventTopic";
   // Pipelines
   private final Stream stream;
-  private final List<StatePipeline<Account, AccountCommand, AccountEvent>> oldPipeline;
-  private final List<StatePipeline<Account, AccountCommand, AccountEvent>> pipeline1;
+  private final List<Pipeline<Account, AccountCommand, AccountEvent>> oldPipeline;
+  private final List<Pipeline<Account, AccountCommand, AccountEvent>> pipeline1;
 
   PipelinesTest() {
     // Pipelines
@@ -65,9 +65,7 @@ class PipelinesTest {
     StepVerifier.create(oldEvents).expectNextCount(eventCount).verifyTimeout(timeout);
 
     // And When
-    StepVerifier.create(Flux.merge(pipeline1.map(StatePipeline::run)))
-                .expectNextCount(eventCount)
-                .verifyTimeout(timeout);
+    StepVerifier.create(Flux.merge(pipeline1.map(Pipeline::run))).expectNextCount(eventCount).verifyTimeout(timeout);
 
     // Then events are published to the new pipeline topic, with number of totalPartitions = totalPartitions,
     var newEvents = Flux.range(0, newPartitions).flatMap(i -> accountCreatedStream(newEventTopic, i));
@@ -89,7 +87,7 @@ class PipelinesTest {
     StepVerifier.create(oldEvents).expectNextCount(eventCount).verifyTimeout(timeout);
 
     // And When new pipelines are run with reduction
-    StepVerifier.create(Flux.merge(pipeline1.map(StatePipeline::runReduced)))
+    StepVerifier.create(Flux.merge(pipeline1.map(Pipeline::runReduced)))
                 .expectNextCount(personsCount)
                 .verifyTimeout(timeout);
 
@@ -105,27 +103,26 @@ class PipelinesTest {
     stream.publish(DataSet.scenario(personsCount, nameChanges).map(PipelinesTest::toMsg))
           .delaySubscription(Duration.ofMillis(100))
           .subscribe();
-    StepVerifier.create(Flux.merge(oldPipeline.map(StatePipeline::run)))
-                .expectNextCount(eventCount)
-                .verifyTimeout(timeout);
+    StepVerifier.create(Flux.merge(oldPipeline.map(Pipeline::run))).expectNextCount(eventCount).verifyTimeout(timeout);
   }
 
-  private StatePipeline<Account, AccountCommand, AccountEvent> createPipeline(Route route) {
-    return new StatePipeline<>(stateDomain(), stream, transformer, route, LogConfig.FINE);
+  private Pipeline<Account, AccountCommand, AccountEvent> createPipeline(Route route) {
+    return new Pipeline<>(stateDomain(), stream, transformer, route, LogConfig.FINE);
   }
 
-  private StateDomain<Account, AccountCommand, AccountEvent> stateDomain() {
-    return new StateDomain<>(Account.class,
-                             AccountCommand.class,
-                             AccountEvent.class,
-                             new Visitor(),
-                             new AccountStateDecider(),
-                             new AccountStateEvolver(),
-                             new AccountStateReducer());
+  private Domain<Account, AccountCommand, AccountEvent> stateDomain() {
+    return new Domain<>(Account.class,
+                        AccountCommand.class,
+                        AccountEvent.class,
+                        new Visitor(),
+                        new AccountDecider(),
+                        new AccountEvolver(),
+                        new AccountReducer());
   }
 
   private Flux<AccountEvent> accountCreatedStream(String topic, int i) {
-    return stream.subscribe(topic, i, 0).concatMap(msg -> toMono(transformer.deserialize(msg.value(), AccountEvent.class)));
+    return stream.subscribe(topic, i, 0)
+                 .concatMap(msg -> toMono(transformer.deserialize(msg.value(), AccountEvent.class)));
     //                 .doOnNext(e -> System.out.printf("p(%d)-%s%n", i, e));
   }
 

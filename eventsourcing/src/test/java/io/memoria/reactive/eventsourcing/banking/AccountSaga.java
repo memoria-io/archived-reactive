@@ -1,5 +1,6 @@
 package io.memoria.reactive.eventsourcing.banking;
 
+import io.memoria.atom.eventsourcing.rule.Saga;
 import io.memoria.reactive.eventsourcing.banking.command.AccountCommand;
 import io.memoria.reactive.eventsourcing.banking.command.ConfirmDebit;
 import io.memoria.reactive.eventsourcing.banking.command.Credit;
@@ -7,10 +8,9 @@ import io.memoria.reactive.eventsourcing.banking.event.AccountEvent;
 import io.memoria.reactive.eventsourcing.banking.event.CreditRejected;
 import io.memoria.reactive.eventsourcing.banking.event.Credited;
 import io.memoria.reactive.eventsourcing.banking.event.Debited;
-import io.memoria.reactive.eventsourcing.pipeline.saga.SagaDecider;
 import io.vavr.control.Option;
 
-public record AccountSagaDecider() implements SagaDecider<AccountEvent, AccountCommand> {
+public record AccountSaga() implements Saga<AccountEvent, AccountCommand> {
 
   @Override
   public Option<AccountCommand> apply(AccountEvent accountEvent) {

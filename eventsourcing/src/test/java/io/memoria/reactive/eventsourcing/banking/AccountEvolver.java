@@ -1,5 +1,6 @@
 package io.memoria.reactive.eventsourcing.banking;
 
+import io.memoria.atom.eventsourcing.rule.Evolver;
 import io.memoria.reactive.eventsourcing.banking.event.AccountClosed;
 import io.memoria.reactive.eventsourcing.banking.event.AccountCreated;
 import io.memoria.reactive.eventsourcing.banking.event.AccountEvent;
@@ -10,10 +11,9 @@ import io.memoria.reactive.eventsourcing.banking.state.Acc;
 import io.memoria.reactive.eventsourcing.banking.state.Account;
 import io.memoria.reactive.eventsourcing.banking.state.ClosedAccount;
 import io.memoria.reactive.eventsourcing.banking.state.Visitor;
-import io.memoria.reactive.eventsourcing.pipeline.state.StateEvolver;
 
 @SuppressWarnings("SwitchStatementWithTooFewBranches")
-public record AccountStateEvolver() implements StateEvolver<Account, AccountEvent> {
+public record AccountEvolver() implements Evolver<Account, AccountEvent> {
   @Override
   public Account apply(Account account, AccountEvent accountEvent) {
     return switch (account) {
