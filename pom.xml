@@ -12,7 +12,7 @@
     <!--suppress MavenRedundantGroupId -->
     <groupId>io.memoria</groupId>
     <artifactId>reactive</artifactId>
-    <version>19.3.0.4</version>
+    <version>19.3.0.7</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}.${project.artifactId}</name>
@@ -32,7 +32,7 @@
     </modules>
 
     <properties>
-        <atom.version>19.3.0.3</atom.version>
+        <atom.version>19.3.0.7</atom.version>
         <reactor.version>2020.0.23</reactor.version>
     </properties>
 

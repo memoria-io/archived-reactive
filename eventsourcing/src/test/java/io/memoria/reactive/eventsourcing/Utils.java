@@ -3,7 +3,7 @@ package io.memoria.reactive.eventsourcing;
 import io.memoria.atom.eventsourcing.Command;
 import io.memoria.atom.eventsourcing.Event;
 import io.memoria.atom.eventsourcing.State;
-import io.memoria.atom.eventsourcing.exception.DeciderException.InvalidCommand;
+import io.memoria.atom.eventsourcing.exception.ESException.InvalidCommand;
 import io.vavr.control.Try;
 
 public class Utils {

@@ -24,7 +24,6 @@ import io.memoria.reactive.eventsourcing.banking.state.ClosedAccount;
 import io.memoria.reactive.eventsourcing.banking.state.Visitor;
 import io.vavr.control.Try;
 
-@SuppressWarnings({"SwitchStatementWithTooFewBranches"})
 public record AccountDecider() implements Decider<Account, AccountCommand, AccountEvent> {
 
   @Override
