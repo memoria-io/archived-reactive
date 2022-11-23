@@ -9,33 +9,26 @@
         <version>19.3.0.8</version>
     </parent>
     <groupId>io.memoria.reactive</groupId>
-    <artifactId>sec</artifactId>
+    <artifactId>nats</artifactId>
     <version>19.3.0.8</version>
     <packaging>jar</packaging>
     <name>${project.groupId}.${project.artifactId}</name>
-    <description>sec Module</description>
+    <description>nats Module</description>
     <dependencies>
         <!--======================================================================================== -->
         <!-- Modules Dependencies -->
         <!--======================================================================================== -->
         <dependency>
             <groupId>io.memoria.reactive</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>eventsourcing</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <!--======================================================================================== -->
-        <!-- Atom Dependencies -->
-        <!--======================================================================================== -->
+        <!-- ===============================================================   -->
+        <!-- Nats Dependencies                                                 -->
+        <!-- ===============================================================   -->
         <dependency>
-            <groupId>io.memoria.atom</groupId>
-            <artifactId>sec</artifactId>
-        </dependency>
-        <!--======================================================================================== -->
-        <!-- Library Dependencies -->
-        <!--======================================================================================== -->
-        <dependency>
-            <groupId>io.projectreactor.netty</groupId>
-            <artifactId>reactor-netty</artifactId>
+            <groupId>io.nats</groupId>
+            <artifactId>jnats</artifactId>
         </dependency>
     </dependencies>
 </project>
